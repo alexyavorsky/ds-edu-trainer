@@ -88,8 +88,9 @@ jobs:
           retention-days: 14
 
   browsers:
-    name: Python в браузерах (Chromium, Firefox, WebKit)
-    runs-on: ubuntu-latest
+    name: Python в браузерах (Chromium, Firefox, WebKit на macOS)
+    # macOS: стек WebKit здесь такой же, как у Safari (на Linux он в разы больше и бюджет глубины не проверяет)
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -98,7 +99,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Браузеры Playwright
-        run: npx playwright install --with-deps chromium firefox webkit
+        run: npx playwright install chromium firefox webkit
       - run: npm run build
       - name: Все эталоны в трёх браузерах; глубина рекурсии не меньше бюджета тестов
         run: node scripts/validate_browsers.ts
