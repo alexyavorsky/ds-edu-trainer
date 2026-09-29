@@ -19,6 +19,13 @@ TIMEOUT = 180
 SUMMARY = re.compile(r"Прошло (\d+) из (\d+)")
 
 
+def github_error(title: str, message: str) -> None:
+    """В GitHub Actions ошибка видна аннотацией на странице запуска — логи без входа не открываются."""
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        esc = lambda s: s.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+        print(f"::error title={esc(title).replace(',', '%2C').replace(':', '%3A')}::{esc(message)}")
+
+
 def check_selfcheck(name: str, proc: subprocess.CompletedProcess) -> str:
     """Синтетические проверки раннера: ожидаемое поведение, а не «все тесты прошли»."""
     out = proc.stdout
@@ -63,6 +70,7 @@ def main() -> int:
     print(f"Python {sys.version.split()[0]} на {sys.platform}: прошли {len(files) - len(failed)} из {len(files)} файлов")
     for name, why in failed:
         print(f"  ✗ {name}\n      {why}")
+        github_error(f"{name} · Python {sys.version_info.major}.{sys.version_info.minor} · {sys.platform}", why)
     return 1 if failed else 0
 
 

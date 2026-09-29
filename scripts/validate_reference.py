@@ -534,6 +534,13 @@ def check_versions(topics: dict[str, dict], errors: list[str]) -> bool:
     return ok
 
 
+def github_error(title: str, message: str) -> None:
+    """В GitHub Actions ошибка видна аннотацией на странице запуска — логи без входа не открываются."""
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        esc = lambda s: s.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+        print(f"::error title={esc(title).replace(',', '%2C').replace(':', '%3A')}::{esc(message)}")
+
+
 # ─── Точка входа ────────────────────────────────────────────────────────────
 
 
@@ -573,9 +580,11 @@ def main(argv: list[str]) -> int:
         print(f"{status} {article_id} — примеров {r.examples}{extra}")
         for e in r.errors:
             print(f"    {e}")
+            github_error(article_id, e)
         failed += bool(r.errors)
     for e in errors:
         print(f"✗ {e}")
+        github_error("справочник", e)
     if planned:
         mark = "✗" if strict else "·"
         shown = ", ".join(planned) if strict or len(planned) <= 10 else ", ".join(planned[:5]) + ", …"
