@@ -37,19 +37,3 @@ export const PACKAGE_LABEL: Record<string, string> = {
   pyarrow: 'pyarrow',
   openpyxl: 'openpyxl',
 };
-
-/**
- * Этап 1 (образец): запуск в браузере только на этих страницах; null — везде.
- * Задачи — по id, статьи справочника — по id статьи.
- */
-export const RUN_SAMPLE: string[] | null = [
-  'ga-find-term',
-  'ga-typo-distance',
-  'ga-find-release',
-  'ga-digit-sum',
-  'numpy/broadcasting',
-  'pandas/groupby',
-  'pandas/plot',
-];
-
-export const canRunInBrowser = (id: string): boolean => !RUN_SAMPLE || RUN_SAMPLE.includes(id);

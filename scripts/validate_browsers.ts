@@ -142,12 +142,16 @@ async function main(argv: string[]): Promise<number> {
         failed = true;
         continue;
       }
+      const summary: string[] = [];
       for (const [probe, outcomes] of Object.entries(result.probes)) {
         const entries = Object.entries(outcomes);
         const last = entries[entries.length - 1];
         const works = entries.filter(([, o]) => o === 'ok').map(([d]) => d).pop() ?? '—';
-        console.log(`  · ${probe}: работает до ${works}${last && last[1] !== 'ok' ? `, на ${last[0]} — ${last[1]}` : ''}`);
+        const line = `${probe}: работает до ${works}${last && last[1] !== 'ok' ? `, на ${last[0]} — ${last[1]}` : ''}`;
+        console.log(`  · ${line}`);
+        summary.push(line);
       }
+      if (process.env.GITHUB_ACTIONS === 'true') console.log(`::notice title=${name}::${[result.userAgent, ...summary].join('%0A')}`);
       const problems: string[] = [];
       if (result.probes.plain?.['990'] !== 'ok') problems.push('обычная рекурсия на 990 уровней не работает');
       if (result.probes.plain?.['5000'] !== 'RecursionError') problems.push('рекурсия на 5000 уровней должна давать RecursionError, а не ронять Python');

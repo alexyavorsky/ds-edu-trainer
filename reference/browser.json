@@ -79,7 +79,7 @@
     },
     "numpy/join-split#row-stack": {
       "status": "differs",
-      "reason": "в браузере не возникает AttributeError"
+      "reason": "не возникает AttributeError"
     },
     "numpy/linalg#eig-complex": {
       "status": "differs",
@@ -91,7 +91,7 @@
     },
     "numpy/linalg#singular": {
       "status": "differs",
-      "reason": "в браузере не возникает LinAlgError"
+      "reason": "не возникает LinAlgError"
     },
     "numpy/masked#int-missing": {
       "status": "differs",
@@ -143,7 +143,7 @@
     },
     "numpy/sorting#sort": {
       "status": "unavailable",
-      "reason": "в браузере пример падает: TypeError: sort() got an unexpected keyword argument 'descending'"
+      "reason": "пример падает — TypeError: sort() got an unexpected keyword argument 'descending'"
     },
     "numpy/statistics#method": {
       "status": "differs",
@@ -180,14 +180,6 @@
     "pandas/intro#version": {
       "status": "differs",
       "reason": "вывод"
-    },
-    "pandas/io-formats#parquet": {
-      "status": "unavailable",
-      "reason": "в браузере пример падает: ArrowKeyError: No type extension with name arrow.py_extension_type found"
-    },
-    "pandas/performance#arrow": {
-      "status": "unavailable",
-      "reason": "в браузере пример падает: NameError: name 'ArrowDtype' is not defined"
     },
     "pandas/performance#category": {
       "status": "differs",

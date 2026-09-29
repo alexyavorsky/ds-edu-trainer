@@ -90,6 +90,12 @@ class NodePython {
           case 'retried':
             retried = m.name;
             return;
+          case 'restart':
+            // как на сайте: новый Python и тот же запуск
+            this.stop();
+            this.worker = this.spawn();
+            this.worker.postMessage({ type: 'run', request: { ...request, runId: id } });
+            return;
           case 'tests':
             tests = m.tests;
             return;
@@ -272,18 +278,18 @@ function exampleJob(article: Article, cell: ExampleCell): () => (py: NodePython)
     const report: ExampleReport = { id, status: 'same', errors: [], diff: [], elapsed: 0 };
     const packages = examplePackages(article.topicPackage, `${article.setup}\n${cell.code}`);
     const end = await py.run({ kind: 'example', packages, setup: article.setup, code: cell.code, filename: `reference/${article.id}.py`, cell: cell.id });
-    if (end.type === 'timeout') return { ...report, status: 'unavailable', reason: `в браузере выполняется дольше ${end.seconds} с` };
-    if (end.type !== 'done') return { ...report, status: 'unavailable', reason: `в браузере не запускается: ${end.message}` };
+    if (end.type === 'timeout') return { ...report, status: 'unavailable', reason: `выполняется дольше ${end.seconds} с` };
+    if (end.type !== 'done') return { ...report, status: 'unavailable', reason: `Python остановился: ${end.message}` };
     const d = end.data as ExampleDone;
     report.elapsed = d.elapsed;
     if (end.retried) report.errors.push(`пакет ${end.retried} не распознан заранее — дополните правила в src/lib/python/packages.ts`);
     const expected = cell.flags.raises;
     if (d.error && !(expected && d.error.mro.includes(expected))) {
       const last = d.lines[d.lines.length - 1] ?? d.error.type;
-      const reason = d.error.type === 'ModuleNotFoundError' ? `в браузере нет пакета: ${last}` : `в браузере пример падает: ${last}`;
+      const reason = d.error.type === 'ModuleNotFoundError' ? `нет пакета — ${last}` : `пример падает — ${last}`;
       return { ...report, status: 'unavailable', reason };
     }
-    if (expected && !d.error) return { ...report, status: 'differs', reason: `в браузере не возникает ${expected}` };
+    if (expected && !d.error) return { ...report, status: 'differs', reason: `не возникает ${expected}` };
     const stored = cell.output === null ? [] : cell.output.split('\n');
     const same = 'timing' in cell.flags
       ? stored.map(numberMask).join('\n') === d.lines.map(numberMask).join('\n')

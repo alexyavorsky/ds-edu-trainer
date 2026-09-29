@@ -33,6 +33,7 @@ export type { RunInput };
 
 interface ActiveRun {
   id: number;
+  request: RunRequest;
   kind: RunRequest['kind'];
   handlers: RunHandlers;
   finish(end: RunEnd): void;
@@ -156,6 +157,17 @@ class PythonHost {
         break;
       case 'retried':
         break;
+      case 'restart':
+        // Python нужно начать заново (pandas импортирован без pyarrow): новый воркер, тот же запуск
+        h.onStatus?.('Перезапускаем Python…');
+        this.worker?.terminate();
+        this.worker = null;
+        this.ready = null;
+        this.start().then(
+          () => this.active === run && this.worker!.postMessage({ type: 'run', request: run.request }),
+          (error: Error) => run.finish({ type: 'load-error', message: error.message }),
+        );
+        break;
       case 'output':
         h.onOutput?.(message.chunks, message.truncated);
         break;
@@ -210,8 +222,10 @@ class PythonHost {
     }
     return new Promise<RunEnd>((resolve) => {
       const id = this.nextId++;
+      const full = { ...request, runId: id } as RunRequest;
       const run: ActiveRun = {
         id,
+        request: full,
         kind: request.kind,
         handlers,
         tests: null,
@@ -224,7 +238,7 @@ class PythonHost {
         },
       };
       this.active = run;
-      this.worker!.postMessage({ type: 'run', request: { ...request, runId: id } as RunRequest });
+      this.worker!.postMessage({ type: 'run', request: full });
     });
   }
 }

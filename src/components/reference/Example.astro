@@ -5,7 +5,6 @@
  */
 import { Code } from 'astro:components';
 import { browserStatus } from '../../lib/browser-runs';
-import { canRunInBrowser } from '../../lib/python/config';
 import { getExamples, getPlots, runnableCode, timingNote } from '../../lib/reference';
 import Icon from '../Icon.astro';
 import CopyButton from './CopyButton.astro';
@@ -24,7 +23,7 @@ const deprecated = 'deprecated' in cell.flags;
 const timing = timingNote(cell.flags);
 const plots = getPlots(article, id);
 // Запуск в браузере (Pyodide): [norun] не запускается никогда; что не работает в Pyodide — в reference/browser.json
-const runnable = canRunInBrowser(article) && !noRun;
+const runnable = !noRun;
 const browser = runnable ? browserStatus(article, id) : undefined;
 const unavailable = browser?.status === 'unavailable';
 ---
@@ -50,7 +49,7 @@ const unavailable = browser?.status === 'unavailable';
             class:list={['btn btn-ghost ex-btn', browser?.status === 'differs' && 'has-note']}
             data-ex-run
             disabled={unavailable}
-            title={unavailable ? browser?.reason : browser?.status === 'differs' ? 'В браузере другая версия библиотеки (32-битная сборка) — вывод может отличаться от показанного' : 'Выполнить пример в браузере'}
+            title={unavailable ? `В браузере не запускается: ${browser?.reason}` : browser?.status === 'differs' ? 'В браузере другая версия библиотеки (32-битная сборка) — вывод может отличаться от показанного' : 'Выполнить пример в браузере'}
           >
             <span class="spinner" aria-hidden="true"></span>
             <Icon name="play" />
@@ -91,7 +90,7 @@ const unavailable = browser?.status === 'unavailable';
   }
   {runnable && <div class="live" data-ex-live hidden />}
   {noRun && <p class="note">Пример не выполняется при проверке справочника — показан только код.</p>}
-  {unavailable && <p class="note">В браузере не запускается — {browser?.reason}. Скопируйте код и выполните у себя.</p>}
+  {unavailable && <p class="note">В браузере не запускается: {browser?.reason}. Скопируйте код и выполните у себя.</p>}
 </figure>
 
 <style>

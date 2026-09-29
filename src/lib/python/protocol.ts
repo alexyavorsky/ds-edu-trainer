@@ -77,6 +77,7 @@ export type FromWorker =
   | { type: 'package-error'; runId: number; message: string }
   | { type: 'started'; runId: number }
   | { type: 'retried'; runId: number; name: string }
+  | { type: 'restart'; runId: number; reason: string }
   | { type: 'output'; runId: number; chunks: [string, string][]; truncated: boolean }
   | { type: 'tests'; runId: number; tests: TestInfo[] }
   | { type: 'test-start'; runId: number; index: number }

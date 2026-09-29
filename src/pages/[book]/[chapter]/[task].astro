@@ -22,9 +22,7 @@ import {
   type Challenge,
   type Chapter,
 } from '../../../lib/content';
-import { joinBundle } from '../../../lib/bundle';
 import { bugsLabel, DIFFICULTY_LABEL, TYPE_LABEL } from '../../../lib/labels';
-import { canRunInBrowser } from '../../../lib/python/config';
 
 export async function getStaticPaths() {
   const paths: { params: Record<string, string>; props: Record<string, unknown> }[] = [];
@@ -54,7 +52,6 @@ const { Content } = await render(challenge);
 const filename = `${c.slug.replaceAll('-', '_')}.py`;
 const link = (x?: Challenge) => x && { href: challengeUrl(x), label: x.data.title };
 const isComplexity = c.type === 'complexity';
-const runnable = !isComplexity && canRunInBrowser(c.taskId);
 ---
 
 <BaseLayout title={c.title} taskId={c.taskId}>
@@ -98,7 +95,7 @@ const runnable = !isComplexity && canRunInBrowser(c.taskId);
         <h2 class="section-title question">Какое время выполнения?</h2>
         <ComplexityQuiz options={c.complexity!.options} answer={c.complexity!.answer} explanation={c.complexity!.explanation} />
       </section>
-    ) : runnable ? (
+    ) : (
       <TaskWorkbench
         taskId={c.taskId}
         starter={c.starter!}
@@ -108,16 +105,6 @@ const runnable = !isComplexity && canRunInBrowser(c.taskId);
         packages={c.packages}
         filename={filename}
       />
-    ) : (
-      <section class="block">
-        <h2 class="section-title">Готовый файл для редактора</h2>
-        <CodeBlock
-          code={joinBundle(c.bundleHeader!, c.starter!, c.bundleFooter!)}
-          filename={filename}
-          copy
-          note={`Вставьте в редактор и запустите: python3 ${filename} — тесты покажут ✓ / ✗ и итог.`}
-        />
-      </section>
     )
   }
 

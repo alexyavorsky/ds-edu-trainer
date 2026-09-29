@@ -122,6 +122,11 @@ export class Engine {
     this.runId = request.runId;
     const post = this.options.post;
     try {
+      // pandas проверяет pyarrow при импорте: если pandas уже импортирован без него, нужен новый Python
+      if (request.packages.includes('pyarrow') && !this.loaded.has('pyarrow') && this.pyodide!.runPython("'pandas' in __import__('sys').modules")) {
+        post({ type: 'restart', runId: request.runId, reason: 'pyarrow' });
+        return;
+      }
       try {
         await this.ensurePackages(request.packages);
         if (request.kind === 'example') {

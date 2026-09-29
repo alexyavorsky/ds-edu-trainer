@@ -9,7 +9,6 @@ import ReferenceSearch from '../../../components/reference/ReferenceSearch.astro
 import ReferenceSidebar from '../../../components/reference/ReferenceSidebar.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { pyodideVersions } from '../../../lib/browser-runs';
-import { canRunInBrowser } from '../../../lib/python/config';
 import { articleUrl, getExamples, LEVEL_LABEL, LEVEL_TONE } from '../../../lib/reference';
 import { getToc, getTopics, readingOrder, type Article, type Topic } from '../../../lib/reference-content';
 
@@ -39,7 +38,7 @@ const prefix = (id: string) => (id.startsWith(`${topic.id}/`) ? '' : `${id.split
 const onPage = headings.filter((h) => h.depth === 2);
 
 // Запуск примеров в браузере: общие данные статьи и версия библиотеки в Pyodide (для пометки «вывод может отличаться»)
-const runData = canRunInBrowser(article.id)
+const runData = getExamples(article.id).size
   ? JSON.stringify({
       article: article.id,
       topicPackage: topic.data.package,
