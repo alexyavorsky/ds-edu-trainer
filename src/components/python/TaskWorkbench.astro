@@ -1,0 +1,404 @@
+---
+/**
+ * Решение задачи прямо на сайте: редактор, «Запустить» (Python в браузере), результаты тестов и вывод.
+ * Копирование полного файла для своего редактора — такой же основной сценарий, как запуск здесь.
+ */
+import { createHash } from 'node:crypto';
+import { Code } from 'astro:components';
+import Icon from '../Icon.astro';
+import CodeBlock from '../CodeBlock.astro';
+
+interface Props {
+  taskId: string;
+  starter: string;
+  tests: string;
+  header: string;
+  footer: string;
+  packages: string[];
+  filename: string; // имя копируемого файла: find_term.py
+}
+const { taskId, starter, tests, header, footer, packages, filename } = Astro.props;
+const starterHash = createHash('sha256').update(starter).digest('hex').slice(0, 16);
+const data = JSON.stringify({ taskId, starter, starterHash, header, footer, packages, filename }).replace(/</g, '\\u003c');
+---
+
+<section class="workbench" data-workbench>
+  <script type="application/json" data-workbench-data set:html={data} />
+
+  <div class="bar">
+    <h2 class="section-title">Решение</h2>
+    <div class="bar-actions">
+      <button type="button" class="btn btn-ghost small" data-toggle-tests aria-expanded="false">
+        <Icon name="eye" />
+        <span data-toggle-label>Показать тесты</span>
+      </button>
+      <button type="button" class="btn btn-ghost small" data-reset>
+        <Icon name="reset" />
+        Сбросить
+      </button>
+    </div>
+  </div>
+
+  <div class="notice" data-starter-changed hidden>
+    <p>Заготовка задачи обновилась с тех пор, как вы сохранили свой код.</p>
+    <div class="notice-actions">
+      <button type="button" class="btn small" data-keep-mine>Оставить мой код</button>
+      <button type="button" class="btn btn-ghost small" data-take-new>Взять новую заготовку</button>
+    </div>
+  </div>
+
+  <div class="confirm" data-reset-confirm hidden>
+    <p>Сбросить редактор к заготовке? Ваш код будет удалён.</p>
+    <div class="notice-actions">
+      <button type="button" class="btn small danger" data-reset-yes>Сбросить</button>
+      <button type="button" class="btn btn-ghost small" data-reset-no>Отмена</button>
+    </div>
+  </div>
+
+  <div class="editor" data-editor>
+    <div class="placeholder" data-editor-placeholder>
+      <Code code={starter.trimEnd()} lang="python" theme="vitesse-dark" />
+    </div>
+  </div>
+
+  <div class="run-row">
+    <button type="button" class="btn btn-primary run" data-run>
+      <span class="spinner" aria-hidden="true"></span>
+      <Icon name="play" />
+      <span data-run-label>Запустить</span>
+      <kbd class="shortcut" data-shortcut>Ctrl+Enter</kbd>
+    </button>
+    <span class="engine-status" data-engine-status aria-live="polite"></span>
+    <div class="copy-row">
+      <button type="button" class="btn btn-ghost small" data-copy-full title="Файл с условием, вашим кодом, тестами и раннером — запускается как python3 файл.py">
+        <Icon name="copy" />
+        <span class="copy-text">Скопировать с тестами</span>
+      </button>
+      <button type="button" class="btn btn-ghost small" data-copy-mine>
+        <Icon name="code" />
+        <span class="copy-text">Скопировать мой код</span>
+      </button>
+    </div>
+  </div>
+  <p class="copied" data-copied aria-live="polite"></p>
+
+  <div class="results" data-results hidden>
+    <p class="summary" data-summary></p>
+    <ul class="tests" data-test-list></ul>
+  </div>
+
+  <div class="output" data-output hidden>
+    <span class="label">Вывод</span>
+    <pre data-output-text></pre>
+    <p class="truncated" data-output-truncated hidden>Вывод обрезан: показаны первые строки.</p>
+  </div>
+
+  <div class="tests-source" data-tests-source hidden>
+    <CodeBlock code={tests} filename="tests.py — только для чтения" />
+  </div>
+
+  <p class="local-note">
+    Можно решать и в своём редакторе: «Скопировать с тестами» и запустите <code>python3 {filename}</code> —
+    тесты те же, результат покажет ✓ / ✗ и итог.
+  </p>
+</section>
+
+<style>
+  .workbench {
+    margin-top: 32px;
+    min-width: 0;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .bar .section-title {
+    margin: 0;
+  }
+  .bar-actions,
+  .notice-actions,
+  .copy-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .small {
+    height: 30px;
+    padding: 0 10px;
+    font-size: 12.5px;
+  }
+  .notice,
+  .confirm {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border: 1px solid rgb(238 177 83 / 0.35);
+    border-radius: var(--radius-sm);
+    background: var(--medium-soft);
+    font-size: 13.5px;
+  }
+  .confirm {
+    border-color: rgb(240 122 125 / 0.35);
+    background: var(--hard-soft);
+  }
+  .notice p,
+  .confirm p {
+    margin: 0;
+  }
+  .notice[hidden],
+  .confirm[hidden] {
+    display: none;
+  }
+  .danger {
+    color: var(--hard);
+  }
+  .editor {
+    min-height: 120px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .editor:focus-within {
+    border-color: var(--border-strong);
+  }
+  .placeholder :global(pre) {
+    margin: 0;
+    padding: 12px 16px 12px 46px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.65;
+    overflow-x: auto;
+  }
+  .editor :global(.cm-editor) {
+    min-height: 120px;
+  }
+  .run-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    margin-top: 12px;
+  }
+  .run {
+    position: relative;
+    height: 38px;
+    padding: 0 16px;
+  }
+  .run.is-waiting {
+    opacity: 0.55;
+  }
+  .run.is-running {
+    pointer-events: none;
+  }
+  .run :global(svg) {
+    width: 13px;
+    height: 13px;
+  }
+  .run.is-running :global(svg),
+  .run.is-waiting :global(svg) {
+    display: none;
+  }
+  .spinner {
+    display: none;
+    width: 13px;
+    height: 13px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  .run.is-running .spinner,
+  .run.is-waiting .spinner {
+    display: inline-block;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .shortcut {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: rgb(0 0 0 / 0.12);
+    opacity: 0.7;
+  }
+  .engine-status {
+    flex: 1;
+    min-width: 0;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .engine-status.is-error {
+    color: var(--hard);
+  }
+  .copy-row {
+    margin-left: auto;
+  }
+  .copied {
+    min-height: 0;
+    margin: 6px 0 0;
+    font-size: 12.5px;
+    color: var(--easy);
+    text-align: right;
+  }
+  .copied:empty {
+    display: none;
+  }
+  .results {
+    margin-top: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .summary {
+    margin: 0;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    background: var(--surface-2);
+  }
+  .summary.is-pass {
+    color: var(--easy);
+  }
+  .summary.is-fail {
+    color: var(--hard);
+  }
+  .summary :global(.sub) {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-2);
+  }
+  .tests {
+    margin: 0;
+    padding: 6px 0;
+    list-style: none;
+  }
+  .tests:empty {
+    display: none;
+  }
+  .tests :global(li) {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: 2px 8px;
+    padding: 6px 16px;
+    font-size: 13.5px;
+  }
+  .tests :global(.mark) {
+    font-weight: 700;
+    text-align: center;
+  }
+  .tests :global(.passed .mark) {
+    color: var(--easy);
+  }
+  .tests :global(.bad .mark) {
+    color: var(--hard);
+  }
+  .tests :global(.skipped),
+  .tests :global(.pending) {
+    color: var(--muted);
+  }
+  .tests :global(.running .mark) {
+    color: var(--accent);
+  }
+  .tests :global(.message) {
+    grid-column: 2;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--text-2);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .tests :global(.line-link),
+  .summary :global(.line-link) {
+    margin-left: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent);
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+  .output {
+    margin-top: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    overflow: hidden;
+  }
+  .output .label {
+    display: block;
+    padding: 8px 16px 0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  .output pre {
+    margin: 0;
+    max-height: 360px;
+    padding: 6px 16px 14px;
+    overflow: auto;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .output :global(.err) {
+    color: #f3a5a7;
+  }
+  .truncated {
+    margin: 0;
+    padding: 8px 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12.5px;
+    color: var(--medium);
+  }
+  .tests-source {
+    margin-top: 12px;
+  }
+  .local-note {
+    margin: 14px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .local-note code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-2);
+  }
+  @media (max-width: 560px) {
+    .copy-row {
+      margin-left: 0;
+      width: 100%;
+    }
+    .copy-row .btn {
+      flex: 1;
+      justify-content: center;
+    }
+    .shortcut {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { initWorkbench } from '../../scripts/python/task';
+
+  document.querySelectorAll<HTMLElement>('[data-workbench]').forEach(initWorkbench);
+</script>

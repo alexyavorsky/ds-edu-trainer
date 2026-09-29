@@ -91,18 +91,18 @@ def test_order_and_duplicates():
 
 
 def test_deep_left():
-    """Вложенность 100 000 уровней: [[[…[0], 1]…], 99999]"""
-    got = flatten_deep(_deep(100_000))
-    assert got == list(range(100_000)), f"неверный результат, начало: {got[:5] if got else got!r}"
+    """Вложенность 1500 уровней — больше предела рекурсии Python: [[[…[0], 1]…], 1499]"""
+    got = flatten_deep(_deep(1500))
+    assert got == list(range(1500)), f"неверный результат, начало: {got[:5] if got else got!r}"
 
 
 def test_deep_right():
-    """Вложенность 100 000 уровней в другую сторону: [0, [1, [2, …]]]"""
+    """Вложенность 1500 уровней в другую сторону: [0, [1, [2, …]]]"""
     nested: list = []
-    for i in range(99_999, -1, -1):
+    for i in range(1499, -1, -1):
         nested = [i, nested]
     got = flatten_deep(nested)
-    assert got == list(range(100_000)), f"неверный результат, начало: {got[:5] if got else got!r}"
+    assert got == list(range(1500)), f"неверный результат, начало: {got[:5] if got else got!r}"
 
 
 def test_input_not_changed():
@@ -118,4 +118,4 @@ def test_no_recursion():
     if facts is None:
         return  # исходник недоступен (код вставлен в REPL) — проверку пропускаем
     recursive, _, _ = facts
-    assert not recursive, "в решении есть рекурсия — на глубине 100 000 она упадёт, нужен явный стек"
+    assert not recursive, "в решении есть рекурсия — на глубине больше 1000 она упадёт, нужен явный стек"

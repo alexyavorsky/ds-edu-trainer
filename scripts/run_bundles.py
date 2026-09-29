@@ -27,6 +27,8 @@ def check_selfcheck(name: str, proc: subprocess.CompletedProcess) -> str:
         return "" if ok else f"зависший тест обработан неправильно: {out[-300:]!r}"
     if name == "selfcheck__recursion.py":
         return "" if "RecursionError" in out else f"ожидался RecursionError: {out[-300:]!r}"
+    if name == "selfcheck__user_test.py":
+        return "" if "Прошло 1 из 1" in out else f"функция test_… из решения запустилась как тест: {out[-300:]!r}"
     if name == "selfcheck__deep.py":
         crashed = proc.returncode not in (0, 1) or "Прошло" not in out
         return f"глубокая рекурсия аварийно завершила Python (код {proc.returncode})" if crashed else ""

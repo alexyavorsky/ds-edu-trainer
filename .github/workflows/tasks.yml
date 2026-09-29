@@ -61,6 +61,32 @@ jobs:
       - name: Выполнить все примеры и сравнить вывод с показанным на сайте
         run: python scripts/validate_reference.py --strict
 
+  pyodide:
+    name: Python в браузере (Pyodide в Node.js)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Кэш пакетов Pyodide (NumPy, pandas, matplotlib — скачиваются с jsDelivr)
+        uses: actions/cache@v4
+        with:
+          path: .pyodide-cache
+          key: pyodide-packages-${{ hashFiles('src/lib/python/config.ts', 'package-lock.json') }}
+      - name: Эталоны проходят, заготовки — нет; примеры справочника совпадают с reference/browser.json
+        run: node scripts/validate_pyodide.ts --report pyodide-report.md
+        env:
+          PYODIDE_CACHE: ${{ github.workspace }}/.pyodide-cache
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pyodide-report
+          path: pyodide-report.md
+          retention-days: 14
+
   site:
     name: Сайт (сверка сборок, типы, build)
     runs-on: ubuntu-latest

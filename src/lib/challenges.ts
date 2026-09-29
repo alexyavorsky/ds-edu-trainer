@@ -6,7 +6,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import type { Loader, LoaderContext } from 'astro/loaders';
 import { parse as parseToml } from 'smol-toml';
-import { buildBundle, type ChallengeType, type Difficulty } from './bundle';
+import { bundleParts, type ChallengeType, type Difficulty } from './bundle';
 
 const ROOT = resolve('.');
 export const CHALLENGES_DIR = join(ROOT, 'challenges');
@@ -130,7 +130,9 @@ export function challengesLoader(): Loader {
                 starter: file('starter.py'),
                 solution: file('solution.py'),
                 code: file('code.py'),
-                bundle: isComplexity ? undefined : buildBundle({ ...common, code: file('starter.py') ?? '' }),
+                tests: file('tests.py'),
+                packages: bookMeta.packages ?? [],
+                ...(isComplexity ? {} : (({ header, footer }) => ({ bundleHeader: header, bundleFooter: footer }))(bundleParts(common))),
               };
               delete (raw as Record<string, unknown>).id;
               const data = await context.parseData({ id, data: raw });

@@ -4,7 +4,10 @@
  * Статью страница кладёт в Astro.locals. Код и вывод берутся из файла — вывод сгенерирован его выполнением.
  */
 import { Code } from 'astro:components';
+import { browserStatus } from '../../lib/browser-runs';
+import { canRunInBrowser } from '../../lib/python/config';
 import { getExamples, getPlots, runnableCode, timingNote } from '../../lib/reference';
+import Icon from '../Icon.astro';
 import CopyButton from './CopyButton.astro';
 
 interface Props {
@@ -20,19 +23,54 @@ const noRun = 'norun' in cell.flags;
 const deprecated = 'deprecated' in cell.flags;
 const timing = timingNote(cell.flags);
 const plots = getPlots(article, id);
+// Запуск в браузере (Pyodide): [norun] не запускается никогда; что не работает в Pyodide — в reference/browser.json
+const runnable = canRunInBrowser(article) && !noRun;
+const browser = runnable ? browserStatus(article, id) : undefined;
+const unavailable = browser?.status === 'unavailable';
 ---
 
-<figure class:list={['example', raises && 'is-error']} data-example={`${article}#${id}`}>
+<figure
+  class:list={['example', raises && 'is-error']}
+  data-example={`${article}#${id}`}
+  data-cell={runnable ? id : undefined}
+  data-run-code={runnable ? cell.code : undefined}
+  data-raises={raises || undefined}
+  data-browser={browser?.status ?? (timing ? 'timing' : undefined)}
+  data-browser-reason={browser?.status === 'differs' ? browser.reason : undefined}
+>
   <figcaption>
     <span class="title">{title}</span>
     {raises && <span class="tag tag-error">ошибка: {raises}</span>}
     {deprecated && <span class="tag tag-old">устаревший API</span>}
+    {
+      runnable && (
+        <span class="run-tools">
+          <button
+            type="button"
+            class:list={['btn btn-ghost ex-btn', browser?.status === 'differs' && 'has-note']}
+            data-ex-run
+            disabled={unavailable}
+            title={unavailable ? browser?.reason : browser?.status === 'differs' ? 'В браузере другая версия библиотеки (32-битная сборка) — вывод может отличаться от показанного' : 'Выполнить пример в браузере'}
+          >
+            <span class="spinner" aria-hidden="true"></span>
+            <Icon name="play" />
+            <span class="text">Запустить</span>
+          </button>
+          <button type="button" class="btn btn-ghost ex-btn" data-ex-edit disabled={unavailable} title="Изменить код примера и запустить свой вариант">
+            <Icon name="edit" />
+            <span class="text" data-ex-edit-label>Изменить</span>
+          </button>
+        </span>
+      )
+    }
     <CopyButton code={runnableCode(article, cell.code)} />
   </figcaption>
-  <Code code={cell.code} lang="python" theme="vitesse-dark" />
+  <div class="code" data-ex-code>
+    <Code code={cell.code} lang="python" theme="vitesse-dark" />
+  </div>
   {
     cell.output !== null && (
-      <div class="output">
+      <div class="output" data-ex-stored>
         <span class="label">
           {raises ? 'Ошибка' : 'Вывод'}
           {timing && <span class="timing">{timing}</span>}
@@ -43,7 +81,7 @@ const plots = getPlots(article, id);
   }
   {
     plots.length > 0 && (
-      <div class="output plots">
+      <div class="output plots" data-ex-stored>
         <span class="label">{plots.length > 1 ? 'Графики' : 'График'}</span>
         {plots.map((p) => (
           <img src={p.src} width={p.width} height={p.height} alt={`График: ${title}`} loading="lazy" decoding="async" />
@@ -51,7 +89,9 @@ const plots = getPlots(article, id);
       </div>
     )
   }
+  {runnable && <div class="live" data-ex-live hidden />}
   {noRun && <p class="note">Пример не выполняется при проверке справочника — показан только код.</p>}
+  {unavailable && <p class="note">В браузере не запускается — {browser?.reason}. Скопируйте код и выполните у себя.</p>}
 </figure>
 
 <style>
@@ -144,6 +184,125 @@ const plots = getPlots(article, id);
   .is-error .output pre {
     color: #f3a5a7;
   }
+  .run-tools {
+    display: inline-flex;
+    flex: none;
+    gap: 2px;
+  }
+  .ex-btn {
+    position: relative;
+    height: 30px;
+    padding: 0 10px;
+    font-size: 12.5px;
+  }
+  .ex-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .ex-btn.has-note::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--medium);
+  }
+  .ex-btn .spinner {
+    display: none;
+    width: 12px;
+    height: 12px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: ex-spin 0.8s linear infinite;
+  }
+  .ex-btn.is-running .spinner {
+    display: inline-block;
+  }
+  .ex-btn.is-running :global(svg) {
+    display: none;
+  }
+  @keyframes ex-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .code :global(.cm-editor) {
+    font-size: 13px;
+  }
+  .live {
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .live[hidden] {
+    display: none;
+  }
+  .live :global(.live-head) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 6px 0 16px;
+  }
+  .live :global(.live-head .label) {
+    flex: 1;
+    padding: 2px 0 0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  .live :global(.live-close) {
+    height: 26px;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+  .live :global(.live-note) {
+    margin: 0;
+    padding: 0 16px 8px;
+    font-size: 12px;
+    color: var(--medium);
+  }
+  .live :global(pre) {
+    margin: 0 !important;
+    padding: 6px 16px 14px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: none !important;
+    color: var(--text-2);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    -webkit-overflow-scrolling: touch;
+  }
+  .live :global(pre.is-error),
+  .live :global(.err) {
+    color: #f3a5a7;
+  }
+  .live :global(.live-head .is-error-label) {
+    color: var(--hard);
+  }
+  .live :global(img) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    padding: 8px 12px 14px;
+    box-sizing: border-box;
+  }
+  .live :global(.status) {
+    margin: 0;
+    padding: 10px 16px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  @media (max-width: 560px) {
+    .ex-btn .text {
+      display: none;
+    }
+  }
   .note {
     margin: 0;
     padding: 8px 16px;
@@ -152,3 +311,9 @@ const plots = getPlots(article, id);
     color: var(--muted);
   }
 </style>
+
+<script>
+  import { initExamples } from '../../scripts/python/examples';
+
+  initExamples();
+</script>
