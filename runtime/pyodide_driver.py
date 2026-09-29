@@ -15,6 +15,7 @@ inspect — на нём работает проверка «решено рек�
 from __future__ import annotations
 
 import builtins
+import gc
 import io
 import json
 import os
@@ -183,6 +184,8 @@ def _run_task(payload: dict, path: str, sink: _Sink) -> dict:
 
     results = namespace["_run_tests"](verbose=False, on_start=on_start, on_result=on_result, user_file=path)
     memory = any(_is_memory_error(r["error_type"], r["message"]) for r in results)
+    namespace.clear()
+    gc.collect()  # мусор этого запуска освобождается сейчас, а не посреди следующего (глубокие структуры — стек)
     return {"phase": "tests", "results": results, "memory": memory}
 
 

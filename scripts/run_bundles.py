@@ -43,6 +43,10 @@ def check_selfcheck(name: str, proc: subprocess.CompletedProcess) -> str:
 
 
 def main() -> int:
+    try:  # консоль Windows в CI — cp1252: без этого print кириллицы падает с UnicodeEncodeError
+        sys.stdout.reconfigure(encoding="utf-8")
+    except (AttributeError, ValueError):
+        pass
     folder = Path(sys.argv[1] if len(sys.argv) > 1 else "bundles")
     files = sorted(folder.glob("*.py"))
     if not files:

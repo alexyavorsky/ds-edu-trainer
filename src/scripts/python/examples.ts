@@ -138,7 +138,9 @@ function initExample(figure: HTMLElement, data: RunData): void {
         end.type === 'timeout'
           ? `Пример выполнялся дольше ${end.seconds} с и был остановлен. Python перезапущен.`
           : end.type === 'crash'
-            ? `Python в браузере аварийно остановился (${end.message}). Python перезапущен — можно запустить снова.`
+            ? /call stack|stack size|too much recursion/i.test(end.message)
+              ? 'Кончился стек браузера — слишком глубокая рекурсия (через C-функции вроде lru_cache в Safari доступно около 60 уровней). Python перезапущен.'
+              : `Python в браузере аварийно остановился (${end.message}). Python перезапущен — можно запустить снова.`
             : end.type === 'package-error'
               ? `Не удалось загрузить пакеты: ${end.message}. ${copyHint}`
               : `Не удалось загрузить Python: ${end.message}. ${copyHint}`;

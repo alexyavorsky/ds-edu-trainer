@@ -101,13 +101,13 @@ def test_order_after_deep_branch():
     assert got == [1, 2, 3, 4, 5, 6, 7], f"получено {got!r}"
 
 
-def test_depth_100():
-    """Глубина 100"""
+def test_depth_50():
+    """Глубина 50"""
     nested: list = [0]
-    for i in range(1, 100):
+    for i in range(1, 50):
         nested = [nested, i]
     got = flatten(nested)
-    assert got == list(range(100)), f"получено {got!r:.80}"
+    assert got == list(range(50)), f"получено {got!r:.80}"
 
 
 def test_input_not_changed():

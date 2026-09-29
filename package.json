@@ -31,6 +31,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@types/node": "^26.6.3",
+    "playwright": "1.63.0",
     "pyodide": "314.0.7",
     "typescript": "^6.0.3"
   }

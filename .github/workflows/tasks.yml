@@ -87,6 +87,22 @@ jobs:
           path: pyodide-report.md
           retention-days: 14
 
+  browsers:
+    name: Python в браузерах (Chromium, Firefox, WebKit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Браузеры Playwright
+        run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run build
+      - name: Все эталоны в трёх браузерах; глубина рекурсии не меньше бюджета тестов
+        run: node scripts/validate_browsers.ts
+
   site:
     name: Сайт (сверка сборок, типы, build)
     runs-on: ubuntu-latest

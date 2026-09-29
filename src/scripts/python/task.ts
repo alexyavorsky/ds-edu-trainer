@@ -273,8 +273,12 @@ export function initWorkbench(root: HTMLElement): void {
     }
     if (end.type === 'crash') {
       tail('не запускался: Python остановился');
-      setSummary('Python в браузере аварийно остановился', 'fail',
-        `Возможно, слишком глубокая рекурсия или не хватило памяти (${end.message}). Python перезапущен — можно запускать снова.`);
+      const stack = /call stack|stack size|too much recursion/i.test(end.message);
+      setSummary('Python в браузере аварийно остановился', 'fail', stack
+        ? 'Кончился стек браузера. Рекурсия через @cache / lru_cache, sum(…) или map в браузере выдерживает меньше уровней, ' +
+          'чем обычная (в Safari — около 60): замените её таблицей или обычной рекурсией со словарём — или запустите файл у себя. ' +
+          'Python перезапущен.'
+        : `Возможно, не хватило памяти (${end.message}). Python перезапущен — можно запускать снова.`);
       return;
     }
     if (end.type === 'timeout') {

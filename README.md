@@ -51,6 +51,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 | `npm run check:bundles` | сборка на сайте совпадает с проверенной сборкой байт в байт |
 | `.venv/bin/python scripts/validate_reference.py --strict` | справочник: структура, ссылки, все примеры выполняются и дают показанный вывод и графики; замеры времени выполняются, но числа не сравниваются |
 | `node scripts/validate_pyodide.ts` | то же в Python для браузера (Pyodide в Node.js): эталоны проходят, заготовки — нет; примеры справочника сверяются с `reference/browser.json` (`--update` — обновить) |
+| `node scripts/validate_browsers.ts` | эталоны в Chromium, Firefox и WebKit (Playwright, после `npm run build`) и пробы глубины рекурсии: в Safari стек меньше всего |
 | `npm run check` | типы TypeScript / Astro |
 
 ## Деплой
