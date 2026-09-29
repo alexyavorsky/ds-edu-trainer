@@ -1,0 +1,9 @@
+[[mutant]]
+name = "едем в самую дальнюю точку"
+find = "        nearest = min(unvisited, key=lambda i: math.dist(here, points[i]))"
+replace = "        nearest = max(unvisited, key=lambda i: math.dist(here, points[i]))"
+
+[[mutant]]
+name = "расстояние считается от склада, а не от текущей точки"
+find = "        here = points[route[-1]]"
+replace = "        here = points[0]"

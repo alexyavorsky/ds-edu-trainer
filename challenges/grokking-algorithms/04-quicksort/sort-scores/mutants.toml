@@ -1,0 +1,4 @@
+[[mutant]]
+name = "опорный элемент потерян при склейке"
+find = "return sort_scores(less) + [pivot] + sort_scores(greater)"
+replace = "return sort_scores(less) + sort_scores(greater)"

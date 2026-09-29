@@ -1,0 +1,73 @@
+---
+title: "merge: виды соединений"
+level: medium
+summary: Объединить две таблицы по общему ключу, как JOIN в SQL, — и выбрать, какие строки оставить.
+requires: [pandas/dataframe, pandas/filtering]
+related: [pandas/merge-keys, pandas/concat, pandas/alignment]
+functions: [DataFrame.merge, pd.merge]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/merging.html#database-style-dataframe-or-named-series-joining-merging
+---
+
+## Коротко
+
+- `left.merge(right, on="id")` сопоставляет строки с одинаковым значением ключа и склеивает их столбцы.
+- `how` решает, какие строки попадут в результат: `"inner"` (по умолчанию) — только ключи из обеих таблиц; `"left"` / `"right"` — все строки одной из таблиц; `"outer"` — все ключи; `"cross"` — все сочетания.
+- Где пары не нашлось, появляется `NaN`.
+- Если ключ повторяется в обеих таблицах, строки **размножаются**: каждая с каждой.
+- Типы ключей должны совпадать: `2` и `"2"` — разные значения.
+
+<MergeDiagram />
+
+## Синтаксис
+
+<Syntax code={`left.merge(right, on="key", how="inner")
+pd.merge(left, right, on=["k1", "k2"], how="left")
+left.merge(right, how="cross")`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['right', 'вторая таблица (или именованный Series)', '—'],
+    ['on', 'столбец-ключ или список столбцов, которые есть в обеих таблицах', 'общие столбцы'],
+    ['how', '"inner", "left", "right", "outer", "cross"', '"inner"'],
+  ]}
+/>
+
+Остальные параметры — ключи с разными именами, суффиксы, проверки — в статье [merge: ключи и проверки](/reference/pandas/merge-keys).
+
+## Примеры
+
+<Setup />
+
+<Example id="inner" title="inner — только общие ключи" />
+
+<Example id="left" title="left — все строки левой" />
+
+<Example id="right" title="right — все строки правой" />
+
+<Example id="outer" title="outer — все ключи" />
+
+<Example id="cross" title="cross — все сочетания" />
+
+<Example id="lookup" title="Подставить данные из справочника" />
+
+Самый частый случай: к таблице фактов (заказы) добавить атрибуты из справочника (клиенты) через `how="left"` — ни один заказ не потеряется.
+
+## Подводные камни
+
+<Pitfall title="Повторяющиеся ключи размножают строки">
+
+Если после `merge` строк стало больше, чем ожидалось, ключ не уникален в одной из таблиц. Проверяйте через `validate=` — см. [ключи и проверки](/reference/pandas/merge-keys).
+
+<Example id="many-to-many" title="Ключ повторяется в обеих таблицах" />
+
+</Pitfall>
+
+<Pitfall title="Ключи разных типов">
+
+<Example id="dtype-mismatch" title="int и str в ключе" />
+
+Приведите ключи к одному типу: `right["id"] = right["id"].astype(int)`.
+
+</Pitfall>

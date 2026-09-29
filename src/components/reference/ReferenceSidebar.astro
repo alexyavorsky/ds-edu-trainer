@@ -1,0 +1,124 @@
+---
+/** Оглавление темы: разделы и статьи с уровнями. На узком экране — выдвижная панель (см. страницу статьи). */
+import { articleUrl, LEVEL_LABEL } from '../../lib/reference';
+import type { Topic, TocSection } from '../../lib/reference-content';
+
+interface Props {
+  topic: Topic;
+  toc: TocSection[];
+  currentId?: string;
+}
+const { topic, toc, currentId } = Astro.props;
+---
+
+<nav class="side-nav" aria-label={`Оглавление: ${topic.data.title}`}>
+  <a class="side-topic" href={`/reference/${topic.id}`}>
+    {topic.data.title} <span>{topic.data.version}</span>
+  </a>
+  {
+    toc.map((section, i) => (
+      <section>
+        <h2>
+          {i + 1}. {section.title}
+        </h2>
+        <ul>
+          {section.entries.map((e) =>
+            e.article ? (
+              <li>
+                <a
+                  href={articleUrl(e.id)}
+                  class:list={[`lvl-${e.article.data.level}`, e.id === currentId && 'is-current']}
+                  aria-current={e.id === currentId ? 'page' : undefined}
+                  title={LEVEL_LABEL[e.article.data.level]}
+                >
+                  {e.article.data.title}
+                </a>
+              </li>
+            ) : (
+              <li class="planned">{e.slug}</li>
+            ),
+          )}
+        </ul>
+      </section>
+    ))
+  }
+</nav>
+
+<style>
+  .side-nav {
+    font-size: 13.5px;
+  }
+  .side-topic {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .side-topic span {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 400;
+    color: var(--faint);
+  }
+  section + section {
+    margin-top: 16px;
+  }
+  h2 {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: var(--text-2);
+    line-height: 1.4;
+  }
+  li a::before {
+    content: '';
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--dot);
+    opacity: 0.8;
+  }
+  .lvl-basic {
+    --dot: var(--easy);
+  }
+  .lvl-medium {
+    --dot: var(--medium);
+  }
+  .lvl-advanced {
+    --dot: var(--hard);
+  }
+  li a:hover {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+  li a.is-current {
+    background: var(--accent-soft);
+    color: var(--text);
+    font-weight: 500;
+  }
+  .planned {
+    padding: 4px 8px 4px 22px;
+    color: var(--faint);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+</style>

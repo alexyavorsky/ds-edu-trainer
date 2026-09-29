@@ -1,0 +1,80 @@
+name: Задачи, справочник и сайт
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Валидация задач (Python 3.12)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Валидатор (эталоны, заготовки, альтернативы, мутанты, самопроверка раннера)
+        run: python scripts/validate.py
+      - name: Собрать копируемые файлы с эталонами и альтернативными эталонами
+        run: python scripts/validate.py --export bundles
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bundles
+          path: bundles/
+          retention-days: 7
+
+  run-bundles:
+    name: Файлы задач · ${{ matrix.os }} · Python ${{ matrix.python }}
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          allow-prereleases: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: bundles
+          path: bundles
+      - name: Запустить все файлы (все тесты должны пройти, самопроверки — дать ожидаемый результат)
+        run: python scripts/run_bundles.py bundles
+
+  reference:
+    name: Справочник (примеры NumPy и pandas, Python 3.12)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Зафиксированные версии NumPy, pandas и зависимостей справочника
+        run: pip install -r requirements-dev.txt
+      - name: Выполнить все примеры и сравнить вывод с показанным на сайте
+        run: python scripts/validate_reference.py --strict
+
+  site:
+    name: Сайт (сверка сборок, типы, build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Сборка файла на сайте совпадает с проверенной (байт в байт)
+        run: npm run check:bundles
+      - run: npm run check
+      - run: npm run build

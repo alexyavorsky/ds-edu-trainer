@@ -1,0 +1,74 @@
+---
+title: Базовые агрегации
+level: basic
+summary: Сумма, среднее, минимум, максимум и их индексы — сворачивают массив в одно число.
+requires: [numpy/arithmetic]
+related: [numpy/axis, numpy/statistics, numpy/nan-inf]
+functions: [np.sum, np.mean, np.min, np.max, np.prod, np.ptp, np.argmin, np.argmax, np.any, np.all]
+docs: https://numpy.org/doc/2.5/user/absolute_beginners.html#more-useful-array-operations
+---
+
+## Коротко
+
+- `sum`, `mean`, `min`, `max`, `prod` сворачивают весь массив в одно значение.
+- `argmin` / `argmax` — **индекс** минимума / максимума (первого, если их несколько).
+- Почти всё доступно и как метод (`a.sum()`), и как функция (`np.sum(a)`). Функция принимает и списки.
+- `any()` / `all()` — есть ли хоть один `True` / все ли `True`.
+- По строкам или столбцам — параметр `axis`, см. [оси](/reference/numpy/axis). Среднее с учётом `NaN` — [nan-функции](/reference/numpy/nan-inf).
+
+## Синтаксис
+
+<Syntax code={`a.sum(), a.mean(), a.min(), a.max(), a.prod()
+a.argmin(), a.argmax()        # индексы
+np.ptp(a)                     # размах max − min
+a.any(), a.all()
+np.sum(a, axis=None, dtype=None, keepdims=False)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['axis', 'ось, по которой сворачивать; None — весь массив', 'None'],
+    ['dtype', 'тип накопления, например float для суммы маленьких целых', 'None'],
+    ['keepdims', 'оставить свёрнутую ось длиной 1', 'False'],
+    ['initial', 'начальное значение: для max/min делает пустой массив допустимым', '—'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="basic" title="Сумма, среднее, минимум, максимум" />
+
+<Example id="where" title="Где минимум и максимум" />
+
+<Example id="any-all" title="Есть ли хоть один / все ли" />
+
+<Example id="function-or-method" title="Функция или метод" />
+
+## Подводные камни
+
+<Pitfall title="Метод ptp удалён">
+
+<VersionNote since="NumPy 2.0" was="a.ptp() — метод массива" now="только функция np.ptp(a)" />
+
+<Example id="ptp-removed" title="Метод ptp" />
+
+</Pitfall>
+
+<Pitfall title="Встроенные sum и max вместо методов NumPy">
+
+Встроенный `sum` перебирает массив по первой оси: для двумерного он складывает строки и возвращает массив, а не число. Кроме того, встроенные функции в десятки раз медленнее.
+
+<Example id="builtin-sum" title="Встроенный sum для матрицы" />
+
+</Pitfall>
+
+<Pitfall title="Максимум пустого массива">
+
+Сумма пустого массива — 0, а у минимума и максимума значения нет. Если массив может оказаться пустым, передайте `initial=` или проверьте `a.size`.
+
+<Example id="empty-max" title="max пустого массива" />
+
+</Pitfall>

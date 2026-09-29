@@ -1,0 +1,9 @@
+[[mutant]]
+name = "обычная рекурсия вместо стека"
+find = "    result: list[int] = []\n    stack = [iter(items)]"
+replace = "    return [x for item in items for x in (flatten_deep(item) if isinstance(item, list) else [item])]\n    result: list[int] = []\n    stack = [iter(items)]"
+
+[[mutant]]
+name = "стек как очередь — порядок нарушается"
+find = "        for item in stack[-1]:"
+replace = "        for item in stack[0]:"

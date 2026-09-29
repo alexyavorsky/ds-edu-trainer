@@ -1,0 +1,68 @@
+---
+title: Универсальные функции (ufunc)
+level: medium
+summary: Математические функции, которые применяются к каждому элементу со скоростью C, и их методы reduce, accumulate, outer.
+requires: [numpy/arithmetic, numpy/aggregations]
+related: [numpy/broadcasting, numpy/inplace-out, numpy/vectorization, numpy/fancy]
+functions: [np.sqrt, np.exp, np.log, np.log10, np.log2, np.abs, np.sin, np.cos, np.maximum, np.minimum, np.ufunc.reduce, np.ufunc.accumulate, np.ufunc.outer, np.ufunc.at]
+docs: https://numpy.org/doc/2.5/reference/ufuncs.html
+---
+
+## Коротко
+
+- **ufunc** (universal function) — функция, которая применяется к каждому элементу массива; цикл выполняется внутри NumPy.
+- Одноместные: `sqrt`, `exp`, `log`, `log10`, `abs`, `sin`… Двуместные: `add`, `multiply`, `maximum`, `minimum`… Все операторы `+`, `*` — тоже ufunc.
+- `np.maximum(a, b)` выбирает большее **из двух массивов поэлементно**, а `np.max(a)` ищет максимум **внутри** массива.
+- У двуместных ufunc есть методы: `reduce` (свернуть), `accumulate` (нарастающий итог), `outer` (все пары), `at` (на месте по индексам).
+- Параметры `out=` и `where=` позволяют писать в готовый массив и считать только там, где условие истинно.
+- Функции модуля `math` с массивами не работают — берите аналоги из `np`.
+
+## Синтаксис
+
+<Syntax code={`np.sqrt(a), np.exp(a), np.log(a), np.abs(a)
+np.maximum(a, b), np.minimum(a, b)      # поэлементно из двух
+np.add.reduce(a)          # = a.sum()
+np.add.accumulate(a)      # = a.cumsum()
+np.multiply.outer(a, b)   # все пары: форма (len(a), len(b))
+np.add.at(a, idx, 1)      # прибавить по индексам с повторами
+np.sqrt(a, out=res, where=a >= 0)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['out', 'массив, куда записать результат (вместо создания нового)', 'None'],
+    ['where', 'маска: считать только там, где True; в остальных местах out не меняется', 'True'],
+    ['dtype', 'тип, в котором вести вычисление', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Example id="unary" title="Функции одного аргумента" />
+
+<Example id="maximum" title="maximum против max" />
+
+<Example id="reduce-accumulate" title="reduce и accumulate" />
+
+<Example id="outer" title="outer: все пары" />
+
+<Example id="where-param" title="Вычислить только где можно" />
+
+Без `out=` элементы, где условие ложно, остались бы неинициализированными — поэтому `where=` всегда используют вместе с `out=`.
+
+## Подводные камни
+
+<Pitfall title="log и sqrt от недопустимых значений">
+
+Логарифм нуля даёт `-inf`, логарифм и корень отрицательного — `nan`. Исключения нет, только `RuntimeWarning`.
+
+<Example id="invalid" title="Логарифм нуля и отрицательного" />
+
+</Pitfall>
+
+<Pitfall title="math.sqrt вместо np.sqrt">
+
+<Example id="math-module" title="Функция math с массивом" />
+
+</Pitfall>

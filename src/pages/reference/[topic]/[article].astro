@@ -1,0 +1,410 @@
+---
+import { getCollection, render } from 'astro:content';
+import Badge from '../../../components/Badge.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import BugReportLink from '../../../components/BugReportLink.astro';
+import PrevNext from '../../../components/PrevNext.astro';
+import { referenceComponents } from '../../../components/reference';
+import ReferenceSearch from '../../../components/reference/ReferenceSearch.astro';
+import ReferenceSidebar from '../../../components/reference/ReferenceSidebar.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { articleUrl, LEVEL_LABEL, LEVEL_TONE } from '../../../lib/reference';
+import { getToc, getTopics, readingOrder, type Article, type Topic } from '../../../lib/reference-content';
+
+export async function getStaticPaths() {
+  const topics = await getTopics();
+  return (await getCollection('reference')).map((article) => {
+    const [topic, slug] = article.id.split('/');
+    return { params: { topic, article: slug }, props: { article, topic: topics.find((t) => t.id === topic)! } };
+  });
+}
+
+const { article, topic } = Astro.props as { article: Article; topic: Topic };
+const { Content, headings } = await render(article);
+Astro.locals.referenceArticle = article.id; // для <Example> и <Setup> внутри статьи
+
+const toc = await getToc(topic);
+const section = toc.find((s) => s.entries.some((e) => e.id === article.id));
+const order = readingOrder(toc);
+const pos = order.findIndex((a) => a.id === article.id);
+const link = (a?: Article) => a && { href: articleUrl(a.id), label: a.data.title };
+
+const titles = new Map((await getCollection('reference')).map((a) => [a.id, a.data.title]));
+const refs = (ids: string[]) => ids.map((id) => ({ id, title: titles.get(id) })); // без title — статья ещё не написана
+const requires = refs(article.data.requires);
+const related = refs(article.data.related);
+const prefix = (id: string) => (id.startsWith(`${topic.id}/`) ? '' : `${id.split('/')[0] === 'numpy' ? 'NumPy' : 'pandas'}: `);
+const onPage = headings.filter((h) => h.depth === 2);
+---
+
+<BaseLayout title={`${article.data.title} — ${topic.data.title}`} description={article.data.summary} articleId={article.id} wide>
+  <div class="ref-layout">
+    <aside class="sidebar" id="ref-sidebar" data-drawer aria-label="Разделы справочника">
+      <div class="drawer-head">
+        <span>Разделы</span>
+        <button type="button" class="btn btn-ghost" data-drawer-close aria-label="Закрыть">✕</button>
+      </div>
+      <ReferenceSidebar topic={topic} toc={toc} currentId={article.id} />
+    </aside>
+    <div class="overlay" data-drawer-overlay hidden></div>
+
+    <div class="ref-main">
+      <div class="topbar">
+        <button type="button" class="btn drawer-open" data-drawer-open aria-controls="ref-sidebar" aria-expanded="false">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          Разделы
+        </button>
+        <ReferenceSearch />
+      </div>
+
+      <Breadcrumbs
+        items={[
+          { label: 'Справочник', href: '/reference' },
+          { label: topic.data.title, href: `/reference/${topic.id}` },
+          ...(section ? [{ label: section.title }] : []),
+        ]}
+      />
+      <header class="head">
+        <div class="meta">
+          <Badge tone={LEVEL_TONE[article.data.level]}>{LEVEL_LABEL[article.data.level]}</Badge>
+          <span class="version">{topic.data.title} {topic.data.version}</span>
+        </div>
+        <h1>{article.data.title}</h1>
+        <p class="summary">{article.data.summary}</p>
+        {
+          requires.length > 0 && (
+            <p class="requires">
+              <span class="muted">Нужно знать:</span>
+              {requires.map((r) => (r.title ? <a href={articleUrl(r.id)}>{prefix(r.id)}{r.title}</a> : <span class="planned">{r.id}</span>))}
+            </p>
+          )
+        }
+      </header>
+
+      {
+        onPage.length > 2 && (
+          <details class="toc-inline">
+            <summary>Содержание статьи</summary>
+            <ul>
+              {onPage.map((h) => (
+                <li>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )
+      }
+
+      <article class="prose">
+        <Content components={referenceComponents} />
+      </article>
+
+      <footer class="article-foot">
+        {
+          related.length > 0 && (
+            <section>
+              <h2 class="section-title">Связанные темы</h2>
+              <ul class="chips">
+                {related.map((r) => (
+                  <li>{r.title ? <a href={articleUrl(r.id)}>{prefix(r.id)}{r.title}</a> : <span class="planned">{r.id}</span>}</li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+        <section class="docs">
+          <h2 class="section-title">Документация</h2>
+          <a href={article.data.docs} target="_blank" rel="noopener noreferrer">{article.data.docs.replace(/^https:\/\//, '')}</a>
+        </section>
+        <BugReportLink articleId={article.id} />
+      </footer>
+
+      <div class="pager">
+        <PrevNext prev={link(order[pos - 1])} next={link(order[pos + 1])} />
+      </div>
+    </div>
+
+    {
+      onPage.length > 2 && (
+        <nav class="toc-side" aria-label="Содержание статьи">
+          <span class="toc-title">На этой странице</span>
+          <ul>
+            {onPage.map((h) => (
+              <li>
+                <a href={`#${h.slug}`} data-toc-link={h.slug}>
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .ref-layout {
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr) 190px;
+    gap: 40px;
+    align-items: start;
+  }
+  .sidebar,
+  .toc-side {
+    position: sticky;
+    top: 76px;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  .drawer-head,
+  .drawer-open,
+  .overlay {
+    display: none;
+  }
+  .ref-main {
+    min-width: 0;
+    max-width: 780px;
+  }
+  .topbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .head {
+    margin-bottom: 28px;
+  }
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .version {
+    font-size: 12.5px;
+    color: var(--faint);
+  }
+  .head h1 {
+    font-size: clamp(26px, 5vw, 34px);
+    letter-spacing: -0.03em;
+    overflow-wrap: anywhere;
+  }
+  .summary {
+    margin: 10px 0 0;
+    font-size: 16px;
+    color: var(--text-2);
+  }
+  .requires {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin: 16px 0 0;
+    font-size: 13.5px;
+  }
+  .requires a,
+  .chips a,
+  .docs a {
+    color: var(--accent-strong);
+  }
+  .requires a:hover,
+  .chips a:hover,
+  .docs a:hover {
+    text-decoration: underline;
+  }
+  .planned {
+    color: var(--faint);
+  }
+  .toc-inline {
+    display: none;
+    margin: 0 0 24px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    font-size: 14px;
+  }
+  .toc-inline summary {
+    cursor: pointer;
+    color: var(--text-2);
+  }
+  .toc-inline ul {
+    margin: 8px 0 2px;
+    padding-left: 18px;
+  }
+  .toc-inline a {
+    color: var(--accent-strong);
+  }
+  .prose :global(a) {
+    color: var(--accent-strong);
+  }
+  .prose :global(a:hover) {
+    text-decoration: underline;
+  }
+  .prose :global(h2) {
+    scroll-margin-top: 76px;
+  }
+  .article-foot {
+    display: grid;
+    gap: 22px;
+    justify-items: start;
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .chips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    font-size: 14px;
+  }
+  .docs a {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+  .pager {
+    margin-top: 32px;
+  }
+  .toc-title {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .toc-side ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .toc-side a {
+    display: block;
+    margin-left: -1px;
+    padding: 4px 0 4px 12px;
+    border-left: 2px solid transparent;
+    color: var(--muted);
+  }
+  .toc-side a:hover {
+    color: var(--text);
+  }
+  .toc-side a.is-active {
+    border-left-color: var(--accent);
+    color: var(--text);
+  }
+
+  /* без правой колонки: содержание — раскрывающимся блоком над статьёй */
+  @media (max-width: 1180px) {
+    .ref-layout {
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 32px;
+    }
+    .toc-side {
+      display: none;
+    }
+    .toc-inline {
+      display: block;
+    }
+  }
+
+  /* узкий экран: оглавление темы — выдвижная панель */
+  @media (max-width: 900px) {
+    .ref-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .sidebar {
+      position: fixed;
+      z-index: 50;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: min(320px, 86vw);
+      max-height: none;
+      padding: 0 16px 24px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+    }
+    .sidebar.is-open {
+      transform: none;
+      box-shadow: 0 0 60px rgb(0 0 0 / 0.6);
+    }
+    .drawer-head {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      margin-bottom: 8px;
+      background: var(--surface);
+      font-weight: 600;
+    }
+    .overlay:not([hidden]) {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: rgb(0 0 0 / 0.5);
+    }
+    .drawer-open {
+      display: inline-flex;
+      flex: none;
+      height: 42px;
+    }
+  }
+</style>
+
+<script>
+  const drawer = document.querySelector<HTMLElement>('[data-drawer]');
+  const overlay = document.querySelector<HTMLElement>('[data-drawer-overlay]');
+  const opener = document.querySelector<HTMLButtonElement>('[data-drawer-open]');
+  const setOpen = (open: boolean) => {
+    drawer?.classList.toggle('is-open', open);
+    if (overlay) overlay.hidden = !open;
+    opener?.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) drawer?.querySelector<HTMLElement>('.is-current')?.scrollIntoView({ block: 'center' });
+  };
+  opener?.addEventListener('click', () => setOpen(true));
+  overlay?.addEventListener('click', () => setOpen(false));
+  document.querySelector('[data-drawer-close]')?.addEventListener('click', () => setOpen(false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+  // на широком экране — прокрутить боковое оглавление к текущей статье
+  if (matchMedia('(min-width: 901px)').matches) {
+    const current = drawer?.querySelector<HTMLElement>('.is-current');
+    if (drawer && current) drawer.scrollTop = current.offsetTop - drawer.clientHeight / 3;
+  }
+
+  // подсветка текущего раздела в «На этой странице»
+  const tocLinks = [...document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]')];
+  const targets = tocLinks.map((a) => document.getElementById(a.dataset.tocLink!)).filter(Boolean) as HTMLElement[];
+  let ticking = false;
+  const highlight = () => {
+    ticking = false;
+    const passed = targets.filter((t) => t.getBoundingClientRect().top < 140);
+    const current = passed[passed.length - 1] ?? targets[0];
+    tocLinks.forEach((a) => a.classList.toggle('is-active', a.dataset.tocLink === current?.id));
+  };
+  if (targets.length) {
+    highlight();
+    addEventListener('scroll', () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(highlight);
+      }
+    }, { passive: true });
+  }
+</script>

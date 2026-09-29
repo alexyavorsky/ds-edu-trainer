@@ -1,0 +1,14 @@
+[[mutant]]
+name = "путь внутри подпапки без разделителя /"
+find = "_walk(item, path + \"/\", ext, result)"
+replace = "_walk(item, path, ext, result)"
+
+[[mutant]]
+name = "расширение ищется где угодно в имени"
+find = "elif name.endswith(ext):"
+replace = "elif ext in name:"
+
+[[mutant]]
+name = "в подпапку не спускаемся"
+find = "            _walk(item, path + \"/\", ext, result)\n"
+replace = "            pass\n"

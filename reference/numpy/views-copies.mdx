@@ -1,0 +1,62 @@
+---
+title: Представления и копии
+level: medium
+summary: Когда изменение «нового» массива меняет исходный — и как это проверить.
+requires: [numpy/indexing, numpy/fancy]
+related: [numpy/reshape, numpy/inplace-out, numpy/memory-layout, pandas/copy-on-write]
+functions: [ndarray.copy, ndarray.view, ndarray.base, np.shares_memory, np.copy]
+docs: https://numpy.org/doc/2.5/user/basics.copies.html
+---
+
+## Коротко
+
+- **Представление** (view) — новый объект-окно на **те же данные**. Изменения видны в обоих массивах.
+- **Копия** (copy) — отдельные данные; изменения независимы.
+- Представления дают: срезы `a[1:4]`, `a[::2]`, `reshape`, `ravel` (если возможно), `.T`, `transpose`.
+- Копии дают: fancy- и булева индексация (`a[[0, 2]]`, `a[a > 0]`), арифметика, `flatten`, `.copy()`.
+- Проверка: `b.base is a` — представление `a`; `np.shares_memory(a, b)` — есть ли общие данные.
+
+## Синтаксис
+
+<Syntax code={`b = a[1:4]                 # представление
+b = a[1:4].copy()          # копия
+b.base is a                # True — b смотрит в данные a
+b.base is None             # True — у b свои данные
+np.shares_memory(a, b)`} />
+
+| Операция | Результат |
+| --- | --- |
+| срез `a[i:j]`, `a[::k]`, `a[:, 0]` | представление |
+| `reshape`, `.T`, `transpose`, `ravel` | обычно представление |
+| `a[[0, 2]]`, `a[mask]` | копия |
+| `a + 1`, `np.sqrt(a)`, `flatten()`, `copy()` | копия (новый массив) |
+
+## Примеры
+
+<Setup />
+
+<Example id="view" title="Срез меняет исходный массив" />
+
+<Example id="copy" title="Копия не меняет" />
+
+<Example id="check" title="Как проверить" />
+
+<Example id="reshape-view" title="reshape — тоже представление" />
+
+## Подводные камни
+
+<Pitfall title="Функция меняет массив вызывающего">
+
+Массив передаётся в функцию по ссылке. Операции на месте (`+=`, `/=`, запись по индексу) внутри функции меняют исходные данные. Если это не задумано — начинайте функцию с `a = a.copy()` или пишите `a = a / a.max()`.
+
+<Example id="function-arg" title="Нормализация внутри функции" />
+
+</Pitfall>
+
+<Pitfall title="Маленький срез держит в памяти большой массив">
+
+Пока жив срез, жив и весь исходный массив. Если из большого массива нужна маленькая часть надолго, сделайте `.copy()`.
+
+<Example id="big-base" title="Срез и base" />
+
+</Pitfall>

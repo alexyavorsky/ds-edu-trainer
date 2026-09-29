@@ -1,0 +1,151 @@
+---
+/** Варианты ответа для задач на сложность. Правильный раскрывается кнопкой. */
+import Icon from './Icon.astro';
+
+interface Props {
+  options: string[];
+  answer: string;
+  explanation: string;
+}
+const { options, answer, explanation } = Astro.props;
+---
+
+<section class="quiz" data-quiz>
+  <div class="options" role="radiogroup" aria-label="Варианты ответа">
+    {
+      options.map((option) => (
+        <button type="button" class="option" role="radio" aria-checked="false" data-option data-correct={String(option === answer)}>
+          <span class="radio" aria-hidden="true" />
+          <span class="value">{option}</span>
+          <span class="verdict" aria-hidden="true" />
+        </button>
+      ))
+    }
+  </div>
+  <button type="button" class="btn" data-reveal>
+    <Icon name="eye" />
+    Показать ответ
+  </button>
+  <div class="explanation" data-explanation hidden>
+    <p class="answer">Ответ: <strong>{answer}</strong></p>
+    <p>{explanation.trim()}</p>
+  </div>
+</section>
+
+<style>
+  .quiz {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+  }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    cursor: pointer;
+    text-align: left;
+    transition:
+      border-color 0.15s,
+      background 0.15s;
+  }
+  .option:hover {
+    border-color: var(--border-strong);
+    background: var(--surface-2);
+  }
+  .radio {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-strong);
+    flex: none;
+  }
+  .value {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+  .option[aria-checked='true'] {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .option[aria-checked='true'] .radio {
+    border: 4px solid var(--accent);
+  }
+  .quiz.is-revealed .option[data-correct='true'] {
+    border-color: var(--easy);
+    background: var(--easy-soft);
+  }
+  .quiz.is-revealed .option[data-correct='true'] .verdict::after {
+    content: 'верно';
+    color: var(--easy);
+  }
+  .quiz.is-revealed .option[aria-checked='true'][data-correct='false'] {
+    border-color: var(--hard);
+    background: var(--hard-soft);
+  }
+  .quiz.is-revealed .option[aria-checked='true'][data-correct='false'] .verdict::after {
+    content: 'ваш ответ';
+    color: var(--hard);
+  }
+  .quiz.is-revealed .option[aria-checked='true'][data-correct='false'] .radio {
+    border-color: var(--hard);
+  }
+  .quiz.is-revealed .option[aria-checked='true'][data-correct='true'] .radio {
+    border-color: var(--easy);
+  }
+  .verdict {
+    font-size: 12px;
+  }
+  .quiz > .btn {
+    align-self: flex-start;
+  }
+  .explanation {
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--text-2);
+    font-size: 14.5px;
+  }
+  .explanation[hidden] {
+    display: none;
+  }
+  .explanation p {
+    margin: 0 0 8px;
+  }
+  .explanation p:last-child {
+    margin: 0;
+  }
+  .answer strong {
+    font-family: var(--font-mono);
+    color: var(--easy);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-quiz]').forEach((quiz) => {
+    const options = [...quiz.querySelectorAll<HTMLButtonElement>('[data-option]')];
+    const explanation = quiz.querySelector<HTMLElement>('[data-explanation]')!;
+    const reveal = quiz.querySelector<HTMLButtonElement>('[data-reveal]')!;
+    options.forEach((option) => {
+      option.addEventListener('click', () => {
+        options.forEach((o) => o.setAttribute('aria-checked', String(o === option)));
+      });
+    });
+    reveal.addEventListener('click', () => {
+      quiz.classList.add('is-revealed');
+      explanation.hidden = false;
+      reveal.disabled = true;
+    });
+  });
+</script>

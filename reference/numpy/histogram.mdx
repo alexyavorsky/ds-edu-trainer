@@ -1,0 +1,70 @@
+---
+title: Гистограммы и подсчёт
+level: medium
+summary: Сколько значений попало в каждый интервал, сколько раз встретилось каждое целое и к какой группе относится значение.
+requires: [numpy/statistics, numpy/searching]
+related: [numpy/unique-sets, pandas/cut-qcut, pandas/plot]
+functions: [np.histogram, np.histogram_bin_edges, np.bincount, np.digitize]
+docs: https://numpy.org/doc/2.5/reference/generated/numpy.histogram.html
+---
+
+## Коротко
+
+- `np.histogram(a, bins)` возвращает пару: **счётчики** и **границы** интервалов (границ на одну больше).
+- `bins` — число интервалов одинаковой ширины или список границ.
+- Интервалы полуоткрытые `[a, b)`, кроме последнего — он включает правую границу.
+- `np.bincount(a)` считает вхождения целых 0, 1, 2… — быстрее `unique` для небольших неотрицательных целых. С `weights` — суммы по группам.
+- `np.digitize(a, bins)` — номер интервала для каждого значения.
+
+## Синтаксис
+
+<Syntax code={`counts, edges = np.histogram(a, bins=10, range=None, density=False)
+np.bincount(x, weights=None, minlength=0)   # x — неотрицательные целые
+np.digitize(a, bins, right=False)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['bins', 'число интервалов, список границ или правило вроде "auto"', '10'],
+    ['range', '(min, max) — диапазон для равных интервалов; значения вне него не считаются', 'None'],
+    ['density', 'True — плотность вместо счётчиков: площадь гистограммы равна 1', 'False'],
+    ['weights', 'в bincount: вместо +1 прибавлять вес элемента', 'None'],
+    ['minlength', 'минимальная длина результата bincount', '0'],
+    ['right', 'в digitize: включать правую границу интервала вместо левой', 'False'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="histogram" title="Гистограмма на 4 интервала" />
+
+<Example id="bins-list" title="Свои границы" />
+
+<Example id="density" title="Доли вместо счётчиков" />
+
+<Example id="bincount" title="Подсчёт целых значений" />
+
+<Example id="bincount-weights" title="Суммы по группам" />
+
+<Example id="digitize" title="Номер группы для каждого значения" />
+
+## Подводные камни
+
+<Pitfall title="Последний интервал закрыт с двух сторон">
+
+Все интервалы `[a, b)`, но последний — `[a, b]`. Поэтому максимум попадает в гистограмму, а не теряется.
+
+<Example id="last-closed" title="Значение на правой границе" />
+
+</Pitfall>
+
+<Pitfall title="bincount только для целых">
+
+Массив `float` не принимается, даже если значения целые по смыслу: NumPy не приводит дробный тип к целому сам. Приведите через `astype(int)`.
+
+<Example id="bincount-float" title="bincount для float" />
+
+</Pitfall>

@@ -1,0 +1,67 @@
+---
+title: Сравнение массивов
+level: basic
+summary: Почему a == b не отвечает «равны ли массивы» и чем проверять равенство целиком — точно и с допуском.
+requires: [numpy/arithmetic]
+related: [numpy/boolean, numpy/nan-inf, numpy/aggregations]
+functions: [np.array_equal, np.allclose, np.isclose, np.equal, np.greater]
+docs: https://numpy.org/doc/2.5/reference/routines.logic.html#comparison
+---
+
+## Коротко
+
+- `a == b`, `a < b` и другие сравнения работают **поэлементно** и возвращают массив `True`/`False`, а не одно значение.
+- Поэтому `if a == b:` падает: Python не знает, как превратить массив в одно `True` или `False`.
+- Равенство целиком — `np.array_equal(a, b)`: одинаковые форма и все элементы.
+- Дробные числа сравнивают **с допуском**: `np.allclose` (целиком) и `np.isclose` (поэлементно).
+- `NaN` не равен ничему, даже себе; для сравнения с учётом `NaN` есть `equal_nan=True`.
+
+## Синтаксис
+
+<Syntax code={`a == b                         # поэлементно → массив bool
+(a == b).all()                 # все ли совпали (формы должны совпадать)
+np.array_equal(a, b, equal_nan=False)
+np.allclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False)
+np.isclose(a, b, rtol=1e-05, atol=1e-08)   # поэлементно`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['rtol', 'относительный допуск: разрешённая разница — rtol × |b|', '1e-05'],
+    ['atol', 'абсолютный допуск; важен для значений около нуля', '1e-08'],
+    ['equal_nan', 'считать NaN равным NaN', 'False'],
+  ]}
+/>
+
+Условие близости: `|a − b| <= atol + rtol × |b|`.
+
+## Примеры
+
+<Setup />
+
+<Example id="elementwise" title="Поэлементное сравнение" />
+
+<Example id="array-equal" title="Равны ли массивы целиком" />
+
+<Example id="floats" title="Сравнение дробных чисел" />
+
+<Example id="tolerance" title="Свой допуск" />
+
+## Подводные камни
+
+<Pitfall title="if a == b">
+
+Проверка в `if` требует одно значение. Решите, что вы имеете в виду: «все равны» — `np.array_equal(a, b)` или `(a == b).all()`, «хоть один равен» — `(a == b).any()`.
+
+<Example id="if-array" title="Массив в условии if" />
+
+</Pitfall>
+
+<Pitfall title="NaN не равен себе">
+
+Два массива с `NaN` в одних и тех же местах `array_equal` по умолчанию считает разными.
+
+<Example id="nan" title="Сравнение с NaN" />
+
+</Pitfall>

@@ -1,0 +1,9 @@
+[[mutant]]
+name = "не проверяется, что все счётчики обнулились"
+find = "    return all(c == 0 for c in counts.values())"
+replace = "    return True"
+
+[[mutant]]
+name = "регистр учитывается"
+find = '    return text.replace(" ", "").lower()'
+replace = '    return text.replace(" ", "")'

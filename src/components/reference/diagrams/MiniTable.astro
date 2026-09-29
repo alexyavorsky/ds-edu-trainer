@@ -1,0 +1,106 @@
+---
+/**
+ * Маленькая таблица для схем. null в ячейке — пропуск (NaN). indexCols — сколько первых столбцов
+ * показать как индекс. tones — цвет строки: 1…4 (или 0 — без цвета); cellTones — цвет отдельных ячеек.
+ */
+interface Props {
+  title?: string;
+  columns: string[];
+  rows: (string | number | null)[][];
+  indexCols?: number;
+  tones?: number[];
+  cellTones?: number[][];
+}
+const { title, columns, rows, indexCols = 0, tones = [], cellTones } = Astro.props;
+---
+
+<div class="mini-wrap">
+  {title && <span class="mini-title">{title}</span>}
+  <table class="mini">
+    <thead>
+      <tr>{columns.map((c, j) => <th class:list={[j < indexCols && 'idx']}>{c}</th>)}</tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row, i) => (
+          <tr class={`t${tones[i] ?? 0}`}>
+            {row.map((v, j) => (
+              <td class:list={[j < indexCols && 'idx', v === null && 'na', cellTones?.[i]?.[j] ? `c${cellTones[i][j]}` : '']}>
+                {v === null ? 'NaN' : v}
+              </td>
+            ))}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .mini-wrap {
+    display: grid;
+    gap: 6px;
+    justify-items: start;
+  }
+  .mini-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+  .mini {
+    display: table;
+    width: auto;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 2px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .mini th,
+  .mini td {
+    padding: 3px 8px;
+    border: 0;
+    border-radius: 4px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .mini th {
+    background: none;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .mini td {
+    background: var(--surface-3);
+    color: var(--text);
+  }
+  .mini .idx {
+    color: var(--text-2);
+    font-weight: 600;
+  }
+  .mini td.idx {
+    background: var(--surface-2);
+  }
+  .mini td.na {
+    color: var(--faint);
+    background: transparent;
+    outline: 1px dashed var(--border-strong);
+    outline-offset: -1px;
+  }
+  .t1 td:not(.idx):not(.na),
+  .mini td.c1 {
+    background: rgb(141 149 255 / 0.18);
+  }
+  .t2 td:not(.idx):not(.na),
+  .mini td.c2 {
+    background: rgb(238 177 83 / 0.18);
+  }
+  .t3 td:not(.idx):not(.na),
+  .mini td.c3 {
+    background: rgb(76 195 138 / 0.16);
+  }
+  .t4 td:not(.idx):not(.na),
+  .mini td.c4 {
+    background: rgb(240 122 125 / 0.16);
+  }
+</style>

@@ -1,0 +1,71 @@
+---
+title: Скользящие окна
+level: advanced
+summary: Скользящее среднее, максимум за последние дни и окна в изображении — без циклов и без копирования данных.
+requires: [numpy/axis, numpy/memory-layout]
+related: [numpy/pad, numpy/diff, pandas/rolling]
+functions: [np.lib.stride_tricks.sliding_window_view, np.lib.stride_tricks.as_strided]
+docs: https://numpy.org/doc/2.5/reference/generated/numpy.lib.stride_tricks.sliding_window_view.html
+---
+
+## Коротко
+
+- `sliding_window_view(a, k)` возвращает все окна длины `k` как строки нового массива: из `n` элементов получается `(n − k + 1, k)`.
+- Это **представление** через strides: данные не копируются, окна пересекаются.
+- Дальше — любая агрегация по последней оси: `.mean(axis=1)` — скользящее среднее, `.max(axis=1)` — скользящий максимум.
+- Для многомерных данных передайте форму окна: `(2, 2)` — квадратики 2 × 2.
+- Результат только для чтения. Чтобы окна были той же длины, что данные, сначала дополните массив через [np.pad](/reference/numpy/pad).
+
+## Синтаксис
+
+<Syntax code={`from numpy.lib.stride_tricks import sliding_window_view
+
+sliding_window_view(a, window_shape, axis=None)
+sliding_window_view(a, 3).mean(axis=-1)      # скользящее среднее
+sliding_window_view(a, 3)[::2]               # окна с шагом 2`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['window_shape', 'размер окна: число или кортеж по осям', '—'],
+    ['axis', 'по каким осям скользить; None — по всем', 'None'],
+    ['writeable', 'разрешить запись (опасно: окна делят одни данные)', 'False'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="windows" title="Все окна длины 3" />
+
+<Example id="moving-average" title="Скользящее среднее" />
+
+<Example id="moving-max" title="Скользящий максимум" />
+
+<Example id="step" title="Окна с шагом" />
+
+<Example id="two-dims" title="Окна 2 × 2 в матрице" />
+
+## Подводные камни
+
+<Pitfall title="Запись в окна запрещена">
+
+<Example id="readonly" title="Изменение окна" />
+
+</Pitfall>
+
+<Pitfall title="Большие окна — много вычислений">
+
+Данные не копируются, но `.mean(axis=1)` для окна длины `k` делает `k` сложений на каждую позицию. Для длинных окон скользящую сумму быстрее посчитать через `cumsum`.
+
+<Example id="cumsum-average" title="Скользящее среднее через cumsum" />
+
+</Pitfall>
+
+<Pitfall title="as_strided">
+
+В старом коде окна делали через `np.lib.stride_tricks.as_strided`. Эта функция не проверяет границы: ошибка в strides читает чужую память. Используйте `sliding_window_view`.
+
+</Pitfall>

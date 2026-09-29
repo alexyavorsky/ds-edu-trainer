@@ -1,0 +1,55 @@
+---
+title: apply_along_axis
+level: advanced
+summary: Применить функцию к каждой строке или столбцу — и понять, когда можно обойтись без этого.
+requires: [numpy/axis, numpy/vectorization]
+related: [numpy/ufunc, pandas/apply]
+functions: [np.apply_along_axis, np.apply_over_axes]
+docs: https://numpy.org/doc/2.5/reference/generated/numpy.apply_along_axis.html
+---
+
+## Коротко
+
+- `np.apply_along_axis(func, axis, a)` вызывает `func` для каждого одномерного среза вдоль `axis`: при `axis=1` — для каждой строки.
+- Функция может вернуть число или массив — результаты собираются в новый массив.
+- Внутри — обычный цикл Python, поэтому это **не быстрее** цикла. Выигрыш только в краткости.
+- Если функция собрана из агрегаций NumPy (`max`, `mean`, `sort`…), вызовите их сразу с `axis` — это в разы быстрее.
+- `apply_along_axis` оправдан для функций без параметра `axis`: `bincount`, `interp`, свои функции с ветвлениями.
+
+## Синтаксис
+
+<Syntax code={`np.apply_along_axis(func1d, axis, arr, *args, **kwargs)
+np.apply_along_axis(f, 1, a)      # f(строка) для каждой строки
+np.apply_along_axis(f, 0, a)      # f(столбец) для каждого столбца`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['func1d', 'функция от одномерного массива', '—'],
+    ['axis', 'ось, вдоль которой берутся срезы: 1 — строки, 0 — столбцы', '—'],
+    ['*args, **kwargs', 'дополнительные аргументы для func1d', '—'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="basic" title="Функция для каждой строки" />
+
+<Example id="returns-array" title="Функция возвращает массив" />
+
+<Example id="no-axis-function" title="Функция без параметра axis" />
+
+<Example id="axis0" title="Для каждого столбца" />
+
+## Подводные камни
+
+<Pitfall title="apply_along_axis там, где хватит axis=">
+
+Первый пример переписывается без цикла: у `max` и `min` есть `axis`.
+
+<Example id="vectorized" title="Векторная версия" />
+
+</Pitfall>

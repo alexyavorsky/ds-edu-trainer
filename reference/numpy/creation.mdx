@@ -1,0 +1,79 @@
+---
+title: Создание массивов
+level: basic
+summary: Все основные способы получить массив — из списка, заполненный значением, диапазон чисел, единичная матрица.
+requires: [numpy/intro]
+related: [numpy/attributes, numpy/dtypes, numpy/random, numpy/reshape]
+functions: [np.array, np.asarray, np.zeros, np.ones, np.full, np.empty, np.arange, np.linspace, np.eye, np.identity, np.zeros_like, np.ones_like, np.full_like, np.empty_like]
+docs: https://numpy.org/doc/2.5/user/basics.creation.html
+---
+
+## Коротко
+
+- Из данных: `np.array(список)`; `np.asarray(x)` не копирует, если `x` уже массив.
+- Заполненные: `zeros`, `ones`, `full(shape, значение)`, `empty` (не заполняет — там мусор).
+- Форма передаётся **кортежем**: `np.zeros((2, 3))`.
+- Диапазоны: `arange(start, stop, step)` — как `range`, `stop` не входит; `linspace(start, stop, num)` — ровно `num` точек, конец входит.
+- `*_like(a)` создаёт массив той же формы и типа, что `a`.
+
+## Синтаксис
+
+<Syntax code={`np.array(obj, dtype=None)
+np.zeros(shape, dtype=float)       # так же ones, empty
+np.full(shape, fill_value, dtype=None)
+np.arange(start=0, stop, step=1)
+np.linspace(start, stop, num=50, endpoint=True)
+np.eye(N, M=None, k=0)             # единицы на диагонали
+np.zeros_like(a)                   # так же ones_like, full_like, empty_like`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['shape', 'форма: число для одномерного массива или кортеж (строки, столбцы, …)', '—'],
+    ['dtype', 'тип элементов: float, int, bool, "float32"…; None — определить по данным', 'float или None'],
+    ['fill_value', 'чем заполнить массив в full / full_like', '—'],
+    ['step', 'шаг arange; может быть дробным, но см. подводные камни', '1'],
+    ['num', 'сколько точек вернёт linspace', '50'],
+    ['endpoint', 'включать ли stop в linspace', 'True'],
+    ['k', 'сдвиг диагонали в eye: 1 — над главной, -1 — под ней', '0'],
+  ]}
+/>
+
+## Примеры
+
+<Example id="from-list" title="Из вложенного списка" />
+
+<Example id="filled" title="Заполненные массивы" />
+
+<Example id="arange" title="arange — как range" />
+
+<Example id="linspace" title="linspace — заданное число точек" />
+
+<Example id="eye" title="Единичная матрица" />
+
+<Example id="like" title="Такой же формы, как другой массив" />
+
+## Подводные камни
+
+<Pitfall title="arange с дробным шагом">
+
+Из-за погрешности float последняя точка может попасть в диапазон, хотя `stop` не должен входить. Для дробных сеток используйте `linspace` — там число точек задано явно.
+
+<Example id="arange-float" title="Лишний элемент" />
+
+</Pitfall>
+
+<Pitfall title="Форма без скобок">
+
+`np.zeros(2, 3)` читается как «2 элемента типа 3». Форму двумерного массива передавайте кортежем: `np.zeros((2, 3))`.
+
+<Example id="shape-tuple" title="Размеры вторым аргументом" />
+
+</Pitfall>
+
+<Pitfall title="empty не значит «нули»">
+
+`np.empty` только выделяет память и не заполняет её: в массиве может оказаться что угодно, в том числе нули — на это нельзя полагаться. Используйте его, только если сразу перезапишете все элементы.
+
+</Pitfall>

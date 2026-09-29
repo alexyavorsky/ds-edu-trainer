@@ -1,0 +1,9 @@
+[[mutant]]
+name = "дороги односторонние"
+find = "        for x, y in ((a, b), (b, a)):"
+replace = "        for x, y in ((a, b),):"
+
+[[mutant]]
+name = "из двух дорог между городами остаётся последняя, а не быстрая"
+find = "            edges[y] = min(edges.get(y, minutes), minutes)"
+replace = "            edges[y] = minutes"

@@ -1,0 +1,58 @@
+---
+title: Маскированные массивы
+level: advanced
+summary: Массив с пометкой «значения нет» для отдельных элементов — пропуски даже в целых числах.
+requires: [numpy/nan-inf, numpy/boolean]
+related: [numpy/aggregations, pandas/missing]
+functions: [np.ma.masked_array, np.ma.masked_where, np.ma.masked_equal, np.ma.masked_invalid, np.ma.MaskedArray.filled, np.ma.MaskedArray.compressed]
+docs: https://numpy.org/doc/2.5/reference/maskedarray.generic.html
+---
+
+## Коротко
+
+- Модуль `np.ma`: массив данных плюс булева **маска**; `True` в маске — «значения нет».
+- Агрегации (`mean`, `sum`, `count`…) и арифметика пропускают маскированные элементы, маска переносится в результат.
+- Создание: `masked_array(data, mask)`, `masked_where(cond, data)`, `masked_equal(data, value)`, `masked_invalid` (NaN и inf).
+- Обратно в обычный массив: `filled(значение)` или `compressed()` — только известные.
+- Плюс перед `NaN`: работает с **целыми** и не требует смены типа. Минус: медленнее и поддерживается не всеми библиотеками.
+
+## Синтаксис
+
+<Syntax code={`m = np.ma.masked_array(data, mask=cond)
+m = np.ma.masked_where(cond, data)
+m = np.ma.masked_equal(data, -1)
+m = np.ma.masked_invalid(data)     # NaN и inf
+m.mean(), m.count()
+m.filled(0), m.compressed()`} />
+
+## Примеры
+
+<Setup />
+
+<Example id="create" title="Маскированный массив" />
+
+<Example id="aggregations" title="Агрегации без пропусков" />
+
+<Example id="invalid" title="Маскировать NaN и inf" />
+
+<Example id="arithmetic" title="Арифметика сохраняет маску" />
+
+<Example id="filled" title="Обратно в обычный массив" />
+
+## Подводные камни
+
+<Pitfall title="Функции вне np.ma не знают о маске">
+
+Многие функции NumPy и других библиотек работают с данными под маской как с обычными значениями. Используйте функции из `np.ma` (`np.ma.median`, `np.ma.concatenate`…) или сначала `filled` / `compressed`.
+
+<Example id="outside-ma" title="np.concatenate теряет маску" />
+
+</Pitfall>
+
+<Pitfall title="Когда нужна маска, а не NaN">
+
+Замена пропусков на `NaN` превращает целые в float. Маска сохраняет исходный тип.
+
+<Example id="int-missing" title="Тип данных маскированного массива" />
+
+</Pitfall>

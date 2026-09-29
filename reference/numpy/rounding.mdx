@@ -1,0 +1,62 @@
+---
+title: Округление и clip
+level: basic
+summary: Округлить до нужного знака, вниз, вверх или к нулю и ограничить значения диапазоном.
+requires: [numpy/arithmetic]
+related: [numpy/dtypes, numpy/where, numpy/display]
+functions: [np.round, np.around, np.floor, np.ceil, np.trunc, np.rint, np.clip, np.fix]
+docs: https://numpy.org/doc/2.5/reference/routines.math.html#rounding
+---
+
+## Коротко
+
+- `np.round(a, decimals)` — до заданного числа знаков; отрицательное `decimals` округляет до десятков, сотен…
+- Половины округляются **до чётного** (банковское округление): `0.5 → 0`, `1.5 → 2`, `2.5 → 2`.
+- `floor` — вниз, `ceil` — вверх, `trunc` — к нулю. Результат остаётся float; целые — через `.astype(int)`.
+- `astype(int)` без округления отбрасывает дробную часть.
+- `np.clip(a, lo, hi)` ограничивает значения: всё меньше `lo` становится `lo`, больше `hi` — `hi`. Одну границу можно заменить на `None`.
+
+## Синтаксис
+
+<Syntax code={`np.round(a, decimals=0)      # или a.round(1)
+np.floor(a), np.ceil(a), np.trunc(a)
+np.clip(a, a_min, a_max)     # или a.clip(0, 100)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['decimals', 'сколько знаков после запятой; отрицательное — округление до 10, 100…', '0'],
+    ['a_min, a_max', 'нижняя и верхняя граница clip; None — без этой границы', '—'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="round" title="До целых, десятых и десятков" />
+
+<Example id="floor-ceil-trunc" title="Вниз, вверх, к нулю" />
+
+<Example id="to-int" title="Округлить и превратить в целые" />
+
+<Example id="clip" title="Ограничить диапазоном" />
+
+## Подводные камни
+
+<Pitfall title="Половины округляются до чётного">
+
+Так работает и встроенный `round` в Python: при большом количестве данных ошибки округления не накапливаются в одну сторону. Если нужно «школьное» округление половин вверх для положительных чисел — `np.floor(a + 0.5)`.
+
+<Example id="bankers" title="Округление половин" />
+
+</Pitfall>
+
+<Pitfall title="np.fix устарел">
+
+<VersionNote since="NumPy 2.5" was="np.fix — округление к нулю" now="np.fix устарел, используйте np.trunc — результат тот же" />
+
+<Example id="fix" title="np.fix" />
+
+</Pitfall>

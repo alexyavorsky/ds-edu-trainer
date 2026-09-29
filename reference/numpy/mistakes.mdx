@@ -1,0 +1,105 @@
+---
+title: Частые ошибки
+level: basic
+kind: overview
+summary: Двенадцать ошибок, которые чаще всего встречаются в коде с NumPy, — и как их исправить.
+related: [numpy/cheatsheet, pandas/mistakes]
+functions: []
+docs: https://numpy.org/doc/2.5/user/index.html
+---
+
+Каждая ошибка показана парой: как не надо и как надо. Подробности — в статье по ссылке.
+
+<Setup />
+
+## Массив в условии if
+
+`a == b` возвращает массив, а не одно значение. → [Сравнение массивов](/reference/numpy/comparing)
+
+<Example id="eq-wrong" title="Неправильно" />
+
+<Example id="eq-right" title="Правильно" />
+
+## and / or вместо & / |
+
+С массивами работают только `&`, `|`, `~`, а каждое условие берётся в скобки. → [Булевы маски](/reference/numpy/boolean)
+
+<Example id="and-wrong" title="Неправильно" />
+
+<Example id="and-right" title="Правильно" />
+
+## Изменение среза меняет исходный массив
+
+Срез — представление, а не копия. → [Представления и копии](/reference/numpy/views-copies)
+
+<Example id="view-wrong" title="Неправильно" />
+
+<Example id="view-right" title="Правильно" />
+
+## result = a.sort()
+
+Метод сортирует на месте и возвращает `None`. → [Сортировка](/reference/numpy/sorting)
+
+<Example id="sort-wrong" title="Неправильно" />
+
+<Example id="sort-right" title="Правильно" />
+
+## Поиск NaN через ==
+
+→ [NaN и бесконечности](/reference/numpy/nan-inf)
+
+<Example id="nan-wrong" title="Неправильно" />
+
+<Example id="nan-right" title="Правильно" />
+
+## Переполнение маленьких целых типов
+
+Арифметика не проверяет выход за пределы типа. → [Типы данных](/reference/numpy/dtypes)
+
+<Example id="overflow-wrong" title="Неправильно" />
+
+<Example id="overflow-right" title="Правильно" />
+
+## Вектор (n,) вместо столбца (n, 1)
+
+Для квадратной матрицы ошибки нет, но результат неверный. → [Транслирование](/reference/numpy/broadcasting)
+
+<Example id="keepdims-wrong" title="Неправильно" />
+
+<Example id="keepdims-right" title="Правильно" />
+
+## Дробное значение в целом массиве
+
+При записи значение приводится к типу массива. → [Типы данных](/reference/numpy/dtypes)
+
+<Example id="int-wrong" title="Неправильно" />
+
+<Example id="int-right" title="Правильно" />
+
+## Форма без скобок
+
+→ [Создание массивов](/reference/numpy/creation)
+
+<Example id="shape-wrong" title="Неправильно" />
+
+<Example id="shape-right" title="Правильно" />
+
+## Функции math для массивов
+
+→ [Универсальные функции](/reference/numpy/ufunc)
+
+<Example id="math-wrong" title="Неправильно" />
+
+<Example id="math-right" title="Правильно" />
+
+## Разное std в NumPy и pandas
+
+→ [Статистика](/reference/numpy/statistics)
+
+<Example id="std-wrong" title="Неожиданно" />
+
+<Example id="std-right" title="Как в pandas" />
+
+## Цикл вместо операции над массивом
+
+Цикл Python по элементам и `np.vectorize` в десятки раз медленнее векторных операций. Перепишите через `np.where`, `np.select`, агрегации с `axis` и транслирование. → [Векторизация](/reference/numpy/vectorization)

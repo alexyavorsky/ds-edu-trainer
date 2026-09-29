@@ -1,0 +1,9 @@
+[[mutant]]
+name = "номиналы берутся в данном порядке, без сортировки"
+find = "for coin in sorted(coins, reverse=True):"
+replace = "for coin in coins:"
+
+[[mutant]]
+name = "от каждого номинала — не больше одной монеты"
+find = "        result.extend([coin] * count)"
+replace = "        result.extend([coin] * min(count, 1))"

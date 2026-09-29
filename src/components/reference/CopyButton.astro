@@ -1,0 +1,65 @@
+---
+/** Кнопка «Копировать» для блоков кода справочника. */
+import Icon from '../Icon.astro';
+
+interface Props {
+  code: string;
+}
+const { code } = Astro.props;
+---
+
+<button
+  type="button"
+  class="btn btn-ghost ref-copy"
+  data-ref-copy
+  data-code={code}
+  aria-label="Копировать код"
+  title="Примеры в стиле Jupyter; в .py-файле оберните последнюю строку в print()"
+>
+  <span class="idle"><Icon name="copy" /><span class="text">Копировать</span></span>
+  <span class="done"><Icon name="check" /><span class="text">Скопировано</span></span>
+</button>
+
+<style>
+  .ref-copy {
+    flex: none;
+    height: 30px;
+    padding: 0 10px;
+    font-size: 12.5px;
+  }
+  .idle,
+  .done {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .done {
+    display: none;
+    color: var(--easy);
+  }
+  .ref-copy.is-copied .idle {
+    display: none;
+  }
+  .ref-copy.is-copied .done {
+    display: inline-flex;
+  }
+  @media (max-width: 560px) {
+    .text {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-ref-copy]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.code ?? '');
+      } catch {
+        return;
+      }
+      button.classList.add('is-copied');
+      setTimeout(() => button.classList.remove('is-copied'), 1800);
+    });
+  });
+</script>

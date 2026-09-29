@@ -1,0 +1,9 @@
+[[mutant]]
+name = "в очередь попадает только один склад"
+find = "    for hub in hubs:\n        dist[hub] = 0\n        queue.append(hub)"
+replace = "    for hub in sorted(hubs)[:1]:\n        dist[hub] = 0\n        queue.append(hub)"
+
+[[mutant]]
+name = "дороги односторонние"
+find = "        neighbors[b].append(a)\n"
+replace = ""

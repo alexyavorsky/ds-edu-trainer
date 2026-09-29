@@ -1,0 +1,57 @@
+---
+title: transform и filter
+level: medium
+summary: Посчитать по группам, но оставить все строки — доля в группе, заполнение средним по группе, нарастающий итог внутри группы.
+requires: [pandas/groupby-agg]
+related: [pandas/missing, pandas/rank, pandas/shift-diff]
+functions: [DataFrameGroupBy.transform, DataFrameGroupBy.filter, DataFrameGroupBy.apply, GroupBy.cumcount, GroupBy.cumsum, GroupBy.shift]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/groupby.html#transformation
+---
+
+## Коротко
+
+- `agg` сворачивает группу в одну строку; `transform` возвращает результат **той же длины**, что исходная таблица — значение группы оказывается в каждой её строке.
+- Типичные задачи `transform`: доля строки в сумме группы, отклонение от среднего по группе, заполнение пропусков средним по группе.
+- `filter(функция)` оставляет или убирает **целые группы** по условию.
+- `cumcount`, `cumsum`, `shift`, `rank`, `diff` работают внутри групп и тоже сохраняют длину.
+- `apply` — самый общий и самый медленный способ: функция получает каждую группу как DataFrame.
+
+## Синтаксис
+
+<Syntax code={`df.groupby(key)["col"].transform("sum")     # или "mean", своя функция
+df.groupby(key).filter(lambda g: условие)
+df.groupby(key).cumcount()
+df.groupby(key)["col"].cumsum(), .shift(), .diff(), .rank()
+df.groupby(key).apply(func)`} />
+
+## Примеры
+
+<Setup />
+
+<Example id="agg-vs-transform" title="agg и transform" />
+
+<Example id="share" title="Доля в группе" />
+
+<Example id="fill" title="Заполнить пропуски средним по группе" />
+
+<Example id="filter" title="Оставить группы по условию" />
+
+<Example id="cumulative" title="Номер, нарастающий итог и сдвиг в группе" />
+
+<Example id="apply" title="apply: своя функция для группы" />
+
+## Подводные камни
+
+<Pitfall title="Ключ группировки больше не попадает в apply">
+
+<VersionNote since="pandas 3.0" was="в функцию apply передавались и столбцы-ключи (с 2.2 — с предупреждением)" now="ключи исключены из переданной группы; они есть в индексе результата" />
+
+<Example id="apply-columns" title="Какие столбцы видит функция" />
+
+</Pitfall>
+
+<Pitfall title="apply там, где хватит transform или agg">
+
+`apply` вызывает функцию Python для каждой группы. Встроенные агрегации и `transform("sum")` со строковым именем считают все группы сразу, без вызова Python для каждой, — поэтому быстрее.
+
+</Pitfall>

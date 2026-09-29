@@ -1,0 +1,4 @@
+[[mutant]]
+name = "хвост после удаления не проверяется"
+find = "while cur is not None and cur.next is not None:"
+replace = "while cur is not None and cur.next is not None and cur.next.next is not None:"

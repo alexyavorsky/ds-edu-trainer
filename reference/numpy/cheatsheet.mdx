@@ -1,0 +1,116 @@
+---
+title: Шпаргалка
+level: basic
+kind: overview
+summary: Самое нужное из NumPy на одной странице — задача и код, со ссылками на подробные статьи.
+related: [numpy/mistakes, pandas/cheatsheet]
+functions: []
+docs: https://numpy.org/doc/2.5/reference/index.html
+---
+
+Во всех строках `import numpy as np`; `a` — массив, `m` — двумерный массив.
+
+## Создание → [статья](/reference/numpy/creation)
+
+| Задача | Код |
+| --- | --- |
+| из списка | `np.array([1, 2, 3])` |
+| нули, единицы, число | `np.zeros((2, 3))`, `np.ones(5)`, `np.full((2, 2), 7)` |
+| диапазон с шагом | `np.arange(0, 10, 2)` |
+| n точек от a до b | `np.linspace(0, 1, 5)` |
+| единичная матрица | `np.eye(3)` |
+| такой же формы | `np.zeros_like(a)` |
+| случайные числа | `rng = np.random.default_rng(42)`; `rng.integers(0, 10, 5)`, `rng.normal(0, 1, 5)` → [random](/reference/numpy/random) |
+
+## Свойства и типы → [атрибуты](/reference/numpy/attributes), [типы](/reference/numpy/dtypes)
+
+| Задача | Код |
+| --- | --- |
+| форма, число осей, элементов | `a.shape`, `a.ndim`, `a.size` |
+| тип элементов, байты | `a.dtype`, `a.nbytes` |
+| сменить тип | `a.astype(float)`, `a.astype(np.int32)` |
+| пределы типа | `np.iinfo(np.int8)`, `np.finfo(np.float32)` |
+
+## Индексация → [срезы](/reference/numpy/indexing), [многомерная](/reference/numpy/indexing-nd)
+
+| Задача | Код |
+| --- | --- |
+| элемент, последний | `a[0]`, `a[-1]` |
+| срез, каждый второй, наоборот | `a[1:4]`, `a[::2]`, `a[::-1]` |
+| элемент, строка, столбец | `m[1, 2]`, `m[1]`, `m[:, 2]` |
+| блок | `m[:2, 1:3]` |
+| по условию | `a[a > 0]`, `a[(a > 0) & (a < 5)]` → [маски](/reference/numpy/boolean) |
+| по списку индексов | `a[[0, 2, 4]]` → [fancy](/reference/numpy/fancy) |
+| подматрица по индексам | `m[np.ix_([0, 2], [1, 3])]` |
+| одно из двух значений | `np.where(a > 0, a, 0)` → [where](/reference/numpy/where) |
+| индексы подходящих | `np.nonzero(a > 0)`, `np.argwhere(m > 0)` |
+| независимая копия | `a[1:4].copy()` → [копии](/reference/numpy/views-copies) |
+
+## Вычисления → [арифметика](/reference/numpy/arithmetic), [ufunc](/reference/numpy/ufunc)
+
+| Задача | Код |
+| --- | --- |
+| поэлементно | `a + b`, `a * 2`, `a ** 2`, `np.sqrt(a)`, `np.exp(a)`, `np.log(a)` |
+| сумма, среднее, мин., макс. | `a.sum()`, `a.mean()`, `a.min()`, `a.max()` → [агрегации](/reference/numpy/aggregations) |
+| по столбцам / строкам | `m.sum(axis=0)`, `m.sum(axis=1)` → [оси](/reference/numpy/axis) |
+| сохранить ось | `m.mean(axis=1, keepdims=True)` |
+| индекс максимума | `a.argmax()`, `m.argmax(axis=1)` |
+| нарастающий итог, разности | `np.cumsum(a)`, `np.diff(a)` → [diff](/reference/numpy/diff) |
+| поэлементный максимум двух | `np.maximum(a, b)` |
+| округлить, ограничить | `np.round(a, 2)`, `np.clip(a, 0, 100)` → [округление](/reference/numpy/rounding) |
+| равны ли массивы | `np.array_equal(a, b)`, `np.allclose(a, b)` → [сравнение](/reference/numpy/comparing) |
+| вектор как столбец | `a[:, np.newaxis]` → [транслирование](/reference/numpy/broadcasting) |
+
+## Форма → [reshape](/reference/numpy/reshape), [оси](/reference/numpy/transpose)
+
+| Задача | Код |
+| --- | --- |
+| новая форма | `a.reshape(3, 4)`, `a.reshape(-1, 2)` |
+| в одну строку | `a.ravel()`, `a.flatten()` |
+| транспонировать | `m.T` |
+| добавить / убрать ось | `np.expand_dims(a, 0)`, `np.squeeze(a)` |
+| склеить | `np.concatenate([a, b])`, `np.vstack([a, b])`, `np.hstack([a, b])` → [склейка](/reference/numpy/join-split) |
+| новая ось при склейке | `np.stack([a, b])` |
+| разрезать | `np.split(a, 3)`, `np.array_split(a, 3)` |
+| повторить | `np.repeat(a, 2)`, `np.tile(a, 2)` → [repeat](/reference/numpy/repeat-tile) |
+| развернуть, сдвинуть | `np.flip(a)`, `np.roll(a, 1)` → [flip](/reference/numpy/flip-roll) |
+| дополнить края | `np.pad(a, 2, mode="edge")` → [pad](/reference/numpy/pad) |
+
+## Сортировка и поиск → [сортировка](/reference/numpy/sorting), [поиск](/reference/numpy/searching)
+
+| Задача | Код |
+| --- | --- |
+| отсортировать | `np.sort(a)`, `np.sort(a, descending=True)` |
+| порядок индексов | `np.argsort(a)` |
+| строки по столбцу | `m[m[:, 1].argsort()]` |
+| позиция в отсортированном | `np.searchsorted(a, v)` |
+| k наибольших | `np.partition(a, -k)[-k:]` |
+| уникальные и частоты | `np.unique(a, return_counts=True)` → [множества](/reference/numpy/unique-sets) |
+| есть ли в наборе | `np.isin(a, [1, 2])` |
+
+## Данные → [NaN](/reference/numpy/nan-inf), [статистика](/reference/numpy/statistics)
+
+| Задача | Код |
+| --- | --- |
+| найти пропуски | `np.isnan(a)` |
+| среднее без NaN | `np.nanmean(a)`, `np.nansum(a)` |
+| заменить NaN | `np.nan_to_num(a)`, `np.where(np.isnan(a), 0, a)` |
+| медиана, перцентили | `np.median(a)`, `np.percentile(a, [25, 75])` |
+| стандартное отклонение | `a.std()`, выборочное — `a.std(ddof=1)` |
+| корреляция | `np.corrcoef(x, y)[0, 1]` |
+| гистограмма | `counts, edges = np.histogram(a, bins=10)` → [гистограммы](/reference/numpy/histogram) |
+| подсчёт целых | `np.bincount(a)` |
+| сетка координат | `X, Y = np.meshgrid(x, y)` → [meshgrid](/reference/numpy/meshgrid) |
+| сохранить / загрузить | `np.save("a.npy", a)`, `np.load("a.npy")`, `np.loadtxt("a.csv", delimiter=",")` → [файлы](/reference/numpy/io) |
+
+## Линейная алгебра → [умножение](/reference/numpy/matmul), [linalg](/reference/numpy/linalg)
+
+| Задача | Код |
+| --- | --- |
+| матричное произведение | `A @ B` |
+| решить A x = b | `np.linalg.solve(A, b)` |
+| обратная, определитель | `np.linalg.inv(A)`, `np.linalg.det(A)` |
+| собственные значения | `np.linalg.eigh(A)` (симметричная), `np.linalg.eig(A)` |
+| норма | `np.linalg.norm(v)` |
+| наименьшие квадраты | `np.linalg.lstsq(X, y)` |
+| произвольные свёртки индексов | `np.einsum("ij,jk->ik", A, B)` → [einsum](/reference/numpy/einsum) |

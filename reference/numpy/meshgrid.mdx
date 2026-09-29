@@ -1,0 +1,58 @@
+---
+title: "Сетки: meshgrid"
+level: medium
+summary: Получить координаты всех точек прямоугольной сетки, чтобы посчитать функцию двух переменных без циклов.
+requires: [numpy/broadcasting, numpy/creation]
+related: [numpy/transpose, numpy/repeat-tile, pandas/plot]
+functions: [np.meshgrid, np.mgrid, np.ogrid, np.indices]
+docs: https://numpy.org/doc/2.5/reference/generated/numpy.meshgrid.html
+---
+
+## Коротко
+
+- `X, Y = np.meshgrid(x, y)` возвращает две матрицы: в `X` координата x каждой точки сетки, в `Y` — координата y.
+- По умолчанию (`indexing="xy"`) форма результата `(len(y), len(x))`: строки соответствуют y, как на графике. `indexing="ij"` даёт `(len(x), len(y))`, как у матриц.
+- Дальше функция считается поэлементно: `np.sqrt(X**2 + Y**2)`.
+- `sparse=True` возвращает строку и столбец без повторов — экономит память, а [транслирование](/reference/numpy/broadcasting) восстанавливает полную сетку.
+- `np.mgrid[0:3, 0:4]` — сетка индексов через срезы; `np.ogrid` — её разреженный вариант.
+
+## Синтаксис
+
+<Syntax code={`X, Y = np.meshgrid(x, y, indexing="xy", sparse=False)
+np.mgrid[start:stop:step, start:stop:step]
+np.ogrid[0:3, 0:4]`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['indexing', '"xy" — форма (len(y), len(x)), "ij" — форма (len(x), len(y))', '"xy"'],
+    ['sparse', 'вернуть массивы формы (1, n) и (m, 1) вместо полных матриц', 'False'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="basic" title="Две матрицы координат" />
+
+<Example id="function" title="Функция на сетке" />
+
+<Example id="sparse" title="Разреженная сетка" />
+
+<Example id="broadcasting" title="То же через транслирование" />
+
+<Example id="mgrid" title="mgrid: сетка индексов" />
+
+<Example id="distance" title="Точки внутри круга" />
+
+## Подводные камни
+
+<Pitfall title="Форма (len(y), len(x)), а не наоборот">
+
+При `indexing="xy"` первая ось — y. Если дальше вы индексируете `X[i, j]` как «i-я точка по x», используйте `indexing="ij"`.
+
+<Example id="ij" title="indexing='ij'" />
+
+</Pitfall>

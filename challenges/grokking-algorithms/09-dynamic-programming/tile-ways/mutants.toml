@@ -1,0 +1,9 @@
+[[mutant]]
+name = "пустая дорожка — 0 способов"
+find = "    ways = [1] + [0] * n  # ways[k] — число дорожек длины k"
+replace = "    ways = [0] + [0] * n\n    if n >= 1:\n        ways[1] = 1"
+
+[[mutant]]
+name = "плитка длины 2 не учитывается"
+find = "        ways[k] = ways[k - 1] + (ways[k - 2] if k >= 2 else 0)"
+replace = "        ways[k] = ways[k - 1]"

@@ -1,0 +1,67 @@
+---
+title: concat
+level: medium
+summary: Склеить несколько таблиц — одну под другой или рядом.
+requires: [pandas/dataframe]
+related: [pandas/merge, pandas/alignment, numpy/join-split]
+functions: [pd.concat]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/merging.html#concat
+---
+
+## Коротко
+
+- `pd.concat([df1, df2])` ставит таблицы **одну под другой**; столбцы сопоставляются по именам.
+- Недостающие в какой-то таблице столбцы заполняются `NaN`; `join="inner"` — оставить только общие.
+- Индексы сохраняются и могут повторяться — обычно передают `ignore_index=True`.
+- `keys=[…]` добавляет внешний уровень индекса — видно, из какой таблицы строка.
+- `axis=1` — **рядом**, по совпадающему индексу. Для объединения по значениям столбца-ключа нужен [merge](/reference/pandas/merge).
+
+## Синтаксис
+
+<Syntax code={`pd.concat(objs, axis=0, join="outer", ignore_index=False, keys=None)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['objs', 'список таблиц или Series', '—'],
+    ['axis', '0 — одна под другой, 1 — рядом', '0'],
+    ['join', '"outer" — все столбцы, "inner" — только общие', '"outer"'],
+    ['ignore_index', 'новый индекс 0, 1, 2…', 'False'],
+    ['keys', 'метки частей для внешнего уровня индекса', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="rows" title="Одна под другой" />
+
+<Example id="ignore-index" title="Новый индекс" />
+
+<Example id="keys" title="Метки частей" />
+
+<Example id="columns-differ" title="Разные столбцы" />
+
+<Example id="join-inner" title="Только общие столбцы" />
+
+<Example id="axis1" title="Рядом по индексу" />
+
+## Подводные камни
+
+<Pitfall title="concat в цикле">
+
+Каждый `concat` копирует все данные, поэтому склейка по одной строке в цикле работает за квадратичное время. Собирайте части в список и склеивайте один раз.
+
+<Example id="loop" title="Список частей и один concat" />
+
+</Pitfall>
+
+<Pitfall title="DataFrame.append удалён">
+
+<VersionNote since="pandas 2.0" was="df.append(other) — добавить строки (устарел в 1.4)" now="метода нет, используйте pd.concat([df, other])" />
+
+<Example id="append-removed" title="Вызов append" />
+
+</Pitfall>

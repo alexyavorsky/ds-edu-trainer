@@ -1,0 +1,81 @@
+---
+title: "Чтение CSV: read_csv"
+level: basic
+summary: Прочитать CSV в таблицу с нужными разделителями, типами, датами и пропусками — и записать обратно.
+requires: [pandas/dataframe]
+related: [pandas/io-formats, pandas/inspect, pandas/datetime, numpy/io]
+functions: [pd.read_csv, DataFrame.to_csv]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/reference/api/pandas.read_csv.html
+---
+
+## Коротко
+
+- `pd.read_csv("файл.csv")` читает таблицу; первая строка — заголовок, разделитель — запятая.
+- Типы столбцов определяются автоматически. Даты по умолчанию остаются строками — их разбирают через `parse_dates`.
+- Пустые поля и строки вроде `NA`, `null` становятся `NaN`; свои обозначения пропусков — `na_values`.
+- CSV из русского Excel: `sep=";"`, `decimal=","`, иногда `encoding="cp1251"`.
+- `df.to_csv("файл.csv", index=False)` — запись; без `index=False` индекс попадёт в файл лишним столбцом.
+
+## Синтаксис
+
+<Syntax code={`pd.read_csv(path, sep=",", header="infer", names=None, index_col=None,
+            usecols=None, dtype=None, parse_dates=None, na_values=None,
+            nrows=None, skiprows=None, decimal=".", thousands=None,
+            encoding="utf-8")
+df.to_csv(path, index=False, sep=",", encoding="utf-8")`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['sep', 'разделитель полей', '","'],
+    ['header', 'номер строки заголовка; None — заголовка нет', '0'],
+    ['names', 'свои имена столбцов', 'None'],
+    ['index_col', 'столбец (имя или номер), который станет индексом', 'None'],
+    ['usecols', 'какие столбцы читать', 'все'],
+    ['dtype', 'типы столбцов: словарь {"столбец": тип}', 'по данным'],
+    ['parse_dates', 'список столбцов, которые разобрать как даты', 'None'],
+    ['na_values', 'дополнительные обозначения пропусков: список или словарь по столбцам', 'None'],
+    ['nrows / skiprows', 'сколько строк прочитать / пропустить в начале', 'None'],
+    ['decimal / thousands', 'десятичный разделитель и разделитель тысяч', '"." / None'],
+    ['encoding', 'кодировка файла', '"utf-8"'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="basic" title="Прочитать файл" />
+
+<Example id="dtypes" title="Какие типы получились" />
+
+<Example id="usecols-index" title="Только нужные столбцы и строки" />
+
+<Example id="parse-dates" title="Даты и индекс" />
+
+<Example id="russian-excel" title="CSV из русского Excel" />
+
+<Example id="names" title="Свои имена столбцов" />
+
+<Example id="na-values" title="Свои обозначения пропусков" />
+
+<Example id="to-csv" title="Записать CSV" />
+
+## Подводные камни
+
+<Pitfall title="Лишний столбец Unnamed: 0">
+
+По умолчанию `to_csv` записывает индекс. При повторном чтении он превращается в столбец без имени.
+
+<Example id="index-column" title="Запись с индексом" />
+
+</Pitfall>
+
+<Pitfall title="Файл не в UTF-8">
+
+Старые файлы из Windows часто в кодировке cp1251. Передайте `encoding="cp1251"`.
+
+<Example id="encoding" title="Чтение файла cp1251" />
+
+</Pitfall>

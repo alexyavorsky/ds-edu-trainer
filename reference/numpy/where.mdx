@@ -1,0 +1,62 @@
+---
+title: where, nonzero, select
+level: medium
+summary: Выбрать значение по условию для каждого элемента или найти индексы элементов, подходящих под условие.
+requires: [numpy/boolean]
+related: [numpy/rounding, numpy/fancy, numpy/inplace-out, pandas/where-mask]
+functions: [np.where, np.nonzero, np.argwhere, np.flatnonzero, np.select]
+docs: https://numpy.org/doc/2.5/reference/generated/numpy.where.html
+---
+
+## Коротко
+
+- `np.where(условие, x, y)` — поэлементный «тернарный оператор»: где условие истинно, берётся `x`, иначе `y`. Получается **новый** массив.
+- `x` и `y` могут быть числами или массивами — они [транслируются](/reference/numpy/broadcasting) к форме условия.
+- `np.where(условие)` с одним аргументом — то же, что `np.nonzero`: кортеж массивов индексов, по одному на ось.
+- `np.argwhere` возвращает те же индексы парами — удобно перебирать координаты.
+- Для нескольких условий — `np.select`: первое сработавшее условие определяет значение.
+
+## Синтаксис
+
+<Syntax code={`np.where(cond, x, y)                  # значения
+np.where(cond)                        # индексы (как np.nonzero)
+np.argwhere(cond)                     # индексы парами, форма (k, ndim)
+np.select(condlist, choicelist, default=0)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['cond', 'булев массив или условие', '—'],
+    ['x, y', 'значения для True и False; числа или массивы совместимой формы', '—'],
+    ['condlist', 'список условий; проверяются по порядку', '—'],
+    ['choicelist', 'список значений той же длины, что condlist', '—'],
+    ['default', 'значение, если ни одно условие не выполнено', '0'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="choose" title="Одно из двух значений" />
+
+<Example id="keep-or-replace" title="Заменить часть, остальное оставить" />
+
+<Example id="indices" title="Индексы подходящих элементов" />
+
+<Example id="two-dims" title="Индексы в двумерном массиве" />
+
+<Example id="select" title="Несколько условий: select" />
+
+## Подводные камни
+
+<Pitfall title="Обе ветки вычисляются целиком">
+
+`np.where` получает уже готовые `x` и `y`: деление на ноль происходит до выбора и даёт предупреждение (и `inf` в промежуточном массиве). Безопасный способ — параметр `where=` у самой операции.
+
+<Example id="both-branches" title="Деление в ветке where" />
+
+<Example id="divide-where" title="Деление только там, где можно" />
+
+</Pitfall>

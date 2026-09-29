@@ -1,0 +1,63 @@
+---
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import ChallengeList from '../../../components/ChallengeList.astro';
+import PrevNext from '../../../components/PrevNext.astro';
+import ProgressBar from '../../../components/ProgressBar.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { chapterLabel, chapterUrl, getBooks, getChallenges, getChapters, type Book, type Chapter } from '../../../lib/content';
+
+export async function getStaticPaths() {
+  const paths: { params: Record<string, string>; props: Record<string, unknown> }[] = [];
+  for (const book of await getBooks()) {
+    const chapters = await getChapters(book.id);
+    chapters.forEach((chapter, i) => {
+      paths.push({
+        params: { book: book.id, chapter: chapter.data.slug },
+        props: { book, chapter, prev: chapters[i - 1], next: chapters[i + 1] },
+      });
+    });
+  }
+  return paths;
+}
+
+const { book, chapter, prev, next } = Astro.props as { book: Book; chapter: Chapter; prev?: Chapter; next?: Chapter };
+const challenges = await getChallenges(book.id, chapter.data.slug);
+const link = (c?: Chapter) => c && { href: chapterUrl(c), label: `${chapterLabel(c, book.data.kind)}. ${c.data.title}` };
+---
+
+<BaseLayout title={`${chapter.data.title} — ${book.data.title}`} description={chapter.data.summary}>
+  <Breadcrumbs items={[{ label: 'Задачи', href: '/' }, { label: book.data.title, href: `/${book.id}` }, { label: chapterLabel(chapter, book.data.kind) }]} />
+
+  <header class="head">
+    <p class="eyebrow">{chapterLabel(chapter, book.data.kind)}</p>
+    <h1>{chapter.data.title}</h1>
+    <p class="summary">{chapter.data.summary}</p>
+    <div class="progress">
+      <ProgressBar ids={challenges.map((c) => c.data.taskId)} />
+    </div>
+  </header>
+
+  <ChallengeList challenges={challenges} />
+
+  <PrevNext prev={link(prev)} next={link(next)} />
+</BaseLayout>
+
+<style>
+  .head {
+    margin-bottom: 32px;
+  }
+  .head h1 {
+    margin-top: 8px;
+    font-size: clamp(26px, 5vw, 34px);
+    letter-spacing: -0.03em;
+  }
+  .summary {
+    margin: 10px 0 0;
+    color: var(--muted);
+    max-width: 620px;
+  }
+  .progress {
+    margin-top: 20px;
+    max-width: 320px;
+  }
+</style>

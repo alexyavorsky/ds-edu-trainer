@@ -1,0 +1,112 @@
+---
+title: Шпаргалка
+level: basic
+kind: overview
+summary: Самое нужное из pandas на одной странице — задача и код, со ссылками на подробные статьи.
+related: [pandas/mistakes, numpy/cheatsheet]
+functions: []
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/reference/index.html
+---
+
+Во всех строках `import pandas as pd`, `import numpy as np`; `df` — таблица, `s` — Series.
+
+## Создание и чтение → [DataFrame](/reference/pandas/dataframe), [read_csv](/reference/pandas/read-csv)
+
+| Задача | Код |
+| --- | --- |
+| таблица из словаря | `pd.DataFrame({"a": [1, 2], "b": [3, 4]})` |
+| из списка записей | `pd.DataFrame([{"a": 1}, {"a": 2}])` |
+| прочитать CSV | `pd.read_csv("f.csv", sep=",", parse_dates=["date"])` |
+| CSV из русского Excel | `pd.read_csv("f.csv", sep=";", decimal=",", encoding="cp1251")` |
+| Excel, Parquet | `pd.read_excel("f.xlsx", sheet_name=None)`, `pd.read_parquet("f.parquet")` → [форматы](/reference/pandas/io-formats) |
+| записать | `df.to_csv("f.csv", index=False)`, `df.to_parquet("f.parquet")` |
+
+## Осмотр → [статья](/reference/pandas/inspect)
+
+| Задача | Код |
+| --- | --- |
+| первые строки, размер | `df.head()`, `df.shape` |
+| типы и пропуски | `df.info()`, `df.dtypes`, `df.isna().sum()` |
+| статистика | `df.describe()`, `df.describe(include="all")` |
+| частоты | `s.value_counts(normalize=True, dropna=False)` |
+| число различных | `df.nunique()` |
+
+## Выбор и фильтрация → [столбцы](/reference/pandas/select-columns), [loc](/reference/pandas/loc-iloc), [фильтр](/reference/pandas/filtering)
+
+| Задача | Код |
+| --- | --- |
+| столбец, несколько | `df["a"]`, `df[["a", "b"]]` |
+| по метке / позиции | `df.loc["x", "a"]`, `df.iloc[0, 1]` |
+| по условию | `df[df["a"] > 0]`, `df[(df["a"] > 0) & (df["b"] == "x")]` |
+| значение из списка, диапазон | `df[df["a"].isin([1, 2])]`, `df[df["a"].between(1, 5)]` |
+| условие строкой | `df.query("a > @limit")` |
+| изменить по условию | `df.loc[df["a"] < 0, "a"] = 0` |
+
+## Изменение → [столбцы](/reference/pandas/columns), [сортировка](/reference/pandas/sorting)
+
+| Задача | Код |
+| --- | --- |
+| новый столбец | `df["c"] = df["a"] * df["b"]`, `df.assign(c=pd.col("a") * 2)` |
+| переименовать, удалить | `df.rename(columns={"a": "x"})`, `df.drop(columns=["b"])` |
+| сортировать | `df.sort_values(["a", "b"], ascending=[True, False])` |
+| n наибольших | `df.nlargest(5, "a")` |
+| заменить значения | `s.replace({"old": "new"})` → [replace](/reference/pandas/replace) |
+| по условию | `s.where(s > 0, 0)`, `s.mask(s > 100, 100)`, `s.clip(0, 100)` → [where](/reference/pandas/where-mask) |
+| словарём, функцией | `s.map({"a": 1})`, `s.map(func)` → [map, apply](/reference/pandas/apply) |
+| дубликаты | `df.drop_duplicates(subset=["a"], keep="last")` → [дубликаты](/reference/pandas/duplicates) |
+
+## Типы и очистка → [пропуски](/reference/pandas/missing), [типы](/reference/pandas/dtypes)
+
+| Задача | Код |
+| --- | --- |
+| заполнить, удалить пропуски | `df.fillna({"a": 0})`, `df.ffill()`, `df.dropna(subset=["a"])` |
+| строку в число | `pd.to_numeric(s, errors="coerce")` |
+| целые с пропусками | `s.astype("Int64")` |
+| категория | `s.astype("category")` → [category](/reference/pandas/category) |
+| текст | `s.str.strip().str.lower()`, `s.str.contains("x", regex=False)` → [строки](/reference/pandas/strings) |
+| даты | `pd.to_datetime(s, format="%d.%m.%Y")`, `s.dt.month`, `s.dt.day_name()` → [даты](/reference/pandas/datetime) |
+| интервалы | `pd.cut(s, bins=[0, 18, 65, 100])`, `pd.qcut(s, 4)` → [cut](/reference/pandas/cut-qcut) |
+
+## Группировка и сводные → [groupby](/reference/pandas/groupby), [agg](/reference/pandas/groupby-agg)
+
+| Задача | Код |
+| --- | --- |
+| итог по группам | `df.groupby("g")["a"].sum()` |
+| несколько итогов с именами | `df.groupby("g").agg(total=("a", "sum"), n=("a", "size"))` |
+| ключи столбцами | `df.groupby("g", as_index=False)["a"].sum()` |
+| значение группы в каждой строке | `df.groupby("g")["a"].transform("mean")` → [transform](/reference/pandas/groupby-transform) |
+| ранг в группе | `df.groupby("g")["a"].rank(method="min")` → [rank](/reference/pandas/rank) |
+| сводная таблица | `df.pivot_table(values="a", index="g", columns="h", aggfunc="sum", fill_value=0)` → [pivot_table](/reference/pandas/pivot-table) |
+| таблица частот | `pd.crosstab(df["g"], df["h"], normalize="index")` |
+
+## Форма и объединение → [melt](/reference/pandas/melt-pivot), [merge](/reference/pandas/merge)
+
+| Задача | Код |
+| --- | --- |
+| широкий → длинный | `df.melt(id_vars="id", var_name="month", value_name="v")` |
+| длинный → широкий | `df.pivot(index="id", columns="month", values="v")` |
+| уровень в столбцы | `s.unstack(fill_value=0)` → [stack](/reference/pandas/stack-unstack) |
+| списки в строки | `df.assign(t=df["t"].str.split(", ")).explode("t")` → [explode](/reference/pandas/explode) |
+| склеить строки | `pd.concat([df1, df2], ignore_index=True)` → [concat](/reference/pandas/concat) |
+| соединить по ключу | `df1.merge(df2, on="id", how="left", validate="many_to_one")` |
+| ключи с разными именами | `df1.merge(df2, left_on="a", right_on="b")` → [ключи](/reference/pandas/merge-keys) |
+
+## Индекс и время → [индекс](/reference/pandas/set-index), [date_range](/reference/pandas/date-range)
+
+| Задача | Код |
+| --- | --- |
+| столбец в индекс и обратно | `df.set_index("id")`, `df.reset_index(drop=True)` |
+| последовательность дат | `pd.date_range("2024-01-01", periods=12, freq="ME")` |
+| выбор по месяцу | `s.loc["2024-03"]` |
+| предыдущее значение, прирост | `s.shift()`, `s.diff()`, `s.pct_change()` → [shift](/reference/pandas/shift-diff) |
+| скользящее среднее | `s.rolling(7).mean()`, `s.rolling("7D").mean()` → [rolling](/reference/pandas/rolling) |
+| по дням / месяцам | `s.resample("D").sum()`, `s.resample("ME").mean()` → [resample](/reference/pandas/resample) |
+
+## Вывод → [to_dict](/reference/pandas/to-dict-numpy), [plot](/reference/pandas/plot)
+
+| Задача | Код |
+| --- | --- |
+| в словарь / список записей | `df.to_dict()`, `df.to_dict("records")` |
+| в массив NumPy | `df.to_numpy()` |
+| график | `df.plot()`, `df.plot.bar()`, `s.plot.hist(bins=20)` |
+| показать все строки | `pd.set_option("display.max_rows", None)` → [отображение](/reference/pandas/display) |

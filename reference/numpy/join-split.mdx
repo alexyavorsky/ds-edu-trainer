@@ -1,0 +1,78 @@
+---
+title: Объединение и разделение
+level: medium
+summary: Склеить несколько массивов в один по существующей или новой оси и разрезать массив на части.
+requires: [numpy/axis, numpy/reshape]
+related: [numpy/repeat-tile, numpy/pad, pandas/concat]
+functions: [np.concatenate, np.stack, np.vstack, np.hstack, np.column_stack, np.dstack, np.split, np.array_split, np.hsplit, np.vsplit]
+docs: https://numpy.org/doc/2.5/reference/routines.array-manipulation.html#joining-arrays
+---
+
+## Коротко
+
+- `np.concatenate(список, axis)` склеивает по **существующей** оси. Размеры по остальным осям должны совпадать.
+- `np.stack(список, axis)` добавляет **новую** ось: из двух `(2, 2)` получается `(2, 2, 2)`. Формы должны совпадать полностью.
+- Короткие варианты: `vstack` — одно под другим (векторы становятся строками), `hstack` — рядом, `column_stack` — векторы как столбцы.
+- `np.split(a, n)` — на `n` равных частей, `np.split(a, [i, j])` — по индексам разреза. `np.array_split` допускает неравные части.
+- Функции принимают **список** массивов, а не несколько аргументов.
+
+## Синтаксис
+
+<Syntax code={`np.concatenate([a, b], axis=0)
+np.stack([a, b], axis=0)
+np.vstack([a, b]), np.hstack([a, b]), np.column_stack([a, b])
+np.split(a, 3, axis=0)            # 3 равные части
+np.split(a, [2, 5])               # a[:2], a[2:5], a[5:]
+np.array_split(a, 3)              # части могут отличаться на 1`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['arrays', 'список или кортеж массивов', '—'],
+    ['axis', 'ось склейки или разреза; в stack — место новой оси', '0'],
+    ['indices_or_sections', 'число частей или список индексов разреза', '—'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="concatenate" title="concatenate по строкам и столбцам" />
+
+<Example id="stack" title="stack — новая ось" />
+
+<Example id="vstack-hstack" title="vstack, hstack, column_stack для векторов" />
+
+<Example id="split" title="Разрезать на части" />
+
+<Example id="array-split" title="Неравные части" />
+
+## Подводные камни
+
+<Pitfall title="split требует равного деления">
+
+<Example id="split-unequal" title="7 элементов на 3 части" />
+
+</Pitfall>
+
+<Pitfall title="Размеры по остальным осям не совпадают">
+
+<Example id="mismatch" title="Разное число столбцов" />
+
+</Pitfall>
+
+<Pitfall title="np.row_stack удалён">
+
+<VersionNote since="NumPy 2.5" was="np.row_stack — синоним vstack (устарел в 2.0)" now="функции нет, используйте np.vstack" />
+
+<Example id="row-stack" title="Вызов np.row_stack" />
+
+</Pitfall>
+
+<Pitfall title="Склейка в цикле">
+
+Каждый `concatenate` копирует все данные. Накопление массива по одному куску в цикле — квадратичная сложность. Соберите куски в список и склейте один раз.
+
+</Pitfall>

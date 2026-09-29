@@ -1,0 +1,14 @@
+[[mutant]]
+name = "не обработан случай «все исправны»"
+find = "return low if low <= n else -1"
+replace = "return low"
+
+[[mutant]]
+name = "плохую сборку mid выкидывают из диапазона"
+find = "high = mid  # mid может быть ответом"
+replace = "high = mid - 1"
+
+[[mutant]]
+name = "поиск начинается с нуля"
+find = "low, high = 1, n + 1"
+replace = "low, high = 0, n + 1"

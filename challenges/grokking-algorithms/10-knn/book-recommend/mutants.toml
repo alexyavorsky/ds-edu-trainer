@@ -1,0 +1,14 @@
+[[mutant]]
+name = "сходство по всем книгам, а не только по общим"
+find = "    norm_a = math.sqrt(sum(a[x] ** 2 for x in common))\n    norm_b = math.sqrt(sum(b[x] ** 2 for x in common))"
+replace = "    norm_a = math.sqrt(sum(v ** 2 for v in a.values()))\n    norm_b = math.sqrt(sum(v ** 2 for v in b.values()))"
+
+[[mutant]]
+name = "читатели с нулевым сходством тоже считаются соседями"
+find = "if sim > 0][:k]"
+replace = "if sim >= 0][:k]"
+
+[[mutant]]
+name = "уже прочитанные книги рекомендуются снова"
+find = "            if book not in mine:\n                collected.setdefault(book, []).append(score)"
+replace = "            collected.setdefault(book, []).append(score)"

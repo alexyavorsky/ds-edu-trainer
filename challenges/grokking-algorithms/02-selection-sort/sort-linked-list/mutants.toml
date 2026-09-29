@@ -1,0 +1,14 @@
+[[mutant]]
+name = "при равных значениях берётся последний узел — порядок равных ломается"
+find = "if cur.value < best.value:"
+replace = "if cur.value <= best.value:"
+
+[[mutant]]
+name = "голова исходного списка не сдвигается, когда минимум — первый узел"
+find = "            head = best.next\n"
+replace = "            head = head\n"
+
+[[mutant]]
+name = "поиск минимума пропускает последний узел"
+find = "        while cur is not None:\n"
+replace = "        while cur is not None and cur.next is not None:\n"

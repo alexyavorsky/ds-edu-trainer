@@ -1,0 +1,49 @@
+---
+title: Векторизация вместо циклов
+level: advanced
+summary: Как переписать цикл Python на операции над целыми массивами и почему np.vectorize не делает код быстрее.
+requires: [numpy/where, numpy/broadcasting, numpy/ufunc]
+related: [numpy/apply-along-axis, numpy/inplace-out, pandas/apply, pandas/iteration]
+functions: [np.vectorize, np.frompyfunc, np.where, np.select, np.cumsum]
+docs: https://numpy.org/doc/2.5/user/whatisnumpy.html#why-is-numpy-fast
+---
+
+## Коротко
+
+- **Векторизация** — запись вычисления через операции над целыми массивами. Цикл выполняет NumPy на C, а не интерпретатор Python — обычно в 10–100 раз быстрее.
+- Типовые замены: `if/else` → `np.where`, цепочка `if/elif` → `np.select`, накопление суммы → `cumsum`, двойной цикл «каждый с каждым» → [транслирование](/reference/numpy/broadcasting), подсчёт по группам → `bincount`.
+- `np.vectorize` только оборачивает функцию Python, чтобы её можно было вызвать от массива. Внутри тот же цикл по элементам, **ускорения нет**.
+- Векторизованный код иногда создаёт большие промежуточные массивы — следите за памятью.
+
+## Синтаксис
+
+<Syntax code={`# цикл                                   # векторно
+[f(x) if c else g(x) for x in a]         np.where(cond, f(a), g(a))
+if / elif / else                         np.select([c1, c2], [v1, v2], default)
+s += x в цикле                           np.cumsum(a), a.sum()
+for i: for j: d[i, j] = …               a[:, None] - a[None, :]
+np.vectorize(f)(a)                       # удобно, но не быстрее цикла`} />
+
+## Примеры
+
+<Setup />
+
+<Example id="loop-vs-vector" title="Цикл и векторная версия" />
+
+Время снято один раз и показано вместе с машиной и датой замера. На другом компьютере числа будут другими, но порядок разницы сохранится.
+
+<Example id="cumulative" title="Накопление — cumsum" />
+
+<Example id="conditions" title="if / elif — np.select" />
+
+<Example id="pairwise" title="Двойной цикл — транслирование" />
+
+## Подводные камни
+
+<Pitfall title="np.vectorize не ускоряет">
+
+Название обманчиво: это удобная обёртка для вызова обычной функции на массиве, а не компиляция. Если функцию нельзя переписать через операции NumPy, `np.vectorize` хотя бы делает код короче — но не быстрее.
+
+<Example id="np-vectorize" title="np.vectorize против векторной версии" />
+
+</Pitfall>

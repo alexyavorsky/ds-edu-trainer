@@ -1,0 +1,170 @@
+---
+import { render } from 'astro:content';
+import Badge from '../../../components/Badge.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import BugReportLink from '../../../components/BugReportLink.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import ComplexityQuiz from '../../../components/ComplexityQuiz.astro';
+import Hints from '../../../components/Hints.astro';
+import PrevNext from '../../../components/PrevNext.astro';
+import SolutionReveal from '../../../components/SolutionReveal.astro';
+import SolvedToggle from '../../../components/SolvedToggle.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+  challengeUrl,
+  chapterLabel,
+  chapterUrl,
+  getBooks,
+  getChallenges,
+  getChapters,
+  type Book,
+  type Challenge,
+  type Chapter,
+} from '../../../lib/content';
+import { bugsLabel, DIFFICULTY_LABEL, TYPE_LABEL } from '../../../lib/labels';
+
+export async function getStaticPaths() {
+  const paths: { params: Record<string, string>; props: Record<string, unknown> }[] = [];
+  for (const book of await getBooks()) {
+    for (const chapter of await getChapters(book.id)) {
+      const challenges = await getChallenges(book.id, chapter.data.slug);
+      challenges.forEach((challenge, i) => {
+        paths.push({
+          params: { book: book.id, chapter: chapter.data.slug, task: challenge.data.slug },
+          props: { book, chapter, challenge, prev: challenges[i - 1], next: challenges[i + 1] },
+        });
+      });
+    }
+  }
+  return paths;
+}
+
+const { book, chapter, challenge, prev, next } = Astro.props as {
+  book: Book;
+  chapter: Chapter;
+  challenge: Challenge;
+  prev?: Challenge;
+  next?: Challenge;
+};
+const c = challenge.data;
+const { Content } = await render(challenge);
+const filename = `${c.slug.replaceAll('-', '_')}.py`;
+const link = (x?: Challenge) => x && { href: challengeUrl(x), label: x.data.title };
+const isComplexity = c.type === 'complexity';
+---
+
+<BaseLayout title={c.title} taskId={c.taskId}>
+  <Breadcrumbs
+    items={[
+      { label: book.data.title, href: `/${book.id}` },
+      { label: `${chapterLabel(chapter, book.data.kind)}. ${chapter.data.title}`, href: chapterUrl(chapter) },
+      { label: c.title },
+    ]}
+  />
+
+  <header class="head">
+    <h1>{c.title}</h1>
+    <div class="head-row">
+      <div class="badges">
+        <Badge tone={c.difficulty}>{DIFFICULTY_LABEL[c.difficulty]}</Badge>
+        <Badge>{TYPE_LABEL[c.type]}</Badge>
+        {c.bugs && <Badge>{bugsLabel(c.bugs)}</Badge>}
+        <Badge href={chapterUrl(chapter)}>{chapterLabel(chapter, book.data.kind)}</Badge>
+      </div>
+      <div class="actions">
+        <SolvedToggle taskId={c.taskId} />
+        <BugReportLink taskId={c.taskId} />
+      </div>
+    </div>
+    <p class="tags">
+      {c.tags.map((t) => <span>#{t}</span>)}
+      <span class="id">id: {c.taskId}</span>
+    </p>
+  </header>
+
+  <article class="prose">
+    <Content />
+  </article>
+
+  {
+    isComplexity ? (
+      <section class="block">
+        <h2 class="section-title">Код</h2>
+        <CodeBlock code={c.code!} />
+        <h2 class="section-title question">Какое время выполнения?</h2>
+        <ComplexityQuiz options={c.complexity!.options} answer={c.complexity!.answer} explanation={c.complexity!.explanation} />
+      </section>
+    ) : (
+      <section class="block">
+        <h2 class="section-title">Готовый файл для редактора</h2>
+        <CodeBlock
+          code={c.bundle!}
+          filename={filename}
+          copy
+          note={`Вставьте в редактор и запустите: python3 ${filename} — тесты покажут ✓ / ✗ и итог.`}
+        />
+      </section>
+    )
+  }
+
+  {
+    c.hints.length > 0 && (
+      <section class="block">
+        <Hints hints={c.hints} />
+      </section>
+    )
+  }
+
+  {
+    !isComplexity && (
+      <section class="block">
+        <SolutionReveal code={c.solution!} filename="solution.py" />
+      </section>
+    )
+  }
+
+  <PrevNext prev={link(prev)} next={link(next)} />
+</BaseLayout>
+
+<style>
+  .head {
+    margin-bottom: 28px;
+  }
+  .head h1 {
+    font-size: clamp(24px, 4.6vw, 32px);
+    letter-spacing: -0.03em;
+  }
+  .head-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .badges,
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin: 14px 0 0;
+    font-size: 12.5px;
+    color: var(--faint);
+  }
+  .id {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+  }
+  .block {
+    margin-top: 32px;
+  }
+  .question {
+    margin-top: 24px;
+  }
+</style>

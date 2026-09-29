@@ -1,0 +1,68 @@
+---
+title: Арифметика с массивами
+level: basic
+summary: Сложение, умножение, деление и степень сразу для всех элементов — основа любых вычислений в NumPy.
+requires: [numpy/creation]
+related: [numpy/broadcasting, numpy/ufunc, numpy/inplace-out, numpy/nan-inf]
+functions: [np.add, np.subtract, np.multiply, np.divide, np.floor_divide, np.mod, np.power]
+docs: https://numpy.org/doc/2.5/user/absolute_beginners.html#basic-array-operations
+---
+
+## Коротко
+
+- `+ - * / // % **` работают **поэлементно**; у двух массивов формы должны совпадать или быть совместимы по правилам [транслирования](/reference/numpy/broadcasting).
+- Операция с числом применяется к каждому элементу: `price * 1.2`.
+- `/` всегда даёт float; `//` и `%` округляют вниз, как в Python (важно для отрицательных).
+- Результат — **новый** массив; изменить существующий на месте — `a += b` (см. [операции на месте](/reference/numpy/inplace-out)).
+- Деление на ноль не бросает исключение: для float получается `inf` или `nan`, для целых — `0`, плюс `RuntimeWarning`.
+
+## Синтаксис
+
+<Syntax code={`a + b, a - b, a * b, a / b      # поэлементно
+a // b, a % b, a ** b
+a * 2, 10 - a                   # с числом
+np.add(a, b), np.multiply(a, b) # то же в виде функций (ufunc)`} />
+
+| Оператор | Функция | Что делает |
+| --- | --- | --- |
+| `+`, `-` | `np.add`, `np.subtract` | сложение, вычитание |
+| `*`, `/` | `np.multiply`, `np.divide` | умножение, деление (результат float) |
+| `//`, `%` | `np.floor_divide`, `np.mod` | целая часть вниз, остаток |
+| `**` | `np.power` | степень |
+| `-a` | `np.negative` | смена знака |
+
+## Примеры
+
+<Setup />
+
+<Example id="elementwise" title="Поэлементные операции" />
+
+<Example id="division" title="Три вида деления" />
+
+<Example id="new-array" title="Результат — новый массив" />
+
+## Подводные камни
+
+<Pitfall title="Деление на ноль — предупреждение, а не ошибка">
+
+Вычисление продолжается, а в результате появляются `inf` и `nan`, которые портят суммы и средние. Проверяйте делитель заранее или используйте `np.divide(..., where=...)` — см. [where](/reference/numpy/where).
+
+<Example id="zero-division" title="float делить на 0" />
+
+<Example id="int-zero" title="Целые делить на 0" />
+
+</Pitfall>
+
+<Pitfall title="Целое число в отрицательной степени">
+
+Результат `2 ** -1` не целый, поэтому для целого массива NumPy отказывается его считать. Сделайте основание дробным: `a.astype(float) ** -1` или `1 / a`.
+
+<Example id="negative-power" title="Отрицательная степень" />
+
+</Pitfall>
+
+<Pitfall title="Разные длины">
+
+<Example id="shapes" title="Массивы разной длины" />
+
+</Pitfall>

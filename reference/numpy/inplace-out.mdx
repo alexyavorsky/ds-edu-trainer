@@ -1,0 +1,65 @@
+---
+title: Операции на месте и out=
+level: advanced
+summary: Изменить массив без создания нового — экономия памяти на больших данных и частый источник неожиданных побочных эффектов.
+requires: [numpy/views-copies, numpy/ufunc]
+related: [numpy/dtypes, numpy/broadcasting, numpy/memory-layout]
+functions: [np.add, np.multiply, np.sqrt, np.ufunc]
+docs: https://numpy.org/doc/2.5/reference/ufuncs.html#optional-keyword-arguments
+---
+
+## Коротко
+
+- `a += b`, `a *= 2` и другие составные операторы меняют массив **на месте**: новый массив не создаётся.
+- `a = a + b` создаёт новый массив и переназначает имя; другие ссылки на старый массив его не видят.
+- У любой ufunc есть `out=` — куда записать результат. `np.sqrt(a, out=a)` — корень на месте.
+- `where=` вместе с `out=` меняет только элементы, где условие истинно.
+- Тип массива при операции на месте не меняется: `int += float` — ошибка.
+
+## Синтаксис
+
+<Syntax code={`a += b                        # на месте, тип a сохраняется
+a = a + b                     # новый массив
+np.multiply(a, 2, out=a)      # на месте через out
+np.add(a, b, out=result)      # в заранее созданный массив
+np.sqrt(a, out=a, where=a > 0)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['out', 'массив для результата; форма должна совпадать с формой результата', 'None'],
+    ['where', 'маска: где False — out не меняется', 'True'],
+    ['casting', "какие преобразования типа разрешены при записи в out", "'same_kind'"],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="inplace-vs-new" title="Новый массив и изменение на месте" />
+
+<Example id="out" title="Результат в готовый массив" />
+
+<Example id="out-self" title="ufunc на месте" />
+
+<Example id="where-out" title="На месте только часть элементов" />
+
+## Подводные камни
+
+<Pitfall title="Целый массив и дробный результат">
+
+При `+=` результат записывается в исходный массив его же типа, и NumPy отказывается молча отбрасывать дробную часть.
+
+<Example id="int-inplace" title="+= 0.5 для int-массива" />
+
+<Example id="int-new" title="Обычное присваивание" />
+
+</Pitfall>
+
+<Pitfall title="Побочные эффекты через представления">
+
+Операция на месте над срезом или над массивом, переданным в функцию, меняет исходные данные — см. [представления и копии](/reference/numpy/views-copies).
+
+</Pitfall>

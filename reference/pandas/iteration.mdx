@@ -1,0 +1,71 @@
+---
+title: Почему iterrows медленный
+level: medium
+summary: Чем плох перебор строк через iterrows и что использовать вместо него.
+requires: [pandas/apply]
+related: [pandas/to-dict-numpy, pandas/performance, numpy/vectorization]
+functions: [DataFrame.iterrows, DataFrame.itertuples, DataFrame.items, DataFrame.to_dict]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/basics.html#iteration
+---
+
+## Коротко
+
+- `iterrows()` на каждой строке создаёт новый Series — это медленно.
+- Series хранит один тип, поэтому в строке целые превращаются в float, если рядом есть дробные.
+- `itertuples()` возвращает именованные кортежи: в несколько раз быстрее, типы сохраняются, поля — `row.qty`.
+- Для нескольких столбцов подходит `zip(df["a"], df["b"])`.
+- Лучший вариант — вообще без цикла: операции над столбцами, `np.where`, `groupby`, `merge`.
+- Изменения `row` внутри цикла **не попадают** в таблицу.
+
+## Синтаксис
+
+<Syntax code={`for idx, row in df.iterrows(): ...        # медленно, типы теряются
+for row in df.itertuples(index=False): row.col
+for a, b in zip(df["a"], df["b"]): ...
+df.to_dict("records")                      # список словарей`} />
+
+| Задача в цикле | Замена |
+| --- | --- |
+| новый столбец из других | `df["c"] = df["a"] * df["b"]` |
+| значение по условию | `np.where(cond, x, y)`, `np.select` |
+| сумма / среднее по группам | `groupby(...).agg(...)` |
+| подставить данные из другой таблицы | `merge` |
+| накопленная сумма | `cumsum()` |
+
+## Примеры
+
+<Setup />
+
+<Example id="iterrows" title="iterrows" />
+
+<Example id="itertuples" title="itertuples — быстрее" />
+
+<Example id="zip" title="zip по столбцам" />
+
+<Example id="vectorized" title="Без цикла" />
+
+<Example id="records" title="Если нужен обычный Python — to_dict" />
+
+## Подводные камни
+
+<Pitfall title="Типы в строке iterrows">
+
+<Example id="types-lost" title="Целое стало дробным" />
+
+</Pitfall>
+
+<Pitfall title="Изменение row не меняет таблицу">
+
+`row` — копия данных строки. Меняйте таблицу через `df.loc[idx, "col"] = …`, а лучше — векторной операцией.
+
+<Example id="modify" title="Запись в row" />
+
+</Pitfall>
+
+<Pitfall title="Скорость">
+
+<Example id="speed" title="iterrows, itertuples и векторная операция" />
+
+Время снято один раз и показано вместе с машиной и датой замера. На другом компьютере числа будут другими, но порядок разницы сохранится.
+
+</Pitfall>

@@ -1,0 +1,66 @@
+---
+title: Series
+level: basic
+summary: Одномерный столбец данных с метками — из списка, словаря или одного значения.
+requires: [pandas/intro]
+related: [pandas/dataframe, pandas/loc-iloc, pandas/alignment]
+functions: [pd.Series, Series.index, Series.name, Series.dtype, Series.to_numpy, Series.iloc]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/dsintro.html#series
+---
+
+## Коротко
+
+- `pd.Series(данные, index=…, name=…)` — значения плюс индекс. Без `index` метки — 0, 1, 2…
+- Из словаря ключи становятся индексом. Из одного значения с `index` — это значение повторяется.
+- `s["метка"]` — по метке, `s.iloc[i]` — по позиции, `s[s > 0]` — по условию.
+- `s.index` — метки, `s.to_numpy()` — значения как массив NumPy, `s.name` — имя (станет именем столбца в DataFrame).
+- Пропуск в целых числах превращает весь Series в `float64`, потому что `NaN` — это float.
+
+## Синтаксис
+
+<Syntax code={`pd.Series(data, index=None, dtype=None, name=None)
+s["метка"], s.iloc[0]
+s.index, s.to_numpy(), s.name, s.dtype`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['data', 'список, массив, словарь или одно значение', '—'],
+    ['index', 'метки; длина должна совпадать с данными', 'RangeIndex 0…n−1'],
+    ['dtype', 'тип значений, например "int64", "float64", "str", "category"', 'по данным'],
+    ['name', 'имя Series', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Example id="from-list" title="Из списка" />
+
+<Example id="with-index" title="Со своими метками и именем" />
+
+<Example id="from-dict" title="Из словаря" />
+
+<Example id="scalar" title="Одно значение на все метки" />
+
+<Example id="access" title="Доступ по метке, позиции и условию" />
+
+<Example id="parts" title="Индекс, значения, имя, тип" />
+
+## Подводные камни
+
+<Pitfall title="s[0] — это метка, а не позиция">
+
+<VersionNote since="pandas 3.0" was="если метки не числа, s[0] брал первый элемент по позиции (с 2.1 — с FutureWarning)" now="s[0] всегда ищет метку 0; по позиции — s.iloc[0]" />
+
+<Example id="positional" title="Число в квадратных скобках" />
+
+</Pitfall>
+
+<Pitfall title="Пропуск меняет тип целых">
+
+`None` в списке целых превращается в `NaN`, и столбец становится `float64`. Чтобы сохранить целые с пропусками, используйте тип `"Int64"` — см. [типы данных](/reference/pandas/dtypes).
+
+<Example id="none-to-nan" title="Целые с пропуском" />
+
+</Pitfall>

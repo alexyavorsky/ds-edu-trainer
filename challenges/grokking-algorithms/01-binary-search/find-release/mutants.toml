@@ -1,0 +1,9 @@
+[[mutant]]
+name = "high = mid — зацикливание"
+find = "high = mid - 1"
+replace = "high = mid"
+
+[[mutant]]
+name = "поиск только по левой половине"
+find = "if guess < target:"
+replace = "if guess > target:"

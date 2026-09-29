@@ -1,0 +1,14 @@
+[[mutant]]
+name = "купон можно использовать много раз"
+find = "            relax(nxt, used, cost + price)\n            if not used:\n                relax(nxt, True, cost + price // 2)"
+replace = "            relax(nxt, used, cost + price // 2)"
+
+[[mutant]]
+name = "купоном не пользуются вовсе"
+find = "            if not used:\n                relax(nxt, True, cost + price // 2)\n"
+replace = ""
+
+[[mutant]]
+name = "состояние без флага купона — одна метка на город"
+find = "        if (city, used) in done:\n            continue"
+replace = "        if any(c == city for c, _ in done):\n            continue"

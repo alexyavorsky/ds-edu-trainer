@@ -1,0 +1,63 @@
+---
+title: date_range и временной индекс
+level: medium
+summary: Последовательность дат с нужным шагом и таблица с датами в индексе — выбор по месяцу, диапазону, дню недели.
+requires: [pandas/datetime, pandas/loc-iloc]
+related: [pandas/resample, pandas/rolling, pandas/shift-diff]
+functions: [pd.date_range, pd.bdate_range, pd.period_range, pd.DatetimeIndex]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/timeseries.html#generating-ranges-of-timestamps
+---
+
+## Коротко
+
+- `pd.date_range(start, end)` или `pd.date_range(start, periods=n, freq=…)` — последовательность дат.
+- Частота `freq`: `D` — день, `h` — час, `min` — минута, `W-MON` — по понедельникам, `ME` — конец месяца, `MS` — начало месяца, `QE`, `YE` — конец квартала и года, `B` — рабочий день. Число впереди — шаг: `2h`, `15min`.
+- С датами в индексе (`DatetimeIndex`) можно выбирать строкой: `s.loc["2024-03"]` — весь март, `s.loc["2024-03-01":"2024-03-10"]` — диапазон с концом включительно.
+- У индекса есть те же части, что у `.dt`: `index.month`, `index.dayofweek`.
+- `period_range` — периоды (целый месяц, квартал), а не моменты времени.
+
+## Синтаксис
+
+<Syntax code={`pd.date_range(start=None, end=None, periods=None, freq="D")
+pd.bdate_range(start, end)          # рабочие дни
+s.loc["2024-03"], s.loc["2024-03-01":"2024-03-10"]
+s.index.dayofweek, s.index.month`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['start, end', 'начало и конец; можно задать одно из них и periods', 'None'],
+    ['periods', 'сколько дат', 'None'],
+    ['freq', 'шаг: "D", "h", "min", "W-MON", "ME", "MS", "QE", "YE", "B"…', '"D"'],
+    ['inclusive', 'включать ли границы: "both", "left", "right", "neither"', '"both"'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="date-range" title="Дни от и до" />
+
+<Example id="freq" title="Разные частоты" />
+
+<Example id="series" title="Series с датами в индексе" />
+
+<Example id="select-string" title="Выбор месяца и диапазона строкой" />
+
+<Example id="index-parts" title="Выбор по дню недели" />
+
+<Example id="bdate" title="Рабочие дни" />
+
+<Example id="period" title="Периоды" />
+
+## Подводные камни
+
+<Pitfall title="Старые обозначения частот">
+
+<VersionNote since="pandas 3.0" was="M, Q, Y, BM… — концы месяца, квартала, года (устарели в 2.2)" now="ME, QE, YE, BME…; M теперь означает только месяц-период в period_range" />
+
+<Example id="old-alias" title="freq='M' в date_range" />
+
+</Pitfall>

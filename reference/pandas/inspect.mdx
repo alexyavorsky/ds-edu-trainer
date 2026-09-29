@@ -1,0 +1,71 @@
+---
+title: Первичный осмотр
+level: basic
+summary: Что сделать первым делом с новой таблицей — посмотреть строки, типы, пропуски, статистику и частоты.
+requires: [pandas/dataframe]
+related: [pandas/stats, pandas/missing, pandas/dtypes, pandas/display]
+functions: [DataFrame.head, DataFrame.tail, DataFrame.info, DataFrame.describe, DataFrame.shape, DataFrame.dtypes, Series.value_counts, DataFrame.nunique]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/basics.html#head-and-tail
+---
+
+## Коротко
+
+- `head(n)` / `tail(n)` — первые / последние строки (по умолчанию 5).
+- `shape` — размер, `columns` — имена, `dtypes` — типы.
+- `info()` — одним взглядом: типы, **число непустых значений** в каждом столбце (видно пропуски) и память.
+- `describe()` — статистика по числовым столбцам; `include="all"` — по всем.
+- `value_counts()` — частоты значений столбца, `nunique()` — число различных значений.
+
+## Синтаксис
+
+<Syntax code={`df.head(5), df.tail(5)
+df.shape, df.columns, df.dtypes
+df.info()
+df.describe(include=None, percentiles=None)
+df["col"].value_counts(normalize=False, dropna=True)
+df.nunique()`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['n', 'сколько строк показать в head / tail', '5'],
+    ['include', 'в describe: None — только числа, "all" — все столбцы, список типов', 'None'],
+    ['normalize', 'в value_counts: доли вместо количеств', 'False'],
+    ['dropna', 'в value_counts: не считать NaN', 'True'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="head-tail" title="Первые и последние строки" />
+
+<Example id="shape" title="Размер и столбцы" />
+
+<Example id="info" title="info: типы и пропуски" />
+
+<Example id="describe" title="Статистика по числам" />
+
+<Example id="describe-all" title="Статистика по всем столбцам" />
+
+<Example id="value-counts" title="Частоты значений" />
+
+<Example id="nunique" title="Сколько различных значений" />
+
+## Подводные камни
+
+<Pitfall title="value_counts не показывает пропуски">
+
+Строки с `NaN` по умолчанию не считаются, и сумма частот меньше числа строк. Чтобы увидеть пропуски, передайте `dropna=False`.
+
+<Example id="value-counts-nan" title="Частоты вместе с NaN" />
+
+</Pitfall>
+
+<Pitfall title="describe без текстовых столбцов">
+
+По умолчанию `describe` молча пропускает нечисловые столбцы — в примере выше нет `city` и `drink`. Для них — `include="all"` или `value_counts`.
+
+</Pitfall>

@@ -1,0 +1,60 @@
+---
+/** Схема stack / unstack: уровень столбцов переходит в индекс строк и обратно. */
+import Arrows from './Arrows.astro';
+import Diagram from './Diagram.astro';
+import MiniTable from './MiniTable.astro';
+---
+
+<Diagram
+  caption="stack переносит заголовки столбцов (jan, feb) во внутренний уровень индекса — таблица становится длинным Series с MultiIndex. unstack переносит уровень индекса обратно в столбцы. Серым — индекс."
+  label="Схема: таблица с индексом city и столбцами jan, feb превращается в Series с индексом city, month и обратно"
+>
+  <div class="flow">
+    <MiniTable
+      title="DataFrame"
+      columns={['city', 'jan', 'feb']}
+      rows={[
+        ['Омск', 120, 130],
+        ['Тула', 95, 105],
+      ]}
+      indexCols={1}
+      cellTones={[
+        [0, 1, 2],
+        [0, 1, 2],
+      ]}
+    />
+    <Arrows forward="stack()" back="unstack()" />
+    <MiniTable
+      title="Series с MultiIndex"
+      columns={['city', 'month', '']}
+      rows={[
+        ['Омск', 'jan', 120],
+        ['', 'feb', 130],
+        ['Тула', 'jan', 95],
+        ['', 'feb', 105],
+      ]}
+      indexCols={2}
+      cellTones={[
+        [0, 0, 1],
+        [0, 0, 2],
+        [0, 0, 1],
+        [0, 0, 2],
+      ]}
+    />
+  </div>
+</Diagram>
+
+<style>
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+  @media (max-width: 620px) {
+    .flow {
+      flex-direction: column;
+      gap: 14px;
+    }
+  }
+</style>

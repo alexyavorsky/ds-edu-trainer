@@ -1,0 +1,7 @@
+title = "pandas"
+kind = "topic"
+code = "pd"
+order = 3
+packages = ["pandas"]
+reference = "pandas"
+description = "Задачи на таблицы: выбор и очистка данных, группировка, объединение, временные ряды. Разделы — как в справочнике."

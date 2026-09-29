@@ -1,0 +1,14 @@
+[[mutant]]
+name = "равные опорному теряются"
+find = "not_greater = [s for s in scores[1:] if s <= pivot]"
+replace = "not_greater = [s for s in scores[1:] if s < pivot]"
+
+[[mutant]]
+name = "склейка в обратном порядке — сортировка по возрастанию"
+find = "return quicksort_desc(greater) + [pivot] + quicksort_desc(not_greater)"
+replace = "return quicksort_desc(not_greater) + [pivot] + quicksort_desc(greater)"
+
+[[mutant]]
+name = "базовый случай теряет единственный элемент"
+find = "        return list(scores)"
+replace = "        return []"

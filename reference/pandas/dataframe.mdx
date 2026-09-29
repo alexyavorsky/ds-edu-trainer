@@ -1,0 +1,63 @@
+---
+title: DataFrame
+level: basic
+summary: Создать таблицу из словаря столбцов, списка записей или массива NumPy.
+requires: [pandas/series]
+related: [pandas/read-csv, pandas/inspect, pandas/select-columns]
+functions: [pd.DataFrame, DataFrame.shape, DataFrame.columns, DataFrame.index, DataFrame.dtypes, DataFrame.from_records]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/dsintro.html#dataframe
+---
+
+## Коротко
+
+- Словарь `{"столбец": [значения]}` — самый частый способ; списки должны быть одной длины.
+- Список словарей — по записи на строку; отсутствующие ключи становятся `NaN`.
+- Из массива NumPy — с явными `columns` и `index`.
+- Словарь из Series **выравнивается по индексу**: строки сопоставляются по меткам, а не по порядку.
+- `shape` — (строки, столбцы), `columns` — имена столбцов, `index` — метки строк, `dtypes` — типы столбцов.
+
+## Синтаксис
+
+<Syntax code={`pd.DataFrame({"a": [1, 2], "b": [3, 4]})
+pd.DataFrame([{"a": 1, "b": 3}, {"a": 2, "b": 4}])
+pd.DataFrame(array, columns=["a", "b"], index=["x", "y"])
+df.shape, df.columns, df.index, df.dtypes`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['data', 'словарь столбцов, список записей, массив, другой DataFrame', '—'],
+    ['index', 'метки строк', 'RangeIndex 0…n−1'],
+    ['columns', 'имена столбцов (для массива) или какие столбцы взять и в каком порядке', 'по данным'],
+    ['dtype', 'один тип для всех столбцов', 'по данным'],
+  ]}
+/>
+
+## Примеры
+
+<Example id="from-dict" title="Из словаря столбцов" />
+
+<Example id="from-records" title="Из списка записей" />
+
+<Example id="from-array" title="Из массива NumPy" />
+
+<Example id="index" title="Свой индекс" />
+
+<Example id="parts" title="Форма, столбцы, индекс, типы" />
+
+## Подводные камни
+
+<Pitfall title="Списки разной длины">
+
+<Example id="lengths" title="Столбцы разной длины" />
+
+</Pitfall>
+
+<Pitfall title="Series сопоставляются по меткам">
+
+Если столбцы переданы как Series с разными индексами, результат содержит объединение меток, а недостающие значения — `NaN`. Это [выравнивание по индексу](/reference/pandas/alignment).
+
+<Example id="from-series" title="Словарь из Series" />
+
+</Pitfall>

@@ -1,0 +1,67 @@
+---
+title: melt и pivot
+level: medium
+summary: Переложить таблицу из широкого формата (месяцы в столбцах) в длинный (месяц — значение в столбце) и обратно.
+requires: [pandas/dataframe, pandas/set-index]
+related: [pandas/stack-unstack, pandas/pivot-table, pandas/explode]
+functions: [DataFrame.melt, pd.melt, DataFrame.pivot, pd.pivot]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/reshaping.html
+---
+
+## Коротко
+
+- **Широкий** формат: у каждой сущности одна строка, показатели по периодам — в отдельных столбцах. **Длинный**: одна строка на пару «сущность — период».
+- `melt(id_vars=…)` — из широкого в длинный: остальные столбцы превращаются в пары «имя столбца (`var_name`) — значение (`value_name`)».
+- `pivot(index, columns, values)` — из длинного в широкий, **без агрегации**: каждому сочетанию должно соответствовать одно значение.
+- Если значений на сочетание несколько, нужен [pivot_table](/reference/pandas/pivot-table) с `aggfunc`.
+- Длинный формат удобен для `groupby`, фильтров и графиков; широкий — для чтения человеком.
+
+<MeltPivotDiagram />
+
+## Синтаксис
+
+<Syntax code={`df.melt(id_vars=None, value_vars=None, var_name="variable", value_name="value")
+df.pivot(index=None, columns=None, values=None)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['id_vars', 'в melt: столбцы, которые остаются как есть (идентификаторы)', 'None'],
+    ['value_vars', 'в melt: какие столбцы «расплавить»; по умолчанию все, кроме id_vars', 'None'],
+    ['var_name / value_name', 'в melt: имена новых столбцов для имён и значений', '"variable" / "value"'],
+    ['index / columns / values', 'в pivot: что станет строками, столбцами и значениями', '—'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="melt" title="melt: из широкого в длинный" />
+
+<Example id="pivot" title="pivot: из длинного в широкий" />
+
+<Example id="value-vars" title="Только часть столбцов" />
+
+<Example id="back-to-columns" title="Обратно в обычную таблицу" />
+
+<Example id="why-long" title="Зачем длинный формат" />
+
+## Подводные камни
+
+<Pitfall title="pivot и повторяющиеся сочетания">
+
+`pivot` не знает, что делать с двумя значениями для одной ячейки.
+
+<Example id="duplicates" title="Два значения на ячейку" />
+
+<Example id="pivot-table" title="pivot_table с агрегацией" />
+
+</Pitfall>
+
+<Pitfall title="pivot сортирует столбцы">
+
+Новые столбцы идут по алфавиту: в примере выше `feb` оказался раньше `jan`. Нужный порядок задайте явно: `wide[["city", "jan", "feb"]]`, или сделайте столбец месяца упорядоченной [категорией](/reference/pandas/category).
+
+</Pitfall>

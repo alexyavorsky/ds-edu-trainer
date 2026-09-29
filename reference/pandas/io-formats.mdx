@@ -1,0 +1,71 @@
+---
+title: Excel, JSON, Parquet
+level: basic
+summary: Прочитать и записать таблицу в Excel, JSON и Parquet — и выбрать формат, который сохраняет типы.
+requires: [pandas/read-csv]
+related: [pandas/to-dict-numpy, pandas/dtypes, numpy/io]
+functions: [pd.read_excel, DataFrame.to_excel, pd.ExcelWriter, pd.read_json, DataFrame.to_json, pd.read_parquet, DataFrame.to_parquet]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/io.html
+---
+
+## Коротко
+
+- **Excel**: `read_excel(path, sheet_name=…)` / `to_excel(path, index=False)`. `sheet_name=None` читает все листы в словарь. Нужен пакет `openpyxl`.
+- Несколько листов в один файл — через `pd.ExcelWriter`.
+- **JSON**: `to_json(orient="records")` — список объектов; `lines=True` — по объекту на строку (JSON Lines). Для кириллицы — `force_ascii=False`.
+- **Parquet**: `to_parquet` / `read_parquet` — быстрый двоичный формат, который **сохраняет типы** (даты, категории, целые с пропусками). Нужен `pyarrow`.
+- CSV и JSON — текст: типы при чтении угадываются заново.
+
+## Синтаксис
+
+<Syntax code={`pd.read_excel(path, sheet_name=0, usecols=None, skiprows=None)
+df.to_excel(path, sheet_name="Sheet1", index=False)
+with pd.ExcelWriter(path) as w: df.to_excel(w, sheet_name="…")
+df.to_json(path=None, orient="records", lines=False, force_ascii=True)
+pd.read_json(path_or_buffer, orient=None, lines=False)
+df.to_parquet(path), pd.read_parquet(path, columns=None)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['sheet_name', 'лист Excel: имя, номер, список или None — все листы', '0'],
+    ['orient', 'вид JSON: "records" — список строк, "columns" — словарь столбцов, "split", "index"…', '"columns" для DataFrame'],
+    ['lines', 'JSON Lines: по одному объекту на строку', 'False'],
+    ['force_ascii', 'экранировать не-ASCII символы (кириллицу) как \\uXXXX', 'True'],
+    ['date_format', 'в to_json: "iso" — даты строками ISO, "epoch" — миллисекундами', '"epoch" / "iso"'],
+    ['columns', 'в read_parquet: какие столбцы читать', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="excel" title="Excel: записать и прочитать" />
+
+<Example id="excel-sheets" title="Несколько листов" />
+
+<Example id="json" title="JSON: список записей" />
+
+<Example id="json-lines" title="JSON Lines" />
+
+<Example id="parquet" title="Parquet сохраняет типы" />
+
+## Подводные камни
+
+<Pitfall title="CSV и JSON теряют типы">
+
+После записи в текст и чтения обратно даты становятся строками, категории — обычными строками. Для промежуточного хранения таблиц удобнее Parquet.
+
+<Example id="csv-loses-types" title="Дата после CSV" />
+
+</Pitfall>
+
+<Pitfall title="read_json со строкой JSON">
+
+<VersionNote since="pandas 3.0" was="read_json('[...]') принимал строку с JSON (с 2.1 — с FutureWarning)" now="строка считается путём к файлу; текст JSON оборачивайте в io.StringIO" />
+
+<Example id="json-string" title="Строка JSON вместо файла" />
+
+</Pitfall>

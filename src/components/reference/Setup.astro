@@ -1,0 +1,61 @@
+---
+/** Общие данные статьи (ячейка setup): выполняются перед каждым примером. `<Setup />` */
+import { Code } from 'astro:components';
+import { getExamples, runnableCode } from '../../lib/reference';
+import CopyButton from './CopyButton.astro';
+
+const article = Astro.locals.referenceArticle!;
+const setup = getExamples(article).get('setup');
+if (!setup) throw new Error(`${article}: в статье есть <Setup />, но в ${article}.py нет ячейки setup`);
+---
+
+<figure class="setup">
+  <figcaption>
+    <span class="title">Данные для примеров</span>
+    <span class="hint">используются во всех примерах ниже</span>
+    <CopyButton code={runnableCode(article, '')} />
+  </figcaption>
+  <Code code={setup.code} lang="python" theme="vitesse-dark" />
+</figure>
+
+<style>
+  .setup {
+    margin: 0 0 20px;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    overflow: hidden;
+    min-width: 0;
+  }
+  figcaption {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 38px;
+    padding: 4px 4px 4px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    border-bottom: 1px dashed var(--border-strong);
+  }
+  .hint {
+    flex: 1;
+    min-width: 0;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--faint);
+  }
+  .setup :global(pre.astro-code) {
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+  }
+  @media (max-width: 560px) {
+    .hint {
+      display: none;
+    }
+    .title {
+      flex: 1;
+    }
+  }
+</style>

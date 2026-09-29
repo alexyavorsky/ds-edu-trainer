@@ -1,0 +1,70 @@
+---
+title: "Интервалы: cut и qcut"
+level: medium
+summary: Разложить числа по интервалам — возрастные группы, ценовые сегменты, квартили.
+requires: [pandas/category]
+related: [numpy/histogram, pandas/groupby, pandas/rank]
+functions: [pd.cut, pd.qcut, pd.Interval, pd.IntervalIndex]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/reference/api/pandas.cut.html
+---
+
+## Коротко
+
+- `pd.cut(s, bins=[…])` — по **заданным границам**; `bins=3` — на 3 интервала одинаковой ширины.
+- Интервалы по умолчанию `(a, b]`: правая граница входит, левая нет. `right=False` — `[a, b)`.
+- `labels=[…]` — свои названия групп вместо интервалов.
+- `pd.qcut(s, q=4)` — по **квантилям**: в каждой группе примерно одинаковое число значений.
+- Результат — категориальный Series с упорядоченными категориями; значения вне интервалов — `NaN`.
+
+## Синтаксис
+
+<Syntax code={`pd.cut(s, bins, right=True, labels=None, include_lowest=False)
+pd.qcut(s, q, labels=None, duplicates="raise")
+pd.qcut(s, q, retbins=True)        # вернуть и границы`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['bins', 'в cut: список границ или число интервалов равной ширины', '—'],
+    ['q', 'в qcut: число групп или список квантилей [0, 0.25, …, 1]', '—'],
+    ['right', 'в cut: правая граница входит в интервал', 'True'],
+    ['labels', 'названия групп; False — номера групп', 'None'],
+    ['include_lowest', 'в cut: включить левую границу первого интервала', 'False'],
+    ['duplicates', 'в qcut: "drop" — убрать совпадающие границы вместо ошибки', '"raise"'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="cut" title="Свои границы" />
+
+<Example id="labels" title="Названия групп" />
+
+<Example id="right" title="Левая граница входит" />
+
+<Example id="equal-width" title="Интервалы равной ширины" />
+
+<Example id="qcut" title="Квартили" />
+
+<Example id="bins-out" title="Границы квантилей" />
+
+## Подводные камни
+
+<Pitfall title="Значения вне интервалов">
+
+Всё, что не попало ни в один интервал, — в том числе значение, равное левой границе первого интервала, — становится `NaN`. Проверяйте `isna().sum()` после `cut` или используйте `include_lowest=True`.
+
+<Example id="outside" title="Значения вне границ" />
+
+</Pitfall>
+
+<Pitfall title="Много одинаковых значений в qcut">
+
+<Example id="qcut-duplicates" title="Совпадающие границы" />
+
+Передайте `duplicates="drop"` — групп станет меньше — или используйте `rank(method="first")` перед `qcut`.
+
+</Pitfall>

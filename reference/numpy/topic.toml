@@ -1,0 +1,38 @@
+title = "NumPy"
+summary = "Массивы и быстрые вычисления над ними: создание, индексация, транслирование, агрегации, линейная алгебра."
+package = "numpy"
+version = "2.5.3"
+docs = "https://numpy.org/doc/2.5/"
+order = 1
+
+[[sections]]
+title = "Основы"
+articles = ["intro", "display", "creation", "attributes", "dtypes"]
+
+[[sections]]
+title = "Индексация"
+articles = ["indexing", "indexing-nd", "boolean", "fancy", "where"]
+
+[[sections]]
+title = "Вычисления"
+articles = ["arithmetic", "comparing", "aggregations", "rounding", "axis", "ufunc", "broadcasting", "diff"]
+
+[[sections]]
+title = "Форма массива"
+articles = ["views-copies", "reshape", "transpose", "join-split", "repeat-tile", "flip-roll", "pad"]
+
+[[sections]]
+title = "Сортировка и множества"
+articles = ["sorting", "searching", "unique-sets"]
+
+[[sections]]
+title = "Данные"
+articles = ["nan-inf", "random", "statistics", "histogram", "meshgrid", "datetime64", "io"]
+
+[[sections]]
+title = "Продвинутое"
+articles = ["matmul", "linalg", "vectorization", "inplace-out", "memory-layout", "sliding-window", "einsum", "structured", "masked", "apply-along-axis", "strings"]
+
+[[sections]]
+title = "Итоги"
+articles = ["mistakes", "cheatsheet"]

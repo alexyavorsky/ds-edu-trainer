@@ -1,0 +1,64 @@
+---
+title: Корреляция
+level: medium
+summary: Насколько согласованно меняются два столбца — матрица корреляций, пары столбцов, ранговая корреляция.
+requires: [pandas/stats]
+related: [numpy/statistics, pandas/rank, pandas/plot]
+functions: [DataFrame.corr, Series.corr, DataFrame.corrwith, DataFrame.cov]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/reference/api/pandas.DataFrame.corr.html
+---
+
+## Коротко
+
+- `df.corr()` — матрица попарных корреляций числовых столбцов, от −1 до 1.
+- `s1.corr(s2)` — корреляция двух Series (строки сопоставляются по индексу).
+- `method="pearson"` (по умолчанию) — линейная связь; `"spearman"` и `"kendall"` — ранговые, ловят любую монотонную связь и устойчивы к выбросам.
+- `corrwith(s)` — корреляция каждого столбца с одним Series.
+- Корреляция около нуля не значит «нет связи» — связь может быть нелинейной. И корреляция не доказывает причинность.
+
+## Синтаксис
+
+<Syntax code={`df.corr(method="pearson", min_periods=1, numeric_only=False)
+s1.corr(s2, method="pearson")
+df.corrwith(other, method="pearson")
+df.cov(ddof=1)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['method', '"pearson", "spearman", "kendall" или своя функция', '"pearson"'],
+    ['min_periods', 'минимум пар без пропусков для расчёта', '1'],
+    ['numeric_only', 'только числовые столбцы', 'False'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="matrix" title="Матрица корреляций" />
+
+<Example id="pair" title="Два столбца" />
+
+<Example id="spearman" title="Пирсон и Спирмен" />
+
+<Example id="corrwith" title="Каждый столбец с одним Series" />
+
+<Example id="cov" title="Ковариация" />
+
+## Подводные камни
+
+<Pitfall title="Нелинейная связь даёт корреляцию около нуля">
+
+<Example id="nonlinear" title="y = x²" />
+
+</Pitfall>
+
+<Pitfall title="Текстовые столбцы">
+
+Как и в других статистиках, текст в `corr` вызывает ошибку. Передайте `numeric_only=True` или выберите столбцы.
+
+<Example id="text" title="numeric_only=True" />
+
+</Pitfall>

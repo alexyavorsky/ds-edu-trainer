@@ -1,0 +1,56 @@
+---
+title: "Строки: np.strings"
+level: advanced
+summary: Поэлементные операции над массивами строк и строковый тип без ограничения длины.
+requires: [numpy/dtypes]
+related: [numpy/structured, pandas/strings]
+functions: [np.strings.strip, np.strings.upper, np.strings.lower, np.strings.capitalize, np.strings.str_len, np.strings.find, np.strings.replace, np.strings.startswith, np.strings.slice, np.dtypes.StringDType, np.char]
+docs: https://numpy.org/doc/2.5/reference/routines.strings.html
+---
+
+## Коротко
+
+- Модуль `np.strings` (NumPy 2.0+) — строковые функции, применяемые к каждому элементу: `strip`, `upper`, `lower`, `capitalize`, `str_len`, `find`, `replace`, `startswith`, `slice`…
+- Обычный строковый массив имеет тип `<Un` — строки **фиксированной** длины `n`. Более длинное значение при записи молча обрезается.
+- `StringDType` (NumPy 2.0+) хранит строки любой длины.
+- Старый модуль `np.char` работает, но новый код пишут на `np.strings`.
+- Для таблиц со строковыми столбцами удобнее [pandas `.str`](/reference/pandas/strings).
+
+## Синтаксис
+
+<Syntax code={`np.strings.strip(a), np.strings.upper(a), np.strings.lower(a)
+np.strings.str_len(a)
+np.strings.find(a, sub), np.strings.startswith(a, prefix)
+np.strings.replace(a, old, new)
+np.strings.slice(a, start, stop)
+np.array(values, dtype=np.dtypes.StringDType())`} />
+
+## Примеры
+
+<Setup />
+
+<Example id="functions" title="Очистка и регистр" />
+
+<Example id="search" title="Поиск и замена" />
+
+<Example id="slice" title="Срез каждой строки" />
+
+<Example id="stringdtype" title="StringDType — строки любой длины" />
+
+## Подводные камни
+
+<Pitfall title="Строка обрезается до длины типа">
+
+Тип `<U5` определяется по самой длинной строке при создании массива. Всё, что длиннее, при записи теряется без предупреждения.
+
+<Example id="fixed-width" title="Запись длинной строки" />
+
+</Pitfall>
+
+<Pitfall title="np.char и np.strings">
+
+<VersionNote since="NumPy 2.0" was="строковые функции в модуле np.char" now="модуль np.strings — быстрее и поддерживает StringDType; np.char оставлен для совместимости" />
+
+<Example id="char-legacy" title="Старый модуль np.char" />
+
+</Pitfall>

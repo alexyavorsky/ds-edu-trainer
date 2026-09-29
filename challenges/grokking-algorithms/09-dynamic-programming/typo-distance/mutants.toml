@@ -1,0 +1,14 @@
+[[mutant]]
+name = "первая строка и столбец не заполнены"
+find = "    for i in range(n + 1):\n        table[i][0] = i  # удалить все i символов\n    for j in range(m + 1):\n        table[0][j] = j  # вставить все j символов\n"
+replace = ""
+
+[[mutant]]
+name = "совпавшие символы тоже стоят правку"
+find = "                table[i][j] = table[i - 1][j - 1]\n"
+replace = "                table[i][j] = table[i - 1][j - 1] + 1\n"
+
+[[mutant]]
+name = "замена не рассматривается"
+find = "1 + min(table[i - 1][j], table[i][j - 1], table[i - 1][j - 1])"
+replace = "1 + min(table[i - 1][j], table[i][j - 1])"

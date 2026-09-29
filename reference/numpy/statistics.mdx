@@ -1,0 +1,70 @@
+---
+title: Статистика
+level: medium
+summary: Среднее, медиана, стандартное отклонение, перцентили, взвешенное среднее и корреляция.
+requires: [numpy/aggregations, numpy/axis]
+related: [numpy/histogram, numpy/nan-inf, pandas/stats, pandas/corr]
+functions: [np.mean, np.median, np.std, np.var, np.percentile, np.quantile, np.average, np.corrcoef, np.cov]
+docs: https://numpy.org/doc/2.5/reference/routines.statistics.html
+---
+
+## Коротко
+
+- `mean` — среднее, `median` — медиана (устойчива к выбросам).
+- `std` и `var` по умолчанию делят на `n` (`ddof=0`). Выборочная оценка — `ddof=1`; так по умолчанию считает pandas.
+- `percentile(a, q)` — перцентили в процентах (0–100), `quantile(a, q)` — то же в долях (0–1). Способ интерполяции задаёт `method`.
+- `average(a, weights=w)` — взвешенное среднее.
+- `corrcoef(x, y)` возвращает **матрицу** 2 × 2; сам коэффициент — элемент `[0, 1]`. Ковариация — `cov`.
+- Все функции принимают `axis`; с пропусками — `nanmean`, `nanmedian`, `nanpercentile`…
+
+## Синтаксис
+
+<Syntax code={`np.mean(a, axis=None), np.median(a, axis=None)
+np.std(a, axis=None, ddof=0), np.var(a, ddof=0)
+np.percentile(a, q, axis=None, method="linear")   # q в 0–100
+np.quantile(a, q, method="linear")                # q в 0–1
+np.average(a, weights=None)
+np.corrcoef(x, y)[0, 1]`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['ddof', 'поправка в знаменателе: делится на n − ddof', '0'],
+    ['q', 'уровень: число или список; 0–100 в percentile, 0–1 в quantile', '—'],
+    ['method', "способ взять значение между точками: 'linear', 'lower', 'higher', 'nearest', 'midpoint'…", "'linear'"],
+    ['weights', 'веса для average той же формы, что данные', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="center" title="Среднее и медиана" />
+
+<Example id="percentile" title="Перцентили и квантили" />
+
+<Example id="method" title="Способ интерполяции" />
+
+<Example id="average" title="Взвешенное среднее" />
+
+<Example id="corrcoef" title="Корреляция и ковариация" />
+
+## Подводные камни
+
+<Pitfall title="std в NumPy и pandas отличается">
+
+`np.std` по умолчанию `ddof=0`, а `Series.std()` в pandas — `ddof=1`. На маленьких выборках разница заметна.
+
+<Example id="spread" title="ddof=0 и ddof=1" />
+
+</Pitfall>
+
+<Pitfall title="Параметр interpolation удалён">
+
+<VersionNote since="NumPy 2.4" was="np.percentile(a, q, interpolation='lower')" now="np.percentile(a, q, method='lower') — interpolation больше не принимается" />
+
+<Example id="interpolation-removed" title="Старый параметр interpolation" />
+
+</Pitfall>

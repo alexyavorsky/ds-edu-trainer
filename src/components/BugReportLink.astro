@@ -1,0 +1,54 @@
+---
+/**
+ * «Нашли ошибку?» — ссылка в Telegram. Текст сообщения с id задачи подставляется в ссылку
+ * и дополнительно копируется в буфер (не все клиенты Telegram поддерживают ?text=).
+ */
+import { TELEGRAM_USER } from '../lib/labels';
+import Icon from './Icon.astro';
+
+interface Props {
+  taskId?: string;
+  articleId?: string;
+  compact?: boolean;
+}
+const { taskId, articleId, compact = false } = Astro.props;
+const subject = taskId ? `в задаче ${taskId}` : articleId ? `в статье справочника ${articleId}` : '';
+const text = subject ? `Нашёл ошибку ${subject}: ` : 'Нашёл ошибку на сайте: ';
+const href = `https://t.me/${TELEGRAM_USER}?text=${encodeURIComponent(text)}`;
+---
+
+<a
+  class:list={['btn', compact ? 'btn-ghost bug-compact' : '', 'bug-report']}
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  data-bug-report
+  data-tg={TELEGRAM_USER}
+  data-subject={subject}
+  aria-label="Нашли ошибку? Написать в Telegram"
+>
+  <Icon name="flag" />
+  <span class="bug-label">Нашли ошибку?</span>
+</a>
+
+<style>
+  @media (max-width: 560px) {
+    .bug-compact .bug-label {
+      display: none;
+    }
+    .bug-compact {
+      padding: 0 10px;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>('[data-bug-report]').forEach((link) => {
+    link.addEventListener('click', () => {
+      const subject = link.dataset.subject;
+      const text = subject ? `Нашёл ошибку ${subject} (${location.href}): ` : `Нашёл ошибку на странице ${location.href}: `;
+      link.href = `https://t.me/${link.dataset.tg}?text=${encodeURIComponent(text)}`;
+      navigator.clipboard?.writeText(text).catch(() => {});
+    });
+  });
+</script>

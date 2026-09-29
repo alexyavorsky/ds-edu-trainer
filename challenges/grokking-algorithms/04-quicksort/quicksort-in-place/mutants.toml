@@ -1,0 +1,4 @@
+[[mutant]]
+name = "граница i начинается с нуля, а не с low"
+find = "    i = low  # граница: items[low..i-1] < pivot"
+replace = "    i = 0"

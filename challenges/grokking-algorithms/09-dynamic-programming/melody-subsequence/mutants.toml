@@ -1,0 +1,9 @@
+[[mutant]]
+name = "при несовпадении — ноль (правило подстроки)"
+find = "                table[i][j] = max(table[i - 1][j], table[i][j - 1])"
+replace = "                table[i][j] = 0"
+
+[[mutant]]
+name = "при совпадении берётся верхняя ячейка, а не диагональ"
+find = "                table[i][j] = table[i - 1][j - 1] + 1"
+replace = "                table[i][j] = table[i - 1][j] + 1"

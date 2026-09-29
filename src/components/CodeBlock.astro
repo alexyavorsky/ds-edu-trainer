@@ -1,0 +1,136 @@
+---
+/** Блок кода с подсветкой Shiki (при сборке) и, по желанию, кнопкой «Копировать». */
+import { Code } from 'astro:components';
+import Icon from './Icon.astro';
+
+interface Props {
+  code: string;
+  filename?: string;
+  copy?: boolean;
+  note?: string;
+}
+const { code, filename, copy = false, note } = Astro.props;
+---
+
+<div class="code-block" data-code-block>
+  {
+    (filename || copy) && (
+      <div class="head">
+        <span class="filename">
+          <Icon name="terminal" size={14} />
+          {filename}
+        </span>
+        {copy && (
+          <button type="button" class="btn btn-ghost copy" data-copy data-code={code}>
+            <span class="copy-idle">
+              <Icon name="copy" />
+              Копировать
+            </span>
+            <span class="copy-done">
+              <Icon name="check" />
+              Скопировано
+            </span>
+          </button>
+        )}
+      </div>
+    )
+  }
+  <div class="body">
+    <Code code={code.trimEnd()} lang="python" theme="vitesse-dark" />
+  </div>
+  {note && <p class="note">{note}</p>}
+</div>
+
+<style>
+  .code-block {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: hidden;
+    min-width: 0;
+  }
+  .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    height: 44px;
+    padding: 0 6px 0 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .filename {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .copy {
+    height: 30px;
+    padding: 0 10px;
+  }
+  .copy-done {
+    display: none;
+    color: var(--easy);
+  }
+  .copy.is-copied .copy-idle {
+    display: none;
+  }
+  .copy.is-copied .copy-done {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .copy-idle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .body :global(pre) {
+    margin: 0;
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.65;
+    tab-size: 4;
+    -webkit-overflow-scrolling: touch;
+  }
+  .body :global(code) {
+    font-family: inherit;
+  }
+  .note {
+    margin: 0;
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  @media (max-width: 560px) {
+    .body :global(pre) {
+      font-size: 12.5px;
+      padding: 14px;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const code = button.dataset.code ?? '';
+      try {
+        await navigator.clipboard.writeText(code);
+      } catch {
+        return; // буфер обмена недоступен (не HTTPS или нет разрешения)
+      }
+      button.classList.add('is-copied');
+      setTimeout(() => button.classList.remove('is-copied'), 1800);
+    });
+  });
+</script>

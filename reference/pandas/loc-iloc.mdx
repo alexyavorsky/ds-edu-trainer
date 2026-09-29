@@ -1,0 +1,72 @@
+---
+title: loc, iloc, at, iat
+level: basic
+summary: Выбрать и изменить строки и столбцы — по меткам или по позициям, одним вызовом.
+requires: [pandas/select-columns]
+related: [pandas/filtering, pandas/set-index, pandas/copy-on-write]
+functions: [DataFrame.loc, DataFrame.iloc, DataFrame.at, DataFrame.iat]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/indexing.html#different-choices-for-indexing
+---
+
+## Коротко
+
+- `df.loc[строки, столбцы]` — по **меткам** индекса и именам столбцов. Срез меток **включает** конец.
+- `df.iloc[строки, столбцы]` — по **позициям** 0, 1, 2… Срез позиций, как в Python, конец **не включает**.
+- Вместо строк в `loc` можно передать булеву маску: `df.loc[df["qty"] < 15, "price"]`.
+- Изменять значения — тоже через `loc` / `iloc` в **одних** скобках: `df.loc[mask, "col"] = значение`.
+- `at` / `iat` — одна ячейка по метке / позиции, быстрее `loc` / `iloc`.
+
+## Синтаксис
+
+<Syntax code={`df.loc["метка"]                  # строка
+df.loc["метка", "col"]           # ячейка
+df.loc["a":"c", ["x", "y"]]      # срез меток (c входит) и список столбцов
+df.loc[mask, "col"] = value      # запись по условию
+df.iloc[0], df.iloc[1:3, :2]     # позиции (3 и 2 не входят)
+df.at["метка", "col"], df.iat[0, 1]`} />
+
+| | `loc` | `iloc` |
+| --- | --- | --- |
+| что принимает | метки, списки меток, маски | целые позиции, списки позиций, маски |
+| срез | конец включается | конец не включается |
+| несуществующая метка при записи | новая строка | ошибка |
+
+## Примеры
+
+<Setup />
+
+<Example id="loc-row" title="Строка по метке" />
+
+<Example id="loc-cell" title="Одна ячейка" />
+
+<Example id="loc-slice" title="Срез меток и список столбцов" />
+
+<Example id="iloc" title="По позициям" />
+
+<Example id="mask" title="Строки по условию" />
+
+<Example id="set" title="Изменить значения" />
+
+<Example id="at-iat" title="Одна ячейка: at и iat" />
+
+## Подводные камни
+
+<Pitfall title="Срезы loc и iloc по-разному обращаются с концом">
+
+`stock.loc["чай":"какао"]` включает «какао», а `stock.iloc[1:3]` не включает позицию 3. Для меток «следующий после конца» не всегда определён, поэтому конец включают.
+
+</Pitfall>
+
+<Pitfall title="Запись в loc с новой меткой добавляет строку">
+
+Опечатка в метке при записи не даёт ошибку — появляется новая строка.
+
+<Example id="new-row" title="Новая метка" />
+
+</Pitfall>
+
+<Pitfall title="Метка в iloc">
+
+<Example id="iloc-label" title="iloc со строкой" />
+
+</Pitfall>

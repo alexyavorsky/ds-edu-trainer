@@ -1,0 +1,65 @@
+---
+title: agg и именованная агрегация
+level: medium
+summary: Несколько итогов по группам за один вызов — с понятными именами столбцов результата.
+requires: [pandas/groupby]
+related: [pandas/groupby-transform, pandas/pivot-table, pandas/multiindex]
+functions: [DataFrameGroupBy.agg, DataFrameGroupBy.aggregate, pd.NamedAgg, GroupBy.nunique, GroupBy.first, GroupBy.last]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/groupby.html#aggregation
+---
+
+## Коротко
+
+- `agg(["sum", "mean"])` — несколько функций для выбранного столбца.
+- `agg({"col": "sum", "other": ["mean", "max"]})` — свои функции для каждого столбца; столбцы результата становятся MultiIndex.
+- **Именованная агрегация** `agg(имя=("столбец", "функция"))` сразу даёт плоские и понятные имена — самый удобный вариант.
+- Функция может быть строкой (`"sum"`, `"nunique"`, `"first"`) или своей функцией от Series. Строки работают быстрее.
+- `as_index=False` — ключи группировки обычными столбцами.
+
+## Синтаксис
+
+<Syntax code={`df.groupby(key)["col"].agg(["sum", "mean"])
+df.groupby(key).agg({"a": "sum", "b": ["min", "max"]})
+df.groupby(key).agg(new_name=("col", "func"), other=("col2", my_func))`} />
+
+| Функция | Что считает |
+| --- | --- |
+| `"sum"`, `"mean"`, `"median"` | сумма, среднее, медиана (без NaN) |
+| `"min"`, `"max"`, `"std"` | минимум, максимум, выборочное отклонение |
+| `"count"` / `"size"` | непустые значения / все строки |
+| `"nunique"` | число различных значений |
+| `"first"`, `"last"` | первое / последнее непустое значение |
+
+## Примеры
+
+<Setup />
+
+<Example id="list" title="Несколько функций для столбца" />
+
+<Example id="dict" title="Свои функции для каждого столбца" />
+
+<Example id="named" title="Именованная агрегация" />
+
+<Example id="custom" title="Свои функции" />
+
+<Example id="as-frame" title="Ключи обычными столбцами" />
+
+<Example id="first-last" title="first, last, size" />
+
+## Подводные камни
+
+<Pitfall title="MultiIndex в столбцах после словаря">
+
+Словарь со списками даёт двухуровневые имена столбцов. Либо используйте именованную агрегацию, либо склейте уровни.
+
+<Example id="flatten" title="Плоские имена столбцов" />
+
+</Pitfall>
+
+<Pitfall title="Столбец с именем <lambda>">
+
+Безымянная функция в списке даёт столбец `<lambda>`. Используйте именованную агрегацию или обычную функцию с понятным именем.
+
+<Example id="lambda-name" title="lambda в списке функций" />
+
+</Pitfall>

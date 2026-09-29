@@ -1,0 +1,59 @@
+---
+title: "Случайная выборка: sample"
+level: medium
+summary: Взять случайные строки — заданное число или долю, с повторами или весами — и перемешать таблицу.
+requires: [pandas/dataframe]
+related: [numpy/random, pandas/inspect]
+functions: [DataFrame.sample, Series.sample]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/reference/api/pandas.DataFrame.sample.html
+---
+
+## Коротко
+
+- `sample(n=3)` — 3 случайные строки, `sample(frac=0.1)` — 10 % строк.
+- `random_state=число` — воспроизводимый результат; без него каждый вызов разный.
+- `sample(frac=1)` перемешивает все строки; `ignore_index=True` — заодно новый индекс.
+- `replace=True` — с повторами (бутстреп); `weights` — вероятность строки пропорциональна весу.
+- Без `replace` нельзя взять больше строк, чем есть в таблице.
+
+## Синтаксис
+
+<Syntax code={`df.sample(n=None, frac=None, replace=False, weights=None,
+          random_state=None, axis=0, ignore_index=False)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['n', 'сколько строк; нельзя вместе с frac', '1'],
+    ['frac', 'доля строк; с replace=True может быть больше 1', 'None'],
+    ['replace', 'разрешить повторы', 'False'],
+    ['weights', 'веса строк: имя столбца или Series', 'None'],
+    ['random_state', 'seed или генератор np.random.Generator', 'None'],
+    ['ignore_index', 'новый индекс 0, 1, 2…', 'False'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="n" title="Несколько случайных строк" />
+
+<Example id="frac" title="Доля строк" />
+
+<Example id="shuffle" title="Перемешать таблицу" />
+
+<Example id="replace" title="С повторами" />
+
+<Example id="weights" title="С весами" />
+
+<Example id="same-seed" title="Один seed — одна выборка" />
+
+## Подводные камни
+
+<Pitfall title="Больше строк, чем есть">
+
+<Example id="too-many" title="n больше числа строк" />
+
+</Pitfall>

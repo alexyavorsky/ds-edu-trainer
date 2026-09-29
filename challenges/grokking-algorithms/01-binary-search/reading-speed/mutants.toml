@@ -1,0 +1,9 @@
+[[mutant]]
+name = "округление вниз вместо вверх"
+find = "(pages + speed - 1) // speed"
+replace = "pages // speed"
+
+[[mutant]]
+name = "строгое сравнение: «успеваем» без запаса"
+find = "if days_needed(chapters, mid) <= days:"
+replace = "if days_needed(chapters, mid) < days:"

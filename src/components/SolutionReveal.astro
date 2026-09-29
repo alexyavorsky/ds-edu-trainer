@@ -1,0 +1,49 @@
+---
+/** Эталонное решение, скрытое по умолчанию. */
+import CodeBlock from './CodeBlock.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  code: string;
+  filename: string;
+}
+const { code, filename } = Astro.props;
+---
+
+<section class="solution" data-solution>
+  <button type="button" class="btn" data-solution-toggle aria-expanded="false">
+    <Icon name="eye" />
+    <span data-solution-label>Показать решение</span>
+  </button>
+  <div class="content" data-solution-content hidden>
+    <CodeBlock code={code} filename={filename} copy />
+  </div>
+</section>
+
+<style>
+  .solution {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .solution .btn {
+    align-self: flex-start;
+  }
+  .content[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-solution]').forEach((root) => {
+    const button = root.querySelector<HTMLButtonElement>('[data-solution-toggle]')!;
+    const content = root.querySelector<HTMLElement>('[data-solution-content]')!;
+    const label = root.querySelector<HTMLElement>('[data-solution-label]')!;
+    button.addEventListener('click', () => {
+      const open = content.hidden;
+      content.hidden = !open;
+      button.setAttribute('aria-expanded', String(open));
+      label.textContent = open ? 'Скрыть решение' : 'Показать решение';
+    });
+  });
+</script>

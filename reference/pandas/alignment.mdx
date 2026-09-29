@@ -1,0 +1,65 @@
+---
+title: Выравнивание по индексу
+level: medium
+summary: Почему арифметика двух Series сопоставляет значения по меткам и откуда в результате появляются NaN.
+requires: [pandas/series, pandas/dataframe]
+related: [pandas/set-index, pandas/concat, pandas/merge]
+functions: [Series.add, Series.sub, Series.reindex, Series.align, DataFrame.reindex]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/dsintro.html#vectorized-operations-and-label-alignment-with-series
+---
+
+## Коротко
+
+- Операции между Series и таблицами выполняются **по совпадающим меткам** индекса, а не по позициям. Порядок строк не важен.
+- Метка есть только в одном из объектов — в результате `NaN`, а набор меток — объединение обоих.
+- Методы `add`, `sub`, `mul`, `div` с `fill_value=0` считают отсутствующее значение нулём.
+- `reindex(метки)` приводит объект к нужному набору меток; `align` выравнивает два объекта друг по другу.
+- Присваивание Series в столбец (`df["new"] = s`) тоже идёт по меткам. Массив NumPy или список — по позициям.
+
+## Синтаксис
+
+<Syntax code={`s1 + s2                         # выравнивание по меткам
+s1.add(s2, fill_value=0)        # так же sub, mul, div
+s.reindex(new_labels, fill_value=None)
+a, b = s1.align(s2, join="outer")`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['fill_value', 'значение для отсутствующей метки перед операцией / при reindex', 'None'],
+    ['join', 'в align: "outer", "inner", "left", "right"', '"outer"'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="arithmetic" title="Арифметика по меткам" />
+
+<Example id="fill-value" title="Отсутствующее значение — ноль" />
+
+<Example id="reindex" title="reindex — нужный набор меток" />
+
+<Example id="reindex-fill" title="reindex с заполнением" />
+
+<Example id="align" title="align — общие метки" />
+
+<Example id="assign-column" title="Новый столбец выравнивается" />
+
+## Подводные камни
+
+<Pitfall title="Метки не совпали — одни NaN">
+
+Если индексы двух объектов не пересекаются (например, после `reset_index` у одного из них), результат будет из одних `NaN`. Проверьте индексы или переходите к позиционной работе через `to_numpy()`.
+
+</Pitfall>
+
+<Pitfall title="Массив вместо Series">
+
+Массив и список выравниванию не подлежат: значения записываются по порядку. Это удобно, но легко перепутать строки, если порядок разный.
+
+<Example id="values" title="Столбец из массива" />
+
+</Pitfall>

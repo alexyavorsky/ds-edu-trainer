@@ -1,0 +1,74 @@
+---
+title: Случайные числа
+level: medium
+summary: "Генератор случайных чисел: целые и дробные, нормальное распределение, случайный выбор и перемешивание — воспроизводимо через seed."
+requires: [numpy/creation]
+related: [numpy/statistics, numpy/histogram, pandas/sample]
+functions: [np.random.default_rng, Generator.integers, Generator.random, Generator.uniform, Generator.normal, Generator.choice, Generator.shuffle, Generator.permutation]
+docs: https://numpy.org/doc/2.5/reference/random/index.html
+---
+
+## Коротко
+
+- Создайте генератор: `rng = np.random.default_rng(seed)`, и берите числа из его методов.
+- Один и тот же `seed` даёт одну и ту же последовательность — так результаты воспроизводимы. Без seed — каждый запуск разный.
+- `integers(low, high, size)` — целые, **`high` не входит**; `random` — [0, 1); `uniform`, `normal` — распределения.
+- `choice` — случайный выбор (с повторами или без, с вероятностями `p`); `permutation` возвращает перемешанную копию, `shuffle` перемешивает на месте.
+- Функции вида `np.random.rand`, `np.random.seed` — старый API. Он работает, но в новом коде используют генератор.
+
+## Синтаксис
+
+<Syntax code={`rng = np.random.default_rng(42)
+rng.integers(low, high=None, size=None)
+rng.random(size=None)
+rng.uniform(low=0.0, high=1.0, size=None)
+rng.normal(loc=0.0, scale=1.0, size=None)
+rng.choice(a, size=None, replace=True, p=None)
+rng.permutation(x), rng.shuffle(x)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['seed', 'число для воспроизводимости; None — случайное начальное состояние', 'None'],
+    ['size', 'сколько чисел: число или форма массива; None — одно число', 'None'],
+    ['low, high', 'границы; high не входит (у integers — если не передать endpoint=True)', '—'],
+    ['loc, scale', 'среднее и стандартное отклонение нормального распределения', '0.0, 1.0'],
+    ['replace', 'в choice: можно ли выбирать один элемент несколько раз', 'True'],
+    ['p', 'в choice: вероятности элементов, сумма 1', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="integers" title="Целые числа" />
+
+<Example id="floats" title="Дробные: равномерное и нормальное" />
+
+<Example id="choice" title="Случайный выбор" />
+
+<Example id="shuffle" title="Перемешать" />
+
+<Example id="reproducible" title="Воспроизводимость" />
+
+## Подводные камни
+
+<Pitfall title="Генератор с тем же seed в цикле">
+
+Если создавать генератор заново на каждой итерации с одним seed, каждый раз получится одно и то же число. Создайте генератор один раз до цикла.
+
+<Example id="same-seed-loop" title="default_rng(1) внутри цикла" />
+
+</Pitfall>
+
+<Pitfall title="Старый API np.random.*">
+
+<VersionNote since="NumPy 1.17" was="np.random.seed(42), np.random.rand(3), np.random.randint(…) — одно глобальное состояние на всю программу" now="генератор np.random.default_rng(seed) с методами; старые функции оставлены для совместимости" />
+
+Числа при одинаковом seed у старого и нового API разные — при переписывании старого кода результаты изменятся.
+
+<Example id="legacy" title="Старый и новый API" />
+
+</Pitfall>

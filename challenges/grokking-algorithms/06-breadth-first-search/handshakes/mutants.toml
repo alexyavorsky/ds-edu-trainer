@@ -1,0 +1,14 @@
+[[mutant]]
+name = "стек вместо очереди (поиск в глубину)"
+find = "        person = queue.popleft()"
+replace = "        person = queue.pop()"
+
+[[mutant]]
+name = "человек без своего ключа в графе ломает поиск"
+find = "for friend in graph.get(person, []):"
+replace = "for friend in graph[person]:"
+
+[[mutant]]
+name = "расстояние не накапливается"
+find = "dist[friend] = dist[person] + 1"
+replace = "dist[friend] = 1"

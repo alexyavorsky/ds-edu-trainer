@@ -1,0 +1,73 @@
+---
+title: Пропуски
+level: medium
+summary: Найти пропущенные значения, заполнить их, удалить строки с ними или восстановить интерполяцией.
+requires: [pandas/inspect, pandas/filtering]
+related: [pandas/dtypes, pandas/where-mask, numpy/nan-inf, pandas/resample]
+functions: [DataFrame.isna, DataFrame.notna, DataFrame.fillna, DataFrame.ffill, DataFrame.bfill, DataFrame.dropna, DataFrame.interpolate, pd.NA]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/missing_data.html
+---
+
+## Коротко
+
+- Пропуск в числах и строках — `NaN`; в nullable-типах (`Int64`, `boolean`, `string`) — `pd.NA`. `None` при создании превращается в одно из них.
+- `isna()` / `notna()` — маски; `isna().sum()` — сколько пропусков в каждом столбце.
+- `fillna(значение)` — заполнить; словарь — своё значение для каждого столбца. `ffill()` / `bfill()` — предыдущим / следующим значением.
+- `dropna()` удаляет строки с пропусками; `subset` — смотреть только на эти столбцы, `thresh` — сколько непустых значений нужно, чтобы оставить строку.
+- `interpolate()` — восстановить значения между известными (линейно, по времени и т. д.).
+
+## Синтаксис
+
+<Syntax code={`df.isna(), df.notna(), df.isna().sum()
+df.fillna(value)                  # число или {"col": value}
+df.ffill(), df.bfill()
+df.dropna(how="any", subset=None, thresh=None, axis=0)
+s.interpolate(method="linear")`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['value', 'в fillna: значение, словарь по столбцам или Series', '—'],
+    ['how', 'в dropna: "any" — удалить при любом пропуске, "all" — только если пропущено всё', '"any"'],
+    ['subset', 'в dropna: какие столбцы проверять', 'все'],
+    ['thresh', 'в dropna: минимальное число непустых значений в строке', 'None'],
+    ['axis', '0 — строки, 1 — столбцы (в ffill — заполнять вдоль строки)', '0'],
+    ['limit', 'в fillna / ffill / interpolate: сколько подряд пропусков заполнять', 'None'],
+    ['method', 'в interpolate: "linear", "time", "nearest", "polynomial"…', '"linear"'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="isna" title="Найти пропуски" />
+
+<Example id="fillna" title="Заполнить значением" />
+
+<Example id="ffill" title="Заполнить предыдущим значением" />
+
+<Example id="dropna" title="Удалить строки с пропусками" />
+
+<Example id="interpolate" title="Интерполяция" />
+
+<Example id="none-nan" title="Во что превращается None" />
+
+## Подводные камни
+
+<Pitfall title="Сравнение с np.nan">
+
+<Example id="nan-eq" title="== np.nan" />
+
+Проверяйте пропуски только через `isna()`.
+
+</Pitfall>
+
+<Pitfall title="fillna(method=…) удалён">
+
+<VersionNote since="pandas 3.0" was="fillna(method='ffill') и fillna(method='bfill') (устарели в 2.1)" now="методы ffill() и bfill()" />
+
+<Example id="method-removed" title="fillna с method" />
+
+</Pitfall>

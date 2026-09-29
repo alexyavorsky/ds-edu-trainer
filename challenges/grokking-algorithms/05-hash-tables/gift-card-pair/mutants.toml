@@ -1,0 +1,9 @@
+[[mutant]]
+name = "товар запоминается до поиска пары — складывается сам с собой"
+find = "        i = seen.get(total - price)\n        if i is not None:\n            return i, j\n        seen[price] = j"
+replace = "        seen[price] = j\n        i = seen.get(total - price)\n        if i is not None:\n            return i, j"
+
+[[mutant]]
+name = "индексы в обратном порядке"
+find = "            return i, j"
+replace = "            return j, i"

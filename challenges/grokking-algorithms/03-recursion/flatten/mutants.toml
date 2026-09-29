@@ -1,0 +1,9 @@
+[[mutant]]
+name = "вложенный список добавлен как один элемент"
+find = "result.extend(flatten(item))"
+replace = "result.append(flatten(item))"
+
+[[mutant]]
+name = "решение без рекурсии: только один уровень"
+find = "result.extend(flatten(item))"
+replace = "result.extend(item)"

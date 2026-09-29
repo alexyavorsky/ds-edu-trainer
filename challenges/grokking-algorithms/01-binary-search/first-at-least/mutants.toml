@@ -1,0 +1,9 @@
+[[mutant]]
+name = "строгое сравнение вместо «не меньше»"
+find = "if prices[mid] >= budget:"
+replace = "if prices[mid] > budget:"
+
+[[mutant]]
+name = "mid выкидывают, хотя он может быть ответом"
+find = "            high = mid\n"
+replace = "            high = mid - 1\n"

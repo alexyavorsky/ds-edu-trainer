@@ -1,0 +1,9 @@
+[[mutant]]
+name = "при равных ценах берётся последний — порядок равных ломается"
+find = "if items[i][1] < items[best][1]:"
+replace = "if items[i][1] <= items[best][1]:"
+
+[[mutant]]
+name = "работа с исходным списком вместо копии"
+find = "rest = list(items)"
+replace = "rest = items"

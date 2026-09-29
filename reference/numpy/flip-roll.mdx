@@ -1,0 +1,58 @@
+---
+title: flip, roll, rot90
+level: medium
+summary: Развернуть массив по оси, циклически сдвинуть элементы или повернуть матрицу.
+requires: [numpy/axis]
+related: [numpy/indexing, numpy/diff, pandas/shift-diff]
+functions: [np.flip, np.flipud, np.fliplr, np.roll, np.rot90]
+docs: https://numpy.org/doc/2.5/reference/generated/numpy.roll.html
+---
+
+## Коротко
+
+- `np.flip(a, axis)` — обратный порядок вдоль оси; без `axis` — по всем осям. `flipud` / `fliplr` — короткие имена для осей 0 и 1.
+- `np.flip` для одномерного массива — то же, что `a[::-1]`; оба дают представление.
+- `np.roll(a, k)` — **циклический** сдвиг: элементы, ушедшие за край, появляются с другой стороны. Положительный `k` — вправо.
+- `roll` без `axis` работает с вытянутым массивом, а затем возвращает исходную форму.
+- `np.rot90(a, k)` поворачивает на `k × 90°` против часовой стрелки.
+
+## Синтаксис
+
+<Syntax code={`np.flip(a, axis=None)
+np.flipud(a), np.fliplr(a)
+np.roll(a, shift, axis=None)
+np.rot90(a, k=1)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['axis', 'ось разворота или сдвига; None — все оси (flip) или вытянутый массив (roll)', 'None'],
+    ['shift', 'на сколько позиций сдвинуть; отрицательное — влево', '—'],
+    ['k', 'сколько раз повернуть на 90°; отрицательное — по часовой стрелке', '1'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="flip" title="Разворот по осям" />
+
+<Example id="flip-all" title="Разворот по всем осям" />
+
+<Example id="roll" title="Циклический сдвиг" />
+
+<Example id="roll-axis" title="Сдвиг по оси" />
+
+<Example id="rot90" title="Поворот матрицы" />
+
+## Подводные камни
+
+<Pitfall title="roll — не сдвиг с пропусками">
+
+Для «значения за вчера» `roll` подставляет в первый день значение из последнего. Нужен сдвиг с пропуском — сделайте срез или используйте `shift` в pandas.
+
+<Example id="roll-not-shift" title="Предыдущее значение через roll" />
+
+</Pitfall>

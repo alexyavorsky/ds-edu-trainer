@@ -1,0 +1,14 @@
+[[mutant]]
+name = "при равных номерах берётся последняя книга"
+find = "if books[j] < books[smallest]:"
+replace = "if books[j] <= books[smallest]:"
+
+[[mutant]]
+name = "обмен считается, даже если книга уже на месте"
+find = "        if smallest != i:"
+replace = "        if True:"
+
+[[mutant]]
+name = "внутренний цикл начинается не с того места"
+find = "for j in range(i + 1, len(books)):"
+replace = "for j in range(i + 2, len(books)):"

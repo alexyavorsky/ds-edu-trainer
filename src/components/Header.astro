@@ -1,0 +1,106 @@
+---
+import BugReportLink from './BugReportLink.astro';
+
+interface Props {
+  taskId?: string;
+  articleId?: string;
+}
+const { taskId, articleId } = Astro.props;
+const path = Astro.url.pathname;
+const inReference = path.startsWith('/reference');
+---
+
+<header class="header">
+  <div class="container header-inner">
+    <a href="/" class="logo" aria-label="На главную">
+      <span class="logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5"/><path d="m16 7 5 5-5 5"/></svg>
+      </span>
+      <span class="logo-text">Тренажёр</span>
+    </a>
+    <nav class="nav" aria-label="Разделы">
+      <a href="/" class:list={['nav-link', !inReference && 'is-active']}>Задачи</a>
+      <a href="/reference" class:list={['nav-link', inReference && 'is-active']}>
+        Справочник
+      </a>
+    </nav>
+    <div class="header-actions">
+      <BugReportLink taskId={taskId} articleId={articleId} compact />
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgb(8 9 10 / 0.8);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    height: 56px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .logo-mark {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #23252c, #16171b);
+    border: 1px solid var(--border-strong);
+    color: var(--accent-strong);
+  }
+  .nav {
+    display: flex;
+    gap: 4px;
+    min-width: 0;
+  }
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 10px;
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    font-size: 14px;
+    white-space: nowrap;
+    transition:
+      color 0.15s,
+      background 0.15s;
+  }
+  .nav-link:hover {
+    color: var(--text);
+    background: var(--surface-2);
+  }
+  .nav-link.is-active {
+    color: var(--text);
+  }
+  .header-actions {
+    margin-left: auto;
+  }
+  @media (max-width: 560px) {
+    .header-inner {
+      gap: 8px;
+    }
+    .logo-text {
+      display: none;
+    }
+    .nav-link {
+      padding: 0 8px;
+    }
+  }
+</style>

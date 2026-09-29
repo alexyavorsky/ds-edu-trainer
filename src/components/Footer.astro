@@ -1,0 +1,29 @@
+---
+import BugReportLink from './BugReportLink.astro';
+---
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p class="muted">Задачи решаются в своём редакторе. Прогресс хранится только в этом браузере.</p>
+    <BugReportLink compact />
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: 96px;
+    border-top: 1px solid var(--border);
+  }
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 20px;
+    padding-bottom: 28px;
+    font-size: 13px;
+  }
+  .footer p {
+    margin: 0;
+  }
+</style>

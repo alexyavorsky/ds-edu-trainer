@@ -1,0 +1,66 @@
+---
+title: Производительность и память
+level: advanced
+summary: Как уменьшить память таблицы и ускорить обработку — типы, векторизация, чтение только нужного.
+requires: [pandas/dtypes, pandas/category, pandas/apply]
+related: [pandas/iteration, pandas/copy-on-write, numpy/vectorization]
+functions: [DataFrame.memory_usage, DataFrame.astype, pd.to_numeric, DataFrame.eval, DataFrame.query, DataFrame.convert_dtypes]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/enhancingperf.html
+---
+
+## Коротко
+
+- Сколько занимает таблица — `memory_usage(deep=True)`. Без `deep` у столбцов `object` считаются только ссылки на строки; у типа `str` результат одинаковый.
+- Повторяющиеся строки → `category`: память падает в разы.
+- Маленькие числа → меньший тип: `pd.to_numeric(s, downcast="integer")`.
+- Главное ускорение — **векторизация**: операции над столбцами вместо `apply(axis=1)` и циклов. Разница — на порядки.
+- Читайте только нужное: `read_csv(usecols=…, dtype=…)`; для промежуточных данных используйте Parquet.
+- Типы Apache Arrow (`dtype_backend="pyarrow"`) есть для всех столбцов. Строки типа `str` при установленном pyarrow и так хранятся в Arrow.
+- `eval` и `query` — выражения строкой; на больших таблицах иногда быстрее, но главное — короче.
+
+## Синтаксис
+
+<Syntax code={`df.memory_usage(deep=True)
+df["col"].astype("category")
+pd.to_numeric(s, downcast="integer")          # или "float"
+pd.read_csv(path, usecols=[...], dtype={...}, dtype_backend="pyarrow")
+df.convert_dtypes(dtype_backend="pyarrow")
+df.eval("c = a * b"), df.query("a > 1")`} />
+
+## Примеры
+
+<Setup />
+
+<Example id="memory" title="Сколько памяти занимают столбцы" />
+
+<Example id="deep" title="Когда нужен deep=True" />
+
+<Example id="category" title="category для повторяющихся строк" />
+
+<Example id="downcast" title="Меньший целый тип" />
+
+<Example id="vectorized" title="Векторизация против apply" />
+
+Время снято один раз и показано вместе с машиной и датой замера. На другом компьютере числа будут другими, но порядок разницы сохранится.
+
+<Example id="usecols" title="Читать только нужное" />
+
+<Example id="arrow" title="Типы Arrow" />
+
+<Example id="eval" title="eval" />
+
+## Подводные камни
+
+<Pitfall title="Оптимизация до измерения">
+
+Сначала найдите, что действительно медленно или занимает память: `memory_usage(deep=True)`, `%timeit` в Jupyter. Чаще всего проблема — `apply`, `iterrows` или цикл с `concat`, а не типы.
+
+</Pitfall>
+
+<Pitfall title="downcast и переполнение">
+
+После уменьшения типа (`int8` до 127) дальнейшая арифметика может выйти за пределы и молча переполниться, как в [NumPy](/reference/numpy/dtypes). Уменьшайте типы для хранения, а считайте в обычных.
+
+<Example id="overflow" title="int8 + 100" />
+
+</Pitfall>

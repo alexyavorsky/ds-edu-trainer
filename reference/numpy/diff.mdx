@@ -1,0 +1,59 @@
+---
+title: "Разности: diff и gradient"
+level: medium
+summary: Изменение между соседними элементами — расход по показаниям счётчика, прирост по дням, скорость по координатам.
+requires: [numpy/axis]
+related: [numpy/aggregations, numpy/join-split, pandas/shift-diff]
+functions: [np.diff, np.gradient, np.ediff1d]
+docs: https://numpy.org/doc/2.5/reference/generated/numpy.diff.html
+---
+
+## Коротко
+
+- `np.diff(a)` — `a[1:] - a[:-1]`: разности соседних элементов. Результат **на 1 короче**.
+- `prepend=` / `append=` добавляют значение перед вычислением, чтобы сохранить длину.
+- `n=2` — разность разностей (вторая разность).
+- В многомерном массиве по умолчанию берётся **последняя** ось; другая — через `axis`.
+- `diff` и `cumsum` взаимно обратны. `np.gradient` возвращает массив той же длины: центральные разности внутри и односторонние на краях.
+
+## Синтаксис
+
+<Syntax code={`np.diff(a, n=1, axis=-1, prepend=None, append=None)
+np.gradient(a)          # производная по сетке с шагом 1
+np.gradient(a, x)       # по координатам x`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['n', 'сколько раз взять разность', '1'],
+    ['axis', 'ось, вдоль которой считать', '-1'],
+    ['prepend, append', 'значения, которые добавляются в начало / конец перед вычислением', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="basic" title="Расход по дням" />
+
+<Example id="prepend" title="Сохранить длину" />
+
+<Example id="inverse" title="cumsum отменяет diff" />
+
+<Example id="second" title="Вторая разность" />
+
+<Example id="two-dims" title="Двумерный массив" />
+
+<Example id="gradient" title="gradient — производная той же длины" />
+
+## Подводные камни
+
+<Pitfall title="Беззнаковые целые">
+
+Для `uint8`, `uint16` и других беззнаковых типов отрицательная разность «переворачивается» в большое положительное число. Перед `diff` переведите массив в знаковый тип: `level.astype(np.int16)`.
+
+<Example id="unsigned" title="diff для uint8" />
+
+</Pitfall>

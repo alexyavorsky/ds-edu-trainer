@@ -1,0 +1,9 @@
+[[mutant]]
+name = "лимит перелётов не соблюдается"
+find = "        if used == max_flights:\n            continue\n"
+replace = ""
+
+[[mutant]]
+name = "одна метка на город — дешёвый, но длинный путь закрывает короткий"
+find = "        if (city, used) in done:\n            continue"
+replace = "        if any(c == city for c, _ in done):\n            continue"

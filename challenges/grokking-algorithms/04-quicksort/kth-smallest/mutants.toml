@@ -1,0 +1,14 @@
+[[mutant]]
+name = "номер в правой части не сдвигается на размер «равных»"
+find = "return kth_fastest(greater, k - len(less) - len(equal))"
+replace = "return kth_fastest(greater, k - len(less))"
+
+[[mutant]]
+name = "граница «равных» сдвинута на единицу"
+find = "if k <= len(less) + len(equal):"
+replace = "if k < len(less) + len(equal):"
+
+[[mutant]]
+name = "опорный — первый элемент (худший случай на упорядоченном входе)"
+find = "pivot = random.choice(times)"
+replace = "pivot = times[0]"

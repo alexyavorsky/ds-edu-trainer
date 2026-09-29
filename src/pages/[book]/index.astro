@@ -1,0 +1,126 @@
+---
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ChallengeList from '../../components/ChallengeList.astro';
+import ChapterCard from '../../components/ChapterCard.astro';
+import ProgressBar from '../../components/ProgressBar.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getEntry } from 'astro:content';
+import { getBooks, getChallenges, getChapters, type Book } from '../../lib/content';
+import { tasksLabel } from '../../lib/labels';
+
+export async function getStaticPaths() {
+  return (await getBooks()).map((book) => ({ params: { book: book.id }, props: { book } }));
+}
+
+const { book } = Astro.props as { book: Book };
+const chapters = await getChapters(book.id);
+const challenges = await getChallenges(book.id);
+const byChapter = (slug: string) => challenges.filter((c) => c.data.chapter === slug);
+const ordered = chapters.flatMap((ch) => byChapter(ch.data.slug));
+const isTopic = book.data.kind === 'topic';
+const referenceTopic = book.data.reference ? await getEntry('topics', book.data.reference) : undefined;
+---
+
+<BaseLayout title={book.data.title} description={book.data.description}>
+  <Breadcrumbs items={[{ label: 'Задачи', href: '/' }, { label: book.data.title }]} />
+
+  <header class="head">
+    <div>
+      <h1>{book.data.title}</h1>
+      <p class="muted">
+        {book.data.author}
+        {book.data.edition && ` · ${book.data.edition}`}
+        {book.data.author && ' · '}
+        {tasksLabel(challenges.length)}
+        {book.data.packages.length > 0 && ` · нужны пакеты: ${book.data.packages.join(', ')}`}
+      </p>
+    </div>
+    {
+      challenges.length > 0 && (
+        <div class="total">
+          <ProgressBar ids={challenges.map((c) => c.data.taskId)} />
+        </div>
+      )
+    }
+  </header>
+
+  {
+    chapters.length === 0 ? (
+      <section class="empty card">
+        <span class="pill">скоро</span>
+        <p>
+          Задачи по этой теме появятся позже. {isTopic && 'Разделы будут повторять разделы справочника, а задачи — ссылаться на его статьи.'}
+        </p>
+        {referenceTopic && (
+          <a class="btn" href={`/reference/${referenceTopic.id}`}>
+            Открыть справочник: {referenceTopic.data.title}
+          </a>
+        )}
+      </section>
+    ) : (
+      <>
+        <section class="block">
+          <h2 class="section-title">{isTopic ? 'Разделы' : 'Главы'}</h2>
+          <div class="chapters">
+            {chapters.map((chapter) => (
+              <ChapterCard chapter={chapter} challenges={byChapter(chapter.data.slug)} />
+            ))}
+          </div>
+        </section>
+
+        <section class="block">
+          <h2 class="section-title">{isTopic ? 'Все задачи темы' : 'Все задачи книги'}</h2>
+          <ChallengeList challenges={ordered} chapters={chapters} />
+        </section>
+      </>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px 32px;
+    margin-bottom: 40px;
+  }
+  .head h1 {
+    font-size: clamp(26px, 5vw, 34px);
+    letter-spacing: -0.03em;
+  }
+  .head p {
+    margin: 8px 0 0;
+  }
+  .total {
+    width: min(100%, 280px);
+  }
+  .block + .block {
+    margin-top: 48px;
+  }
+  .empty {
+    display: grid;
+    gap: 14px;
+    justify-items: start;
+    padding: 24px;
+  }
+  .empty p {
+    margin: 0;
+    color: var(--text-2);
+    max-width: 620px;
+  }
+  .pill {
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 99px;
+    color: var(--accent-strong);
+    background: var(--accent-soft);
+  }
+  .chapters {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: 12px;
+  }
+</style>

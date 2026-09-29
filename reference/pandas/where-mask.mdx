@@ -1,0 +1,67 @@
+---
+title: where, mask, clip
+level: medium
+summary: Заменить значения по условию — выбросы, невозможные значения — и ограничить диапазоном.
+requires: [pandas/filtering]
+related: [pandas/replace, pandas/missing, numpy/where, numpy/rounding]
+functions: [DataFrame.where, DataFrame.mask, DataFrame.clip, Series.where, Series.mask, Series.clip]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/reference/api/pandas.DataFrame.where.html
+---
+
+## Коротко
+
+- `s.where(условие, другое)` **оставляет** значения, где условие `True`, остальные заменяет (по умолчанию на `NaN`).
+- `s.mask(условие, другое)` — наоборот: **заменяет**, где условие `True`.
+- Замена может быть числом, Series или таблицей той же формы — значения берутся по меткам.
+- `clip(lower, upper)` ограничивает значения диапазоном; границы могут быть Series — свои для каждой строки.
+- Не путайте с `np.where(условие, a, b)`: там выбирается одно из двух значений, а у `where` в pandas «другое» используется только там, где условие ложно.
+
+## Синтаксис
+
+<Syntax code={`s.where(cond, other=nan)     # оставить, где cond
+s.mask(cond, other=nan)      # заменить, где cond
+s.clip(lower=None, upper=None)
+np.where(cond, a, b)         # NumPy: массив из a или b`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['cond', 'условие: булев Series / DataFrame или функция от объекта', '—'],
+    ['other', 'на что заменить: значение, Series, DataFrame или функция', 'NaN'],
+    ['lower, upper', 'в clip: границы — числа или Series', 'None'],
+    ['inplace', 'изменить на месте; в pandas 3 возвращает сам объект', 'False'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="where" title="where: невозможные значения в NaN" />
+
+<Example id="mask" title="mask: заменить то, что подходит под условие" />
+
+<Example id="other-series" title="Замена значениями другого Series" />
+
+<Example id="frame" title="По всей таблице" />
+
+<Example id="clip" title="clip: ограничить диапазоном" />
+
+<Example id="clip-series" title="Свои границы для каждой строки" />
+
+## Подводные камни
+
+<Pitfall title="where оставляет, а не заменяет">
+
+Логика обратная привычной: `where(temps > 50, 50)` заменит на 50 всё, что **не больше** 50. Для «заменить, если больше» — `mask`.
+
+</Pitfall>
+
+<Pitfall title="np.where возвращает массив">
+
+Результат `np.where` — массив NumPy без индекса. Чтобы получить Series, оберните: `pd.Series(np.where(...), index=s.index)`.
+
+<Example id="np-where" title="np.where для Series" />
+
+</Pitfall>

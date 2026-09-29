@@ -1,0 +1,69 @@
+---
+title: "Столбцы: добавить, изменить, удалить"
+level: basic
+summary: Создать новый столбец из вычисления, переименовать или удалить столбцы.
+requires: [pandas/select-columns]
+related: [pandas/method-chaining, pandas/apply, pandas/dtypes]
+functions: [DataFrame.assign, DataFrame.insert, DataFrame.rename, DataFrame.drop, pd.col]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/dsintro.html#column-selection-addition-deletion
+---
+
+## Коротко
+
+- `df["new"] = выражение` добавляет или заменяет столбец **на месте**. Одно значение запишется во все строки.
+- `df.assign(new=...)` возвращает **новую** таблицу и удобно встраивается в цепочки. Внутри `assign` можно ссылаться на только что созданные столбцы через `lambda d: …` или `pd.col("…")`.
+- `insert(позиция, имя, значения)` — добавить столбец в нужное место.
+- `rename(columns={"старое": "новое"})` и `drop(columns=[...])` возвращают новую таблицу.
+- `pd.col("price")` (новое в pandas 3.0) — короткая ссылка на столбец вместо `lambda d: d["price"]`.
+
+## Синтаксис
+
+<Syntax code={`df["new"] = df["a"] * 2
+df.assign(new=lambda d: d["a"] * 2, other=pd.col("b") + 1)
+df.insert(loc, column, value)
+df.rename(columns={"old": "new"})
+df.drop(columns=["a", "b"], errors="raise")`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['columns', 'в rename — словарь или функция для имён; в drop — список удаляемых столбцов', 'None'],
+    ['errors', 'в drop: "ignore" — не падать, если столбца нет', '"raise"'],
+    ['loc', 'в insert: позиция нового столбца', '—'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="add" title="Новый столбец" />
+
+<Example id="assign" title="assign — новая таблица" />
+
+<Example id="pd-col" title="pd.col вместо lambda" />
+
+<Example id="insert" title="Столбец на нужную позицию" />
+
+<Example id="rename" title="Переименовать" />
+
+<Example id="drop" title="Удалить" />
+
+<Example id="change" title="Заменить значения" />
+
+## Подводные камни
+
+<Pitfall title="rename, drop и assign не меняют исходную таблицу">
+
+Они возвращают новую таблицу — результат нужно сохранить: `menu = menu.drop(columns=["cost"])`. Таблицу на месте меняют присваивание (`df["col"] = …`, `df.loc[…] = …`), `insert`, `pop` и `del df["col"]`.
+
+</Pitfall>
+
+<Pitfall title="Удаление несуществующего столбца">
+
+<Example id="drop-missing" title="drop с опечаткой" />
+
+Если столбца может не быть — `errors="ignore"`.
+
+</Pitfall>

@@ -1,0 +1,72 @@
+---
+title: Сортировка
+level: medium
+summary: Упорядочить массив, узнать порядок индексов и отсортировать строки таблицы по столбцу.
+requires: [numpy/fancy, numpy/axis]
+related: [numpy/searching, numpy/unique-sets, pandas/sorting]
+functions: [np.sort, ndarray.sort, np.argsort, np.lexsort]
+docs: https://numpy.org/doc/2.5/reference/generated/numpy.sort.html
+---
+
+## Коротко
+
+- `np.sort(a)` возвращает **новый** отсортированный массив; метод `a.sort()` сортирует **на месте** и возвращает `None`.
+- `descending=True` (с NumPy 2.5) — по убыванию. В старом коде для этого писали `np.sort(a)[::-1]`.
+- `np.argsort(a)` — индексы, которые упорядочили бы `a`. С ними сортируют связанные массивы и строки таблицы.
+- В многомерном массиве по умолчанию сортируется каждая строка (`axis=-1`); `axis=None` — весь массив как одномерный.
+- Несколько ключей — `np.lexsort`: главный ключ передаётся **последним**.
+
+## Синтаксис
+
+<Syntax code={`np.sort(a, axis=-1, kind=None, descending=False)
+a.sort(axis=-1)                   # на месте
+np.argsort(a, axis=-1, descending=False)
+table[table[:, k].argsort()]      # строки по столбцу k
+np.lexsort((второстепенный, главный))`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['axis', 'ось сортировки; None — вытянуть в одну строку', '-1'],
+    ['descending', 'по убыванию (новое в 2.5)', 'False'],
+    ['stable', 'True — равные элементы сохраняют исходный порядок', 'None'],
+    ['kind', "старый способ выбрать алгоритм: 'quicksort', 'stable'…; нельзя вместе с stable/descending", 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="sort" title="По возрастанию и по убыванию" />
+
+<Example id="argsort" title="argsort: упорядочить связанный массив" />
+
+<Example id="axis" title="Строки и столбцы" />
+
+<Example id="rows-by-column" title="Строки таблицы по столбцу" />
+
+<Example id="lexsort" title="Несколько ключей: lexsort" />
+
+Сначала по городу, при равном городе — по баллам.
+
+## Подводные камни
+
+<Pitfall title="a.sort() возвращает None">
+
+`result = a.sort()` — частая ошибка: массив отсортирован на месте, а в `result` — `None`. Нужен новый массив — `np.sort(a)`.
+
+<Example id="in-place" title="Метод sort" />
+
+</Pitfall>
+
+<Pitfall title="Сортировка по убыванию в старом коде">
+
+<VersionNote since="NumPy 2.5" was="параметра descending не было: писали np.sort(a)[::-1] или np.argsort(-a)" now="np.sort(a, descending=True), np.argsort(a, descending=True)" />
+
+Разворот `[::-1]` по-прежнему работает, но у равных элементов меняет порядок на обратный.
+
+<Example id="reverse-old" title="Разворот отсортированного массива" />
+
+</Pitfall>

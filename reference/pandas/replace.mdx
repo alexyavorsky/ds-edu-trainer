@@ -1,0 +1,74 @@
+---
+title: "Замена значений: replace"
+level: medium
+summary: Заменить конкретные значения — опечатки, коды «нет данных», варианты написания — во всей таблице или в отдельных столбцах.
+requires: [pandas/select-columns]
+related: [pandas/where-mask, pandas/strings, pandas/missing, pandas/apply]
+functions: [DataFrame.replace, Series.replace, Series.map]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/reference/api/pandas.DataFrame.replace.html
+---
+
+## Коротко
+
+- `replace(старое, новое)` заменяет **целые значения** ячеек. Подстроку внутри текста меняет `.str.replace`.
+- Словарь `{старое: новое}` — несколько замен сразу; список старых значений — все в одно новое.
+- Вложенный словарь `{"столбец": {старое: новое}}` — замены только в указанных столбцах.
+- `regex=True` — старое значение как регулярное выражение.
+- `replace` оставляет незнакомые значения как есть, а `map` со словарём превращает их в `NaN`.
+
+## Синтаксис
+
+<Syntax code={`s.replace(old, new)
+s.replace({"a": "b", "c": "d"})
+df.replace(["x", "y"], np.nan)
+df.replace({"col": {old: new}})
+s.replace(pattern, new, regex=True)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['to_replace', 'что заменить: значение, список, словарь, регулярное выражение', '—'],
+    ['value', 'на что заменить; не нужен, если to_replace — словарь замен', 'None'],
+    ['regex', 'считать to_replace регулярным выражением', 'False'],
+    ['inplace', 'изменить на месте; в pandas 3 возвращает саму таблицу', 'False'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="scalar" title="Код «нет ответа» в NaN" />
+
+<Example id="dict" title="Словарь замен" />
+
+<Example id="list" title="Несколько значений в одно" />
+
+<Example id="per-column" title="Замены по столбцам" />
+
+<Example id="regex" title="Регулярное выражение" />
+
+## Подводные камни
+
+<Pitfall title="replace меняет только целые значения">
+
+Чтобы заменить часть текста, нужен `.str.replace` — см. [строки](/reference/pandas/strings).
+
+<Example id="whole-value" title="Значение и подстрока" />
+
+</Pitfall>
+
+<Pitfall title="replace и map со словарём">
+
+<Example id="vs-map" title="Незнакомые значения" />
+
+</Pitfall>
+
+<Pitfall title="inplace=True возвращает таблицу">
+
+<VersionNote since="pandas 3.0" was="replace, fillna, where, mask, clip… с inplace=True возвращали None" now="возвращают сам изменённый объект" />
+
+<Example id="inplace" title="Результат replace(..., inplace=True)" />
+
+</Pitfall>

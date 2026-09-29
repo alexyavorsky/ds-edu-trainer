@@ -1,0 +1,76 @@
+---
+/** Схема транслирования: три случая, растянутые ячейки пунктиром. */
+import ArrayGrid from './ArrayGrid.astro';
+import Diagram from './Diagram.astro';
+
+const base = [
+  [0, 0, 0, 0],
+  [10, 10, 10, 10],
+  [20, 20, 20, 20],
+];
+const row = [[1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]];
+const col = [[1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3]];
+const colA = [[0, 0, 0, 0], [10, 10, 10, 10], [20, 20, 20, 20]];
+const add = (a: number[][], b: number[][]) => a.map((r, i) => r.map((v, j) => v + b[i][j]));
+const cases = [
+  { title: 'Матрица + строка', a: { v: base, shape: '(3, 4)' }, b: { v: row, rows: 1, shape: '(4,) → (1, 4)' }, r: add(base, row) },
+  { title: 'Матрица + столбец', a: { v: base, shape: '(3, 4)' }, b: { v: col, cols: 1, shape: '(3, 1)' }, r: add(base, col) },
+  { title: 'Столбец + строка', a: { v: colA, cols: 1, shape: '(3, 1)' }, b: { v: row, rows: 1, shape: '(4,) → (1, 4)' }, r: add(colA, row) },
+];
+---
+
+<Diagram
+  caption="Сплошные ячейки — настоящие данные, пунктирные — растянутые: NumPy ведёт себя так, будто значения повторены, но не копирует их."
+  label="Схема транслирования: матрица 3×4 плюс строка, матрица плюс столбец, столбец плюс строка — результат 3×4"
+>
+  <div class="cases">
+    {
+      cases.map((c) => (
+        <div class="case">
+          <span class="case-title">{c.title}</span>
+          <div class="formula">
+            <ArrayGrid values={c.a.v} realCols={'cols' in c.a ? (c.a.cols as number) : undefined} shape={c.a.shape} tone="a" />
+            <span class="op">+</span>
+            <ArrayGrid values={c.b.v} realRows={c.b.rows} realCols={c.b.cols} shape={c.b.shape} tone="b" />
+            <span class="op">=</span>
+            <ArrayGrid values={c.r} shape="(3, 4)" tone="result" />
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</Diagram>
+
+<style>
+  .cases {
+    display: grid;
+    gap: 22px;
+    justify-content: center;
+  }
+  .case {
+    display: grid;
+    gap: 10px;
+  }
+  .case-title {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+  .formula {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .op {
+    align-self: center;
+    margin-top: -22px;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    color: var(--muted);
+  }
+  @media (max-width: 560px) {
+    .formula {
+      gap: 6px;
+    }
+  }
+</style>

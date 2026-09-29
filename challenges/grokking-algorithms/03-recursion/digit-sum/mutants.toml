@@ -1,0 +1,9 @@
+[[mutant]]
+name = "потеряна последняя цифра"
+find = "return n % 10 + digit_sum(n // 10)"
+replace = "return digit_sum(n // 10)"
+
+[[mutant]]
+name = "базовый случай только для нуля — цикл через str"
+find = "    if n < 10:  # базовый случай: одна цифра\n        return n\n    return n % 10 + digit_sum(n // 10)"
+replace = "    return sum(int(d) for d in str(n))"

@@ -1,0 +1,53 @@
+---
+/** Схема melt / pivot: широкий формат (месяцы в столбцах) ⇄ длинный (месяц — значение в столбце). */
+import Arrows from './Arrows.astro';
+import Diagram from './Diagram.astro';
+import MiniTable from './MiniTable.astro';
+---
+
+<Diagram
+  caption="melt превращает столбцы jan и feb в пары «имя столбца — значение»: каждая ячейка широкой таблицы становится строкой длинной. pivot делает обратное."
+  label="Схема: широкая таблица city, jan, feb превращается в длинную city, month, cups и обратно"
+>
+  <div class="flow">
+    <MiniTable
+      title="Широкий формат"
+      columns={['city', 'jan', 'feb']}
+      rows={[
+        ['Омск', 120, 130],
+        ['Тула', 95, 105],
+      ]}
+      cellTones={[
+        [0, 1, 2],
+        [0, 1, 2],
+      ]}
+    />
+    <Arrows forward={'melt(id_vars="city")'} back={'pivot(index="city", columns="month")'} />
+    <MiniTable
+      title="Длинный формат"
+      columns={['city', 'month', 'cups']}
+      rows={[
+        ['Омск', 'jan', 120],
+        ['Тула', 'jan', 95],
+        ['Омск', 'feb', 130],
+        ['Тула', 'feb', 105],
+      ]}
+      tones={[1, 1, 2, 2]}
+    />
+  </div>
+</Diagram>
+
+<style>
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+  @media (max-width: 620px) {
+    .flow {
+      flex-direction: column;
+      gap: 14px;
+    }
+  }
+</style>

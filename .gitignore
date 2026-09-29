@@ -1,0 +1,16 @@
+# книга — не коммитить и не деплоить
+*.pdf
+
+node_modules/
+dist/
+.astro/
+.vercel/
+__pycache__/
+*.pyc
+.DS_Store
+
+# собранные файлы для CI
+bundles/
+
+# окружение для проверки справочника
+.venv/

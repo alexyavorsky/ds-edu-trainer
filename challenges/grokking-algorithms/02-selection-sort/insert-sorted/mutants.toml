@@ -1,0 +1,14 @@
+[[mutant]]
+name = "равный голове заказ встаёт перед ней"
+find = "if head is None or time < head.value:"
+replace = "if head is None or time <= head.value:"
+
+[[mutant]]
+name = "равный заказ встаёт перед существующими"
+find = "while cur.next is not None and cur.next.value <= time:"
+replace = "while cur.next is not None and cur.next.value < time:"
+
+[[mutant]]
+name = "потерян хвост после вставки"
+find = "    node.next = cur.next\n"
+replace = ""

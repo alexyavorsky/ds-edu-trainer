@@ -1,0 +1,75 @@
+---
+title: Линейная алгебра
+level: advanced
+summary: Решить систему уравнений, найти обратную матрицу, определитель, собственные значения, норму и приближённое решение методом наименьших квадратов.
+requires: [numpy/matmul]
+related: [numpy/einsum, numpy/statistics, numpy/comparing]
+functions: [np.linalg.solve, np.linalg.inv, np.linalg.det, np.linalg.eig, np.linalg.eigh, np.linalg.norm, np.linalg.lstsq, np.linalg.matrix_rank, np.linalg.LinAlgError]
+docs: https://numpy.org/doc/2.5/reference/routines.linalg.html
+---
+
+## Коротко
+
+- `np.linalg.solve(A, b)` решает систему `A @ x = b`. Это точнее и быстрее, чем `inv(A) @ b`.
+- `inv` — обратная матрица, `det` — определитель, `matrix_rank` — ранг.
+- `eigh` — собственные значения и векторы **симметричной** матрицы (вещественные, по возрастанию); `eig` — для любой квадратной.
+- `norm` — норма вектора или матрицы; с `axis` — для каждой строки или столбца.
+- `lstsq(X, y)` — приближённое решение переопределённой системы (линейная регрессия).
+- Вырожденная матрица даёт `LinAlgError`. Результаты — числа с плавающей точкой: сравнивайте через `np.allclose`.
+
+## Синтаксис
+
+<Syntax code={`np.linalg.solve(A, b)
+np.linalg.inv(A), np.linalg.det(A), np.linalg.matrix_rank(A)
+values, vectors = np.linalg.eigh(A)     # симметричная A
+values, vectors = np.linalg.eig(A)      # любая квадратная A
+np.linalg.norm(x, ord=None, axis=None)
+coef, residuals, rank, sv = np.linalg.lstsq(X, y)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['ord', 'вид нормы: None — евклидова, 1 — сумма модулей, np.inf — максимум модуля', 'None'],
+    ['axis', 'в norm: считать норму вдоль оси (например, каждой строки)', 'None'],
+    ['rcond', 'в lstsq: порог отбрасывания малых сингулярных чисел', 'по машинной точности'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="solve" title="Решить систему уравнений" />
+
+<Example id="inv-det" title="Обратная матрица и определитель" />
+
+<Example id="solve-vs-inv" title="solve вместо inv" />
+
+<Example id="norm" title="Нормы" />
+
+<Example id="eigh" title="Собственные значения симметричной матрицы" />
+
+<Example id="lstsq" title="Метод наименьших квадратов" />
+
+## Подводные камни
+
+<Pitfall title="eig всегда возвращает комплексные числа">
+
+<VersionNote since="NumPy 2.5" was="eig возвращал вещественный массив, если все собственные значения оказались вещественными" now="eig и eigvals всегда возвращают комплексный массив; для симметричных матриц используйте eigh" />
+
+<Example id="eig-complex" title="eig для симметричной матрицы" />
+
+</Pitfall>
+
+<Pitfall title="Вырожденная матрица">
+
+Если строки линейно зависимы (ранг меньше размера), решения нет или их бесконечно много.
+
+<Example id="rank" title="Ранг вырожденной матрицы" />
+
+<Example id="singular" title="solve для вырожденной матрицы" />
+
+Для таких систем используйте `lstsq` — он вернёт решение с наименьшей ошибкой.
+
+</Pitfall>

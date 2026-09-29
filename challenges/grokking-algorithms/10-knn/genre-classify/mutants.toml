@@ -1,0 +1,14 @@
+[[mutant]]
+name = "при ничьей — первый по алфавиту жанр"
+find = "    for _, label in neighbors:  # от ближнего к дальнему\n        if votes[label] == top:\n            return label"
+replace = "    return min(label for label, n in votes.items() if n == top)"
+
+[[mutant]]
+name = "при равных расстояниях сортировка по метке"
+find = "    neighbors = sorted(train, key=lambda item: math.dist(item[0], query))[:k]"
+replace = "    neighbors = sorted(train, key=lambda item: (math.dist(item[0], query), item[1]))[:k]"
+
+[[mutant]]
+name = "берутся k самых дальних"
+find = "    neighbors = sorted(train, key=lambda item: math.dist(item[0], query))[:k]"
+replace = "    neighbors = sorted(train, key=lambda item: math.dist(item[0], query))[-k:]"

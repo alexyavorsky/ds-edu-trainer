@@ -1,0 +1,4 @@
+[[mutant]]
+name = "обновление ключа увеличивает счётчик"
+find = "                bucket[i] = (key, value)\n                return"
+replace = "                bucket[i] = (key, value)\n                self.count += 1\n                return"

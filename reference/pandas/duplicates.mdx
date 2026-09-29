@@ -1,0 +1,58 @@
+---
+title: Дубликаты
+level: medium
+summary: Найти, посчитать и удалить повторяющиеся строки — целиком или по выбранным столбцам.
+requires: [pandas/filtering]
+related: [pandas/inspect, numpy/unique-sets, pandas/groupby]
+functions: [DataFrame.duplicated, DataFrame.drop_duplicates, Series.duplicated, Series.drop_duplicates]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/duplicates.html
+---
+
+## Коротко
+
+- `duplicated()` — маска: `True` у строки, которая **повторяет** уже встречавшуюся.
+- `drop_duplicates()` удаляет повторы и возвращает новую таблицу.
+- `subset` — какие столбцы сравнивать; без него сравниваются все.
+- `keep="first"` (по умолчанию) оставляет первое вхождение, `"last"` — последнее, `False` — помечает или удаляет **все** повторяющиеся строки.
+- Число повторов — `duplicated().sum()`.
+
+## Синтаксис
+
+<Syntax code={`df.duplicated(subset=None, keep="first")
+df.drop_duplicates(subset=None, keep="first", ignore_index=False)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['subset', 'столбец или список столбцов для сравнения', 'все столбцы'],
+    ['keep', '"first", "last" или False — какие вхождения не считать повтором', '"first"'],
+    ['ignore_index', 'в drop_duplicates: новый индекс 0, 1, 2…', 'False'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="duplicated" title="Какие строки — повторы" />
+
+<Example id="count" title="Сколько повторов" />
+
+<Example id="drop" title="Удалить повторы" />
+
+<Example id="keep-last" title="Оставить последнее вхождение" />
+
+<Example id="keep-false" title="Все строки, у которых есть повтор" />
+
+<Example id="ignore-index" title="Новый индекс после удаления" />
+
+## Подводные камни
+
+<Pitfall title="Без subset повторов может не найтись">
+
+Если хотя бы один столбец различается (например, время), строки не считаются дубликатами. Укажите, по каким столбцам строка «та же самая».
+
+<Example id="whole-row" title="Сравнение по всем столбцам" />
+
+</Pitfall>

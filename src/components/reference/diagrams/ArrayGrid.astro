@@ -1,0 +1,82 @@
+---
+/**
+ * Массив в виде сетки ячеек. Ячейки вне realRows × realCols рисуются «виртуальными» —
+ * так показано растягивание при транслировании.
+ */
+interface Props {
+  values: (number | string)[][];
+  realRows?: number;
+  realCols?: number;
+  shape: string;
+  tone?: 'a' | 'b' | 'result';
+}
+const { values, realRows = Infinity, realCols = Infinity, shape, tone = 'a' } = Astro.props;
+const cols = values[0]?.length ?? 0;
+---
+
+<div class:list={['array', `tone-${tone}`]}>
+  <div class="cells" style={`grid-template-columns: repeat(${cols}, var(--cell))`}>
+    {values.map((row, r) => row.map((v, c) => <span class:list={['cell', (r >= realRows || c >= realCols) && 'virtual']}>{v}</span>))}
+  </div>
+  <span class="shape">{shape}</span>
+</div>
+
+<style>
+  .array {
+    --cell: 30px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .cells {
+    display: grid;
+    gap: 3px;
+  }
+  .cell {
+    display: grid;
+    place-items: center;
+    height: var(--cell);
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text);
+    background: var(--c-soft);
+    border: 1px solid var(--c-line);
+  }
+  .cell.virtual {
+    color: var(--muted);
+    background: transparent;
+    border-style: dashed;
+  }
+  .tone-a {
+    --c-soft: rgb(141 149 255 / 0.16);
+    --c-line: rgb(141 149 255 / 0.45);
+  }
+  .tone-b {
+    --c-soft: rgb(238 177 83 / 0.16);
+    --c-line: rgb(238 177 83 / 0.5);
+  }
+  .tone-result {
+    --c-soft: rgb(76 195 138 / 0.14);
+    --c-line: rgb(76 195 138 / 0.45);
+  }
+  .shape {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  @media (max-width: 560px) {
+    .array {
+      --cell: 22px;
+    }
+    .cell {
+      font-size: 10.5px;
+      border-radius: 4px;
+    }
+    .shape {
+      font-size: 10.5px;
+    }
+  }
+</style>

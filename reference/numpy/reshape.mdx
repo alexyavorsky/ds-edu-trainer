@@ -1,0 +1,68 @@
+---
+title: reshape и ravel
+level: medium
+summary: Разложить те же данные в другую форму — например, 12 значений в таблицу 3 × 4 — или вытянуть таблицу в одну строку.
+requires: [numpy/attributes, numpy/views-copies]
+related: [numpy/transpose, numpy/join-split, numpy/memory-layout]
+functions: [np.reshape, ndarray.reshape, np.ravel, ndarray.flatten, np.resize]
+docs: https://numpy.org/doc/2.5/reference/generated/numpy.reshape.html
+---
+
+## Коротко
+
+- `a.reshape(3, 4)` раскладывает элементы в новую форму; **число элементов** должно совпадать.
+- Одна из размерностей может быть `-1` — NumPy вычислит её сам. `a.reshape(-1)` вытягивает массив в одну строку.
+- Элементы читаются и раскладываются **по строкам** (порядок C); `order="F"` — по столбцам.
+- `reshape` и `ravel` по возможности возвращают **представление**, `flatten` — всегда копию.
+- Другой размер (с повтором данных) — функция `np.resize`.
+
+## Синтаксис
+
+<Syntax code={`a.reshape(3, 4)          # или a.reshape((3, 4))
+a.reshape(-1, 4)         # число строк вычислится
+a.reshape(-1)            # одномерный
+a.ravel()                # одномерный, по возможности без копии
+a.flatten()              # одномерный, всегда копия
+np.resize(a, new_size)   # другой размер, данные повторяются`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['shape', 'новая форма: числа через запятую или кортеж; одно из чисел может быть -1', '—'],
+    ['order', '"C" — по строкам, "F" — по столбцам', '"C"'],
+    ['copy', 'True — всегда копировать; False — ошибка, если без копии нельзя; None — как получится', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="basic" title="12 значений в таблицу 3 × 4" />
+
+<Example id="minus-one" title="-1 вместо одной размерности" />
+
+<Example id="order" title="Порядок раскладки" />
+
+<Example id="ravel-flatten" title="ravel и flatten" />
+
+## Подводные камни
+
+<Pitfall title="Число элементов должно совпадать">
+
+<Example id="bad-size" title="Неподходящая форма" />
+
+Если нужен другой размер с повтором данных — `np.resize`; с дополнением нулями — [np.pad](/reference/numpy/pad).
+
+<Example id="resize-function" title="np.resize" />
+
+</Pitfall>
+
+<Pitfall title="Присваивание a.shape устарело">
+
+<VersionNote since="NumPy 2.5" was="a.shape = (2, 3) меняло форму на месте" now="так делать устарело — пишите a = a.reshape(2, 3)" />
+
+<Example id="set-shape" title="Присваивание shape" />
+
+</Pitfall>

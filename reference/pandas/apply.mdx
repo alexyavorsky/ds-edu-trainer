@@ -1,0 +1,71 @@
+---
+title: "Функции: map, apply, pipe"
+level: medium
+summary: Применить свою функцию к значениям, столбцам или строкам — и понять, почему сначала стоит искать векторную операцию.
+requires: [pandas/columns]
+related: [pandas/iteration, pandas/replace, pandas/method-chaining, numpy/vectorization]
+functions: [Series.map, DataFrame.map, DataFrame.apply, Series.apply, DataFrame.pipe]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/basics.html#function-application
+---
+
+## Коротко
+
+- Сначала — **векторные операции**: арифметика над столбцами, методы `.str`, `.dt`, `np.where`. Они в десятки и сотни раз быстрее.
+- `Series.map(словарь или функция)` — преобразовать каждое значение.
+- `DataFrame.map(функция)` — к каждой ячейке таблицы (раньше назывался `applymap`).
+- `df.apply(f)` передаёт в функцию **столбцы**, `df.apply(f, axis=1)` — **строки**. Построчный `apply` — это цикл Python.
+- `df.pipe(f, …)` — вызвать функцию от всей таблицы внутри цепочки методов.
+
+## Синтаксис
+
+<Syntax code={`s.map(dict_or_func, na_action=None)
+df.map(func)                       # поэлементно
+df.apply(func, axis=0)             # func(столбец)
+df.apply(func, axis=1)             # func(строка) — медленно
+df.pipe(func, *args, **kwargs)     # func(df, ...)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['arg / func', 'словарь, Series или функция', '—'],
+    ['axis', 'в apply: 0 — функция получает столбцы, 1 — строки', '0'],
+    ['na_action', 'в map: "ignore" — не вызывать функцию для NaN', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="vectorized" title="Сначала — операция над столбцами" />
+
+<Example id="map-dict" title="map со словарём" />
+
+<Example id="map-func" title="map с функцией" />
+
+<Example id="frame-map" title="DataFrame.map — каждая ячейка" />
+
+<Example id="apply-columns" title="apply по столбцам" />
+
+<Example id="apply-rows" title="apply по строкам" />
+
+<Example id="pipe" title="pipe в цепочке" />
+
+## Подводные камни
+
+<Pitfall title="apply по строкам медленный">
+
+Для каждой строки создаётся Series и вызывается функция Python. Всё, что можно записать через столбцы, пишите через столбцы.
+
+<Example id="slow" title="apply(axis=1) против векторной операции" />
+
+</Pitfall>
+
+<Pitfall title="applymap удалён">
+
+<VersionNote since="pandas 3.0" was="df.applymap(func) (устарел в 2.1)" now="df.map(func)" />
+
+<Example id="applymap" title="Вызов applymap" />
+
+</Pitfall>

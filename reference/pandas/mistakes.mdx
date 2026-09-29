@@ -1,0 +1,101 @@
+---
+title: Частые ошибки
+level: basic
+kind: overview
+summary: Двенадцать ошибок, которые чаще всего встречаются в коде с pandas, — и как их исправить.
+related: [pandas/cheatsheet, numpy/mistakes]
+functions: []
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/index.html
+---
+
+Каждая ошибка показана парой: как не надо и как надо. Подробности — в статье по ссылке.
+
+<Setup />
+
+## Цепочечное присваивание
+
+Две пары скобок при записи в pandas 3 никогда не меняют таблицу. → [Copy-on-Write](/reference/pandas/copy-on-write)
+
+<Example id="chained-wrong" title="Неправильно" />
+
+<Example id="chained-right" title="Правильно" />
+
+## and / or в фильтре
+
+→ [Фильтрация](/reference/pandas/filtering)
+
+<Example id="and-wrong" title="Неправильно" />
+
+<Example id="and-right" title="Правильно" />
+
+## Результат метода не сохранили
+
+`drop`, `rename`, `sort_values`, `fillna`, `assign` возвращают новую таблицу. → [Столбцы](/reference/pandas/columns)
+
+<Example id="assign-wrong" title="Неправильно" />
+
+<Example id="assign-right" title="Правильно" />
+
+## s[0] вместо s.iloc[0]
+
+В квадратных скобках — метка, а не позиция. → [Series](/reference/pandas/series)
+
+<Example id="position-wrong" title="Неправильно" />
+
+<Example id="position-right" title="Правильно" />
+
+## Поиск пропусков через ==
+
+→ [Пропуски](/reference/pandas/missing)
+
+<Example id="nan-wrong" title="Неправильно" />
+
+<Example id="nan-right" title="Правильно" />
+
+## Строки с пустым ключом выпали из groupby
+
+→ [groupby](/reference/pandas/groupby)
+
+<Example id="dropna-wrong" title="Неожиданно" />
+
+<Example id="dropna-right" title="Правильно" />
+
+## mean по всей таблице с текстом
+
+→ [Описательная статистика](/reference/pandas/stats)
+
+<Example id="mean-wrong" title="Неправильно" />
+
+<Example id="mean-right" title="Правильно" />
+
+## merge размножил строки
+
+Ключ в справочнике не уникален. → [merge: ключи и проверки](/reference/pandas/merge-keys)
+
+<Example id="merge-wrong" title="Неправильно" />
+
+<Example id="merge-right" title="Правильно" />
+
+## Даты остались строками
+
+→ [read_csv](/reference/pandas/read-csv), [даты](/reference/pandas/datetime)
+
+<Example id="dates-wrong" title="Неправильно" />
+
+<Example id="dates-right" title="Правильно" />
+
+## Лишний столбец после to_csv
+
+→ [read_csv](/reference/pandas/read-csv)
+
+<Example id="index-wrong" title="Неправильно" />
+
+<Example id="index-right" title="Правильно" />
+
+## apply и iterrows вместо операций над столбцами
+
+Построчная обработка в сотни раз медленнее векторной. → [Функции](/reference/pandas/apply), [почему iterrows медленный](/reference/pandas/iteration)
+
+## Код из интернета для pandas 1.x и 2.x
+
+`applymap`, `append`, `fillna(method=…)`, частоты `M` / `Q` / `Y`, позиционный `s[0]` удалены или изменили смысл. Обзор — в статье [что такое pandas](/reference/pandas/intro).

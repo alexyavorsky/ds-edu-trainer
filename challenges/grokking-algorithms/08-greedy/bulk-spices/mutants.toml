@@ -1,0 +1,9 @@
+[[mutant]]
+name = "сортировка по ценности, а не по ценности за грамм"
+find = "order = sorted(spices, key=lambda s: s[2] / s[1], reverse=True)"
+replace = "order = sorted(spices, key=lambda s: s[2], reverse=True)"
+
+[[mutant]]
+name = "последняя специя берётся целиком, даже если не влезает"
+find = "        take = min(weight, room)"
+replace = "        take = weight"

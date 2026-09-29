@@ -1,0 +1,73 @@
+---
+title: Copy-on-Write
+level: advanced
+summary: Почему изменение выборки больше не меняет исходную таблицу, куда делся SettingWithCopyWarning и как правильно изменять данные.
+requires: [pandas/loc-iloc, numpy/views-copies]
+related: [pandas/method-chaining, pandas/performance, pandas/filtering]
+functions: [DataFrame.loc, DataFrame.copy, pd.errors.ChainedAssignmentError]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/copy_on_write.html
+---
+
+## Коротко
+
+- В pandas 3 **Copy-on-Write** включён всегда: любая выборка, столбец или результат метода ведёт себя как **отдельная копия**.
+- Изменение выборки (`low = df[mask]; low["x"] = 0`) не меняет исходную таблицу, и предупреждений об этом больше нет.
+- **Цепочечное присваивание** `df["col"][0] = 1` никогда не меняет `df` — выдаётся `ChainedAssignmentError`. Изменять нужно одной операцией: `df.loc[0, "col"] = 1`.
+- Копирование ленивое: данные копируются только в момент изменения, поэтому `reset_index`, `rename` и подобные методы стали дешёвыми.
+- `.copy()` «на всякий случай» после фильтра больше не нужен.
+
+## Было и стало
+
+| Код | pandas 2.x | pandas 3 |
+| --- | --- | --- |
+| `sub = df[mask]; sub["x"] = 0` | `SettingWithCopyWarning`, результат неочевиден | меняется только `sub` |
+| `s = df["a"]; s[0] = 9` | иногда менял `df` | меняется только `s` |
+| `df["a"][0] = 9` | иногда работал | не работает, `ChainedAssignmentError` |
+| `df.loc[0, "a"] = 9` | работает | работает |
+| `df["a"].to_numpy()` | изменяемый массив | массив только для чтения |
+
+## Синтаксис
+
+<Syntax code={`df.loc[row_mask, "col"] = value     # изменить исходную таблицу
+sub = df[mask]                     # независимая выборка, можно менять
+df = df.assign(col=...)            # новый объект вместо изменения на месте`} />
+
+## Примеры
+
+<Setup />
+
+<Example id="subset" title="Изменение выборки" />
+
+<Example id="column" title="Изменение Series из столбца" />
+
+<Example id="loc" title="Правильно: одна операция loc" />
+
+<Example id="lazy-copy" title="Копия появляется только при изменении" />
+
+## Подводные камни
+
+<Pitfall title="Цепочечное присваивание молча ничего не делает">
+
+<VersionNote since="pandas 3.0" was="df['a'][0] = 1 иногда менял df (с SettingWithCopyWarning), иногда нет" now="никогда не меняет df; выдаётся ChainedAssignmentError" />
+
+<Example id="chained" title="Две пары скобок" />
+
+</Pitfall>
+
+<Pitfall title="Массив из to_numpy только для чтения">
+
+Массив может смотреть в данные таблицы, поэтому запись в него запрещена. Нужен изменяемый массив — `to_numpy(copy=True)`.
+
+<Example id="readonly" title="Запись в массив столбца" />
+
+</Pitfall>
+
+<Pitfall title="Настройка mode.copy_on_write">
+
+В pandas 2.x Copy-on-Write включали настройкой. В pandas 3 отключить его нельзя, а сама настройка устарела. Класс `SettingWithCopyWarning` удалён: код, который его ловит или отключает, падает.
+
+<Example id="option" title="Попытка отключить" />
+
+<Example id="no-warning-class" title="SettingWithCopyWarning" />
+
+</Pitfall>

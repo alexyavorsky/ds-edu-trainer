@@ -1,0 +1,102 @@
+---
+title: "Группировка: groupby"
+level: medium
+summary: Посчитать итоги по категориям — сумму продаж по городам, среднюю оценку по товарам.
+requires: [pandas/select-columns, pandas/stats]
+related: [pandas/groupby-agg, pandas/groupby-transform, pandas/pivot-table, pandas/multiindex]
+functions: [DataFrame.groupby, Series.groupby, GroupBy.size, GroupBy.count, GroupBy.get_group]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/groupby.html
+---
+
+## Коротко
+
+- `groupby` работает по схеме **разделение → применение → объединение** (split-apply-combine): строки делятся на группы по ключу, к каждой группе применяется функция, результаты собираются в одну таблицу.
+- Сам `df.groupby("city")` ничего не считает — это «ленивый» объект; результат появляется после агрегации: `.sum()`, `.mean()`, `.agg(...)`.
+- Ключи группировки по умолчанию уходят в **индекс** результата и **сортируются**.
+- `size()` — число строк в группе, `count()` — число непустых значений в столбце.
+- Строки с `NaN` в ключе по умолчанию выпадают (`dropna=True`).
+
+<GroupbyDiagram />
+
+## Синтаксис
+
+<Syntax code={`df.groupby(by, as_index=True, sort=True, dropna=True, observed=True)
+df.groupby(by)["столбец"].sum()          # → Series
+df.groupby(by)[["a", "b"]].mean()        # → DataFrame
+df.groupby(by)["столбец"].agg(["sum", "mean"])`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['by', 'ключ: имя столбца, список имён, Series или функция от метки индекса', '—'],
+    ['as_index', 'True — ключи в индекс результата; False — в обычные столбцы', 'True'],
+    ['sort', 'сортировать группы по ключу; False — порядок первого появления', 'True'],
+    ['dropna', 'выбрасывать строки, у которых ключ — NaN', 'True'],
+    ['observed', 'для категориальных ключей: только встречающиеся категории', 'True'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="one-key" title="Сумма по одному ключу" />
+
+<Example id="columns" title="Несколько столбцов сразу" />
+
+`mean` пропускает `NaN`: у Омска средняя оценка посчитана по двум записям из трёх.
+
+<Example id="several-aggs" title="Несколько функций: agg" />
+
+Подробнее — в статье [agg и именованная агрегация](/reference/pandas/groupby-agg).
+
+<Example id="two-keys" title="Два ключа — MultiIndex в результате" />
+
+<Example id="as-index" title="Ключи обычными столбцами: as_index=False" />
+
+То же самое даёт `.reset_index()` после агрегации.
+
+<Example id="size-count" title="size и count" />
+
+<Example id="sort" title="Без сортировки групп" />
+
+<Example id="iterate" title="Посмотреть на группы: цикл по groupby" />
+
+Цикл удобен, чтобы понять, как разбились данные. Для вычислений используйте агрегации — они намного быстрее.
+
+## Подводные камни
+
+<Pitfall title="mean() по всему DataFrame падает на текстовых столбцах">
+
+Агрегации не отбрасывают молча нечисловые столбцы. Выберите нужные столбцы или передайте `numeric_only=True`. При этом `sum()` на строках не падает, а склеивает их — тоже вряд ли то, что нужно.
+
+<Example id="whole-frame" title="Агрегация по всем столбцам" />
+
+</Pitfall>
+
+<Pitfall title="Строки с пустым ключом исчезают">
+
+Сумма по группам может не сойтись с общей суммой: строки с `NaN` в ключе отброшены. Чтобы увидеть их отдельной группой, передайте `dropna=False`.
+
+<Example id="dropna" title="NaN в ключе группировки" />
+
+</Pitfall>
+
+<Pitfall title="Пустые категории не попадают в результат">
+
+<VersionNote
+  since="pandas 3.0"
+  was="observed=False: для категориального ключа в результате были все категории, даже без строк (в 2.1–2.x — с FutureWarning)."
+  now="observed=True: только встречающиеся категории. Все категории — observed=False."
+/>
+
+<Example id="observed" title="Категориальный ключ" />
+
+</Pitfall>
+
+<Pitfall title="MultiIndex там, где его не ждали">
+
+Группировка по нескольким ключам даёт MultiIndex. Если дальше нужны обычные столбцы — например, для `merge` или сохранения в CSV, — передайте `as_index=False` или вызовите `.reset_index()`.
+
+</Pitfall>

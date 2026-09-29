@@ -1,0 +1,101 @@
+---
+/** Подсказки открываются по одной. */
+import Icon from './Icon.astro';
+
+interface Props {
+  hints: string[];
+}
+const { hints } = Astro.props;
+---
+
+{
+  hints.length > 0 && (
+    <section class="hints" data-hints>
+      <ol class="list">
+        {hints.map((hint, i) => (
+          <li class="hint" data-hint hidden>
+            <span class="n">Подсказка {i + 1}</span>
+            <p>{hint}</p>
+          </li>
+        ))}
+      </ol>
+      <button type="button" class="btn" data-hint-next>
+        <Icon name="bulb" />
+        <span data-hint-label>Подсказка</span>
+        <span class="counter" data-hint-counter>
+          0 / {hints.length}
+        </span>
+      </button>
+    </section>
+  )
+}
+
+<style>
+  .hints {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .list:not(:has(li:not([hidden]))) {
+    display: none;
+  }
+  .hint {
+    padding: 12px 14px;
+    border: 1px solid rgb(238 177 83 / 0.2);
+    border-radius: var(--radius-sm);
+    background: rgb(238 177 83 / 0.06);
+  }
+  .hint[hidden] {
+    display: none;
+  }
+  .n {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--medium);
+  }
+  .hint p {
+    margin: 4px 0 0;
+    color: var(--text-2);
+    font-size: 14.5px;
+  }
+  .hints .btn {
+    align-self: flex-start;
+  }
+  .counter {
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-hints]').forEach((root) => {
+    const hints = [...root.querySelectorAll<HTMLElement>('[data-hint]')];
+    const button = root.querySelector<HTMLButtonElement>('[data-hint-next]')!;
+    const counter = root.querySelector<HTMLElement>('[data-hint-counter]')!;
+    const label = root.querySelector<HTMLElement>('[data-hint-label]')!;
+    let shown = 0;
+    button.addEventListener('click', () => {
+      if (shown >= hints.length) return;
+      hints[shown].hidden = false;
+      shown++;
+      counter.textContent = `${shown} / ${hints.length}`;
+      if (shown === hints.length) {
+        button.disabled = true;
+        label.textContent = 'Подсказки закончились';
+      } else {
+        label.textContent = 'Ещё подсказка';
+      }
+    });
+  });
+</script>

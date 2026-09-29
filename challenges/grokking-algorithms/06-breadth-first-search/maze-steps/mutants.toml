@@ -1,0 +1,9 @@
+[[mutant]]
+name = "нет проверки левой/верхней границы — индекс -1 «заворачивает» на другой край"
+find = "if 0 <= nr < rows and 0 <= nc < cols and"
+replace = "if nr < rows and nc < cols and"
+
+[[mutant]]
+name = "клетка не помечается посещённой"
+find = " and (nr, nc) not in dist:"
+replace = " and (nr, nc) != (r, c):"

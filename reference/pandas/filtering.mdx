@@ -1,0 +1,65 @@
+---
+title: Фильтрация строк
+level: basic
+summary: Оставить строки, подходящие под условие, — одно или несколько, со списком значений или диапазоном.
+requires: [pandas/select-columns]
+related: [pandas/loc-iloc, pandas/strings, pandas/where-mask, numpy/boolean]
+functions: [Series.isin, Series.between, DataFrame.query]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/indexing.html#boolean-indexing
+---
+
+## Коротко
+
+- Условие над столбцом даёт булеву маску: `df["amount"] > 1000`. `df[маска]` оставляет строки, где `True`.
+- Условия объединяют через `&` (и), `|` (или), `~` (не), каждое — **в скобках**. `and` / `or` не работают.
+- `isin([...])` — значение из списка, `between(a, b)` — в диапазоне (границы включены).
+- `query("amount > 1000 and city == 'Омск'")` — то же строкой; переменные Python — через `@`.
+- Фильтр плюс выбор столбцов — `df.loc[маска, ["a", "b"]]`.
+
+## Синтаксис
+
+<Syntax code={`df[df["col"] > 0]
+df[(df["a"] > 0) & (df["b"] == "x")]
+df[df["col"].isin(["x", "y"])]
+df[df["col"].between(1, 10, inclusive="both")]
+df.query("a > @limit and b == 'x'")
+df.loc[mask, ["a", "b"]]`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['inclusive', 'в between: "both", "neither", "left", "right" — какие границы включать', '"both"'],
+    ['expr', 'в query: условие строкой; имена столбцов как переменные, @имя — переменная Python', '—'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="condition" title="Одно условие" />
+
+<Example id="and-or" title="И / или" />
+
+<Example id="not" title="Отрицание" />
+
+<Example id="isin" title="Значение из списка" />
+
+<Example id="between" title="Диапазон" />
+
+<Example id="query" title="query и переменная Python" />
+
+<Example id="loc-column" title="Фильтр и выбор столбцов" />
+
+Фильтр по тексту (содержит, начинается с) — в статье [строки](/reference/pandas/strings).
+
+## Подводные камни
+
+<Pitfall title="and / or и условия без скобок">
+
+Как и в NumPy, `and` пытается превратить Series в одно значение. А без скобок `df["a"] > 0 & df["b"] < 5` из-за приоритета `&` вычисляется неправильно.
+
+<Example id="python-and" title="and между условиями" />
+
+</Pitfall>

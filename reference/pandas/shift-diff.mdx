@@ -1,0 +1,68 @@
+---
+title: shift, diff, pct_change
+level: advanced
+summary: Сравнить значение с предыдущим — прирост за день, изменение в процентах, значение за вчера.
+requires: [pandas/date-range]
+related: [pandas/rolling, pandas/resample, numpy/diff, pandas/groupby-transform]
+functions: [Series.shift, Series.diff, Series.pct_change, DataFrame.shift, DataFrame.diff, DataFrame.pct_change]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/timeseries.html#shifting-and-lagging
+---
+
+## Коротко
+
+- `shift(1)` сдвигает значения на строку вниз — в строке оказывается предыдущее значение; `shift(-1)` — следующее. Освободившиеся места — `NaN`.
+- `diff()` — разность с предыдущим (`s - s.shift()`), `pct_change()` — относительное изменение (`s / s.shift() - 1`).
+- `periods=k` — сравнение со значением k строк назад.
+- `shift(1, freq="D")` сдвигает **даты в индексе**, а значения оставляет на месте.
+- Для нескольких рядов в одной таблице — `groupby(...)["col"].diff()`, иначе разности посчитаются между разными рядами.
+
+## Синтаксис
+
+<Syntax code={`s.shift(periods=1, freq=None, fill_value=None)
+s.diff(periods=1)
+s.pct_change(periods=1)
+df.groupby("key")["col"].shift(), .diff(), .pct_change()`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['periods', 'на сколько строк сдвинуть или с каким значением сравнить; отрицательное — вперёд', '1'],
+    ['freq', 'в shift: сдвинуть индекс-даты на частоту вместо сдвига значений', 'None'],
+    ['fill_value', 'в shift: чем заполнить освободившиеся места', 'NaN'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="shift" title="Вчера и завтра" />
+
+<Example id="diff" title="Разность с предыдущим" />
+
+<Example id="pct-change" title="Изменение в процентах" />
+
+<Example id="periods" title="Сравнение с k днями назад" />
+
+<Example id="shift-freq" title="Сдвиг дат, а не значений" />
+
+<Example id="groups" title="Внутри групп" />
+
+## Подводные камни
+
+<Pitfall title="Разности между разными рядами">
+
+Если в одной таблице несколько тикеров, магазинов или клиентов, простой `diff` вычтет значение одного ряда из другого.
+
+<Example id="no-group" title="diff без groupby" />
+
+</Pitfall>
+
+<Pitfall title="pct_change и пропуски">
+
+<VersionNote since="pandas 3.0" was="pct_change сначала заполнял пропуски предыдущим значением (fill_method='pad')" now="пропуски не заполняются, fill_method принимает только None; нужное заполнение сделайте явно через ffill()" />
+
+<Example id="pct-nan" title="pct_change с пропуском" />
+
+</Pitfall>

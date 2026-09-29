@@ -1,0 +1,71 @@
+---
+title: Обзор .plot
+level: advanced
+summary: Быстрый график прямо из таблицы — линии, столбцы, гистограмма, диаграмма рассеяния.
+requires: [pandas/dataframe, pandas/set-index]
+related: [pandas/melt-pivot, numpy/histogram, pandas/rolling]
+functions: [DataFrame.plot, Series.plot, DataFrame.plot.bar, DataFrame.plot.barh, Series.plot.hist, DataFrame.plot.scatter, DataFrame.plot.area]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/visualization.html
+---
+
+## Коротко
+
+- `df.plot()` рисует линию для каждого числового столбца; по оси X — индекс.
+- Вид графика — через `kind=…` или методы `df.plot.bar()`, `.barh()`, `.hist()`, `.scatter(x, y)`, `.area()`, `.box()`, `.pie()`.
+- Рисует библиотека **matplotlib** — её нужно установить отдельно. `.plot` возвращает объект осей (`Axes`): через него настраивают подписи и сохраняют картинку.
+- Для графика по категориям удобен длинный или сводный формат: сначала [pivot_table](/reference/pandas/pivot-table) или `groupby`, потом `.plot`.
+- В Jupyter график показывается сам; в скрипте — `import matplotlib.pyplot as plt; plt.show()` или сохранение в файл.
+
+## Синтаксис
+
+<Syntax code={`df.plot(kind="line", x=None, y=None, title=None, figsize=None)
+df.plot.bar(rot=0), df.plot.barh(), df.plot.area()
+s.plot.hist(bins=10)
+df.plot.scatter(x="a", y="b")
+ax = df.plot(); ax.set_ylabel("…"); ax.figure.savefig("chart.png")`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['kind', '"line", "bar", "barh", "hist", "box", "area", "scatter", "pie"', '"line"'],
+    ['x, y', 'столбцы для осей; по умолчанию x — индекс, y — все числовые столбцы', 'None'],
+    ['title', 'заголовок графика', 'None'],
+    ['figsize', 'размер в дюймах: (ширина, высота)', 'None'],
+    ['rot', 'поворот подписей по оси X в градусах', 'None'],
+  ]}
+/>
+
+## Примеры
+
+Графики нарисованы при проверке справочника — тем же кодом, что в примере; цвета подобраны под тёмную тему сайта. Сам `.plot` возвращает объект осей (`<Axes: …>`) — в Jupyter его текст виден над картинкой.
+
+<Setup />
+
+<Example id="line" title="Линии по столбцам" />
+
+<Example id="bar" title="Столбцы" />
+
+<Example id="one-column" title="Один столбец горизонтально" />
+
+<Example id="hist" title="Гистограмма" />
+
+<Example id="scatter" title="Диаграмма рассеяния" />
+
+<Example id="save" title="Подписи и сохранение в файл" />
+
+## Подводные камни
+
+<Pitfall title="matplotlib не установлен">
+
+pandas не ставит matplotlib сам, а без него `.plot` падает с `ImportError: matplotlib is required for plotting…`. Установите `pip install matplotlib`.
+
+</Pitfall>
+
+<Pitfall title="Нечисловые столбцы">
+
+Текстовые столбцы в график не попадают. Если числовых столбцов нет совсем, `.plot` падает — проверьте типы через `df.dtypes`.
+
+<Example id="no-numeric" title="Только текстовые столбцы" />
+
+</Pitfall>

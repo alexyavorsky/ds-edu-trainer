@@ -1,0 +1,46 @@
+---
+/** Подводный камень: `<Pitfall title="...">текст и, при желании, <Example /></Pitfall>`. */
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+
+<section class="pitfall">
+  <p class="head">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    <span>{title}</span>
+  </p>
+  <div class="body"><slot /></div>
+</section>
+
+<style>
+  .pitfall {
+    margin: 0 0 16px;
+    padding: 14px 16px 2px;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--medium);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    min-width: 0;
+  }
+  .head {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin: 0 0 8px !important;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+  .head svg {
+    flex: none;
+    margin-top: 2px;
+    color: var(--medium);
+  }
+  .body :global(.example),
+  .body :global(.version-note) {
+    margin-bottom: 14px;
+  }
+</style>

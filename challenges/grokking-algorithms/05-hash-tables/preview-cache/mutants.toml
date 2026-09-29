@@ -1,0 +1,14 @@
+[[mutant]]
+name = "get не продлевает жизнь элемента"
+find = "        self._touch(photo_id)\n        return self.data[photo_id]"
+replace = "        return self.data[photo_id]"
+
+[[mutant]]
+name = "вытесняется самый новый, а не самый давний"
+find = "del self.data[next(iter(self.data))]"
+replace = "del self.data[next(reversed(self.data))]"
+
+[[mutant]]
+name = "обновление при полном кэше тоже вытесняет"
+find = "        if photo_id in self.data:\n            self._touch(photo_id)\n        elif len(self.data) >= self.capacity:"
+replace = "        if len(self.data) >= self.capacity:"

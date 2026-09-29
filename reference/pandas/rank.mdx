@@ -1,0 +1,58 @@
+---
+title: Ранги
+level: medium
+summary: Место каждого значения в упорядоченном списке — с выбором, что делать с одинаковыми значениями.
+requires: [pandas/sorting]
+related: [pandas/groupby-transform, pandas/corr, pandas/cut-qcut]
+functions: [Series.rank, DataFrame.rank]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/reference/api/pandas.Series.rank.html
+---
+
+## Коротко
+
+- `rank()` ставит каждому значению место: наименьшее получает 1. `ascending=False` — наибольшее получает 1.
+- Порядок строк не меняется — в отличие от сортировки.
+- Для равных значений `method`: `"average"` — средний ранг (3.5), `"min"` — как в спорте (оба третьи, следующий пятый), `"dense"` — без пропусков (следующий четвёртый), `"first"` — по порядку появления.
+- `pct=True` — ранг как доля от 0 до 1.
+- В группах — `groupby("group")["col"].rank()`.
+- Ранги — float, для целых мест добавьте `.astype(int)`.
+
+## Синтаксис
+
+<Syntax code={`s.rank(method="average", ascending=True, pct=False, na_option="keep")
+df.groupby("g")["col"].rank(method="min")`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['method', '"average", "min", "max", "first", "dense"', '"average"'],
+    ['ascending', 'True — наименьшее значение получает ранг 1', 'True'],
+    ['pct', 'ранг в долях от 0 до 1', 'False'],
+    ['na_option', '"keep" — у NaN ранг NaN, "top" / "bottom" — поставить в начало или конец', '"keep"'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="average" title="Ранги по умолчанию" />
+
+<Example id="methods" title="Как обработать равные значения" />
+
+<Example id="descending" title="Места в забеге" />
+
+<Example id="pct" title="Ранг в долях" />
+
+<Example id="groups" title="Ранги внутри групп" />
+
+## Подводные камни
+
+<Pitfall title="Ранги — дробные числа">
+
+Даже с `method="min"` результат имеет тип float, потому что у `"average"` бывают дроби и тип один на все методы.
+
+<Example id="float" title="Тип рангов" />
+
+</Pitfall>

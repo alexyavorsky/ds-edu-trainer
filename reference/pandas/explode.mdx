@@ -1,0 +1,55 @@
+---
+title: explode
+level: medium
+summary: Разложить списки в ячейках на отдельные строки — теги, позиции заказа, несколько значений через запятую.
+requires: [pandas/strings]
+related: [pandas/melt-pivot, pandas/stack-unstack]
+functions: [DataFrame.explode, Series.explode, Series.str.split]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/reference/api/pandas.DataFrame.explode.html
+---
+
+## Коротко
+
+- `explode("col")` делает из строки со списком `[a, b, c]` три строки; остальные столбцы копируются.
+- Индекс повторяется; `ignore_index=True` — новый индекс 0, 1, 2…
+- Строки вида `"a, b"` сначала превращают в списки: `.str.split(", ")`.
+- Пустой список превращается в `NaN`.
+- Можно разложить несколько столбцов сразу, если списки в них одной длины.
+
+## Синтаксис
+
+<Syntax code={`df.explode(column, ignore_index=False)
+df.assign(col=df["col"].str.split(", ")).explode("col")`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['column', 'столбец или список столбцов со списками', '—'],
+    ['ignore_index', 'новый индекс 0, 1, 2…', 'False'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="split-explode" title="Строки через запятую — в отдельные строки" />
+
+<Example id="ignore-index" title="Новый индекс" />
+
+<Example id="count" title="Частота позиций" />
+
+<Example id="empty" title="Пустой список" />
+
+<Example id="several" title="Несколько столбцов" />
+
+## Подводные камни
+
+<Pitfall title="explode не разбивает строки">
+
+`explode` раскладывает только списки (и другие последовательности, кроме строк). Строку сначала разбейте через `.str.split`.
+
+<Example id="string-not-list" title="explode без split" />
+
+</Pitfall>

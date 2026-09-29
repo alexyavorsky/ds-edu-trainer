@@ -1,0 +1,66 @@
+---
+title: Что такое pandas
+level: basic
+summary: Библиотека для табличных данных — прочитать файл, отобрать строки, посчитать итоги, объединить таблицы.
+related: [pandas/series, pandas/dataframe, pandas/display, numpy/intro]
+functions: [pd.Series, pd.DataFrame, pd.__version__]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/getting_started/overview.html
+---
+
+## Коротко
+
+- **Series** — одномерный массив значений с **индексом** (метками строк).
+- **DataFrame** — таблица: набор столбцов-Series с общим индексом. У каждого столбца свой тип.
+- Операции применяются к целому столбцу сразу, как в NumPy: `df["a"] * 2`.
+- Принято импортировать так: `import pandas as pd`. Во всех примерах справочника `pd` и `np` уже импортированы.
+- Примеры в стиле Jupyter: под кодом — вывод `print` и значение последней строки. В `.py`-файле оберните последнюю строку в `print()`.
+
+## Главное о pandas 3
+
+Справочник написан для pandas 3.0. Если код из интернета ведёт себя иначе, скорее всего, дело в одном из этих изменений:
+
+- строки по умолчанию хранятся в типе `str`, а не `object` — [строки](/reference/pandas/strings);
+- любая выборка ведёт себя как копия (Copy-on-Write), цепочечное присваивание не работает — [Copy-on-Write](/reference/pandas/copy-on-write);
+- даты из строк получают разрешение в микросекундах, а не наносекундах — [даты](/reference/pandas/datetime);
+- удалены `applymap`, `fillna(method=…)`, частоты `M`, `Q`, `Y` и другие устаревшие API — отмечены в статьях.
+
+## Синтаксис
+
+<Syntax code={`import pandas as pd
+
+s = pd.Series([1, 2, 3], index=["a", "b", "c"])
+df = pd.DataFrame({"имя_столбца": [значения], ...})
+df["столбец"]            # столбец — это Series
+pd.__version__`} />
+
+## Примеры
+
+<Setup />
+
+<Example id="series" title="Series — значения с метками" />
+
+<Example id="dataframe" title="DataFrame — таблица" />
+
+<Example id="column" title="Столбец таблицы — Series" />
+
+<Example id="vectorized" title="Вычисление по целому столбцу" />
+
+<Example id="version" title="Какая версия установлена" />
+
+## Подводные камни
+
+<Pitfall title="Тип строк изменился">
+
+<VersionNote since="pandas 3.0" was="строковые столбцы имели тип object" now="тип str; проверки вида df.dtypes == object для строк больше не срабатывают" />
+
+<Example id="str-dtype" title="Тип строкового столбца" />
+
+</Pitfall>
+
+<Pitfall title="Цикл по строкам вместо операции над столбцом">
+
+pandas построен на NumPy: операции над столбцами выполняются быстро, а цикл Python по строкам — в десятки раз медленнее. См. [почему iterrows медленный](/reference/pandas/iteration).
+
+<Example id="numpy" title="Под столбцом — массив NumPy" />
+
+</Pitfall>

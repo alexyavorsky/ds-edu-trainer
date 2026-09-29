@@ -1,0 +1,85 @@
+---
+title: "Строки: .str и тип str"
+level: medium
+summary: Очистить и разобрать текстовые столбцы — регистр, пробелы, поиск, разбиение, извлечение по шаблону.
+requires: [pandas/select-columns, pandas/filtering]
+related: [pandas/replace, pandas/dtypes, pandas/explode, numpy/strings]
+functions: [Series.str.strip, Series.str.lower, Series.str.upper, Series.str.title, Series.str.contains, Series.str.startswith, Series.str.endswith, Series.str.split, Series.str.extract, Series.str.replace, Series.str.len, Series.str.cat, Series.str.slice]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/text.html
+---
+
+## Коротко
+
+- Строковые методы вызываются через `.str`: `s.str.lower()`, `s.str.contains("x")`. Они работают с каждым значением и пропускают `NaN`.
+- В pandas 3 строки по умолчанию хранятся в типе `str` (раньше — `object`).
+- `contains`, `replace`, `split`, `extract` по умолчанию понимают **регулярные выражения**. Для поиска обычного текста — `regex=False`.
+- `split(expand=True)` раскладывает части по столбцам; `extract(r"(...)")` достаёт группы шаблона.
+- `s.str[:4]` — срез каждой строки, `s.str.len()` — длины.
+
+## Синтаксис
+
+<Syntax code={`s.str.strip(), s.str.lower(), s.str.upper(), s.str.title()
+s.str.contains(pat, case=True, regex=True, na=None)
+s.str.startswith(prefix), s.str.endswith(suffix)
+s.str.split(sep, n=-1, expand=False)
+s.str.extract(r"(группа)", expand=True)
+s.str.replace(pat, repl, regex=False)
+s.str.len(), s.str[i:j], s.str.cat(sep=", ")`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['pat', 'подстрока или регулярное выражение', '—'],
+    ['regex', 'в contains — True, в replace — False: считать ли pat регулярным выражением', 'True / False'],
+    ['case', 'в contains: учитывать регистр', 'True'],
+    ['expand', 'в split / extract: вернуть DataFrame со столбцами', 'False / True'],
+    ['n', 'в split: максимум разбиений', '-1 (все)'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="clean" title="Пробелы и регистр" />
+
+<Example id="contains" title="Строки, содержащие текст" />
+
+<Example id="startswith" title="Начинается / заканчивается на" />
+
+<Example id="split" title="Разбить на столбцы" />
+
+<Example id="extract" title="Извлечь по шаблону" />
+
+<Example id="replace" title="Замена по шаблону" />
+
+<Example id="len-slice" title="Длина и срез" />
+
+<Example id="cat" title="Склеить значения" />
+
+## Подводные камни
+
+<Pitfall title="Точка и другие символы в регулярном выражении">
+
+В `contains` точка означает «любой символ». Для поиска текста как есть передайте `regex=False`.
+
+<Example id="regex-default" title="contains с точкой" />
+
+</Pitfall>
+
+<Pitfall title=".str у нестроковых столбцов">
+
+<Example id="no-str" title=".str для чисел" />
+
+Сначала приведите к строкам: `s.astype(str).str.len()`.
+
+</Pitfall>
+
+<Pitfall title="Пропуски в строковых методах">
+
+Методы, возвращающие строки, сохраняют `NaN`. А `contains` и `startswith` в типе `str` возвращают для пропуска `False` — строка с пропуском не попадёт в фильтр.
+
+<Example id="na" title="Пропуск в upper и contains" />
+
+</Pitfall>

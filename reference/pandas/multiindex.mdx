@@ -1,0 +1,74 @@
+---
+title: MultiIndex
+level: advanced
+summary: Индекс из нескольких уровней — город и месяц, магазин и товар — и как по нему выбирать данные.
+requires: [pandas/set-index, pandas/groupby]
+related: [pandas/stack-unstack, pandas/pivot-table, pandas/groupby-agg]
+functions: [pd.MultiIndex, DataFrame.xs, pd.IndexSlice, DataFrame.swaplevel, DataFrame.droplevel, Index.get_level_values, MultiIndex.from_tuples]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/advanced.html
+---
+
+## Коротко
+
+- MultiIndex — метка строки из нескольких частей (уровней). Появляется после `set_index([a, b])`, `groupby([a, b])`, `pivot_table`, `stack`.
+- `df.loc["Омск"]` — все строки внешнего уровня; полная метка — кортеж `df.loc[("Омск", "фев")]`.
+- `xs("янв", level="month")` — срез по любому уровню.
+- `pd.IndexSlice` — срезы по нескольким уровням сразу; индекс должен быть отсортирован (`sort_index()`).
+- `swaplevel`, `droplevel`, `get_level_values` — работа с уровнями; `reset_index()` — обратно в плоскую таблицу.
+
+## Синтаксис
+
+<Syntax code={`df.set_index(["a", "b"])
+df.loc["x"], df.loc[("x", "y")], df.loc[("x", "y"), "col"]
+df.xs("y", level="b")
+idx = pd.IndexSlice; df.sort_index().loc[idx[:, ["y1", "y2"]], :]
+df.swaplevel(), df.droplevel("b"), df.index.get_level_values("a")`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['level', 'уровень по имени или номеру (в xs, droplevel, groupby, reset_index)', '—'],
+    ['drop_level', 'в xs: убрать уровень, по которому сделан срез', 'True'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="show" title="Таблица с двумя уровнями" />
+
+<Example id="outer" title="Внешний уровень" />
+
+<Example id="tuple" title="Полная метка — кортеж" />
+
+<Example id="xs" title="Срез по внутреннему уровню" />
+
+<Example id="index-slice" title="IndexSlice" />
+
+<Example id="levels" title="Имена и значения уровней" />
+
+<Example id="swap-drop" title="Поменять или убрать уровень" />
+
+<Example id="from-groupby" title="Группировка по уровню" />
+
+## Подводные камни
+
+<Pitfall title="Срезы по неотсортированному индексу">
+
+Срез по меткам уровня (`loc["Омск":"Тула"]`, `IndexSlice`) требует отсортированного индекса, иначе `UnsortedIndexError`. Выбор одной метки работает и без сортировки. Вызывайте `sort_index()` перед срезами.
+
+<Example id="unsorted" title="Срез по неотсортированному индексу" />
+
+<Example id="sorted" title="После sort_index" />
+
+</Pitfall>
+
+<Pitfall title="MultiIndex там, где проще плоская таблица">
+
+Для экспорта, `merge` и большинства операций удобнее обычные столбцы. Если уровни мешают — `reset_index()`.
+
+<Example id="flat" title="Обратно в столбцы" />
+
+</Pitfall>

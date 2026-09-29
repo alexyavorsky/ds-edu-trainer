@@ -1,0 +1,54 @@
+---
+title: repeat и tile
+level: medium
+summary: Повторить каждый элемент или весь массив несколько раз.
+requires: [numpy/join-split]
+related: [numpy/broadcasting, numpy/pad, numpy/meshgrid]
+functions: [np.repeat, np.tile]
+docs: https://numpy.org/doc/2.5/reference/generated/numpy.repeat.html
+---
+
+## Коротко
+
+- `np.repeat(a, k)` повторяет **каждый элемент** `k` раз: `[1, 2] → [1, 1, 2, 2]`.
+- `np.tile(a, k)` повторяет **весь массив**: `[1, 2] → [1, 2, 1, 2]`.
+- `repeat` принимает и список повторов — у каждого элемента своё число.
+- У `repeat` без `axis` многомерный массив сначала вытягивается в строку; `tile` с кортежем повторяет по нескольким осям.
+- Для арифметики с повторёнными данными обычно хватает [транслирования](/reference/numpy/broadcasting) — оно не копирует данные.
+
+## Синтаксис
+
+<Syntax code={`np.repeat(a, repeats, axis=None)
+np.tile(a, reps)          # reps — число или кортеж по осям`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['repeats', 'сколько раз повторить; число или список по одному на элемент', '—'],
+    ['axis', 'ось повторения в repeat; None — сначала вытянуть в строку', 'None'],
+    ['reps', 'сколько раз повторить массив в tile; кортеж — по каждой оси', '—'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="basic" title="Каждый элемент или весь массив" />
+
+<Example id="counts" title="Разное число повторов" />
+
+<Example id="repeat-axis" title="repeat по оси" />
+
+<Example id="tile-2d" title="tile по двум осям" />
+
+## Подводные камни
+
+<Pitfall title="Копирование там, где хватит транслирования">
+
+`tile` и `repeat` создают полноценные копии. Если повтор нужен только для поэлементной операции, транслирование даст тот же результат без лишней памяти.
+
+<Example id="no-broadcast" title="tile против транслирования" />
+
+</Pitfall>

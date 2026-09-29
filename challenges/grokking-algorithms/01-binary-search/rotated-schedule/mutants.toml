@@ -1,0 +1,14 @@
+[[mutant]]
+name = "левая половина из одного элемента не считается отсортированной"
+find = "if first <= middle:"
+replace = "if first < middle:"
+
+[[mutant]]
+name = "target на левой границе теряется"
+find = "if first <= target < middle:"
+replace = "if first < target < middle:"
+
+[[mutant]]
+name = "обычный бинарный поиск без учёта сдвига"
+find = "        if first <= middle:  # левая половина [low, mid] отсортирована"
+replace = "        if True:"

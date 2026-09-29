@@ -1,0 +1,28 @@
+---
+/** Сигнатура в упрощённом виде: `<Syntax code={`np.sort(a, axis=-1)`} />`. Заголовок «Синтаксис» — в самой статье. */
+import { Code } from 'astro:components';
+interface Props {
+  code: string;
+}
+const { code } = Astro.props;
+---
+
+<div class="syntax">
+  <Code code={code} lang="python" theme="vitesse-dark" />
+</div>
+
+<style>
+  .syntax {
+    margin: 0 0 20px;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .syntax :global(pre) {
+    margin: 0 !important;
+    border: 0 !important;
+    padding: 12px 16px !important;
+  }
+</style>

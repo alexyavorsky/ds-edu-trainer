@@ -1,0 +1,72 @@
+---
+title: Сохранение и загрузка
+level: medium
+summary: Сохранить массив в файл и прочитать обратно — в двоичном формате NumPy или в текстовом CSV.
+requires: [numpy/creation, numpy/dtypes]
+related: [numpy/nan-inf, numpy/structured, pandas/read-csv]
+functions: [np.save, np.load, np.savez, np.savez_compressed, np.savetxt, np.loadtxt, np.genfromtxt]
+docs: https://numpy.org/doc/2.5/reference/routines.io.html
+---
+
+## Коротко
+
+- `np.save("x.npy", a)` / `np.load("x.npy")` — один массив в двоичном формате `.npy`: быстро, тип и форма сохраняются точно.
+- `np.savez("x.npz", a=a, b=b)` — несколько массивов в одном файле; `load` возвращает словарь-подобный объект. `savez_compressed` — со сжатием.
+- `np.savetxt` / `np.loadtxt` — текст (CSV): читается людьми и другими программами, но медленнее и теряет точность при `fmt`.
+- `np.genfromtxt` умеет пропуски: пустые поля становятся `nan`.
+- Для таблиц с заголовками и разными типами столбцов удобнее [pandas.read_csv](/reference/pandas/read-csv).
+
+## Синтаксис
+
+<Syntax code={`np.save("a.npy", a)
+a = np.load("a.npy")
+np.savez("data.npz", x=x, y=y)        # или savez_compressed
+data = np.load("data.npz"); data["x"]
+np.savetxt("a.csv", a, delimiter=",", fmt="%.3f", header="")
+np.loadtxt("a.csv", delimiter=",", skiprows=0, usecols=None, dtype=float)
+np.genfromtxt("a.csv", delimiter=",", skip_header=0)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['delimiter', 'разделитель полей в текстовом файле; None — любые пробелы', 'None'],
+    ['fmt', 'формат чисел при записи в savetxt, например "%.2f" или "%d"', '"%.18e"'],
+    ['header', 'строка заголовка в savetxt; записывается с префиксом «# »', '""'],
+    ['skiprows / skip_header', 'сколько строк пропустить в начале (loadtxt / genfromtxt)', '0'],
+    ['usecols', 'какие столбцы читать: номер или кортеж номеров', 'None'],
+    ['dtype', 'тип результата', 'float'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="npy" title="Один массив: .npy" />
+
+<Example id="npz" title="Несколько массивов: .npz" />
+
+<Example id="txt" title="Текстовый CSV" />
+
+<Example id="loadtxt-cols" title="Пропустить заголовок и выбрать столбцы" />
+
+<Example id="genfromtxt" title="Пропуски в данных" />
+
+## Подводные камни
+
+<Pitfall title="loadtxt не понимает пустые поля">
+
+Одно пустое значение — и чтение падает. Для файлов с пропусками используйте `genfromtxt` или pandas.
+
+<Example id="loadtxt-missing" title="Пустое поле в loadtxt" />
+
+</Pitfall>
+
+<Pitfall title="np.load и pickle">
+
+`np.load` по умолчанию не загружает массивы объектов (`allow_pickle=False`): такой файл может выполнить произвольный код. Включайте `allow_pickle=True` только для файлов из надёжного источника.
+
+<Example id="pickle" title="Массив объектов в .npy" />
+
+</Pitfall>

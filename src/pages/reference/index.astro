@@ -1,0 +1,117 @@
+---
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ReferenceSearch from '../../components/reference/ReferenceSearch.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getToc, getTopics } from '../../lib/reference-content';
+import { LEVEL_LABEL, type Level } from '../../lib/reference';
+
+const topics = await Promise.all(
+  (await getTopics()).map(async (topic) => {
+    const entries = (await getToc(topic)).flatMap((s) => s.entries);
+    const written = entries.flatMap((e) => (e.article ? [e.article] : []));
+    const byLevel = (level: Level) => written.filter((a) => a.data.level === level).length;
+    return { topic, total: entries.length, written: written.length, levels: (['basic', 'medium', 'advanced'] as Level[]).map((l) => [l, byLevel(l)] as const) };
+  }),
+);
+---
+
+<BaseLayout title="Справочник" description="Шпаргалки по NumPy и pandas: синтаксис, примеры с настоящим выводом, подводные камни.">
+  <Breadcrumbs items={[{ label: 'Главная', href: '/' }, { label: 'Справочник' }]} />
+  <header class="head">
+    <h1>Справочник</h1>
+    <p class="muted">
+      Короткие статьи для повторения: открыть тему, за минуту вспомнить синтаксис, посмотреть пример с настоящим выводом и тонкости.
+    </p>
+    <p class="jupyter">Примеры в стиле Jupyter; в .py-файле оберните последнюю строку в print().</p>
+    <div class="search"><ReferenceSearch /></div>
+  </header>
+
+  <ul class="topics">
+    {
+      topics.map(({ topic, total, written, levels }) => (
+        <li>
+          <a class="topic card" href={`/reference/${topic.id}`}>
+            <span class="topic-head">
+              <span class="title">{topic.data.title}</span>
+              <span class="version">{topic.data.version}</span>
+            </span>
+            <span class="muted summary">{topic.data.summary}</span>
+            <span class="stats">
+              {written < total ? `${written} из ${total} статей` : `${total} статей`}
+              {levels.filter(([, n]) => n > 0).map(([l, n]) => <span>· {LEVEL_LABEL[l]}: {n}</span>)}
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>
+
+<style>
+  .head {
+    margin-bottom: 32px;
+  }
+  .head h1 {
+    font-size: clamp(28px, 5vw, 36px);
+    letter-spacing: -0.03em;
+  }
+  .head p {
+    margin: 10px 0 0;
+    max-width: 620px;
+  }
+  .jupyter {
+    font-size: 13px;
+    color: var(--faint);
+  }
+  .search {
+    margin-top: 22px;
+    max-width: 620px;
+  }
+  .topics {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  .topic {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 100%;
+    padding: 22px;
+    transition: border-color 0.15s;
+  }
+  .topic:hover {
+    border-color: var(--border-strong);
+  }
+  .topic-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .version {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--faint);
+  }
+  .summary {
+    font-size: 14px;
+  }
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 6px;
+    margin-top: auto;
+    padding-top: 6px;
+    font-size: 12.5px;
+    color: var(--faint);
+  }
+</style>

@@ -1,0 +1,53 @@
+---
+title: Атрибуты массива
+level: basic
+summary: Форма, число измерений, размер, тип элементов и занимаемая память — то, что первым делом смотрят у незнакомого массива.
+requires: [numpy/creation]
+related: [numpy/dtypes, numpy/reshape, numpy/memory-layout]
+functions: [ndarray.shape, ndarray.ndim, ndarray.size, ndarray.dtype, ndarray.itemsize, ndarray.nbytes]
+docs: https://numpy.org/doc/2.5/reference/arrays.ndarray.html#array-attributes
+---
+
+## Коротко
+
+- `shape` — кортеж длин по осям: `(3, 4)` — 3 строки, 4 столбца.
+- `ndim` — число осей (`len(shape)`), `size` — всего элементов (произведение `shape`).
+- `dtype` — тип элементов, `itemsize` — байт на элемент, `nbytes` — байт на данные (`size * itemsize`).
+- `len(a)` — длина только **первой** оси.
+- Это атрибуты, а не методы: `a.shape`, без скобок.
+
+## Синтаксис
+
+<Syntax code={`a.shape      # (3, 4)
+a.ndim       # 2
+a.size       # 12
+a.dtype      # dtype('int64')
+a.itemsize   # 8 — байт на элемент
+a.nbytes     # 96 — байт на все элементы
+len(a)       # 3 — длина первой оси`} />
+
+## Примеры
+
+<Example id="basic" title="Все атрибуты сразу" />
+
+<Example id="bytes" title="Память: float64 и float32" />
+
+<Example id="three-dims" title="Трёхмерный массив" />
+
+## Подводные камни
+
+<Pitfall title="(3,), (3, 1) и (1, 3) — три разные формы">
+
+Одномерный вектор, столбец и строка содержат одни и те же три числа, но ведут себя по-разному в [транслировании](/reference/numpy/broadcasting) и матричном умножении.
+
+<Example id="shapes-differ" title="Одни данные, разные формы" />
+
+</Pitfall>
+
+<Pitfall title="У нульмерного массива нет длины">
+
+`np.array(5)` — массив с `shape == ()`: одно значение без осей. `len` для него падает; число элементов даёт `size`.
+
+<Example id="zero-dim" title="len для 0-мерного массива" />
+
+</Pitfall>

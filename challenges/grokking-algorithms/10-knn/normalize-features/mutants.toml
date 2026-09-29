@@ -1,0 +1,9 @@
+[[mutant]]
+name = "постоянный столбец — деление на ноль"
+find = "            new_row.append((x - mins[j]) / span if span else 0.0)"
+replace = "            new_row.append((x - mins[j]) / span)"
+
+[[mutant]]
+name = "нормализация по строке, а не по столбцу"
+find = "    mins = [min(row[j] for row in rows) for j in range(columns)]\n    maxs = [max(row[j] for row in rows) for j in range(columns)]"
+replace = "    mins = [min(rows[0])] * columns\n    maxs = [max(rows[0])] * columns"

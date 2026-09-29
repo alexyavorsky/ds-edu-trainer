@@ -1,0 +1,9 @@
+[[mutant]]
+name = "выступление можно взять несколько раз (неограниченный рюкзак)"
+find = "                table[i][t] = max(table[i][t], table[i - 1][t - time] + rating)"
+replace = "                table[i][t] = max(table[i][t], table[i][t - time] + rating)"
+
+[[mutant]]
+name = "при восстановлении время не уменьшается"
+find = "            t -= shows[i - 1][1]"
+replace = "            t -= 0"

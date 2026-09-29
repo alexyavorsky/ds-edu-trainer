@@ -1,0 +1,158 @@
+---
+import Badge from '../../../components/Badge.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import ReferenceSearch from '../../../components/reference/ReferenceSearch.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { articleUrl, LEVEL_LABEL, LEVEL_TONE } from '../../../lib/reference';
+import { getToc, getTopics, type Topic } from '../../../lib/reference-content';
+
+export async function getStaticPaths() {
+  return (await getTopics()).map((topic) => ({ params: { topic: topic.id }, props: { topic } }));
+}
+
+const { topic } = Astro.props as { topic: Topic };
+const toc = await getToc(topic);
+---
+
+<BaseLayout title={`${topic.data.title} — справочник`} description={topic.data.summary}>
+  <Breadcrumbs items={[{ label: 'Справочник', href: '/reference' }, { label: topic.data.title }]} />
+  <header class="head">
+    <h1>{topic.data.title}</h1>
+    <p class="muted">{topic.data.summary}</p>
+    <p class="version">
+      Написано для {topic.data.title} {topic.data.version} · <a href={topic.data.docs} target="_blank" rel="noopener noreferrer">документация</a>
+    </p>
+    <div class="search"><ReferenceSearch placeholder={`Поиск: ${topic.data.title} и не только…`} /></div>
+    <p class="legend">
+      <span class="dot lvl-basic"></span> базовый <span class="dot lvl-medium"></span> средний <span class="dot lvl-advanced"></span> продвинутый
+    </p>
+  </header>
+
+  {
+    toc.map((section, i) => (
+      <section class="section">
+        <h2 class="section-title">
+          {i + 1}. {section.title}
+        </h2>
+        <ol class="entries">
+          {section.entries.map((e) =>
+            e.article ? (
+              <li>
+                <a class="entry card" href={articleUrl(e.id)}>
+                  <span class="entry-main">
+                    <span class="title">{e.article.data.title}</span>
+                    <span class="muted">{e.article.data.summary}</span>
+                  </span>
+                  <Badge tone={LEVEL_TONE[e.article.data.level]}>{LEVEL_LABEL[e.article.data.level]}</Badge>
+                </a>
+              </li>
+            ) : (
+              <li class="entry planned">
+                <span class="title">{e.slug}</span>
+                <span class="pill">скоро</span>
+              </li>
+            ),
+          )}
+        </ol>
+      </section>
+    ))
+  }
+</BaseLayout>
+
+<style>
+  .head {
+    margin-bottom: 36px;
+  }
+  .head h1 {
+    font-size: clamp(28px, 5vw, 36px);
+    letter-spacing: -0.03em;
+  }
+  .head p {
+    margin: 10px 0 0;
+  }
+  .version {
+    font-size: 13px;
+    color: var(--faint);
+  }
+  .version a {
+    color: var(--accent-strong);
+  }
+  .search {
+    margin-top: 20px;
+    max-width: 620px;
+  }
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-left: 8px;
+  }
+  .dot:first-child {
+    margin-left: 0;
+  }
+  .lvl-basic {
+    background: var(--easy);
+  }
+  .lvl-medium {
+    background: var(--medium);
+  }
+  .lvl-advanced {
+    background: var(--hard);
+  }
+  .section {
+    margin-bottom: 30px;
+  }
+  .entries {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 13px 16px;
+    font-size: 13.5px;
+  }
+  a.entry:hover {
+    border-color: var(--border-strong);
+  }
+  .entry-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .planned {
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+  }
+  .planned .title {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--faint);
+  }
+  .pill {
+    font-size: 11.5px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    color: var(--muted);
+    background: var(--surface-2);
+  }
+</style>

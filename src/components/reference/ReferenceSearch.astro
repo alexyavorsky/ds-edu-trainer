@@ -1,0 +1,278 @@
+---
+/**
+ * Поиск по справочнику на клиенте. Индекс (/reference/search.json) загружается при первом фокусе.
+ * Слова запроса и индекса приводятся к основам (src/lib/stem.ts), и каждое слово ищется по началу основ:
+ * «окно» находит «окна», «группировка» — «группировки», «группиров» — и то и другое.
+ */
+import Icon from '../Icon.astro';
+
+interface Props {
+  autofocus?: boolean;
+  placeholder?: string;
+}
+const { autofocus = false, placeholder = 'Поиск по справочнику: функция, тема, слово…' } = Astro.props;
+---
+
+<div class="ref-search" data-ref-search>
+  <label class="field">
+    <Icon name="search" size={16} />
+    <input
+      type="search"
+      placeholder={placeholder}
+      autocomplete="off"
+      spellcheck="false"
+      aria-label="Поиск по справочнику"
+      aria-controls="ref-search-results"
+      aria-expanded="false"
+      autofocus={autofocus}
+      data-ref-search-input
+    />
+    <kbd aria-hidden="true">/</kbd>
+  </label>
+  <div class="results" role="listbox" id="ref-search-results" data-ref-search-results hidden></div>
+</div>
+
+<style>
+  .ref-search {
+    position: relative;
+    width: 100%;
+  }
+  .field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--muted);
+    transition: border-color 0.15s;
+  }
+  .field:focus-within {
+    border-color: var(--accent);
+  }
+  input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 14.5px;
+  }
+  input::placeholder {
+    color: var(--faint);
+  }
+  input::-webkit-search-cancel-button {
+    filter: invert(0.6);
+  }
+  kbd {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 1px 6px;
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    color: var(--faint);
+  }
+  .results {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    max-height: min(70vh, 520px);
+    overflow-y: auto;
+    padding: 6px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    box-shadow: 0 16px 40px rgb(0 0 0 / 0.45);
+  }
+  .results :global(a) {
+    display: grid;
+    gap: 2px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    color: var(--text);
+  }
+  .results :global(a:hover),
+  .results :global(a.is-active) {
+    background: var(--surface-3);
+  }
+  .results :global(.r-title) {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .results :global(.r-meta) {
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .results :global(.r-summary) {
+    font-size: 12.5px;
+    color: var(--text-2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .results :global(mark) {
+    background: none;
+    color: var(--accent-strong);
+  }
+  .results :global(.r-empty) {
+    padding: 12px 10px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  @media (max-width: 560px) {
+    kbd {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { stem } from '../../lib/stem';
+
+  interface Doc {
+    u: string;
+    t: string;
+    s: string;
+    p: string;
+    l: 'basic' | 'medium' | 'advanced';
+    f: string;
+    h: string;
+    w: string;
+  }
+  interface Prepared extends Doc {
+    fields: [tokens: string[], weight: number][];
+  }
+
+  const LEVEL: Record<Doc['l'], string> = { basic: 'базовый', medium: 'средний', advanced: 'продвинутый' };
+  const WORD_RE = /[\p{L}\p{N}_]+/gu;
+  const normalize = (text: string) => text.toLowerCase().replaceAll('ё', 'е');
+  const words = (text: string) => normalize(text).match(WORD_RE) ?? [];
+  const terms = (text: string) => words(text).map(stem);
+  const escape = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+  let index: Promise<Prepared[]> | null = null;
+  function loadIndex(): Promise<Prepared[]> {
+    index ??= fetch('/reference/search.json')
+      .then((r) => r.json() as Promise<Doc[]>)
+      .then((docs) =>
+        docs.map((d) => ({
+          ...d,
+          fields: [
+            [terms(d.t), 10],
+            [d.f.split(' ').flatMap((name) => [normalize(name), ...words(name)]), 9],
+            [d.h.split(' '), 5], // в индексе уже основы
+            [terms(d.s), 4],
+            [d.w.split(' '), 2],
+          ],
+        })),
+      );
+    return index;
+  }
+
+  /**
+   * Для каждого слова запроса: лучшее совпадение (та же основа весит в 1,5 раза больше начала основы)
+   * плюс четверть весов остальных полей, где слово тоже встретилось. 0 — какое-то слово не нашлось.
+   */
+  function score(doc: Prepared, query: string[]): number {
+    let total = 0;
+    for (const q of query) {
+      const hits = doc.fields.map(([tokens, weight]) =>
+        tokens.includes(q) ? weight * 1.5 : tokens.some((t) => t.startsWith(q)) ? weight : 0,
+      );
+      const best = Math.max(...hits);
+      if (!best) return 0;
+      total += best + (hits.reduce((a, b) => a + b, 0) - best) / 4;
+    }
+    return total;
+  }
+
+  function highlight(title: string, query: string[]): string {
+    return escape(title).replace(WORD_RE, (w) =>
+      query.some((q) => stem(normalize(w)).startsWith(q)) ? `<mark>${w}</mark>` : w,
+    );
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-ref-search]').forEach((root) => {
+    const input = root.querySelector<HTMLInputElement>('[data-ref-search-input]')!;
+    const box = root.querySelector<HTMLElement>('[data-ref-search-results]')!;
+    let active = -1;
+
+    const close = () => {
+      box.hidden = true;
+      input.setAttribute('aria-expanded', 'false');
+      active = -1;
+    };
+    const links = () => [...box.querySelectorAll<HTMLAnchorElement>('a')];
+    const setActive = (i: number) => {
+      const all = links();
+      if (!all.length) return;
+      active = (i + all.length) % all.length;
+      all.forEach((a, j) => a.classList.toggle('is-active', j === active));
+      all[active].scrollIntoView({ block: 'nearest' });
+    };
+
+    async function run() {
+      const query = terms(input.value);
+      if (!query.length) return close();
+      const docs = await loadIndex();
+      const found = docs
+        .map((d) => ({ d, s: score(d, query) }))
+        .filter((x) => x.s > 0)
+        .sort((a, b) => b.s - a.s)
+        .slice(0, 12);
+      box.innerHTML = found.length
+        ? found
+            .map(
+              ({ d }) =>
+                `<a href="${d.u}" role="option"><span class="r-title">${highlight(d.t, query)}</span>` +
+                `<span class="r-meta">${escape(d.p)} · ${LEVEL[d.l]}</span><span class="r-summary">${escape(d.s)}</span></a>`,
+            )
+            .join('')
+        : `<p class="r-empty">Ничего не найдено. Попробуйте начало слова или имя функции.</p>`;
+      box.hidden = false;
+      input.setAttribute('aria-expanded', 'true');
+      active = -1;
+    }
+
+    input.addEventListener('focus', () => {
+      loadIndex();
+      if (input.value.trim()) run();
+    });
+    input.addEventListener('input', run);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActive(active + 1);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setActive(active - 1);
+      } else if (e.key === 'Enter') {
+        const target = links()[active >= 0 ? active : 0];
+        if (target) location.href = target.href;
+      } else if (e.key === 'Escape') {
+        close();
+        input.blur();
+      }
+    });
+    document.addEventListener('click', (e) => {
+      if (!root.contains(e.target as Node)) close();
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const el = e.target as HTMLElement;
+    if (e.key !== '/' || el.closest('input, textarea, [contenteditable]')) return;
+    const input = document.querySelector<HTMLInputElement>('[data-ref-search-input]');
+    if (input) {
+      e.preventDefault();
+      input.focus();
+    }
+  });
+</script>

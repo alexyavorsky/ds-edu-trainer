@@ -1,0 +1,14 @@
+[[mutant]]
+name = "забыт остаток правой половины"
+find = "    result.extend(right[j:])\n"
+replace = ""
+
+[[mutant]]
+name = "при делении теряется средний элемент"
+find = "return merge(merge_sort(items[:mid]), merge_sort(items[mid:]))"
+replace = "return merge(merge_sort(items[:mid]), merge_sort(items[mid + 1:]))"
+
+[[mutant]]
+name = "в слиянии сдвигается не тот указатель"
+find = "            result.append(right[j])\n            j += 1"
+replace = "            result.append(right[j])\n            i += 1"

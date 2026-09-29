@@ -1,0 +1,66 @@
+---
+title: Выбор столбцов
+level: basic
+summary: Взять один столбец, несколько столбцов или все столбцы нужного типа.
+requires: [pandas/dataframe]
+related: [pandas/loc-iloc, pandas/filtering, pandas/columns]
+functions: [DataFrame.__getitem__, DataFrame.select_dtypes, DataFrame.filter]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/indexing.html#basics
+---
+
+## Коротко
+
+- `df["col"]` — один столбец, результат — **Series**.
+- `df[["a", "b"]]` — несколько столбцов (список!), результат — **DataFrame**. `df[["a"]]` — DataFrame из одного столбца.
+- `df.col` работает для простых имён, но ломается, если имя совпадает с методом или атрибутом (`size`, `count`, `index`) или содержит пробел. Для присваивания точку не используют.
+- `select_dtypes(include="number")` — все числовые столбцы; `filter(like="…")` — по части имени.
+
+## Синтаксис
+
+<Syntax code={`df["col"]                         # Series
+df[["a", "b"]]                    # DataFrame
+df.select_dtypes(include="number", exclude=None)
+df.filter(items=None, like=None, regex=None)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['include / exclude', 'в select_dtypes: типы — "number", "str", "bool", "datetime", "category" или список', 'None'],
+    ['like', 'в filter: подстрока в имени столбца', 'None'],
+    ['regex', 'в filter: регулярное выражение для имени', 'None'],
+    ['items', 'в filter: точный список имён; отсутствующие пропускаются без ошибки', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="one" title="Один столбец" />
+
+<Example id="many" title="Несколько столбцов" />
+
+<Example id="one-as-frame" title="Один столбец как DataFrame" />
+
+<Example id="select-dtypes" title="Столбцы по типу" />
+
+<Example id="filter" title="Столбцы по части имени" />
+
+## Подводные камни
+
+<Pitfall title="Доступ через точку">
+
+Столбец `size` через точку не достать: `menu.size` — это число элементов таблицы. Используйте квадратные скобки везде, где имя может совпасть с атрибутом.
+
+<Example id="attribute" title="menu.price и menu.size" />
+
+</Pitfall>
+
+<Pitfall title="Опечатка в имени столбца">
+
+<Example id="missing" title="Несуществующий столбец" />
+
+Список имён — `df.columns`. Проверка наличия — `"cost" in df.columns`.
+
+</Pitfall>

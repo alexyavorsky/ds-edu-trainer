@@ -1,0 +1,9 @@
+[[mutant]]
+name = "билет добавляется в «виденные» до проверки"
+find = "        if code in seen:\n            return code\n        seen.add(code)"
+replace = "        seen.add(code)\n        if code in seen:\n            return code"
+
+[[mutant]]
+name = "пустая строка вместо None"
+find = "    return None"
+replace = "    return \"\""

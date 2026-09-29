@@ -1,0 +1,86 @@
+---
+import Icon from './Icon.astro';
+
+interface Link {
+  href: string;
+  label: string;
+}
+interface Props {
+  prev?: Link;
+  next?: Link;
+}
+const { prev, next } = Astro.props;
+---
+
+{
+  (prev || next) && (
+    <nav class="prev-next" aria-label="Соседние страницы">
+      {prev ? (
+        <a href={prev.href} class="card link">
+          <span class="dir">
+            <Icon name="arrow-left" size={14} /> Назад
+          </span>
+          <span class="label">{prev.label}</span>
+        </a>
+      ) : (
+        <span />
+      )}
+      {next && (
+        <a href={next.href} class="card link next">
+          <span class="dir">
+            Дальше <Icon name="arrow-right" size={14} />
+          </span>
+          <span class="label">{next.label}</span>
+        </a>
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .prev-next {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 48px;
+  }
+  .link {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    min-width: 0;
+    transition: border-color 0.15s;
+  }
+  .link:hover {
+    border-color: var(--border-strong);
+  }
+  .next {
+    text-align: right;
+    align-items: flex-end;
+  }
+  .dir {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .label {
+    font-weight: 500;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+  @media (max-width: 560px) {
+    .prev-next {
+      grid-template-columns: 1fr;
+    }
+    .next {
+      text-align: left;
+      align-items: flex-start;
+    }
+  }
+</style>

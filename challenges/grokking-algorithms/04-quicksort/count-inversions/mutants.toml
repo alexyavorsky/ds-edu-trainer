@@ -1,0 +1,14 @@
+[[mutant]]
+name = "равные значения считаются инверсией"
+find = "if left[i] <= right[j]:"
+replace = "if left[i] < right[j]:"
+
+[[mutant]]
+name = "за правый элемент добавляется одна инверсия, а не все оставшиеся слева"
+find = "split += len(left) - i"
+replace = "split += 1"
+
+[[mutant]]
+name = "инверсии внутри половин не учитываются"
+find = "return merged, a + b + split"
+replace = "return merged, split"

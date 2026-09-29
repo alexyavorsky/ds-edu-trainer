@@ -1,0 +1,4 @@
+[[mutant]]
+name = "пустой список не обработан"
+find = "    if not offers:\n        return -1\n"
+replace = ""

@@ -1,0 +1,76 @@
+---
+title: Описательная статистика
+level: basic
+summary: Сумма, среднее, медиана, минимум и максимум по столбцам и строкам — и где находится максимум.
+requires: [pandas/inspect, pandas/select-columns]
+related: [pandas/corr, pandas/groupby, numpy/axis, numpy/statistics]
+functions: [DataFrame.sum, DataFrame.mean, DataFrame.median, DataFrame.min, DataFrame.max, DataFrame.std, DataFrame.quantile, DataFrame.idxmax, DataFrame.idxmin, DataFrame.cumsum, DataFrame.agg]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/basics.html#descriptive-statistics
+---
+
+## Коротко
+
+- `sum`, `mean`, `median`, `min`, `max`, `std`, `count`, `quantile` считаются **по каждому столбцу** (`axis=0`); `axis=1` — по каждой строке.
+- Пропуски по умолчанию **пропускаются** (`skipna=True`), в отличие от NumPy.
+- `idxmax()` / `idxmin()` — **метка** строки с максимумом / минимумом (в NumPy `argmax` даёт позицию).
+- `agg(["min", "max"])` — несколько статистик сразу.
+- `std` и `var` в pandas по умолчанию выборочные (`ddof=1`), в NumPy — `ddof=0`.
+- Текстовые столбцы в `mean` и подобных вызывают ошибку — выберите числовые или передайте `numeric_only=True`.
+
+<AxisDiagram caption="В pandas axis значит то же, что в NumPy: df.sum(axis=0) сворачивает строки — получается сумма каждого столбца; df.sum(axis=1) — сумма каждой строки." />
+
+## Синтаксис
+
+<Syntax code={`df.sum(axis=0, skipna=True, numeric_only=False)   # так же mean, median, min, max, std
+df.quantile(q=0.5)
+df.idxmax(axis=0), df.idxmin(axis=0)
+df.cumsum(axis=0)
+df.agg(["min", "max", "mean"])`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['axis', '0 — по столбцам (результат для каждого столбца), 1 — по строкам', '0'],
+    ['skipna', 'пропускать NaN', 'True'],
+    ['numeric_only', 'только числовые столбцы', 'False'],
+    ['ddof', 'в std и var: знаменатель n − ddof', '1'],
+    ['q', 'в quantile: уровень или список уровней от 0 до 1', '0.5'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="columns" title="По столбцам" />
+
+<Example id="rows" title="По строкам" />
+
+<Example id="skipna" title="Пропуски" />
+
+<Example id="several" title="Несколько статистик" />
+
+<Example id="idxmax" title="Где максимум" />
+
+<Example id="quantile" title="Квантили" />
+
+<Example id="cumulative" title="Нарастающий итог" />
+
+## Подводные камни
+
+<Pitfall title="std в pandas и NumPy">
+
+<Example id="std-ddof" title="Разный ddof по умолчанию" />
+
+</Pitfall>
+
+<Pitfall title="Текстовые столбцы">
+
+Нечисловые столбцы не отбрасываются молча.
+
+<Example id="text-column" title="mean для таблицы с текстом" />
+
+<Example id="numeric-only" title="numeric_only=True" />
+
+</Pitfall>

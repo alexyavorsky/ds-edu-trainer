@@ -1,0 +1,7 @@
+title = "NumPy"
+kind = "topic"
+code = "np"
+order = 2
+packages = ["numpy"]
+reference = "numpy"
+description = "Задачи на массивы: индексация, транслирование, агрегации, линейная алгебра. Разделы — как в справочнике."

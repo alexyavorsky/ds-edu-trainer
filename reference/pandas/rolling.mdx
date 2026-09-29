@@ -1,0 +1,71 @@
+---
+title: "Окна: rolling, expanding, ewm"
+level: advanced
+summary: Скользящее среднее, максимум «на текущий момент» и экспоненциальное сглаживание временного ряда.
+requires: [pandas/date-range, pandas/stats]
+related: [pandas/resample, pandas/shift-diff, numpy/sliding-window]
+functions: [Series.rolling, DataFrame.rolling, Series.expanding, Series.ewm, Rolling.mean, Rolling.agg]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/window.html
+---
+
+## Коротко
+
+- `rolling(n)` — окно из `n` последних строк; дальше агрегация: `.mean()`, `.sum()`, `.max()`, `.agg([...])`. Первые `n − 1` значений — `NaN`.
+- `min_periods` — сколько значений достаточно для расчёта; `center=True` — окно вокруг точки, а не до неё.
+- `rolling("7D")` при датах в индексе — окно **по времени**: учитываются строки за последние 7 дней, даже если дней с данными меньше.
+- `expanding()` — окно от начала до текущей строки: максимум или среднее «на сегодняшний день».
+- `ewm(span=…)` — экспоненциальное сглаживание: недавние значения весят больше.
+
+## Синтаксис
+
+<Syntax code={`s.rolling(window, min_periods=None, center=False).mean()
+s.rolling("7D").sum()            # окно по времени
+s.expanding(min_periods=1).max()
+s.ewm(span=None, alpha=None, adjust=True).mean()
+df.groupby("key")["col"].rolling(3).mean()`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['window', 'размер окна: число строк или длительность вроде "7D", "12h"', '—'],
+    ['min_periods', 'минимум значений в окне для результата', 'размер окна'],
+    ['center', 'окно с центром в текущей строке', 'False'],
+    ['span / alpha', 'в ewm: скорость забывания; alpha = 2 / (span + 1)', '—'],
+    ['adjust', 'в ewm: False — рекуррентная формула s_t = α·x_t + (1 − α)·s_{t−1}', 'True'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="rolling-mean" title="Скользящее среднее" />
+
+<Example id="min-periods" title="Без пропусков в начале" />
+
+<Example id="center" title="Окно вокруг точки" />
+
+<Example id="time-window" title="Окно по времени" />
+
+<Example id="expanding" title="С начала до текущей строки" />
+
+<Example id="ewm" title="Экспоненциальное сглаживание" />
+
+<Example id="agg" title="Несколько функций" />
+
+## Подводные камни
+
+<Pitfall title="Окна через границы групп">
+
+Если в одной таблице несколько рядов, простое `rolling` смешает их. Группируйте перед окном — результат получит MultiIndex (группа, исходная метка).
+
+<Example id="groups" title="rolling по группам" />
+
+</Pitfall>
+
+<Pitfall title="Окно по строкам при пропусках в датах">
+
+`rolling(3)` берёт 3 строки, даже если между ними неделя. Для «последних 3 дней» нужен `rolling("3D")` и даты в индексе, как в примере выше.
+
+</Pitfall>

@@ -1,0 +1,75 @@
+---
+title: "Даты: to_datetime и .dt"
+level: medium
+summary: Превратить строки в даты, достать месяц, день недели и час, посчитать промежутки между датами.
+requires: [pandas/dtypes]
+related: [pandas/date-range, pandas/resample, pandas/shift-diff, numpy/datetime64]
+functions: [pd.to_datetime, Series.dt, pd.Timestamp, pd.Timedelta, pd.DateOffset, Series.dt.floor, Series.dt.strftime, Series.dt.day_name, Series.dt.as_unit]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/timeseries.html
+---
+
+## Коротко
+
+- `pd.to_datetime(s)` превращает строки в тип `datetime64`. Свой формат — `format="%d.%m.%Y"`, дата вида 01.03 — `dayfirst=True`, нераспознанные значения в `NaT` — `errors="coerce"`.
+- Через `.dt` доступны части даты: `.dt.year`, `.dt.month`, `.dt.day_name()`, `.dt.hour`, `.dt.date`.
+- Разность дат — промежуток (`Timedelta`): `.dt.days`, `.dt.total_seconds()`.
+- `.dt.floor("D")` округляет вниз до дня, часа и т. д.; `.dt.strftime(...)` форматирует в строку.
+- «Плюс месяц» с учётом календаря — `pd.DateOffset(months=1)`.
+- В pandas 3 даты из строк хранятся с точностью до **микросекунд** (раньше — наносекунд).
+
+## Синтаксис
+
+<Syntax code={`pd.to_datetime(s, format=None, dayfirst=False, errors="raise")
+s.dt.year, s.dt.month, s.dt.day, s.dt.hour, s.dt.date
+s.dt.day_name(), s.dt.floor("h"), s.dt.strftime("%d.%m.%Y")
+(end - start).dt.days, (end - start).dt.total_seconds()
+s + pd.DateOffset(months=1), s + pd.Timedelta(days=3)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['format', 'формат строки: "%d.%m.%Y %H:%M", "ISO8601" или "mixed"', 'определяется по первому значению'],
+    ['dayfirst', 'в неоднозначных датах сначала день: 01.03 — 1 марта', 'False'],
+    ['errors', '"raise" — ошибка, "coerce" — NaT для нераспознанных', '"raise"'],
+    ['unit', 'для чисел: единица — "s", "ms", "us", "ns"', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="to-datetime" title="Строки в даты" />
+
+<Example id="format" title="Свой формат и dayfirst" />
+
+<Example id="errors" title="Нераспознанные значения в NaT" />
+
+<Example id="dt" title="Части даты через .dt" />
+
+<Example id="timedelta" title="Промежутки между датами" />
+
+<Example id="floor-strftime" title="Округление и форматирование" />
+
+<Example id="offset" title="Плюс календарный месяц" />
+
+## Подводные камни
+
+<Pitfall title="Разные форматы в одном столбце">
+
+Формат определяется по первой строке и применяется ко всем. Если форматы различаются, передайте `format="ISO8601"` (все ISO, но разной точности) или `format="mixed"`.
+
+<Example id="mixed-format" title="Дата со временем и без" />
+
+<Example id="iso8601" title="format='ISO8601'" />
+
+</Pitfall>
+
+<Pitfall title="Микросекунды вместо наносекунд">
+
+<VersionNote since="pandas 3.0" was="даты всегда datetime64[ns]; astype('int64') давал наносекунды" now="из строк — datetime64[us]; число при astype('int64') в 1000 раз меньше. Для кода, не зависящего от единицы, — .dt.as_unit('ns')" />
+
+<Example id="unit" title="Тип и число" />
+
+</Pitfall>

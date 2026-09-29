@@ -1,0 +1,9 @@
+[[mutant]]
+name = "занятые цвета не учитываются — всем цвет 0"
+find = "        taken = {colors[n] for n in neighbors[region] if n in colors}"
+replace = "        taken = set()"
+
+[[mutant]]
+name = "цвет берётся «следующий после максимального», а не наименьший свободный"
+find = "        color = 0\n        while color in taken:\n            color += 1"
+replace = "        color = max(taken, default=-1) + 1"

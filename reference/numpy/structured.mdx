@@ -1,0 +1,65 @@
+---
+title: Структурированные массивы
+level: advanced
+summary: Массив записей с именованными полями разных типов — как таблица, но в одном массиве NumPy.
+requires: [numpy/dtypes, numpy/boolean]
+related: [numpy/io, numpy/sorting, pandas/dataframe]
+functions: [np.dtype, np.rec.array, np.sort]
+docs: https://numpy.org/doc/2.5/user/basics.rec.html
+---
+
+## Коротко
+
+- Тип элемента задаётся списком полей: `np.dtype([("name", "U10"), ("age", "i4")])`. Каждый элемент — запись.
+- `a["age"]` — массив одного поля (представление); `a[1]` — одна запись.
+- Работают маски, сортировка по полю (`order="age"`), запись в поле.
+- Полезно для чтения двоичных форматов и обмена с C-кодом. Для анализа табличных данных почти всегда удобнее [pandas DataFrame](/reference/pandas/dataframe).
+
+## Синтаксис
+
+<Syntax code={`dt = np.dtype([("name", "U10"), ("age", "i4"), ("score", "f8")])
+a = np.array([("Аня", 21, 4.5), ...], dtype=dt)   # элементы — кортежи
+a["age"]                  # поле
+a[0]                      # запись
+np.sort(a, order="age")`} />
+
+| Код типа | Значение |
+| --- | --- |
+| `"U10"` | строка до 10 символов |
+| `"i4"`, `"i8"` | целое 4 / 8 байт |
+| `"f8"` | float64 |
+| `"?"` | bool |
+
+## Примеры
+
+<Setup />
+
+<Example id="create" title="Массив записей" />
+
+<Example id="field" title="Поле как массив" />
+
+<Example id="row" title="Одна запись" />
+
+<Example id="filter" title="Фильтр по полю" />
+
+<Example id="sort" title="Сортировка по полю" />
+
+<Example id="assign" title="Изменить поле" />
+
+## Подводные камни
+
+<Pitfall title="Строки фиксированной длины">
+
+Поле `"U10"` хранит не больше 10 символов: длинные значения молча обрезаются. Выбирайте длину с запасом.
+
+<Example id="truncate" title="Длинное имя" />
+
+</Pitfall>
+
+<Pitfall title="Для таблиц есть pandas">
+
+Группировка, объединение, пропуски и работа со строками в структурированных массивах неудобны. Массив легко превратить в DataFrame.
+
+<Example id="to-pandas" title="Структурированный массив в DataFrame" />
+
+</Pitfall>

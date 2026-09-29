@@ -1,0 +1,71 @@
+---
+title: Сортировка
+level: basic
+summary: Упорядочить строки по одному или нескольким столбцам, по индексу или взять n наибольших.
+requires: [pandas/dataframe]
+related: [pandas/rank, pandas/set-index, numpy/sorting]
+functions: [DataFrame.sort_values, DataFrame.sort_index, DataFrame.nlargest, DataFrame.nsmallest]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/reference/api/pandas.DataFrame.sort_values.html
+---
+
+## Коротко
+
+- `sort_values("col")` — по столбцу; список столбцов — по нескольким, `ascending` — список направлений.
+- Пропуски по умолчанию идут в конец (`na_position="last"`).
+- `key=` — функция, применяемая к столбцу перед сравнением: например, без учёта регистра.
+- `sort_index()` — по индексу; помогает вернуть исходный порядок строк.
+- `nlargest(n, "col")` / `nsmallest` — n строк с наибольшими / наименьшими значениями, быстрее полной сортировки.
+- Сортировка возвращает новую таблицу; индекс остаётся прежним, пока не передать `ignore_index=True`.
+
+## Синтаксис
+
+<Syntax code={`df.sort_values(by, ascending=True, na_position="last", key=None, ignore_index=False)
+df.sort_index(ascending=True)
+df.nlargest(n, columns), df.nsmallest(n, columns)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['by', 'столбец или список столбцов', '—'],
+    ['ascending', 'по возрастанию; список — своё направление для каждого столбца', 'True'],
+    ['na_position', '"last" или "first" — куда ставить пропуски', '"last"'],
+    ['key', 'функция от Series, результат которой сравнивается', 'None'],
+    ['ignore_index', 'заменить индекс на 0, 1, 2…', 'False'],
+    ['kind', 'алгоритм; "stable" сохраняет порядок равных (для нескольких столбцов сортировка всегда устойчивая)', '"quicksort"'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="by-column" title="По одному столбцу" />
+
+<Example id="descending" title="По убыванию" />
+
+<Example id="several" title="По нескольким столбцам" />
+
+<Example id="key" title="Без учёта регистра" />
+
+<Example id="ignore-index" title="Пропуски в начале и новый индекс" />
+
+<Example id="sort-index" title="Вернуть порядок по индексу" />
+
+<Example id="nlargest" title="n наибольших" />
+
+## Подводные камни
+
+<Pitfall title="Результат не сохранили">
+
+`sort_values` не меняет таблицу. Присвойте результат: `staff = staff.sort_values("salary")`.
+
+<Example id="not-inplace" title="Сортировка без присваивания" />
+
+</Pitfall>
+
+<Pitfall title="Заглавные и строчные буквы">
+
+Строки сравниваются по кодам символов: все заглавные идут раньше строчных, поэтому «аня» оказывается после «Дины». Для сортировки без учёта регистра передайте `key`.
+
+</Pitfall>

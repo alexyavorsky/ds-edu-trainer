@@ -1,0 +1,65 @@
+---
+title: "Оси: T, newaxis, squeeze"
+level: medium
+summary: Поменять оси местами, добавить ось длины 1 или убрать лишние единичные оси.
+requires: [numpy/reshape]
+related: [numpy/broadcasting, numpy/matmul, numpy/memory-layout]
+functions: [ndarray.T, np.transpose, np.swapaxes, np.moveaxis, np.newaxis, np.expand_dims, np.squeeze]
+docs: https://numpy.org/doc/2.5/reference/routines.array-manipulation.html#transpose-like-operations
+---
+
+## Коротко
+
+- `a.T` — транспонирование: строки становятся столбцами. Для многомерного массива порядок осей переворачивается.
+- `np.transpose(a, axes)` задаёт порядок осей явно; `moveaxis` переносит одну ось, `swapaxes` меняет две местами.
+- `a[:, np.newaxis]` (или `np.expand_dims`) добавляет ось длины 1: вектор `(3,)` → столбец `(3, 1)`.
+- `np.squeeze` убирает все оси длины 1: `(3, 1)` → `(3,)`.
+- Всё это — представления: данные не копируются.
+
+## Синтаксис
+
+<Syntax code={`a.T                          # перевернуть порядок осей
+np.transpose(a, (0, 2, 1))   # явный порядок
+np.moveaxis(a, source, destination)
+np.swapaxes(a, 0, 1)
+a[:, np.newaxis]             # добавить ось; np.newaxis — это None
+np.expand_dims(a, axis=0)
+np.squeeze(a, axis=None)     # убрать оси длины 1`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['axes', 'новый порядок осей для transpose; None — обратный', 'None'],
+    ['source, destination', 'откуда и куда перенести ось в moveaxis', '—'],
+    ['axis', 'куда вставить ось (expand_dims) или какую убрать (squeeze)', '— / None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="t" title="Транспонирование матрицы" />
+
+<Example id="transpose-axes" title="Порядок осей в многомерном массиве" />
+
+<Example id="newaxis" title="Добавить ось" />
+
+<Example id="squeeze" title="Убрать оси длины 1" />
+
+## Подводные камни
+
+<Pitfall title="Вектор не транспонируется">
+
+У одномерного массива одна ось, переставлять нечего: `v.T` — тот же вектор. Чтобы получить столбец, добавьте ось: `v[:, np.newaxis]` или `v.reshape(-1, 1)`.
+
+<Example id="vector-t" title=".T для вектора" />
+
+</Pitfall>
+
+<Pitfall title="squeeze(axis=…) только для осей длины 1">
+
+<Example id="squeeze-error" title="Убрать ось длины 2" />
+
+</Pitfall>

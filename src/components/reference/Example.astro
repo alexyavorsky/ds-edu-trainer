@@ -1,0 +1,154 @@
+---
+/**
+ * Пример из файла reference/<тема>/<статья>.py: `<Example id="scalar" title="Массив и число" />`.
+ * Статью страница кладёт в Astro.locals. Код и вывод берутся из файла — вывод сгенерирован его выполнением.
+ */
+import { Code } from 'astro:components';
+import { getExamples, getPlots, runnableCode, timingNote } from '../../lib/reference';
+import CopyButton from './CopyButton.astro';
+
+interface Props {
+  id: string;
+  title?: string;
+}
+const { id, title = 'Пример' } = Astro.props;
+const article = Astro.locals.referenceArticle!;
+const cell = getExamples(article).get(id);
+if (!cell) throw new Error(`${article}: нет примера «${id}» — проверьте ${article}.py`);
+const raises = cell.flags.raises;
+const noRun = 'norun' in cell.flags;
+const deprecated = 'deprecated' in cell.flags;
+const timing = timingNote(cell.flags);
+const plots = getPlots(article, id);
+---
+
+<figure class:list={['example', raises && 'is-error']} data-example={`${article}#${id}`}>
+  <figcaption>
+    <span class="title">{title}</span>
+    {raises && <span class="tag tag-error">ошибка: {raises}</span>}
+    {deprecated && <span class="tag tag-old">устаревший API</span>}
+    <CopyButton code={runnableCode(article, cell.code)} />
+  </figcaption>
+  <Code code={cell.code} lang="python" theme="vitesse-dark" />
+  {
+    cell.output !== null && (
+      <div class="output">
+        <span class="label">
+          {raises ? 'Ошибка' : 'Вывод'}
+          {timing && <span class="timing">{timing}</span>}
+        </span>
+        <pre>{cell.output}</pre>
+      </div>
+    )
+  }
+  {
+    plots.length > 0 && (
+      <div class="output plots">
+        <span class="label">{plots.length > 1 ? 'Графики' : 'График'}</span>
+        {plots.map((p) => (
+          <img src={p.src} width={p.width} height={p.height} alt={`График: ${title}`} loading="lazy" decoding="async" />
+        ))}
+      </div>
+    )
+  }
+  {noRun && <p class="note">Пример не выполняется при проверке справочника — показан только код.</p>}
+</figure>
+
+<style>
+  .example {
+    margin: 0 0 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    overflow: hidden;
+    min-width: 0;
+  }
+  figcaption {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 38px;
+    padding: 4px 4px 4px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .title {
+    flex: 1;
+    min-width: 0;
+  }
+  .tag {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    padding: 2px 7px;
+    border-radius: 5px;
+  }
+  .tag-error {
+    color: var(--hard);
+    background: var(--hard-soft);
+  }
+  .tag-old {
+    color: var(--medium);
+    background: var(--medium-soft);
+  }
+  .example :global(pre.astro-code) {
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+  }
+  .output {
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .label {
+    display: block;
+    padding: 8px 16px 0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  .is-error .label {
+    color: var(--hard);
+  }
+  .timing {
+    margin-left: 8px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .timing::before {
+    content: '· ';
+  }
+  .plots img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    padding: 8px 12px 14px;
+    box-sizing: border-box;
+  }
+  .output pre {
+    margin: 0 !important;
+    padding: 6px 16px 14px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: none !important;
+    color: var(--text-2);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .is-error .output pre {
+    color: #f3a5a7;
+  }
+  .note {
+    margin: 0;
+    padding: 8px 16px;
+    border-top: 1px solid var(--border);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+</style>

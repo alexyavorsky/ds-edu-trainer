@@ -1,0 +1,59 @@
+---
+/**
+ * Пометка «было / стало» для поведения, которое менялось между версиями:
+ * `<VersionNote since="pandas 3.0" was="..." now="..." />`. `код` в обратных кавычках оформляется как код.
+ */
+interface Props {
+  since: string;
+  was: string;
+  now: string;
+}
+const { since, was, now } = Astro.props;
+const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const inline = (s: string) => escape(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+---
+
+<aside class="version-note">
+  <span class="since">Изменилось в {since}</span>
+  <dl>
+    <div><dt>Было</dt><dd set:html={inline(was)} /></div>
+    <div><dt>Стало</dt><dd set:html={inline(now)} /></div>
+  </dl>
+</aside>
+
+<style>
+  .version-note {
+    margin: 0 0 16px;
+    padding: 12px 14px;
+    border: 1px solid rgb(141 149 255 / 0.3);
+    border-radius: var(--radius-sm);
+    background: var(--accent-soft);
+    font-size: 14px;
+  }
+  .since {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+  dl {
+    margin: 0;
+    display: grid;
+    gap: 4px;
+  }
+  dl div {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 8px;
+  }
+  dt {
+    color: var(--muted);
+  }
+  dd {
+    margin: 0;
+    color: var(--text-2);
+  }
+</style>

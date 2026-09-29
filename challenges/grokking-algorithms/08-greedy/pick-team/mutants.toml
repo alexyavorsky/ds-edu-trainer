@@ -1,0 +1,9 @@
+[[mutant]]
+name = "не проверяется, что покрытие вообще возможно — берётся бесполезный кандидат"
+find = "        if best is None:\n            return None"
+replace = "        if best is None:\n            best = next(iter(candidates))"
+
+[[mutant]]
+name = "берётся кандидат с наибольшим числом навыков вообще, а не новых"
+find = "            cover = uncovered & skills"
+replace = "            cover = set(skills)"

@@ -1,0 +1,92 @@
+---
+title: Типы данных
+level: medium
+summary: Привести столбцы к правильным типам — числа из строк, целые с пропусками, логические значения.
+requires: [pandas/inspect]
+related: [pandas/missing, pandas/category, pandas/strings, pandas/datetime, numpy/dtypes]
+functions: [DataFrame.astype, pd.to_numeric, DataFrame.convert_dtypes, pd.Int64Dtype, pd.BooleanDtype, pd.StringDtype]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/basics.html#dtypes
+---
+
+## Коротко
+
+- Основные типы: `int64`, `float64`, `bool`, `str`, `datetime64`, `category`. Посмотреть — `df.dtypes`.
+- `astype(тип)` или `astype({"col": тип})` — привести столбцы; падает на первом неподходящем значении.
+- `pd.to_numeric(s, errors="coerce")` превращает в число всё, что можно, а остальное — в `NaN`.
+- **Nullable-типы** с заглавной буквы — `Int64`, `Float64`, `boolean`, `string` — хранят пропуск как `pd.NA`, не меняя тип: целые остаются целыми.
+- `convert_dtypes()` подбирает nullable-типы для всей таблицы.
+
+## Синтаксис
+
+<Syntax code={`df.dtypes
+df.astype({"qty": "int64", "price": "float64"})
+pd.to_numeric(s, errors="raise", downcast=None)
+pd.Series(values, dtype="Int64")      # "Float64", "boolean", "string"
+df.convert_dtypes()`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['dtype', 'в astype: тип или словарь {"столбец": тип}', '—'],
+    ['errors', 'в to_numeric: "raise" — ошибка, "coerce" — NaN для неподходящих значений', '"raise"'],
+    ['downcast', 'в to_numeric: "integer", "float" — выбрать самый компактный тип', 'None'],
+  ]}
+/>
+
+| Тип | Что хранит | Пропуск |
+| --- | --- | --- |
+| `int64` | целые | нельзя — столбец станет `float64` |
+| `Int64` | целые | `pd.NA` |
+| `float64` | дробные | `NaN` |
+| `bool` / `boolean` | логические | нельзя / `pd.NA` |
+| `str` | строки (по умолчанию в pandas 3) | `NaN` |
+| `category` | повторяющиеся значения из набора | `NaN` |
+
+## Примеры
+
+<Setup />
+
+<Example id="dtypes" title="Что прочиталось" />
+
+<Example id="astype" title="astype" />
+
+<Example id="to-numeric" title="to_numeric с errors='coerce'" />
+
+<Example id="nullable" title="Целые с пропусками: Int64" />
+
+<Example id="convert-dtypes" title="convert_dtypes" />
+
+`convert_dtypes` выбирает для строк тип `string` с пропуском `pd.NA`, а обычный тип по умолчанию — `str` с пропуском `NaN`.
+
+## Подводные камни
+
+<Pitfall title="astype падает на первом плохом значении">
+
+<Example id="astype-fails" title="Строка «нет» в числах" />
+
+</Pitfall>
+
+<Pitfall title="astype(bool) для строк">
+
+Любая непустая строка — `True`, включая `"False"`. Переводите через словарь.
+
+<Example id="bool-trap" title="Строки «True» / «False»" />
+
+</Pitfall>
+
+<Pitfall title="Коды с ведущими нулями">
+
+Идентификаторы, индексы и телефоны — не числа. При приведении к `int` ведущие нули теряются.
+
+<Example id="keep-zeros" title="id как число" />
+
+</Pitfall>
+
+<Pitfall title="В столбец str нельзя записать число">
+
+<VersionNote since="pandas 3.0" was="строковый столбец был object и принимал что угодно" now="тип str принимает только строки и пропуски" />
+
+<Example id="str-setitem" title="Число в строковый столбец" />
+
+</Pitfall>

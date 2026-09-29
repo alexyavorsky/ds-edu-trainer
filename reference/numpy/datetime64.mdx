@@ -1,0 +1,58 @@
+---
+title: "Даты: datetime64"
+level: medium
+summary: Массивы дат и промежутков времени — арифметика, диапазоны, рабочие дни.
+requires: [numpy/dtypes, numpy/arithmetic]
+related: [pandas/datetime, pandas/date-range]
+functions: [np.datetime64, np.timedelta64, np.is_busday, np.busday_count, np.busday_offset]
+docs: https://numpy.org/doc/2.5/reference/arrays.datetime.html
+---
+
+## Коротко
+
+- `datetime64` — момент времени, `timedelta64` — промежуток. У обоих есть **единица**: `D` — дни, `h` — часы, `m` — минуты, `s` — секунды, `M` — месяцы, `Y` — годы.
+- Разница двух дат — `timedelta64`; дата плюс промежуток — дата.
+- `np.arange(начало, конец, dtype="datetime64[D]")` — все дни подряд.
+- `astype("datetime64[M]")` огрубляет дату до месяца, `/ np.timedelta64(1, "D")` превращает промежуток в число дней.
+- Для анализа данных по датам обычно удобнее pandas: [to_datetime](/reference/pandas/datetime) и [date_range](/reference/pandas/date-range).
+
+## Синтаксис
+
+<Syntax code={`np.datetime64("2024-03-15")            # единица по строке: D
+np.datetime64("2024-03-15T14:30")      # m — минуты
+np.timedelta64(3, "D")
+np.array(strings, dtype="datetime64[D]")
+np.arange(start, stop, dtype="datetime64[D]")
+np.busday_count(begin, end)`} />
+
+## Примеры
+
+<Setup />
+
+<Example id="create" title="Создание дат" />
+
+<Example id="arithmetic" title="Арифметика дат" />
+
+<Example id="arange" title="Все дни подряд" />
+
+<Example id="units" title="Смена единицы и разница в днях" />
+
+<Example id="busday" title="Рабочие дни" />
+
+## Подводные камни
+
+<Pitfall title="Месяц нельзя прибавить к дате с днями">
+
+Длина месяца не фиксирована, поэтому промежутки в месяцах и годах не складываются с датами в днях. Для «плюс один месяц» используйте `pd.DateOffset(months=1)` в pandas.
+
+<Example id="month-add" title="Дата + 1 месяц" />
+
+</Pitfall>
+
+<Pitfall title="timedelta64 без единицы устарел">
+
+<VersionNote since="NumPy 2.5" was="np.timedelta64(5) и d + 1 — «общая» единица, подставлялась автоматически" now="устарело: указывайте единицу явно — np.timedelta64(5, 'D')" />
+
+<Example id="generic-unit" title="Промежуток без единицы" />
+
+</Pitfall>

@@ -1,0 +1,67 @@
+---
+title: Матричное умножение
+level: advanced
+summary: Оператор @ и функции dot, inner, outer — чем матричное произведение отличается от поэлементного.
+requires: [numpy/arithmetic, numpy/transpose]
+related: [numpy/linalg, numpy/einsum, numpy/broadcasting]
+functions: [np.matmul, np.dot, np.inner, np.outer, np.vdot, np.vecdot]
+docs: https://numpy.org/doc/2.5/reference/generated/numpy.matmul.html
+---
+
+## Коротко
+
+- `a @ b` — матричное произведение: `(n, k) @ (k, m) → (n, m)`. Внутренние размеры должны совпадать.
+- `a * b` — **поэлементное** умножение, это другое.
+- Вектор на вектор через `@` — скалярное произведение (число); матрица на вектор — вектор.
+- Для массивов 3D и больше `@` умножает матрицы **пачкой** по последним двум осям, а первые оси транслирует. `np.dot` для них ведёт себя иначе — в новом коде используйте `@`.
+- `np.outer(x, y)` — все попарные произведения, `np.inner` / `np.dot` для векторов — скалярное произведение.
+
+## Синтаксис
+
+<Syntax code={`a @ b                 # = np.matmul(a, b)
+np.dot(x, y)          # для векторов и матриц совпадает с @
+np.inner(x, y)        # скалярное произведение векторов
+np.outer(x, y)        # (n,) и (m,) → (n, m)`} />
+
+| Формы | `a @ b` |
+| --- | --- |
+| `(n, k) @ (k, m)` | `(n, m)` |
+| `(n, k) @ (k,)` | `(n,)` |
+| `(k,) @ (k,)` | число |
+| `(b, n, k) @ (k, m)` | `(b, n, m)` — пачка матриц |
+
+## Примеры
+
+<Setup />
+
+<Example id="matmul" title="Стоимость заказов в магазинах" />
+
+<Example id="star" title="* и @" />
+
+<Example id="vector" title="Матрица на вектор, вектор на вектор" />
+
+<Example id="dot-outer" title="Скалярное и внешнее произведение" />
+
+<Example id="batch" title="Пачка матриц" />
+
+## Подводные камни
+
+<Pitfall title="Внутренние размеры не совпадают">
+
+Проверьте формы: у `(2, 3) @ (2, 3)` внутренние размеры 3 и 2. Скорее всего, нужна транспонированная матрица: `orders @ orders.T`.
+
+<Example id="mismatch" title="Несовместимые формы" />
+
+</Pitfall>
+
+<Pitfall title="np.dot и @ для многомерных массивов">
+
+<Example id="dot-vs-matmul" title="Результат для 3D-массивов" />
+
+</Pitfall>
+
+<Pitfall title="@ с числом">
+
+<Example id="scalar" title="Число @ матрица" />
+
+</Pitfall>

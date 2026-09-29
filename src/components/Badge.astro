@@ -1,0 +1,62 @@
+---
+interface Props {
+  tone?: 'easy' | 'medium' | 'hard' | 'neutral' | 'accent';
+  href?: string;
+}
+const { tone = 'neutral', href } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag class:list={['badge', `badge-${tone}`]} href={href}><slot /></Tag>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text-2);
+  }
+  a.badge:hover {
+    border-color: var(--border-strong);
+    color: var(--text);
+  }
+  .badge-easy,
+  .badge-medium,
+  .badge-hard {
+    border-color: transparent;
+  }
+  .badge-easy::before,
+  .badge-medium::before,
+  .badge-hard::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .badge-easy {
+    color: var(--easy);
+    background: var(--easy-soft);
+  }
+  .badge-medium {
+    color: var(--medium);
+    background: var(--medium-soft);
+  }
+  .badge-hard {
+    color: var(--hard);
+    background: var(--hard-soft);
+  }
+  .badge-accent {
+    color: var(--accent-strong);
+    background: var(--accent-soft);
+    border-color: transparent;
+  }
+</style>

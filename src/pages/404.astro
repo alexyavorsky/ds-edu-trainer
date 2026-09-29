@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Страница не найдена">
+  <section class="nf">
+    <p class="eyebrow">404</p>
+    <h1>Такой страницы нет</h1>
+    <p class="muted">Возможно, задачу переименовали или удалили.</p>
+    <a href="/" class="btn">На главную</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    padding: 60px 0;
+  }
+  .nf h1 {
+    margin-top: 8px;
+    font-size: 32px;
+  }
+  .nf p {
+    margin: 10px 0 24px;
+  }
+</style>

@@ -1,0 +1,9 @@
+[[mutant]]
+name = "цикл не обнаруживается"
+find = "    return order if len(order) == len(waiting) else None"
+replace = "    return order"
+
+[[mutant]]
+name = "курсы, которые встречаются только в требованиях, теряются"
+find = "            waiting.setdefault(need, 0)\n"
+replace = "            waiting.setdefault(need, 1)\n"

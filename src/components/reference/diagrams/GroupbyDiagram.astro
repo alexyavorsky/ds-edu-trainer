@@ -1,0 +1,171 @@
+---
+/** Схема groupby: разделение → применение → объединение на данных из статьи pandas/groupby. */
+import Diagram from './Diagram.astro';
+
+const rows: [string, number][] = [
+  ['Омск', 30],
+  ['Тула', 12],
+  ['Омск', 18],
+  ['Пермь', 25],
+  ['Тула', 20],
+  ['Омск', 12],
+];
+const tone: Record<string, string> = { Омск: 'g1', Пермь: 'g2', Тула: 'g3' };
+const groups = [...new Set(rows.map(([city]) => city))].sort((a, b) => a.localeCompare(b, 'ru'));
+const partOf = (city: string) => rows.filter(([c]) => c === city).map(([, v]) => v);
+---
+
+<Diagram
+  caption={'sales.groupby("city")["cups"].sum(): строки делятся по городу, в каждой группе считается сумма, итоги собираются в Series с городом в индексе.'}
+  label="Схема groupby: исходная таблица из шести строк делится на три группы по городу, в каждой считается сумма чашек, результаты собираются в таблицу"
+>
+  <div class="flow">
+    <div class="stage">
+      <span class="stage-title">Исходные данные</span>
+      <table class="mini">
+        <thead><tr><th>city</th><th>cups</th></tr></thead>
+        <tbody>
+          {rows.map(([city, cups]) => <tr class={tone[city]}><td>{city}</td><td>{cups}</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+    <span class="arrow" aria-hidden="true">→</span>
+    <div class="stage">
+      <span class="stage-title">1. Разделение</span>
+      <div class="groups">
+        {
+          groups.map((city) => (
+            <table class:list={['mini', tone[city]]}>
+              <tbody>
+                {partOf(city).map((v) => (
+                  <tr class={tone[city]}><td>{city}</td><td>{v}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          ))
+        }
+      </div>
+    </div>
+    <span class="arrow" aria-hidden="true">→</span>
+    <div class="stage">
+      <span class="stage-title">2. Применение: sum()</span>
+      <div class="groups">
+        {
+          groups.map((city) => (
+            <div class:list={['calc', tone[city]]}>
+              {partOf(city).join(' + ')} = <b>{partOf(city).reduce((a, b) => a + b, 0)}</b>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+    <span class="arrow" aria-hidden="true">→</span>
+    <div class="stage">
+      <span class="stage-title">3. Объединение</span>
+      <table class="mini">
+        <thead><tr><th>city</th><th>cups</th></tr></thead>
+        <tbody>
+          {groups.map((city) => <tr class={tone[city]}><td>{city}</td><td>{partOf(city).reduce((a, b) => a + b, 0)}</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</Diagram>
+
+<style>
+  .flow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 12px;
+  }
+  .stage {
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+  }
+  .stage-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+  .arrow {
+    align-self: center;
+    color: var(--faint);
+    font-size: 18px;
+  }
+  .groups {
+    display: grid;
+    gap: 8px;
+  }
+  .mini {
+    border-collapse: separate;
+    border-spacing: 0 3px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    margin: 0;
+    display: table;
+    width: auto;
+  }
+  .mini th {
+    padding: 0 10px 2px 8px;
+    font-weight: 500;
+    color: var(--muted);
+    text-align: left;
+    background: none;
+    border: 0;
+  }
+  .mini td {
+    padding: 3px 10px 3px 8px;
+    border: 0;
+    background: var(--g-soft);
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .mini td:first-child {
+    border-left: 3px solid var(--g);
+    border-radius: 4px 0 0 4px;
+  }
+  .mini td:last-child {
+    border-radius: 0 4px 4px 0;
+    text-align: right;
+  }
+  .calc {
+    padding: 4px 10px;
+    border-left: 3px solid var(--g);
+    border-radius: 4px;
+    background: var(--g-soft);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+  .calc b {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .g1 {
+    --g: #8d95ff;
+    --g-soft: rgb(141 149 255 / 0.12);
+  }
+  .g2 {
+    --g: #4cc38a;
+    --g-soft: rgb(76 195 138 / 0.12);
+  }
+  .g3 {
+    --g: #eeb153;
+    --g-soft: rgb(238 177 83 / 0.12);
+  }
+  @media (max-width: 720px) {
+    .flow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 14px;
+      justify-content: stretch;
+    }
+    .arrow {
+      display: none;
+    }
+  }
+</style>

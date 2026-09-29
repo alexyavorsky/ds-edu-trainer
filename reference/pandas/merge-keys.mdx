@@ -1,0 +1,68 @@
+---
+title: "merge: ключи и проверки"
+level: medium
+summary: Ключи с разными именами, одинаковые столбцы в обеих таблицах, проверка уникальности ключей и объединение по индексу.
+requires: [pandas/merge]
+related: [pandas/set-index, pandas/duplicates, pandas/concat]
+functions: [DataFrame.merge, DataFrame.join, pd.errors.MergeError]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/reference/api/pandas.DataFrame.merge.html
+---
+
+## Коротко
+
+- Ключи называются по-разному — `left_on="customer", right_on="client_id"`. По индексу — `left_index=True` / `right_index=True`.
+- Одноимённые столбцы, которые не являются ключом, получают суффиксы `_x` и `_y`; свои — `suffixes=("_a", "_b")`.
+- `indicator=True` добавляет столбец `_merge`: `both`, `left_only`, `right_only` — удобно искать строки без пары.
+- `validate="one_to_one"`, `"one_to_many"`, `"many_to_one"` проверяет уникальность ключей и падает, если она нарушена.
+- `df.join(other)` — короткая форма `merge` по индексу `other`.
+
+## Синтаксис
+
+<Syntax code={`left.merge(right, left_on="a", right_on="b", how="left")
+left.merge(right, left_on="a", right_index=True)
+left.merge(right, on="k", suffixes=("_x", "_y"), indicator=False, validate=None)
+left.join(right, on=None, how="left")`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['left_on / right_on', 'ключи с разными именами в левой и правой таблице', 'None'],
+    ['left_index / right_index', 'использовать индекс как ключ', 'False'],
+    ['suffixes', 'суффиксы для одноимённых столбцов', '("_x", "_y")'],
+    ['indicator', 'добавить столбец _merge с источником строки', 'False'],
+    ['validate', '"one_to_one", "one_to_many", "many_to_one", "many_to_many"', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="left-right-on" title="Ключи с разными именами" />
+
+<Example id="suffixes" title="Одноимённые столбцы" />
+
+<Example id="indicator" title="Откуда строка: indicator" />
+
+<Example id="index" title="Ключ в индексе правой таблицы" />
+
+<Example id="join" title="join — объединение по индексу" />
+
+<Example id="several-keys" title="Несколько ключей" />
+
+## Подводные камни
+
+<Pitfall title="Неожиданные дубликаты в справочнике">
+
+Повтор в «справочной» таблице молча размножает строки фактов. `validate` превращает это в явную ошибку.
+
+<Example id="validate" title="validate='many_to_one'" />
+
+</Pitfall>
+
+<Pitfall title="Два столбца-ключа в результате">
+
+С `left_on` / `right_on` оба ключа остаются в результате (`customer` и `client_id`). Лишний удалите через `drop(columns=…)`.
+
+</Pitfall>

@@ -1,0 +1,49 @@
+---
+title: Порядок памяти и strides
+level: advanced
+summary: Как массив хранится в памяти, почему транспонирование ничего не копирует и когда порядок влияет на скорость.
+requires: [numpy/views-copies, numpy/transpose]
+related: [numpy/reshape, numpy/sliding-window, numpy/inplace-out]
+functions: [ndarray.strides, ndarray.flags, np.ascontiguousarray, np.asfortranarray]
+docs: https://numpy.org/doc/2.5/reference/arrays.ndarray.html#internal-memory-layout-of-an-ndarray
+---
+
+## Коротко
+
+- Данные массива лежат в памяти одним блоком. Форма и **strides** говорят, как по нему ходить: на сколько байт сдвинуться, чтобы перейти к следующему элементу по каждой оси.
+- **C-порядок** (по умолчанию) — строка за строкой; **F-порядок** (Fortran) — столбец за столбцом.
+- Транспонирование, срезы с шагом, `broadcast_to` меняют только strides — поэтому они бесплатны и дают представления.
+- `flags["C_CONTIGUOUS"]` показывает, лежат ли элементы подряд в порядке C. Некоторые операции (`ravel`, `reshape`, передача в C-библиотеки) для несплошных массивов копируют данные.
+- Проход вдоль последней оси C-массива быстрее, чем вдоль первой: элементы идут подряд.
+
+## Синтаксис
+
+<Syntax code={`a.strides                    # (байт по оси 0, байт по оси 1, …)
+a.flags["C_CONTIGUOUS"], a.flags["F_CONTIGUOUS"]
+np.ascontiguousarray(a)      # копия в порядке C, если нужно
+np.asfortranarray(a)         # копия в порядке F, если нужно
+np.zeros((3, 4), order="F")`} />
+
+## Примеры
+
+<Setup />
+
+<Example id="strides" title="strides и транспонирование" />
+
+<Example id="flags" title="Сплошной ли массив" />
+
+<Example id="order-f" title="Порядок F" />
+
+<Example id="slice-strides" title="Срез с шагом" />
+
+<Example id="contiguous" title="Сделать сплошным" />
+
+## Подводные камни
+
+<Pitfall title="ravel и reshape иногда копируют">
+
+Для несплошного массива (например, транспонированного) вытянуть элементы в строку без копии нельзя, и `ravel` молча копирует. Если важно, чтобы копии не было, используйте `a.reshape(-1, copy=False)` — он упадёт вместо копирования.
+
+<Example id="ravel-copy" title="ravel для транспонированного массива" />
+
+</Pitfall>

@@ -1,0 +1,9 @@
+[[mutant]]
+name = "стоимость — цена одного рейса, а не всего пути"
+find = "            new_cost = cost + price"
+replace = "            new_cost = price"
+
+[[mutant]]
+name = "-1 вместо бесконечности для недостижимого"
+find = "    return math.inf"
+replace = "    return -1"

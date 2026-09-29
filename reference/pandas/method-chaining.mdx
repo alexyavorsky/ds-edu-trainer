@@ -1,0 +1,57 @@
+---
+title: Цепочки методов
+level: advanced
+summary: Записать обработку таблицы одной цепочкой — без промежуточных переменных и без изменения исходных данных.
+requires: [pandas/columns, pandas/filtering, pandas/apply]
+related: [pandas/copy-on-write, pandas/groupby-agg, pandas/performance]
+functions: [DataFrame.assign, DataFrame.pipe, DataFrame.query, DataFrame.loc, pd.col]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/basics.html#tablewise-function-application
+---
+
+## Коротко
+
+- Большинство методов возвращают новую таблицу, поэтому их можно вызывать подряд: `df.dropna().assign(...).query(...)`.
+- Цепочку берут в круглые скобки и пишут по методу на строку — так её легко читать и комментировать.
+- Внутри цепочки нельзя сослаться на промежуточный результат по имени — используйте `lambda d: …` в `assign` и `loc` или `pd.col("…")`.
+- `pipe(функция, …)` встраивает в цепочку свою функцию от всей таблицы, в том числе для отладки.
+- С Copy-on-Write цепочки не копируют данные лишний раз, а исходная таблица остаётся нетронутой.
+
+## Синтаксис
+
+<Syntax code={`(
+    df
+    .rename(columns={...})
+    .dropna(subset=[...])
+    .assign(new=lambda d: d["a"] * 2, other=pd.col("b") + 1)
+    .query("new > 10")
+    .loc[lambda d: d["other"] > 0, ["a", "new"]]
+    .pipe(my_func, arg=1)
+)`} />
+
+## Примеры
+
+<Setup />
+
+<Example id="steps" title="Пошагово, с переменной df" />
+
+<Example id="chain" title="То же цепочкой" />
+
+<Example id="pd-col" title="pd.col и loc с lambda" />
+
+<Example id="pipe" title="Своя функция в цепочке" />
+
+## Подводные камни
+
+<Pitfall title="Длинную цепочку трудно отлаживать">
+
+Если результат неожиданный, вставьте между шагами `pipe` с печатью размера или `head()` — цепочку не придётся разбирать.
+
+<Example id="debug" title="Печать размеров между шагами" />
+
+</Pitfall>
+
+<Pitfall title="lambda видит промежуточный результат">
+
+В `assign(revenue=lambda d: …)` переменная `d` — таблица на этом шаге цепочки, а не исходная `raw`. Поэтому после `rename` в ней уже новые имена столбцов.
+
+</Pitfall>

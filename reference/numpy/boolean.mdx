@@ -1,0 +1,61 @@
+---
+title: Булевы маски
+level: medium
+summary: Отобрать или изменить элементы по условию — без циклов и if.
+requires: [numpy/indexing, numpy/comparing]
+related: [numpy/where, numpy/fancy, numpy/nan-inf, pandas/filtering]
+functions: [np.count_nonzero, np.any, np.all, np.logical_and, np.logical_or, np.logical_not]
+docs: https://numpy.org/doc/2.5/user/basics.indexing.html#boolean-array-indexing
+---
+
+## Коротко
+
+- Сравнение массива даёт **маску** — массив `True`/`False` той же формы: `temps > 5`.
+- `a[маска]` возвращает элементы, где маска `True`. Результат — одномерная **копия**.
+- Условия объединяют через `&` (и), `|` (или), `~` (не), каждое условие — **в скобках**. Слова `and`, `or`, `not` с массивами не работают.
+- `a[маска] = значение` меняет только выбранные элементы.
+- `маска.sum()` — сколько `True`, `маска.mean()` — их доля; `any()` / `all()` — есть ли хоть один / все ли.
+
+## Синтаксис
+
+<Syntax code={`mask = a > 0
+a[mask]                      # или сразу a[a > 0]
+a[(a > 0) & (a < 10)]        # и
+a[(a < 0) | (a > 10)]        # или
+a[~mask]                     # не
+a[a < 0] = 0                 # запись по маске
+mask.sum(), mask.any(), mask.all()`} />
+
+## Примеры
+
+<Setup />
+
+<Example id="mask" title="Маска и отбор" />
+
+<Example id="combine" title="Несколько условий" />
+
+<Example id="assign" title="Замена по условию" />
+
+`a[a < 0] = 0` меняет массив на месте. Если нужно получить новый массив, не трогая старый, используйте [np.where](/reference/numpy/where) или `np.clip`.
+
+<Example id="count" title="Сколько элементов подходит" />
+
+<Example id="two-dims" title="Маска двумерного массива" />
+
+## Подводные камни
+
+<Pitfall title="and / or вместо & / |">
+
+Python пытается превратить весь массив в одно `True` или `False` и не может.
+
+<Example id="python-and" title="and с массивами" />
+
+</Pitfall>
+
+<Pitfall title="Условия без скобок">
+
+У `&` и `|` приоритет выше, чем у `>` и `<`: `a > 0 & a < 10` читается как `a > (0 & a) < 10`. Скобки вокруг каждого условия обязательны.
+
+<Example id="precedence" title="Без скобок" />
+
+</Pitfall>

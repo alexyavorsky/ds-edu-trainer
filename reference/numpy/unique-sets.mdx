@@ -1,0 +1,76 @@
+---
+title: Уникальные значения и множества
+level: medium
+summary: Список различных значений с частотами, проверка вхождения и операции над множествами — пересечение, объединение, разность.
+requires: [numpy/sorting, numpy/boolean]
+related: [numpy/histogram, pandas/inspect, pandas/duplicates]
+functions: [np.unique, np.unique_values, np.unique_counts, np.unique_inverse, np.unique_all, np.isin, np.intersect1d, np.union1d, np.setdiff1d, np.setxor1d]
+docs: https://numpy.org/doc/2.5/reference/routines.set.html
+---
+
+## Коротко
+
+- `np.unique(a)` — отсортированные уникальные значения.
+- `return_counts=True` добавляет частоты, `return_inverse=True` — номер уникального значения для каждого элемента (удобно для кодирования категорий), `return_index=True` — где значение встретилось впервые.
+- `axis=0` ищет уникальные **строки** двумерного массива.
+- Короткие функции (NumPy 2): `unique_values`, `unique_counts`, `unique_inverse`, `unique_all`.
+- `np.isin(a, b)` — маска «элемент `a` есть в `b`». Множества: `intersect1d`, `union1d`, `setdiff1d`, `setxor1d` — результат отсортирован и без повторов.
+
+## Синтаксис
+
+<Syntax code={`np.unique(a, return_index=False, return_inverse=False,
+          return_counts=False, axis=None)
+np.unique_counts(a)          # → (values, counts)
+np.isin(a, b, invert=False)
+np.intersect1d(a, b), np.union1d(a, b)
+np.setdiff1d(a, b), np.setxor1d(a, b)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['return_counts', 'вернуть число вхождений каждого значения', 'False'],
+    ['return_inverse', 'вернуть индексы, по которым из уникальных восстанавливается исходный массив', 'False'],
+    ['return_index', 'вернуть индекс первого вхождения', 'False'],
+    ['axis', 'искать уникальные срезы вдоль оси, например строки при axis=0', 'None'],
+    ['invert', 'в isin: True — маска «нет в b»', 'False'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="unique" title="Уникальные значения" />
+
+<Example id="counts" title="Частоты и самое частое значение" />
+
+<Example id="inverse" title="Коды значений" />
+
+<Example id="array-api" title="Функции unique_values и unique_counts" />
+
+<Example id="rows" title="Уникальные строки" />
+
+<Example id="isin" title="Проверка вхождения" />
+
+<Example id="sets" title="Операции над множествами" />
+
+## Подводные камни
+
+<Pitfall title="NaN в unique">
+
+`np.unique` считает все `NaN` одним значением, хотя `NaN != NaN`. Чтобы каждый `NaN` остался отдельным, передайте `equal_nan=False`.
+
+<Example id="nan" title="unique с NaN" />
+
+<Example id="nan-separate" title="equal_nan=False" />
+
+</Pitfall>
+
+<Pitfall title="np.in1d удалён">
+
+<VersionNote since="NumPy 2.4" was="np.in1d(a, b) — проверка вхождения (устарела в 2.0)" now="функции нет, используйте np.isin(a, b)" />
+
+<Example id="in1d-removed" title="Вызов np.in1d" />
+
+</Pitfall>

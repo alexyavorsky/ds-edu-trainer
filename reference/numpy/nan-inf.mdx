@@ -1,0 +1,74 @@
+---
+title: NaN и бесконечности
+level: medium
+summary: Как хранить пропуски в массиве, находить их и считать суммы и средние без них.
+requires: [numpy/aggregations, numpy/boolean]
+related: [numpy/masked, numpy/dtypes, pandas/missing]
+functions: [np.nan, np.inf, np.isnan, np.isinf, np.isfinite, np.nansum, np.nanmean, np.nanmedian, np.nanmax, np.nanmin, np.nanstd, np.nan_to_num]
+docs: https://numpy.org/doc/2.5/reference/constants.html#numpy.nan
+---
+
+## Коротко
+
+- `np.nan` (not a number) — стандартная метка пропуска в дробных массивах; `np.inf` — бесконечность.
+- `NaN` «заражает» вычисления: сумма, среднее, максимум с `NaN` дают `NaN`.
+- Функции `nansum`, `nanmean`, `nanmax`, `nanmedian`, `nanstd`… пропускают `NaN`.
+- `NaN` не равен ничему, даже себе. Искать пропуски — только через `np.isnan`.
+- `NaN` бывает только в float-массивах; в целых его хранить нельзя.
+
+## Синтаксис
+
+<Syntax code={`np.isnan(a), np.isinf(a), np.isfinite(a)   # маски
+np.nansum(a), np.nanmean(a), np.nanmax(a)  # без учёта NaN
+np.nan_to_num(a, nan=0.0, posinf=None, neginf=None)
+a[~np.isnan(a)]                            # только известные значения`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['nan', 'чем заменить NaN в nan_to_num', '0.0'],
+    ['posinf, neginf', 'чем заменить +inf и −inf; None — самым большим / маленьким числом типа', 'None'],
+    ['axis', 'у nan-функций — как у обычных агрегаций', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="propagate" title="NaN в сумме и среднем" />
+
+<Example id="nan-functions" title="Агрегации без NaN" />
+
+<Example id="isnan" title="Найти и отбросить пропуски" />
+
+<Example id="fill" title="Заполнить пропуски" />
+
+<Example id="inf" title="Бесконечности" />
+
+## Подводные камни
+
+<Pitfall title="Сравнение с np.nan">
+
+`a == np.nan` всегда даёт `False`, поэтому такая проверка молча ничего не находит.
+
+<Example id="nan-eq" title="Поиск NaN через ==" />
+
+</Pitfall>
+
+<Pitfall title="Среднее из одних NaN">
+
+Если в срезе нет ни одного значения, nan-функция возвращает `NaN` с предупреждением.
+
+<Example id="all-nan" title="nanmean без значений" />
+
+</Pitfall>
+
+<Pitfall title="NaN в целом массиве">
+
+<Example id="int-nan" title="Запись NaN в int-массив" />
+
+Для целых с пропусками есть маскированные массивы [np.ma](/reference/numpy/masked) и nullable-типы pandas.
+
+</Pitfall>

@@ -1,0 +1,73 @@
+---
+title: to_dict и to_numpy
+level: medium
+summary: Превратить таблицу в словарь, список записей или массив NumPy — для JSON, обычного Python или библиотек машинного обучения.
+requires: [pandas/dataframe]
+related: [pandas/io-formats, pandas/iteration, pandas/dtypes]
+functions: [DataFrame.to_dict, Series.to_dict, DataFrame.to_numpy, Series.to_numpy, Series.tolist, DataFrame.values]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/reference/api/pandas.DataFrame.to_dict.html
+---
+
+## Коротко
+
+- `to_dict()` по умолчанию — `{столбец: {метка: значение}}`. Другие формы задаёт `orient`: `"list"`, `"records"`, `"index"`.
+- `to_dict("records")` — список словарей по строкам; это самый частый формат для JSON и API.
+- `to_numpy()` — массив NumPy. У разнотипных столбцов общий тип `object` — медленный и неудобный.
+- `tolist()` — список значений Series в обычных типах Python.
+- Вместо `.values` используйте `to_numpy()`: у него понятное поведение и параметры `dtype`, `na_value`.
+
+## Синтаксис
+
+<Syntax code={`df.to_dict(orient="dict")      # "list", "records", "index", "split", "tight"
+s.to_dict()
+df.to_numpy(dtype=None, na_value=<пропуск>)
+s.tolist()`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['orient', 'форма словаря: "dict", "list", "records", "index", "split", "tight"', '"dict"'],
+    ['dtype', 'в to_numpy: тип результата', 'по данным'],
+    ['na_value', 'в to_numpy: чем заменить пропуски', 'по типу'],
+  ]}
+/>
+
+| orient | Результат |
+| --- | --- |
+| `"dict"` | `{столбец: {метка: значение}}` |
+| `"list"` | `{столбец: [значения]}` |
+| `"records"` | `[{столбец: значение}, …]` |
+| `"index"` | `{метка: {столбец: значение}}` |
+
+## Примеры
+
+<Setup />
+
+<Example id="to-dict" title="Словарь по умолчанию" />
+
+<Example id="orients" title="Другие формы словаря" />
+
+<Example id="series" title="Series в словарь" />
+
+<Example id="to-numpy" title="Массив NumPy" />
+
+<Example id="tolist" title="Список Python" />
+
+## Подводные камни
+
+<Pitfall title="Разные типы — массив object">
+
+<Example id="mixed" title="to_numpy для таблицы с текстом" />
+
+Выберите сначала числовые столбцы: `df.select_dtypes("number").to_numpy()`.
+
+</Pitfall>
+
+<Pitfall title="Пропуски в nullable-типах">
+
+В столбце `Int64` пропуск — это `pd.NA`. В массиве NumPy у целых пропусков нет, поэтому `to_numpy` возвращает float с `NaN`. Если нужны целые, укажите `dtype` и значение для пропусков.
+
+<Example id="nullable" title="Int64 с пропуском" />
+
+</Pitfall>

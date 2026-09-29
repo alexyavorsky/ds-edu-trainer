@@ -1,0 +1,73 @@
+---
+title: "Ресемплинг: resample и asfreq"
+level: advanced
+summary: Перейти к другой частоте временного ряда — из часов в дни, из дней в месяцы — или наоборот.
+requires: [pandas/date-range, pandas/groupby]
+related: [pandas/rolling, pandas/shift-diff, pandas/missing]
+functions: [Series.resample, DataFrame.resample, Resampler.agg, Resampler.ffill, Resampler.interpolate, Series.asfreq]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/timeseries.html#resampling
+---
+
+## Коротко
+
+- `resample("D")` — это `groupby` по интервалам времени: дальше нужна агрегация — `.sum()`, `.mean()`, `.agg([...])`.
+- Частоты те же, что в [date_range](/reference/pandas/date-range): `h`, `D`, `W`, `ME` (метка — конец месяца), `MS` (начало месяца), `QE`, `YE`.
+- **Понижение** частоты (часы → дни) — агрегация; **повышение** (дни → часы) — заполнение: `.ffill()`, `.interpolate()`.
+- `asfreq("12h")` просто берёт значения в нужные моменты, без агрегации.
+- Нужны даты в индексе; если даты в столбце — `resample(..., on="столбец")`.
+
+## Синтаксис
+
+<Syntax code={`s.resample(rule, on=None, label=None, closed=None).sum()
+s.resample("D").agg(["sum", "max"])
+s.resample("h").ffill(), s.resample("h").interpolate()
+s.asfreq("12h")`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['rule', 'новая частота: "h", "D", "W", "ME", "MS", "QE", "YE"…', '—'],
+    ['on', 'столбец с датами вместо индекса', 'None'],
+    ['label', 'какой границей подписать интервал: "left" или "right"', 'зависит от частоты'],
+    ['closed', 'какая граница интервала входит в него: "left" или "right"', 'зависит от частоты'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="daily" title="Из часов в дни" />
+
+<Example id="several" title="Несколько итогов" />
+
+<Example id="month-end" title="По месяцам: ME" />
+
+<Example id="month-start" title="По месяцам: MS" />
+
+<Example id="upsample" title="Чаще данных: ffill" />
+
+<Example id="interpolate" title="Чаще данных: интерполяция" />
+
+<Example id="asfreq" title="asfreq без агрегации" />
+
+<Example id="frame" title="Свои функции для столбцов" />
+
+<Example id="column-on" title="Даты в столбце" />
+
+## Подводные камни
+
+<Pitfall title="Индекс без дат">
+
+<Example id="no-datetime" title="resample для обычного индекса" />
+
+Сделайте даты индексом (`set_index("time")`) или передайте `on=`.
+
+</Pitfall>
+
+<Pitfall title="resample('M') больше не работает">
+
+Конец месяца теперь обозначается `ME`, начало — `MS`. Подробности и пример ошибки — в статье [date_range](/reference/pandas/date-range).
+
+</Pitfall>

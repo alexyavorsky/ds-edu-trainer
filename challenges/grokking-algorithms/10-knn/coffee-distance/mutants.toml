@@ -1,0 +1,14 @@
+[[mutant]]
+name = "забыт квадратный корень"
+find = "    return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))"
+replace = "    return sum((x - y) ** 2 for x, y in zip(a, b))"
+
+[[mutant]]
+name = "разная длина не проверяется — zip молча обрезает"
+find = "    if len(a) != len(b):\n        raise ValueError(f\"разная длина векторов: {len(a)} и {len(b)}\")\n"
+replace = ""
+
+[[mutant]]
+name = "модуль разности вместо квадрата"
+find = "(x - y) ** 2"
+replace = "abs(x - y)"

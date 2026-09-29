@@ -1,0 +1,14 @@
+[[mutant]]
+name = "low = mid — бесконечный цикл"
+find = "low = mid + 1"
+replace = "low = mid"
+
+[[mutant]]
+name = "условие цикла без равенства"
+find = "while low <= high:"
+replace = "while low < high:"
+
+[[mutant]]
+name = "-1 вместо None"
+find = "    return None"
+replace = "    return -1"

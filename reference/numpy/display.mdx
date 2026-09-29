@@ -1,0 +1,78 @@
+---
+title: Настройки отображения
+level: basic
+summary: Как NumPy печатает массивы и числа и как временно изменить точность, научную запись и сокращение длинных массивов.
+requires: [numpy/intro]
+related: [pandas/display, numpy/rounding, numpy/dtypes]
+functions: [np.set_printoptions, np.printoptions, np.get_printoptions]
+docs: https://numpy.org/doc/2.5/reference/generated/numpy.set_printoptions.html
+---
+
+## Коротко
+
+- `print(a)` показывает `[1. 2. 3.]`, а repr (последняя строка в Jupyter) — `array([1., 2., 3.])`.
+- В NumPy 2 repr скаляра выглядит как `np.float64(0.3)`: так видно, что это тип NumPy, а не `float`.
+- Настройки влияют **только на отображение**, данные не меняются.
+- `np.printoptions(...)` в блоке `with` меняет настройки временно — так лучше, чем глобальный `np.set_printoptions`.
+- Массивы длиннее `threshold` (по умолчанию 1000) печатаются сокращённо, через `...`.
+
+## В этом справочнике
+
+Перед каждым примером выполняются одни и те же настройки, чтобы вывод на сайте совпадал на любой машине. Для NumPy это значения по умолчанию, заданные явно:
+
+<Syntax code={`np.set_printoptions(linewidth=75, precision=8, threshold=1000, edgeitems=3)`} />
+
+Настройки pandas — в статье [pandas: настройки отображения](/reference/pandas/display).
+
+## Синтаксис
+
+<Syntax code={`np.set_printoptions(precision=8, suppress=False, threshold=1000,
+                    edgeitems=3, linewidth=75, legacy=False)
+with np.printoptions(precision=3):   # те же параметры, только внутри блока
+    print(a)
+np.get_printoptions()                # текущие значения`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['precision', 'сколько знаков после запятой показывать у float', '8'],
+    ['suppress', 'True — не использовать научную запись для маленьких чисел', 'False'],
+    ['threshold', 'сколько элементов можно показать целиком; больше — сокращение', '1000'],
+    ['edgeitems', 'сколько элементов показывать с каждого края при сокращении', '3'],
+    ['linewidth', 'ширина строки в символах, после которой идёт перенос', '75'],
+    ['legacy', "вид вывода старой версии, например '1.25'", 'False'],
+  ]}
+/>
+
+## Примеры
+
+<Example id="print-vs-repr" title="print и repr" />
+
+<Example id="scalar" title="Скаляр NumPy" />
+
+<Example id="precision" title="Меньше знаков — временно" />
+
+<Example id="suppress" title="Без научной записи" />
+
+<Example id="threshold" title="Длинный массив" />
+
+## Подводные камни
+
+<Pitfall title="precision не округляет данные">
+
+Видимые цифры — это только отображение: сумма и сравнения используют полные значения. Округлить сами данные — [np.round](/reference/numpy/rounding).
+
+<Example id="display-only" title="Отображение и значение" />
+
+</Pitfall>
+
+<Pitfall title="Вывод np.float64(...) в старом коде выглядел иначе">
+
+<VersionNote since="NumPy 2.0" was="repr скаляра — просто 0.5" now="repr скаляра — np.float64(0.5); print по-прежнему показывает 0.5" />
+
+Если старый вывод нужен, например чтобы не переписывать doctest, есть `legacy="1.25"`.
+
+<Example id="legacy" title="Старый вид repr" />
+
+</Pitfall>

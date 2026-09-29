@@ -1,0 +1,115 @@
+---
+/** Схема осей: sum(axis=0) сворачивает строки (результат — по столбцам), sum(axis=1) — столбцы (результат — по строкам). */
+import Diagram from './Diagram.astro';
+
+interface Props {
+  caption?: string;
+}
+const {
+  caption = 'axis — ось, вдоль которой идёт вычисление. Она исчезает: axis=0 сворачивает строки и даёт значение для каждого столбца, axis=1 — для каждой строки.',
+} = Astro.props;
+const data = [
+  [5, 3, 4, 6],
+  [2, 7, 1, 3],
+  [4, 4, 5, 2],
+];
+const colSums = data[0].map((_, j) => data.reduce((s, row) => s + row[j], 0));
+const rowSums = data.map((row) => row.reduce((a, b) => a + b, 0));
+---
+
+<Diagram caption={caption} label="Схема: сумма по оси 0 даёт сумму каждого столбца, сумма по оси 1 — сумму каждой строки">
+  <div class="panels">
+    <div class="panel">
+      <span class="title"><code>a.sum(axis=0)</code> — вниз по строкам</span>
+      <div class="grid axis0" style="--cols: 4">
+        {data.flat().map((v) => <span class="cell">{v}</span>)}
+        {colSums.map(() => <span class="arrow">↓</span>)}
+        {colSums.map((v) => <span class="cell result">{v}</span>)}
+      </div>
+      <span class="shape">(3, 4) → (4,)</span>
+    </div>
+    <div class="panel">
+      <span class="title"><code>a.sum(axis=1)</code> — вдоль строки</span>
+      <div class="grid axis1" style="--cols: 6">
+        {
+          data.map((row, i) => (
+            <>
+              {row.map((v) => <span class="cell">{v}</span>)}
+              <span class="arrow">→</span>
+              <span class="cell result">{rowSums[i]}</span>
+            </>
+          ))
+        }
+      </div>
+      <span class="shape">(3, 4) → (3,)</span>
+    </div>
+  </div>
+</Diagram>
+
+<style>
+  .panels {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 28px 48px;
+  }
+  .panel {
+    display: grid;
+    gap: 10px;
+    justify-items: center;
+  }
+  .title {
+    font-size: 12.5px;
+    color: var(--text-2);
+  }
+  .title code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent-strong);
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+  .grid {
+    --cell: 32px;
+    display: grid;
+    grid-template-columns: repeat(var(--cols), var(--cell));
+    gap: 4px;
+  }
+  .cell {
+    display: grid;
+    place-items: center;
+    height: var(--cell);
+    border-radius: 5px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    background: rgb(141 149 255 / 0.14);
+    border: 1px solid rgb(141 149 255 / 0.4);
+    color: var(--text);
+  }
+  .cell.result {
+    background: rgb(76 195 138 / 0.14);
+    border-color: rgb(76 195 138 / 0.5);
+    font-weight: 600;
+  }
+  .arrow {
+    display: grid;
+    place-items: center;
+    height: 20px;
+    color: var(--medium);
+    font-size: 15px;
+  }
+  .axis1 .arrow {
+    height: var(--cell);
+  }
+  .shape {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  @media (max-width: 560px) {
+    .grid {
+      --cell: 28px;
+    }
+  }
+</style>

@@ -1,0 +1,64 @@
+---
+title: "Сводные таблицы: pivot_table, crosstab"
+level: medium
+summary: Сводная таблица как в Excel — итоги по двум измерениям сразу, с итоговыми строкой и столбцом.
+requires: [pandas/groupby-agg]
+related: [pandas/melt-pivot, pandas/stack-unstack, pandas/groupby]
+functions: [DataFrame.pivot_table, pd.pivot_table, pd.crosstab]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/reshaping.html#pivot-tables
+---
+
+## Коротко
+
+- `pivot_table(values, index, columns, aggfunc)` — значения из `index` становятся строками, из `columns` — столбцами, в ячейках — итог `aggfunc`.
+- По умолчанию `aggfunc="mean"` — для сумм укажите `"sum"` явно.
+- `fill_value=0` заполняет пустые сочетания, `margins=True` добавляет итоговые строку и столбец.
+- `index` и `columns` могут быть списками — получится MultiIndex.
+- `pd.crosstab(a, b)` — таблица частот: сколько строк в каждом сочетании; `normalize` — доли.
+
+## Синтаксис
+
+<Syntax code={`df.pivot_table(values=None, index=None, columns=None, aggfunc="mean",
+               fill_value=None, margins=False, margins_name="All", observed=True)
+pd.crosstab(index, columns, values=None, aggfunc=None, normalize=False, margins=False)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['values', 'столбец (или список) с числами для итогов', 'все числовые'],
+    ['index / columns', 'что станет строками / столбцами: столбец или список', 'None'],
+    ['aggfunc', 'функция или список: "sum", "mean", "count", своя функция', '"mean"'],
+    ['fill_value', 'чем заполнить отсутствующие сочетания', 'None'],
+    ['margins', 'добавить итоги по строкам и столбцам', 'False'],
+    ['normalize', 'в crosstab: True / "all", "index", "columns" — доли вместо количеств', 'False'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="basic" title="Сводная таблица" />
+
+<Example id="fill-margins" title="Нули и итоги" />
+
+<Example id="two-index" title="Несколько уровней строк" />
+
+<Example id="several-funcs" title="Несколько функций" />
+
+<Example id="crosstab" title="Таблица частот" />
+
+<Example id="crosstab-normalize" title="Доли по строкам" />
+
+Сводная таблица без агрегации (просто переложить значения) — [pivot](/reference/pandas/melt-pivot).
+
+## Подводные камни
+
+<Pitfall title="Среднее вместо суммы">
+
+Если не передать `aggfunc`, в ячейках окажутся средние. Для одного значения на сочетание это незаметно, а при нескольких — итог неверный.
+
+<Example id="default-mean" title="pivot_table без aggfunc" />
+
+</Pitfall>

@@ -1,0 +1,86 @@
+---
+title: Типы данных и astype
+level: basic
+summary: Какой тип у элементов, как его сменить и почему целые числа в массиве могут молча переполниться.
+requires: [numpy/creation, numpy/attributes]
+related: [numpy/nan-inf, numpy/strings, numpy/structured, pandas/dtypes]
+functions: [ndarray.astype, np.iinfo, np.finfo, np.int8, np.int32, np.int64, np.float32, np.float64, np.bool, np.complex128]
+docs: https://numpy.org/doc/2.5/user/basics.types.html
+---
+
+## Коротко
+
+- Все элементы массива одного типа (`dtype`). По умолчанию целые — `int64`, дробные — `float64`.
+- `a.astype(тип)` возвращает **новый** массив нужного типа. Из float в int дробная часть отбрасывается (к нулю), а не округляется.
+- Целые в массиве **переполняются молча**: `int8` после 127 переходит в −128. Пределы типа — `np.iinfo`, для float — `np.finfo`.
+- Запись в массив приводит значение к его типу: `9.9` в целом массиве станет `9`, а `NaN` туда не записать.
+- Число Python не расширяет тип массива (правила NEP 50 в NumPy 2): `float32 + 3.0` остаётся `float32`.
+
+## Синтаксис
+
+<Syntax code={`a.dtype                  # dtype('int64')
+a.astype(np.float32)     # или "float32", float, int, bool, str
+np.array(data, dtype=np.int16)
+np.iinfo(np.int8)        # min, max для целых
+np.finfo(np.float64)     # eps, max, точность для дробных`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['dtype', 'новый тип: объект NumPy (np.int32), строка ("int32") или тип Python (int, float, bool)', '—'],
+    ['copy', 'False — не копировать, если тип уже совпадает', 'True'],
+  ]}
+  title="Параметры astype"
+/>
+
+| Тип | Что хранит | Байт |
+| --- | --- | --- |
+| `bool` | True / False | 1 |
+| `int8`, `int16`, `int32`, `int64` | целые со знаком | 1, 2, 4, 8 |
+| `uint8` … `uint64` | целые без знака | 1 … 8 |
+| `float32`, `float64` | дробные | 4, 8 |
+| `complex128` | комплексные | 16 |
+| `<U5` | строки Unicode до 5 символов | 20 |
+
+## Примеры
+
+<Example id="inferred" title="Тип определяется по данным" />
+
+<Example id="astype" title="Смена типа" />
+
+<Example id="limits" title="Пределы типов" />
+
+## Подводные камни
+
+<Pitfall title="Переполнение целых без ошибки">
+
+Арифметика над массивом целых не проверяет выход за пределы. Для данных, которые могут вырасти (суммы, произведения), берите `int64` или `float64`.
+
+<Example id="overflow" title="int8 после 127" />
+
+</Pitfall>
+
+<Pitfall title="Запись в массив меняет значение">
+
+<Example id="assign-truncates" title="Дробь в целом массиве" />
+
+<Example id="nan-int" title="NaN в целом массиве" />
+
+Если нужны пропуски, массив должен быть дробным: `np.array([1, 2, 3], dtype=float)`.
+
+</Pitfall>
+
+<Pitfall title="Число Python больше не расширяет тип">
+
+<VersionNote
+  since="NumPy 2.0"
+  was="тип результата зависел от значения: float32 + 3.0 давал float64, int8 + 200 — int16"
+  now="число Python подстраивается под тип массива: float32 + 3.0 → float32, а int8 + 200 — ошибка"
+/>
+
+<Example id="nep50-scalar" title="float32 плюс число Python" />
+
+<Example id="nep50-overflow" title="Число не помещается в тип массива" />
+
+</Pitfall>

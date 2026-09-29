@@ -1,0 +1,67 @@
+---
+title: einsum
+level: advanced
+summary: Одна функция для сумм, транспонирования, скалярных и матричных произведений — записанных буквами индексов.
+requires: [numpy/matmul, numpy/axis]
+related: [numpy/linalg, numpy/broadcasting]
+functions: [np.einsum, np.einsum_path]
+docs: https://numpy.org/doc/2.5/reference/generated/numpy.einsum.html
+---
+
+## Коротко
+
+- `np.einsum("ij,jk->ik", A, B)` описывает вычисление буквами: у каждого операнда свои индексы, после `->` — индексы результата.
+- Индекс, который **есть во входах, но нет в результате**, суммируется. Индекс, повторённый в разных операндах, перемножается.
+- `"ij->ji"` — транспонирование, `"ii->"` — след, `"ij->j"` — сумма по строкам, `"i,i->"` — скалярное произведение.
+- Удобно для пачек и многомерных тензоров, где `@` и `sum` дают громоздкий код.
+- `optimize=True` подбирает порядок вычислений для трёх и более операндов.
+
+## Синтаксис
+
+<Syntax code={`np.einsum("индексы_a,индексы_b->индексы_результата", a, b, optimize=False)
+np.einsum("ij,jk->ik", A, B)      # A @ B
+np.einsum("bij,bjk->bik", X, Y)   # пачка матриц
+np.einsum("ij->j", A)             # A.sum(axis=0)`} />
+
+| Запись | Эквивалент |
+| --- | --- |
+| `"ij->ji"` | `A.T` |
+| `"ii->"` | `np.trace(A)` |
+| `"ij->"` | `A.sum()` |
+| `"ij->j"` | `A.sum(axis=0)` |
+| `"ij,jk->ik"` | `A @ B` |
+| `"i,i->"` | `v @ v` |
+| `"i,j->ij"` | `np.outer(v, w)` |
+| `"ij,ij->ij"` | `A * B` |
+
+## Примеры
+
+<Setup />
+
+<Example id="sums" title="Суммы" />
+
+<Example id="transpose-trace" title="Транспонирование и след" />
+
+<Example id="products" title="Произведения" />
+
+<Example id="elementwise" title="Поэлементно и построчно" />
+
+<Example id="batch" title="Пачка матриц" />
+
+<Example id="outer" title="Внешнее произведение" />
+
+## Подводные камни
+
+<Pitfall title="Одна буква — один размер">
+
+Если буква встречается в нескольких операндах, размеры по этим осям должны совпадать.
+
+<Example id="mismatch" title="Разные размеры у одного индекса" />
+
+</Pitfall>
+
+<Pitfall title="Читаемость">
+
+Для простых операций `@`, `.T` и `.sum(axis=…)` понятнее. `einsum` оправдан, когда операция не выражается одной стандартной функцией.
+
+</Pitfall>

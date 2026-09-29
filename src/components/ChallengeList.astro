@@ -1,0 +1,332 @@
+---
+/**
+ * Список задач с фильтрами по сложности, типу, статусу и поиском по названию.
+ * Фильтрация — на клиенте по data-атрибутам строк.
+ */
+import type { Challenge, Chapter } from '../lib/content';
+import { challengeUrl } from '../lib/content';
+import { DIFFICULTY_LABEL, DIFFICULTY_PLURAL, TYPE_LABEL } from '../lib/labels';
+import Badge from './Badge.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  challenges: Challenge[];
+  chapters?: Chapter[]; // если передан — у строк показывается номер главы
+}
+const { challenges, chapters } = Astro.props;
+const chapterNum = (slug: string) => chapters?.find((c) => c.data.slug === slug)?.data.number;
+const types = (Object.keys(TYPE_LABEL) as (keyof typeof TYPE_LABEL)[]).filter((t) => challenges.some((c) => c.data.type === t));
+---
+
+<div class="list-wrap" data-challenge-list>
+  <div class="filters">
+    <label class="search">
+      <Icon name="search" size={15} />
+      <span class="sr-only">Поиск по названию</span>
+      <input type="search" placeholder="Поиск по названию" data-filter-search autocomplete="off" />
+    </label>
+    <div class="chips" role="group" aria-label="Сложность">
+      <button type="button" class="chip is-on" data-filter="difficulty" data-value="">Все</button>
+      {
+        (['easy', 'medium', 'hard'] as const).map((d) => (
+          <button type="button" class="chip" data-filter="difficulty" data-value={d}>
+            <span class={`dot ${d}`} />
+            {DIFFICULTY_PLURAL[d]}
+          </button>
+        ))
+      }
+    </div>
+    <div class="selects">
+      <label>
+        <span class="sr-only">Тип задачи</span>
+        <select data-filter-select="type">
+          <option value="">Любой тип</option>
+          {types.map((t) => <option value={t}>{TYPE_LABEL[t]}</option>)}
+        </select>
+      </label>
+      <label>
+        <span class="sr-only">Статус</span>
+        <select data-filter-select="status">
+          <option value="">Любой статус</option>
+          <option value="solved">Решённые</option>
+          <option value="unsolved">Нерешённые</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <ul class="list">
+    {
+      challenges.map((c) => (
+        <li
+          class="row"
+          data-row
+          data-id={c.data.taskId}
+          data-difficulty={c.data.difficulty}
+          data-type={c.data.type}
+          data-title={c.data.title.toLowerCase()}
+        >
+          <a href={challengeUrl(c)} class="row-link" data-solved-marker={c.data.taskId}>
+            <span class="status" aria-hidden="true">
+              <Icon name="check" size={12} />
+            </span>
+            {chapters && <span class="chapter-num">{String(chapterNum(c.data.chapter)).padStart(2, '0')}</span>}
+            <span class="title">{c.data.title}</span>
+            <span class="meta">
+              <Badge tone={c.data.difficulty}>{DIFFICULTY_LABEL[c.data.difficulty]}</Badge>
+              <span class="type">{TYPE_LABEL[c.data.type]}</span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="empty" data-empty hidden>Ничего не нашлось. Попробуйте изменить фильтры.</p>
+</div>
+
+<style>
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 220px;
+    min-width: 0;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--muted);
+  }
+  .search:focus-within {
+    border-color: var(--border-strong);
+  }
+  .search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+  }
+  .search input::placeholder {
+    color: var(--faint);
+  }
+  .chips {
+    display: flex;
+    gap: 4px;
+    padding: 3px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    overflow-x: auto;
+    max-width: 100%;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 26px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .chip:hover {
+    color: var(--text);
+  }
+  .chip.is-on {
+    background: var(--surface-3);
+    color: var(--text);
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .dot.easy {
+    background: var(--easy);
+  }
+  .dot.medium {
+    background: var(--medium);
+  }
+  .dot.hard {
+    background: var(--hard);
+  }
+  .selects {
+    display: flex;
+    gap: 8px;
+  }
+  select {
+    height: 34px;
+    padding: 0 30px 0 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface)
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8f98' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+      no-repeat right 10px center;
+    color: var(--text-2);
+    font: inherit;
+    font-size: 13.5px;
+    appearance: none;
+    cursor: pointer;
+  }
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .row + .row {
+    border-top: 1px solid var(--border);
+  }
+  .row[hidden] {
+    display: none;
+  }
+  .row-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 52px;
+    padding: 10px 16px;
+    transition: background 0.12s;
+  }
+  .row-link:hover {
+    background: var(--surface-2);
+  }
+  .status {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-strong);
+    color: transparent;
+  }
+  .is-solved .status {
+    border-color: var(--easy);
+    background: var(--easy);
+    color: var(--bg);
+  }
+  .chapter-num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--faint);
+  }
+  .title {
+    flex: 1;
+    min-width: 0;
+    font-size: 14.5px;
+    font-weight: 500;
+  }
+  .is-solved .title {
+    color: var(--text-2);
+  }
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: none;
+  }
+  .type {
+    width: 128px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .empty {
+    margin: 0;
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--muted);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+  }
+  @media (max-width: 640px) {
+    .row-link {
+      flex-wrap: wrap;
+      row-gap: 6px;
+    }
+    .title {
+      flex-basis: calc(100% - 60px);
+    }
+    .meta {
+      width: 100%;
+      padding-left: 30px;
+    }
+    .type {
+      width: auto;
+    }
+    .selects {
+      width: 100%;
+    }
+    .selects label {
+      flex: 1;
+    }
+    select {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import { getSolved, SOLVED_EVENT } from '../scripts/progress';
+
+  document.querySelectorAll<HTMLElement>('[data-challenge-list]').forEach((root) => {
+    const state = { difficulty: '', type: '', status: '', query: '' };
+    const rows = [...root.querySelectorAll<HTMLElement>('[data-row]')];
+    const empty = root.querySelector<HTMLElement>('[data-empty]')!;
+
+    const apply = () => {
+      const solved = getSolved();
+      let visible = 0;
+      for (const row of rows) {
+        const d = row.dataset;
+        const isSolved = solved.has(d.id!);
+        const show =
+          (!state.difficulty || d.difficulty === state.difficulty) &&
+          (!state.type || d.type === state.type) &&
+          (!state.status || (state.status === 'solved') === isSolved) &&
+          (!state.query || d.title!.includes(state.query));
+        row.hidden = !show;
+        if (show) visible++;
+      }
+      empty.hidden = visible > 0;
+    };
+
+    root.querySelectorAll<HTMLButtonElement>('[data-filter="difficulty"]').forEach((chip, _, chips) => {
+      chip.addEventListener('click', () => {
+        chips.forEach((c) => c.classList.toggle('is-on', c === chip));
+        state.difficulty = chip.dataset.value ?? '';
+        apply();
+      });
+    });
+    root.querySelectorAll<HTMLSelectElement>('[data-filter-select]').forEach((select) => {
+      select.addEventListener('change', () => {
+        state[select.dataset.filterSelect as 'type' | 'status'] = select.value;
+        apply();
+      });
+    });
+    root.querySelector<HTMLInputElement>('[data-filter-search]')!.addEventListener('input', (e) => {
+      state.query = (e.target as HTMLInputElement).value.trim().toLowerCase();
+      apply();
+    });
+    document.addEventListener(SOLVED_EVENT, apply);
+  });
+</script>

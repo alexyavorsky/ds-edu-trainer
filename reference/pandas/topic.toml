@@ -1,0 +1,50 @@
+title = "pandas"
+summary = "Табличные данные: чтение, выбор и фильтрация, очистка, группировка, объединение, временные ряды."
+package = "pandas"
+version = "3.0.6"
+docs = "https://pandas.pydata.org/pandas-docs/version/3.0/"
+order = 2
+
+[[sections]]
+title = "Основы"
+articles = ["intro", "display", "series", "dataframe", "read-csv", "io-formats", "inspect"]
+
+[[sections]]
+title = "Выбор данных"
+articles = ["select-columns", "loc-iloc", "filtering"]
+
+[[sections]]
+title = "Изменение данных"
+articles = ["columns", "sorting", "replace", "where-mask", "duplicates", "apply", "iteration", "to-dict-numpy"]
+
+[[sections]]
+title = "Типы и очистка"
+articles = ["missing", "dtypes", "strings", "category", "datetime", "date-range"]
+
+[[sections]]
+title = "Анализ"
+articles = ["stats", "corr", "rank", "cut-qcut", "sample"]
+
+[[sections]]
+title = "Группировка и сводные таблицы"
+articles = ["groupby", "groupby-agg", "groupby-transform", "pivot-table"]
+
+[[sections]]
+title = "Форма и объединение"
+articles = ["melt-pivot", "stack-unstack", "explode", "concat", "merge", "merge-keys"]
+
+[[sections]]
+title = "Индексы"
+articles = ["alignment", "set-index", "multiindex"]
+
+[[sections]]
+title = "Временные ряды"
+articles = ["shift-diff", "rolling", "resample"]
+
+[[sections]]
+title = "Продвинутое"
+articles = ["copy-on-write", "method-chaining", "performance", "plot"]
+
+[[sections]]
+title = "Итоги"
+articles = ["mistakes", "cheatsheet"]

@@ -1,0 +1,60 @@
+---
+title: stack и unstack
+level: medium
+summary: Перенести уровень столбцов в индекс строк и обратно — основной приём для таблиц с MultiIndex.
+requires: [pandas/melt-pivot, pandas/multiindex]
+related: [pandas/groupby, pandas/pivot-table]
+functions: [DataFrame.stack, DataFrame.unstack, Series.unstack]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/reshaping.html#reshaping-by-stacking-and-unstacking
+---
+
+## Коротко
+
+- `stack()` переносит заголовки столбцов во **внутренний уровень индекса**: таблица становится длиннее, из DataFrame часто получается Series с MultiIndex.
+- `unstack()` делает обратное: внутренний уровень индекса становится столбцами.
+- `level=` выбирает уровень по номеру или имени; `fill_value=` заполняет появившиеся пустые ячейки.
+- Частый приём: `groupby([a, b]).sum().unstack()` — из двухуровневого результата сделать таблицу `a × b`.
+- В отличие от `melt` / `pivot`, здесь всё строится вокруг **индекса**, а не обычных столбцов.
+
+<StackUnstackDiagram />
+
+## Синтаксис
+
+<Syntax code={`df.stack(level=-1)
+s.unstack(level=-1, fill_value=None)
+df.groupby(["a", "b"])["x"].sum().unstack(fill_value=0)`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['level', 'какой уровень переносить: номер или имя; по умолчанию внутренний', '-1'],
+    ['fill_value', 'в unstack: чем заполнить сочетания, которых не было', 'None'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="stack" title="stack: столбцы в индекс" />
+
+<Example id="unstack" title="unstack: индекс в столбцы" />
+
+<Example id="unstack-level" title="Другой уровень" />
+
+<Example id="groupby" title="unstack после groupby" />
+
+## Подводные камни
+
+<Pitfall title="stack сохраняет пропуски">
+
+<VersionNote since="pandas 3.0" was="stack по умолчанию выбрасывал строки с NaN (dropna=True)" now="новая реализация stack сохраняет все значения; параметры dropna и sort больше не принимаются" />
+
+<Example id="nan-kept" title="stack с пропуском" />
+
+<Example id="dropna-arg" title="Параметр dropna" />
+
+Чтобы убрать пропуски, вызовите `.dropna()` после `stack()`.
+
+</Pitfall>

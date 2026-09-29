@@ -1,0 +1,66 @@
+---
+title: Категориальный тип
+level: medium
+summary: Тип для столбцов с небольшим набором повторяющихся значений — экономит память и задаёт порядок.
+requires: [pandas/dtypes]
+related: [pandas/groupby, pandas/cut-qcut, pandas/performance]
+functions: [Series.astype, pd.CategoricalDtype, pd.Categorical, Series.cat.categories, Series.cat.codes, Series.cat.add_categories, Series.cat.remove_unused_categories]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/categorical.html
+---
+
+## Коротко
+
+- `category` хранит набор допустимых значений (`categories`) и для каждой строки — номер значения (`codes`).
+- Для столбцов вроде города, размера, статуса это в разы уменьшает память и ускоряет группировку.
+- `ordered=True` задаёт порядок: сортировка и сравнения идут по нему, а не по алфавиту.
+- Записать можно только значение из набора категорий; новое сначала добавляют через `cat.add_categories`.
+- Категории без строк видны в `value_counts`, но не в `groupby`: там с pandas 3.0 по умолчанию `observed=True`.
+
+## Синтаксис
+
+<Syntax code={`s.astype("category")
+pd.CategoricalDtype(["S", "M", "L"], ordered=True)
+s.cat.categories, s.cat.codes
+s.cat.add_categories([...]), s.cat.remove_unused_categories()
+s.cat.rename_categories({...})`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['categories', 'допустимые значения и их порядок', 'уникальные значения по алфавиту'],
+    ['ordered', 'есть ли порядок: сравнения < > и сортировка по нему', 'False'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="create" title="Категории и коды" />
+
+<Example id="ordered" title="Упорядоченные категории" />
+
+<Example id="memory" title="Экономия памяти" />
+
+<Example id="groupby" title="Пустые категории в value_counts и groupby" />
+
+Подробнее — в подводных камнях статьи [groupby](/reference/pandas/groupby).
+
+## Подводные камни
+
+<Pitfall title="Новое значение не из набора">
+
+<Example id="new-value" title="Запись нового значения" />
+
+<Example id="add-category" title="Сначала добавить категорию" />
+
+</Pitfall>
+
+<Pitfall title="Когда category не помогает">
+
+Если почти все значения разные (имена, адреса, id), категории хранят те же строки плюс номера — памяти уходит даже больше. Выигрыш заметен, когда уникальных значений намного меньше, чем строк.
+
+<Example id="unique-values" title="Все значения разные" />
+
+</Pitfall>

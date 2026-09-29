@@ -1,0 +1,66 @@
+---
+title: set_index и reset_index
+level: medium
+summary: Сделать столбец индексом для доступа по ключу — и вернуть индекс обратно в столбцы.
+requires: [pandas/loc-iloc]
+related: [pandas/alignment, pandas/multiindex, pandas/merge-keys]
+functions: [DataFrame.set_index, DataFrame.reset_index, DataFrame.rename_axis, Index.is_unique]
+docs: https://pandas.pydata.org/pandas-docs/version/3.0/user_guide/indexing.html#set-reset-index
+---
+
+## Коротко
+
+- **Индекс** — метки строк. По нему работают `loc`, выравнивание, `join`, временные ряды.
+- `set_index("col")` делает столбец индексом (по умолчанию убирая его из данных); список столбцов — MultiIndex.
+- `reset_index()` возвращает индекс в обычный столбец и ставит индекс 0, 1, 2…; `drop=True` — старый индекс просто выбросить.
+- После фильтрации и сортировки индекс остаётся старым, с пропусками — `reset_index(drop=True)` приводит его в порядок.
+- Индекс не обязан быть уникальным, но с повторами `loc` возвращает несколько строк.
+
+## Синтаксис
+
+<Syntax code={`df.set_index(keys, drop=True)
+df.reset_index(drop=False)
+df.rename_axis("имя")          # имя индекса
+df.index.is_unique`} />
+
+## Параметры
+
+<Params
+  items={[
+    ['keys', 'в set_index: столбец или список столбцов', '—'],
+    ['drop', 'в set_index — убрать столбец из данных; в reset_index — не превращать индекс в столбец', 'True / False'],
+    ['level', 'в reset_index: какие уровни MultiIndex вернуть в столбцы', 'все'],
+  ]}
+/>
+
+## Примеры
+
+<Setup />
+
+<Example id="set-index" title="Столбец — в индекс" />
+
+<Example id="reset-index" title="Индекс — обратно в столбец" />
+
+<Example id="reset-drop" title="Новый индекс после фильтра" />
+
+<Example id="keep-column" title="Оставить столбец в данных" />
+
+<Example id="rename-axis" title="Имя индекса" />
+
+## Подводные камни
+
+<Pitfall title="Повторяющиеся метки">
+
+`loc` по неуникальной метке возвращает таблицу, а не одну строку, — дальше код, рассчитанный на одно значение, ломается.
+
+<Example id="unique" title="Метка встречается дважды" />
+
+</Pitfall>
+
+<Pitfall title="Метки нет в индексе">
+
+<Example id="missing-label" title="loc с несуществующей меткой" />
+
+Проверка — `"Z-9" in df.index`.
+
+</Pitfall>

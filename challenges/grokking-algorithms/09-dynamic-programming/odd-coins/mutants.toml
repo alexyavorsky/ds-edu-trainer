@@ -1,0 +1,9 @@
+[[mutant]]
+name = "жадный выбор вместо таблицы"
+find = "    impossible = amount + 1  # больше монет не понадобится никогда"
+replace = "    left, used = amount, 0\n    for c in sorted(coins, reverse=True):\n        used += left // c\n        left %= c\n    return used if left == 0 else -1\n    impossible = amount + 1"
+
+[[mutant]]
+name = "недостижимая сумма не превращается в -1"
+find = "    return best[amount] if best[amount] != impossible else -1"
+replace = "    return best[amount]"

@@ -1,0 +1,50 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  taskId?: string;
+  articleId?: string;
+  wide?: boolean; // шире обычного контейнера — для статей справочника с боковыми колонками
+}
+const { title, description = 'Задачи по книгам и темам для быстрого повторения.', taskId, articleId, wide = false } = Astro.props;
+const fullTitle = title ? `${title} — Тренажёр` : 'Тренажёр задач по книгам';
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#08090a" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{fullTitle}</title>
+  </head>
+  <body>
+    <Header taskId={taskId} articleId={articleId} />
+    <main class:list={['container', 'main', wide && 'wide']}>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .main {
+    padding-top: 36px;
+  }
+  .main.wide {
+    max-width: calc(1240px + var(--gutter) * 2);
+  }
+  @media (min-width: 720px) {
+    .main {
+      padding-top: 52px;
+    }
+  }
+</style>
