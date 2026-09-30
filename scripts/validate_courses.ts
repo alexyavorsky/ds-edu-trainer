@@ -306,10 +306,11 @@ function judge(run: Run, i: number, s: StepResult | undefined, engine: string): 
   const cell = run.lesson.cells.find((c) => c.id === step.cell)!;
   const where = `${engine}, ${run.label}, ячейка ${step.cell}`;
   if (!s) return `${where}: не выполнилась (прогон остановился раньше)`;
-  const forbidden = s.warnings.filter((w) => FORBIDDEN_WARNINGS.includes(w));
-  if (forbidden.length) return `${where}: ${forbidden.join(', ')} — устаревший API в уроке недопустим`;
-  if (s.warnings.length && !('warns' in cell.flags)) return `${where}: предупреждения ${s.warnings.join(', ')} — уберите их или поставьте флаг [warns]`;
   const expect = run.expect[i];
+  // предупреждения проверяются у кода урока; заготовки и типичные ошибки ученика могут их выдавать
+  const forbidden = s.warnings.filter((w) => FORBIDDEN_WARNINGS.includes(w));
+  if (expect === 'ok' && forbidden.length) return `${where}: ${forbidden.join(', ')} — устаревший API в уроке недопустим`;
+  if (expect === 'ok' && s.warnings.length && !('warns' in cell.flags)) return `${where}: предупреждения ${s.warnings.join(', ')} — уберите их или поставьте флаг [warns]`;
   if (step.op === 'check') {
     if (expect === 'ok' && !passedAll(s)) return `${where}: проверка не проходит — ${describe(s)}`;
     if (expect !== 'ok' && passedAll(s)) return `${where}: проверка проходит, а должна ловить ${expect === 'fail' ? 'заготовку' : 'эту ошибку'}`;

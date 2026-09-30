@@ -1,0 +1,38 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "assign": {
+      "lines": [
+        "[21.5  0.  22.1 22.4  0.  23. ]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "where": {
+      "lines": [
+        "[5 0 8 0]",
+        "['да' 'нет' 'да' 'нет']"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "labels": {
+      "lines": [],
+      "result": [
+        "array(['минус', 'минус', 'минус', 'минус', 'минус'], dtype='<U5')"
+      ],
+      "html": null,
+      "error": null
+    },
+    "clip": {
+      "lines": [],
+      "result": [
+        "array([100,  98,   0,  76, 100,  64])"
+      ],
+      "html": null,
+      "error": null
+    }
+  }
+}
