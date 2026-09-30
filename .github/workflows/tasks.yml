@@ -61,6 +61,49 @@ jobs:
       - name: Выполнить все примеры и сравнить вывод с показанным на сайте
         run: python scripts/validate_reference.py --strict
 
+  pyodide:
+    name: Python в браузере (Pyodide в Node.js)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Кэш пакетов Pyodide (NumPy, pandas, matplotlib — скачиваются с jsDelivr)
+        uses: actions/cache@v4
+        with:
+          path: .pyodide-cache
+          key: pyodide-packages-${{ hashFiles('src/lib/python/config.ts', 'package-lock.json') }}
+      - name: Эталоны проходят, заготовки — нет; примеры справочника совпадают с reference/browser.json
+        run: node scripts/validate_pyodide.ts --report pyodide-report.md
+        env:
+          PYODIDE_CACHE: ${{ github.workspace }}/.pyodide-cache
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pyodide-report
+          path: pyodide-report.md
+          retention-days: 14
+
+  browsers:
+    name: Python в браузерах (Chromium, Firefox, WebKit на macOS)
+    # macOS: стек WebKit здесь такой же, как у Safari (на Linux он в разы больше и бюджет глубины не проверяет)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Браузеры Playwright
+        run: npx playwright install chromium firefox webkit
+      - run: npm run build
+      - name: Все эталоны в трёх браузерах; глубина рекурсии не меньше бюджета тестов
+        run: node scripts/validate_browsers.ts
+
   site:
     name: Сайт (сверка сборок, типы, build)
     runs-on: ubuntu-latest

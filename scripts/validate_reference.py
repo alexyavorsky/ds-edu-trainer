@@ -35,19 +35,15 @@
 
 from __future__ import annotations
 
-import ast
 import contextlib
 import difflib
-import io
 import os
 import platform
 import re
 import subprocess
 import sys
-import tempfile
 import tomllib
 import traceback
-import warnings
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
@@ -57,6 +53,9 @@ REFERENCE = ROOT / "reference"
 PRELUDE = REFERENCE / "prelude.py"
 REQUIREMENTS = ROOT / "requirements-dev.txt"
 PLOTS = ROOT / "public" / "reference" / "plots"
+
+sys.path.insert(0, str(ROOT / "runtime"))
+from reference_exec import ExampleRunner  # noqa: E402 — общий с сайтом запуск примеров
 
 OUTPUT_MARK = "# ─── вывод ───"
 FLAGS = {"raises", "warns", "norun", "deprecated", "timing", "machine"}
@@ -72,32 +71,6 @@ LIST_KEYS = {"requires", "related", "functions"}
 SECTIONS_REQUIRED = ("Коротко", "Примеры", "Подводные камни")
 SECTIONS_ORDER = ("Коротко", "Синтаксис", "Параметры", "Примеры", "Подводные камни")
 FORBIDDEN_WARNINGS = (DeprecationWarning, PendingDeprecationWarning, FutureWarning)
-
-# Графики в цветах сайта (src/styles/global.css): прозрачный фон ложится на блок вывода.
-PLOT_RC = {
-    "figure.figsize": (6.4, 3.6),
-    "figure.facecolor": "none",
-    "axes.facecolor": "none",
-    "savefig.facecolor": "none",
-    "savefig.bbox": "tight",
-    "axes.edgecolor": "#2d3036",
-    "axes.labelcolor": "#b7bac1",
-    "axes.titlecolor": "#f4f5f6",
-    "axes.prop_cycle": ["#8d95ff", "#4cc38a", "#eeb153", "#f07a7d", "#5ec8e5", "#c792ea"],  # цвета линий
-    "xtick.color": "#8a8f98",
-    "ytick.color": "#8a8f98",
-    "grid.color": "#2d3036",
-    "text.color": "#b7bac1",
-    "legend.facecolor": "#141518",
-    "legend.edgecolor": "#2d3036",
-    "legend.labelcolor": "#b7bac1",
-    "patch.edgecolor": "#08090a",
-    "font.family": "sans-serif",   # в SVG: 'DejaVu Sans', sans-serif — без шрифта браузер возьмёт рубленый
-    "font.sans-serif": ["DejaVu Sans"],  # идёт с matplotlib: разметка текста одинакова на любой машине
-    "svg.fonttype": "none",        # текст остаётся текстом: файл меньше, подписи чёткие
-    "svg.hashsalt": "reference",   # иначе id элементов в SVG случайные
-}
-
 
 # ─── Файл примеров ──────────────────────────────────────────────────────────
 
@@ -193,99 +166,11 @@ def serialize_examples(ex: ExamplesFile) -> str:
 
 
 # ─── Выполнение ─────────────────────────────────────────────────────────────
+# Сам запуск примера — в runtime/reference_exec.py: тот же код выполняет примеры на сайте (Pyodide).
 
 
-@dataclass
-class RunResult:
-    lines: list[str]
-    error: BaseException | None
-    categories: list[type]  # категории предупреждений
-    plots: list[str]  # SVG открытых после примера фигур matplotlib
-
-
-class ExampleRunner:
-    """Выполняет ячейки в одинаковой обстановке: настройки отображения сбрасываются перед каждой."""
-
-    def __init__(self):
-        os.environ["MPLBACKEND"] = "Agg"
-        import matplotlib
-        import matplotlib.pyplot as plt
-        import numpy as np
-        import pandas as pd
-        from cycler import cycler
-        from pandas._config.config import _registered_options
-
-        self.np, self.pd, self.mpl, self.plt = np, pd, matplotlib, plt
-        self.prelude = compile(PRELUDE.read_text(encoding="utf-8"), str(PRELUDE), "exec")
-        self.np_defaults = np.get_printoptions()
-        self.pd_defaults = {k: pd.get_option(k) for k in _registered_options if k.startswith("display.")}
-        matplotlib.rcParams.update({**PLOT_RC, "axes.prop_cycle": cycler(color=PLOT_RC["axes.prop_cycle"])})
-        self.mpl_defaults = {k: v for k, v in matplotlib.rcParams.items() if k != "backend"}
-
-    def reset(self):
-        self.np.set_printoptions(**self.np_defaults)
-        for key, value in self.pd_defaults.items():
-            self.pd.set_option(key, value)
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")  # среди настроек matplotlib есть устаревшие
-            self.mpl.rcParams.update(self.mpl_defaults)
-        self.plt.close("all")
-
-    def run(self, setup: str, cell: Cell, filename: str) -> RunResult:
-        self.reset()
-        namespace: dict = {"__name__": "__main__"}
-        buffer = io.StringIO()
-        categories: list[type] = []
-        error: BaseException | None = None
-
-        def show(message, category, *_args, **_kwargs):
-            categories.append(category)
-            buffer.write(f"{category.__name__}: {message}\n")
-
-        with warnings.catch_warnings(), tempfile.TemporaryDirectory() as workdir, contextlib.chdir(workdir):
-            # у каждого примера своя пустая рабочая папка: можно писать и читать файлы
-            warnings.simplefilter("always")
-            warnings.showwarning = show
-            with contextlib.redirect_stdout(buffer):
-                try:
-                    exec(self.prelude, namespace)
-                    if setup:
-                        exec(compile(setup, f"{filename}:setup", "exec"), namespace)
-                    self.exec_cell(cell.code, f"{filename}:{cell.id}", namespace)
-                except Exception as e:  # noqa: BLE001 — исключение и есть результат примера
-                    error = e
-            plots = [self.svg(self.plt.figure(n)) for n in self.plt.get_fignums()]
-            self.plt.close("all")
-        if error is not None:
-            buffer.write(f"{type(error).__name__}: {error}\n")
-        lines = [l.rstrip() for l in buffer.getvalue().rstrip("\n").split("\n")] if buffer.getvalue() else []
-        return RunResult(lines, error, categories, plots)
-
-    @staticmethod
-    def svg(figure) -> str:
-        out = io.StringIO()
-        figure.savefig(out, format="svg", metadata={"Date": None})  # без даты файл не меняется от запуска к запуску
-        return out.getvalue()
-
-    @staticmethod
-    def exec_cell(code: str, filename: str, namespace: dict):
-        tree = ast.parse(code, filename)
-        last = tree.body[-1] if tree.body and isinstance(tree.body[-1], ast.Expr) else None
-        if last is not None:
-            tree.body.pop()
-        exec(compile(tree, filename, "exec"), namespace)
-        if last is not None:
-            value = eval(compile(ast.Expression(last.value), filename, "eval"), namespace)
-            if value is not None and not is_plot_object(value):
-                print(repr(value))
-
-
-def is_plot_object(value) -> bool:
-    """Оси, фигура или список линий matplotlib: вместо их repr статья показывает сам график."""
-    items = list(value.flat) if type(value).__name__ == "ndarray" and value.dtype == object else value
-    if isinstance(items, (list, tuple)):
-        return bool(items) and all(is_plot_object(v) for v in items)
-    return type(value).__module__.startswith("matplotlib.")
+def make_runner() -> ExampleRunner:
+    return ExampleRunner(PRELUDE.read_text(encoding="utf-8"), str(PRELUDE))
 
 
 def machine_label() -> str:
@@ -512,7 +397,7 @@ def run_examples(article: Article, runner: ExampleRunner, update: bool, retime: 
     setup = setup_cell.code if setup_cell else ""
     rel = path.relative_to(ROOT)
     if setup_cell is not None:
-        check = runner.run(setup, Cell("setup-check", {}, "pass", None, 0), str(rel))
+        check = runner.run(setup, "pass", str(rel), "setup-check")
         if check.error is not None or check.lines or check.plots:
             detail = check.lines[-1] if check.lines else "осталась открытая фигура" if check.plots else ""
             r.errors.append(f"{article.id}:setup: общие данные должны выполняться молча и без ошибок: {detail}")
@@ -532,7 +417,7 @@ def run_examples(article: Article, runner: ExampleRunner, update: bool, retime: 
             if cell.output is not None:
                 r.errors.append(f"{where}: у примера [norun] не бывает вывода")
             continue
-        result = runner.run(setup, cell, str(rel))
+        result = runner.run(setup, cell.code, str(rel), cell.id)
         lines, error, categories = result.lines, result.error, result.categories
         for n, svg in enumerate(result.plots, 1):
             plots[PLOTS / article.topic / article.slug / (f"{cell.id}.svg" if n == 1 else f"{cell.id}-{n}.svg")] = svg
@@ -649,6 +534,13 @@ def check_versions(topics: dict[str, dict], errors: list[str]) -> bool:
     return ok
 
 
+def github_error(title: str, message: str) -> None:
+    """В GitHub Actions ошибка видна аннотацией на странице запуска — логи без входа не открываются."""
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        esc = lambda s: s.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+        print(f"::error title={esc(title).replace(',', '%2C').replace(':', '%3A')}::{esc(message)}")
+
+
 # ─── Точка входа ────────────────────────────────────────────────────────────
 
 
@@ -664,7 +556,7 @@ def main(argv: list[str]) -> int:
     topics, articles, errors, planned = load_topics()
     known = {a.id for a in articles} | set(planned)  # ссылаться на запланированную статью можно
     runnable = check_versions(topics, errors)
-    runner = ExampleRunner() if runnable else None
+    runner = make_runner() if runnable else None
 
     reports: dict[str, Report] = {}
     for article in articles:
@@ -688,9 +580,11 @@ def main(argv: list[str]) -> int:
         print(f"{status} {article_id} — примеров {r.examples}{extra}")
         for e in r.errors:
             print(f"    {e}")
+            github_error(article_id, e)
         failed += bool(r.errors)
     for e in errors:
         print(f"✗ {e}")
+        github_error("справочник", e)
     if planned:
         mark = "✗" if strict else "·"
         shown = ", ".join(planned) if strict or len(planned) <= 10 else ", ".join(planned[:5]) + ", …"

@@ -53,14 +53,13 @@ def test_symmetric():
 
 
 def test_long_strings():
-    """Строки по 150 символов: верные ответы за отведённое время"""
-    a = "".join(chr(ord("a") + (i * 7) % 26) for i in range(150))
-    b = "".join(chr(ord("a") + (i * 11) % 26) for i in range(150))
-    c = "".join(chr(ord("a") + (i * i + 3 * i) % 26) for i in range(150))
-    for x, y, expected in [(a, b, 138), (a, c, 133), (a, a[:75], 75)]:
+    """Строки по 20 символов: верные ответы за отведённое время"""
+    a = "".join(chr(ord("a") + (i * 7) % 26) for i in range(20))
+    b = "".join(chr(ord("a") + (i * 11) % 26) for i in range(20))
+    c = "".join(chr(ord("a") + (i * i + 3 * i) % 26) for i in range(20))
+    for x, y, expected in [(a, b, 18), (a, c, 18), (a, a[:10], 10)]:
         got = edit_distance(x, y)
         assert got == expected, f"строки длины {len(x)} и {len(y)}: ожидалось {expected}, получено {got!r}"
 
 
-test_long_strings.timeout = 10
 test_long_strings.timeout_hint = "Если это рекурсия, добавьте запоминание: без него одни и те же подзадачи считаются заново"

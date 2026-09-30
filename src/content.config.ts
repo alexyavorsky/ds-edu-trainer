@@ -55,9 +55,12 @@ const challenges = defineCollection({
       starter: z.string().optional(),
       solution: z.string().optional(),
       code: z.string().optional(),
-      bundle: z.string().optional(),
+      tests: z.string().optional(),
+      packages: z.array(z.string()), // пакеты раздела (у темы); у книги пусто — только стандартная библиотека
+      bundleHeader: z.string().optional(), // копируемый файл = шапка + код решения + footer (src/lib/bundle.ts)
+      bundleFooter: z.string().optional(),
     })
-    .refine((c) => (c.type === 'complexity' ? !!c.complexity && !!c.code : !!c.starter && !!c.solution && !!c.bundle), {
+    .refine((c) => (c.type === 'complexity' ? !!c.complexity && !!c.code : !!c.starter && !!c.solution && !!c.tests && !!c.bundleFooter), {
       message: 'набор файлов не соответствует типу задачи — запустите python3 scripts/validate.py',
     }),
 });

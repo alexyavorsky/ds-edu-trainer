@@ -34,7 +34,7 @@ pd.DataFrame({
 # 4  50.3      2.0  2.0    2.0    2.0
 
 # %% descending
-race.assign(place=race["time"].rank(method="min").astype(int)).sort_values("place")
+race.assign(place=race["time"].rank(method="min").astype(int)).sort_values(["place", "runner"])
 # ─── вывод ───
 #   runner group  time  place
 # 1  Борис     B  49.8      1

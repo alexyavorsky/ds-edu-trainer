@@ -73,6 +73,7 @@ TIMEOUT = 15
 PYTHON_MIN = (3, 10)  # задачи должны запускаться на Python 3.10+
 MIN_TESTS = 3
 SEPARATOR = "# ════ Тесты — ниже этой линии ничего менять не нужно " + "═" * 19
+TESTS_LIST_COMMENT = "# Тесты задачи по порядку — запускаются только они"
 
 
 # ─── Сборка копируемого файла ───────────────────────────────────────────────
@@ -171,7 +172,16 @@ def build_bundle(task_dir: Path, code_file: str = "starter.py", code: str | None
     code = (code if code is not None else (task_dir / code_file).read_text("utf-8")).strip()
     tests = (task_dir / "tests.py").read_text("utf-8").strip()
     runner = RUNNER.read_text("utf-8").strip()
-    return f"{header}\n\n{code}\n\n\n{SEPARATOR}\n\n{tests}\n\n\n{runner}\n"
+    return f"{header}\n\n{code}\n\n\n{SEPARATOR}\n\n{tests}\n\n\n{tests_list(tests)}\n\n\n{runner}\n"
+
+
+def tests_list(tests: str) -> str:
+    """Явный список тестов после tests.py: функция test_… из кода решения тестом не становится.
+
+    Имена — функции test_* верхнего уровня tests.py по порядку (зеркало src/lib/bundle.ts::testsList).
+    """
+    names = [n.name for n in ast.parse(tests).body if isinstance(n, ast.FunctionDef) and n.name.startswith("test_")]
+    return "\n".join([TESTS_LIST_COMMENT, "_TESTS = [", *(f"    {name}," for name in names), "]"])
 
 
 # ─── Отчёт ──────────────────────────────────────────────────────────────────
@@ -421,7 +431,8 @@ def run_bundle(source: str) -> tuple[list | None, str]:
         os.unlink(path)
     for line in reversed(proc.stdout.splitlines()):
         if line.startswith(RESULT_MARK):
-            return json.loads(line[len(RESULT_MARK):]), ""
+            results = json.loads(line[len(RESULT_MARK):])
+            return [(r["title"], r["status"] == "passed", r["message"]) for r in results], ""
     err = proc.stderr.strip().splitlines()
     return None, "упал при загрузке: " + (err[-1] if err else f"код выхода {proc.returncode}")
 
@@ -632,6 +643,11 @@ SELF_CHECKS = {
         "def dive(n: int) -> int:\n    return dive(n + 1)\n",
         'def test_dive():\n    """Уходит в бесконечную рекурсию"""\n    dive(0)\n',
     ),
+    "функция test_ в решении": (
+        "def test_my_idea() -> None:\n    raise AssertionError('своя проверка, а не тест задачи')\n\n\n"
+        "def add(a: int, b: int) -> int:\n    return a + b\n",
+        'def test_add():\n    """add(2, 3) == 5"""\n    assert add(2, 3) == 5\n',
+    ),
     "глубокая рекурсия через C-вызовы": (
         "import sys\n\n\ndef depth(n: int) -> int:\n    return 0 if n == 0 else 1 + max(map(depth, [n - 1]))\n",
         'def test_deep():\n    """20 000 уровней при поднятом лимите рекурсии"""\n'
@@ -640,10 +656,15 @@ SELF_CHECKS = {
 }
 
 
+def self_check_bundle(name: str, runner: str) -> str:
+    code, tests = SELF_CHECKS[name]
+    return f"{code}\n\n{tests}\n\n{tests_list(tests)}\n\n{runner}"
+
+
 def check_runner() -> list[str]:
     """Раннер не должен зависать и падать: проверка на синтетических «задачах»."""
     runner = RUNNER.read_text("utf-8")
-    bundle = lambda name: f"{SELF_CHECKS[name][0]}\n\n{SELF_CHECKS[name][1]}\n\n{runner}"
+    bundle = lambda name: self_check_bundle(name, runner)
     errors = []
 
     source = bundle("бесконечный цикл")
@@ -664,6 +685,10 @@ def check_runner() -> list[str]:
     results, err = run_bundle(bundle("бесконечная рекурсия"))
     if results is None or not results[0][2].startswith("RecursionError"):
         errors.append(f"раннер: бесконечная рекурсия должна давать RecursionError, получено {results or err!r}")
+
+    results, err = run_bundle(bundle("функция test_ в решении"))
+    if results != [("add(2, 3) == 5", True, "")]:
+        errors.append(f"раннер: функция test_… из кода решения не должна запускаться как тест, получено {results or err!r}")
 
     results, err = run_bundle(bundle("глубокая рекурсия через C-вызовы"))
     if results is None:
@@ -689,9 +714,8 @@ def export_bundles(out: Path) -> int:
             (out / f"{meta['id']}__alt_{alt.stem}.py").write_text(build_bundle(task_dir, code=code), "utf-8")
             count += 1
     runner = RUNNER.read_text("utf-8")
-    for name, key in (("hang", "бесконечный цикл"), ("recursion", "бесконечная рекурсия"), ("deep", "глубокая рекурсия через C-вызовы")):
-        code, tests = SELF_CHECKS[key]
-        (out / f"selfcheck__{name}.py").write_text(f"{code}\n\n{tests}\n\n{runner}", "utf-8")
+    for name, key in (("hang", "бесконечный цикл"), ("recursion", "бесконечная рекурсия"), ("user_test", "функция test_ в решении"), ("deep", "глубокая рекурсия через C-вызовы")):
+        (out / f"selfcheck__{name}.py").write_text(self_check_bundle(key, runner), "utf-8")
         count += 1
     print(f"Собрано файлов: {count} → {out}")
     return 0

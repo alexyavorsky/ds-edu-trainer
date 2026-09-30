@@ -40,6 +40,9 @@ export function renderProgress(): void {
   document.querySelectorAll<HTMLElement>('[data-solved-marker]').forEach((el) => {
     el.classList.toggle('is-solved', solved.has(el.dataset.solvedMarker ?? ''));
   });
+  document.querySelectorAll<HTMLInputElement>('[data-solved-toggle] input[data-id]').forEach((input) => {
+    input.checked = solved.has(input.dataset.id ?? ''); // «Решено» могли отметить тесты на странице
+  });
 }
 
 renderProgress();

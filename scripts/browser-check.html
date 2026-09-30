@@ -1,0 +1,106 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Проверка Python в браузере</title>
+<!--
+  Страница для scripts/validate_browsers.ts: запускает воркер production-сборки сайта (dist/) — тот же код,
+  что на страницах задач, — и выполняет в нём все задачи и пробы глубины рекурсии. Результат — window.__result.
+-->
+<pre id="log"></pre>
+<script type="module">
+  const log = (s) => (document.getElementById('log').textContent += s + '\n');
+  const params = new URLSearchParams(location.search);
+  const [worker, tasks, config] = await Promise.all(['/__check/worker', '/__check/tasks.json', '/__check/config.json'].map((u) => fetch(u)));
+  const workerUrl = `/_astro/${await worker.text()}`;
+  const allTasks = await tasks.json();
+  const { timeoutFactor, defaultTestTimeout, probes } = await config.json();
+  const only = params.get('only')?.split(',');
+
+  /** Один воркер; при таймауте или падении завершается, как на сайте. */
+  class Python {
+    constructor() {
+      this.worker = new Worker(workerUrl, { type: 'module' });
+      this.listeners = new Set();
+      this.worker.onmessage = (e) => this.listeners.forEach((l) => l(e.data));
+      this.worker.onerror = (e) => {
+        e.preventDefault();
+        this.listeners.forEach((l) => l({ type: 'fatal', runId: -1, message: e.message }));
+      };
+      this.ready = new Promise((resolve, reject) =>
+        this.listeners.add((m) => (m.type === 'ready' ? resolve() : m.type === 'load-error' ? reject(new Error(m.message)) : 0)),
+      );
+      this.nextId = 1;
+    }
+    stop() {
+      this.worker.terminate();
+    }
+    run(request) {
+      const id = this.nextId++;
+      return new Promise((resolve) => {
+        let tests = null;
+        let timer;
+        const finish = (end) => {
+          clearTimeout(timer);
+          this.listeners.delete(listener);
+          resolve(end);
+        };
+        const arm = (seconds) => {
+          clearTimeout(timer);
+          timer = setTimeout(() => finish({ type: 'timeout', seconds }), seconds * 1000);
+        };
+        const listener = (m) => {
+          if (m.type === 'fatal' && (m.runId === id || m.runId === -1)) return finish({ type: 'crash', message: m.message });
+          if (m.runId !== id) return;
+          if (m.type === 'started') arm(request.kind === 'task' ? defaultTestTimeout * timeoutFactor : 30);
+          if (m.type === 'tests') tests = m.tests;
+          if (m.type === 'test-start') arm((tests?.[m.index]?.timeout ?? defaultTestTimeout) * timeoutFactor);
+          if (m.type === 'test') arm(defaultTestTimeout * timeoutFactor);
+          if (m.type === 'done') finish({ type: 'done', data: m });
+          if (m.type === 'package-error') finish({ type: 'package-error', message: m.message });
+        };
+        this.listeners.add(listener);
+        this.worker.postMessage({ type: 'run', request: { ...request, runId: id } });
+      });
+    }
+  }
+
+  const result = { probes: {}, tasks: [], userAgent: navigator.userAgent };
+  try {
+    // Пробы: до какой глубины каждый вид рекурсии работает, а где Python падает целиком (стек WebAssembly)
+    for (const [name, { depths, code }] of Object.entries(probes)) {
+      result.probes[name] = {};
+      for (const depth of depths) {
+        const py = new Python();
+        await py.ready;
+        const end = await py.run({ kind: 'example', packages: [], setup: '', code: code.replaceAll('DEPTH', String(depth)), filename: 'probe.py', cell: name });
+        py.stop();
+        const outcome = end.type === 'done' ? (end.data.error ? end.data.error.type : 'ok') : end.type;
+        result.probes[name][depth] = outcome;
+        if (outcome !== 'ok') break;
+      }
+      log(`${name}: ${JSON.stringify(result.probes[name])}`);
+    }
+    // Задачи: у каждой свой воркер — как на сайте, где у страницы задачи свой
+    for (const task of allTasks.filter((t) => !only || only.includes(t.id))) {
+      const py = new Python();
+      await py.ready;
+      for (const [variant, code] of task.variants) {
+        const end = await py.run({ kind: 'task', packages: task.packages, code, footer: task.footer });
+        let status = end.type;
+        if (end.type === 'done') {
+          const failed = (end.data.results ?? []).filter((r) => r.status !== 'passed');
+          status = end.data.phase !== 'tests' ? `${end.data.phase}: ${end.data.error?.message}` : failed.length ? failed.map((r) => `«${r.title}»: ${r.message}`).join('; ') : 'passed';
+        } else if (end.message) {
+          status += `: ${end.message}`;
+        }
+        result.tasks.push({ id: task.id, variant, status });
+        if (status !== 'passed') log(`✗ ${task.id} ${variant}: ${status}`);
+        if (end.type !== 'done') break;
+      }
+      py.stop();
+    }
+  } catch (error) {
+    result.error = String(error);
+  }
+  log('готово');
+  window.__result = result;
+</script>

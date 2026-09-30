@@ -9,6 +9,7 @@ import Hints from '../../../components/Hints.astro';
 import PrevNext from '../../../components/PrevNext.astro';
 import SolutionReveal from '../../../components/SolutionReveal.astro';
 import SolvedToggle from '../../../components/SolvedToggle.astro';
+import TaskWorkbench from '../../../components/python/TaskWorkbench.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import {
   challengeUrl,
@@ -95,15 +96,15 @@ const isComplexity = c.type === 'complexity';
         <ComplexityQuiz options={c.complexity!.options} answer={c.complexity!.answer} explanation={c.complexity!.explanation} />
       </section>
     ) : (
-      <section class="block">
-        <h2 class="section-title">Готовый файл для редактора</h2>
-        <CodeBlock
-          code={c.bundle!}
-          filename={filename}
-          copy
-          note={`Вставьте в редактор и запустите: python3 ${filename} — тесты покажут ✓ / ✗ и итог.`}
-        />
-      </section>
+      <TaskWorkbench
+        taskId={c.taskId}
+        starter={c.starter!}
+        tests={c.tests!}
+        header={c.bundleHeader!}
+        footer={c.bundleFooter!}
+        packages={c.packages}
+        filename={filename}
+      />
     )
   }
 

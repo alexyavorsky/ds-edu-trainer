@@ -66,6 +66,15 @@ def _deep(depth: int) -> list:
     return nested
 
 
+def _free(nested: list) -> None:
+    """Разбирает вложенный список по одному уровню. Иначе он освобождается рекурсивно, и на глубине 100 000
+    Python в браузере (Pyodide) переполняет стек — хотя само решение верное."""
+    while nested:
+        inner = next((x for x in nested if isinstance(x, list)), None)
+        nested.clear()
+        nested = inner
+
+
 def test_example():
     """[1, [2, [3, [4]]], 5] → [1, 2, 3, 4, 5]"""
     got = flatten_deep([1, [2, [3, [4]]], 5])
@@ -92,7 +101,11 @@ def test_order_and_duplicates():
 
 def test_deep_left():
     """Вложенность 100 000 уровней: [[[…[0], 1]…], 99999]"""
-    got = flatten_deep(_deep(100_000))
+    nested = _deep(100_000)
+    try:
+        got = flatten_deep(nested)
+    finally:
+        _free(nested)
     assert got == list(range(100_000)), f"неверный результат, начало: {got[:5] if got else got!r}"
 
 
@@ -101,7 +114,10 @@ def test_deep_right():
     nested: list = []
     for i in range(99_999, -1, -1):
         nested = [i, nested]
-    got = flatten_deep(nested)
+    try:
+        got = flatten_deep(nested)
+    finally:
+        _free(nested)
     assert got == list(range(100_000)), f"неверный результат, начало: {got[:5] if got else got!r}"
 
 

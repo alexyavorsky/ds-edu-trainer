@@ -30,10 +30,13 @@ np.insert(sorted_prices, pos, 200)
 # array([ 90, 120, 200, 250, 480])
 
 # %% partition
-print(np.partition(scores, 2))                 # 2 наименьших слева, порядок частей не гарантирован
-np.partition(scores, -3)[-3:]                  # 3 наибольших
+part = np.partition(scores, 2)
+print(part[2])                                 # на месте 2 — третий по величине
+print(np.sort(part[:2]), np.sort(part[3:]))    # слева меньшие, справа большие; порядок внутри частей любой
+np.sort(np.partition(scores, -3)[-3:])         # 3 наибольших (отсортированы уже для вывода)
 # ─── вывод ───
-# [39 45 58 90 81 72 66]
+# 58
+# [39 45] [66 72 81 90]
 # array([72, 81, 90])
 
 # %% top-k

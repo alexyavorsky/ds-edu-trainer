@@ -8,7 +8,8 @@ import { referenceComponents } from '../../../components/reference';
 import ReferenceSearch from '../../../components/reference/ReferenceSearch.astro';
 import ReferenceSidebar from '../../../components/reference/ReferenceSidebar.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { articleUrl, LEVEL_LABEL, LEVEL_TONE } from '../../../lib/reference';
+import { pyodideVersions } from '../../../lib/browser-runs';
+import { articleUrl, getExamples, LEVEL_LABEL, LEVEL_TONE } from '../../../lib/reference';
 import { getToc, getTopics, readingOrder, type Article, type Topic } from '../../../lib/reference-content';
 
 export async function getStaticPaths() {
@@ -35,6 +36,20 @@ const requires = refs(article.data.requires);
 const related = refs(article.data.related);
 const prefix = (id: string) => (id.startsWith(`${topic.id}/`) ? '' : `${id.split('/')[0] === 'numpy' ? 'NumPy' : 'pandas'}: `);
 const onPage = headings.filter((h) => h.depth === 2);
+
+// Запуск примеров в браузере: общие данные статьи и версия библиотеки в Pyodide (для пометки «вывод может отличаться»)
+const runData = getExamples(article.id).size
+  ? JSON.stringify({
+      article: article.id,
+      topicPackage: topic.data.package,
+      setup: getExamples(article.id).get('setup')?.code ?? '',
+      filename: `reference/${article.id}.py`,
+      library: topic.data.title,
+      browserVersion: pyodideVersions()[topic.data.package],
+      referenceVersion: topic.data.version,
+      matplotlibVersion: pyodideVersions().matplotlib,
+    }).replace(/</g, '\\u003c')
+  : null;
 ---
 
 <BaseLayout title={`${article.data.title} — ${topic.data.title}`} description={article.data.summary} articleId={article.id} wide>
@@ -99,6 +114,7 @@ const onPage = headings.filter((h) => h.depth === 2);
       <article class="prose">
         <Content components={referenceComponents} />
       </article>
+      {runData && <script type="application/json" id="reference-run-data" set:html={runData} />}
 
       <footer class="article-foot">
         {

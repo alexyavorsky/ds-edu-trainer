@@ -1,0 +1,229 @@
+{
+  "pyodide": "314.0.7",
+  "examples": {
+    "numpy/aggregations#basic": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/aggregations#builtin-sum": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/aggregations#function-or-method": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/aggregations#where": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/arithmetic#division": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/arithmetic#int-zero": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/arithmetic#zero-division": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/attributes#basic": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/axis#sum-axis": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/datetime64#generic-unit": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/dtypes#inferred": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/einsum#products": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/einsum#transpose-trace": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/histogram#bincount-float": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/indexing-nd#element": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/indexing#single": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/inplace-out#int-inplace": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/intro#one-type": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/intro#version": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/join-split#row-stack": {
+      "status": "differs",
+      "reason": "не возникает AttributeError"
+    },
+    "numpy/linalg#eig-complex": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/linalg#rank": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/linalg#singular": {
+      "status": "differs",
+      "reason": "не возникает LinAlgError"
+    },
+    "numpy/masked#int-missing": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/matmul#vector": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/mistakes#overflow-right": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/nan-inf#inf": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/random#integers": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/random#reproducible": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/reshape#ravel-flatten": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/reshape#set-shape": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/rounding#fix": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/searching#searchsorted": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/searching#side": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/searching#unsorted": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/sorting#sort": {
+      "status": "unavailable",
+      "reason": "пример падает — TypeError: sort() got an unexpected keyword argument 'descending'"
+    },
+    "numpy/statistics#method": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/structured#assign": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/ufunc#invalid": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/unique-sets#array-api": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "numpy/where#both-branches": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "pandas/category#memory": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "pandas/inspect#info": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "pandas/intro#numpy": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "pandas/intro#version": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "pandas/performance#category": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "pandas/performance#deep": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "pandas/performance#memory": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "pandas/plot#bar": {
+      "status": "differs",
+      "reason": "график"
+    },
+    "pandas/plot#hist": {
+      "status": "differs",
+      "reason": "график"
+    },
+    "pandas/plot#line": {
+      "status": "differs",
+      "reason": "график"
+    },
+    "pandas/plot#one-column": {
+      "status": "differs",
+      "reason": "график"
+    },
+    "pandas/plot#save": {
+      "status": "differs",
+      "reason": "вывод и график"
+    },
+    "pandas/plot#scatter": {
+      "status": "differs",
+      "reason": "график"
+    },
+    "pandas/to-dict-numpy#nullable": {
+      "status": "differs",
+      "reason": "вывод"
+    },
+    "pandas/to-dict-numpy#to-numpy": {
+      "status": "differs",
+      "reason": "вывод"
+    }
+  }
+}

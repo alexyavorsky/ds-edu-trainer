@@ -111,7 +111,19 @@ export interface BundleInput {
   runner: string;
 }
 
-export function buildBundle(i: BundleInput): string {
+const TESTS_LIST_COMMENT = '# Тесты задачи по порядку — запускаются только они';
+
+/**
+ * Явный список тестов после tests.py: функция test_… из кода решения тестом не становится.
+ * Имена — функции test_* верхнего уровня tests.py по порядку (зеркало validate.py::tests_list).
+ */
+export function testsList(tests: string): string {
+  const names = [...tests.matchAll(/^def (test_\w+)\s*\(/gm)].map((m) => m[1]);
+  return [TESTS_LIST_COMMENT, '_TESTS = [', ...names.map((n) => `    ${n},`), ']'].join('\n');
+}
+
+/** Части копируемого файла: шапка-docstring и всё, что идёт после кода решения (тесты и раннер). */
+export function bundleParts(i: Omit<BundleInput, 'code'>): { header: string; footer: string } {
   const header = [
     '"""',
     i.title,
@@ -128,5 +140,20 @@ export function buildBundle(i: BundleInput): string {
     `Запуск: python3 ${i.slug.replaceAll('-', '_')}.py (на Windows: python ${i.slug.replaceAll('-', '_')}.py)`,
     '"""',
   ].join('\n');
-  return `${header}\n\n${i.code.trim()}\n\n\n${SEPARATOR}\n\n${i.tests.trim()}\n\n\n${i.runner.trim()}\n`;
+  return { header, footer: bundleFooter(i.tests, i.runner) };
+}
+
+/** Всё, что идёт после кода решения: разделитель, tests.py, список _TESTS и раннер. Его же выполняет сайт. */
+export function bundleFooter(tests: string, runner: string): string {
+  return `${SEPARATOR}\n\n${tests.trim()}\n\n\n${testsList(tests.trim())}\n\n\n${runner.trim()}\n`;
+}
+
+/** Склеивает копируемый файл из частей; тот же код собирает файл с кодом из редактора на странице задачи. */
+export function joinBundle(header: string, code: string, footer: string): string {
+  return `${header}\n\n${code.trim()}\n\n\n${footer}`;
+}
+
+export function buildBundle(i: BundleInput): string {
+  const { header, footer } = bundleParts(i);
+  return joinBundle(header, i.code, footer);
 }

@@ -14,3 +14,6 @@ bundles/
 
 # окружение для проверки справочника
 .venv/
+
+# кэш пакетов Pyodide для scripts/validate_pyodide.ts
+.pyodide-cache/
