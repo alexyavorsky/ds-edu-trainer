@@ -10,6 +10,9 @@
  *   ученик что-то написал, проверяется; не решённое (или пропущенное) заменяется эталонным решением —
  *   следующие ячейки не ломаются, а код ученика остаётся в редакторе.
  * - Код упражнений сохраняется в localStorage, изменённый код демонстраций — нет.
+ * - Сохранённый вывод демонстраций ниже первого нерешённого упражнения скрыт за плашкой (renderGate), чтобы
+ *   не подсказать ответ; «Показать всё равно» открывает одну ячейку, «Весь вывод урока» — все. Живой вывод
+ *   виден всегда, и выполненная ячейка остаётся открытой.
  * Код выполняется только по нажатию — никогда из ссылки или параметров URL.
  */
 import { python, type RunEnd } from '../../lib/python/client';
@@ -178,6 +181,7 @@ class DemoView extends CellView {
   private showStored(): void {
     this.live.hidden = true;
     this.live.replaceChildren();
+    this.root.classList.remove('has-live');
     if (this.stored) this.stored.hidden = false;
   }
 
@@ -185,6 +189,7 @@ class DemoView extends CellView {
     if (this.stored) this.stored.hidden = true;
     this.live.replaceChildren(...children);
     this.live.hidden = false;
+    this.root.classList.add('has-live'); // плашка скрытого вывода не нужна, пока виден живой
   }
 
   status(text: string, isError = false): void {
@@ -211,6 +216,7 @@ class DemoView extends CellView {
     }
     const d = end.data as LessonDone;
     this.setCount(this.lesson.nextCount());
+    this.root.classList.add('is-open'); // вывод ячейки уже показан — после «Вернуть» сохранённый не прячем
     const expected = this.data.raises && !edited && d.error?.mro.includes(this.data.raises);
     const markError = (line: number) => {
       if (this.view && this.editor) this.editor.goToLine(this.view, line);
@@ -550,6 +556,32 @@ class Lesson {
     this.bar.querySelector('[data-restart]')!.addEventListener('click', () => this.restart());
     python.subscribe(() => this.renderBar());
     this.renderBar();
+    this.initGate();
+  }
+
+  // ─── Скрытие сохранённого вывода ниже нерешённого упражнения ───
+
+  private gated(): HTMLElement[] {
+    return [...document.querySelectorAll<HTMLElement>('.cell-demo[data-gated]')];
+  }
+
+  private initGate(): void {
+    for (const root of this.gated()) {
+      root.querySelector('[data-gate-show]')?.addEventListener('click', () => root.classList.add('is-open'));
+      root.querySelector('[data-gate-all]')?.addEventListener('click', () => this.gated().forEach((r) => r.classList.add('is-open')));
+    }
+    this.renderGate();
+    document.addEventListener(progress.COURSE_EVENT, () => this.renderGate());
+    window.addEventListener('storage', (e) => e.key === progress.STORE_KEY && this.renderGate());
+  }
+
+  /** Вывод демонстрации открыт, если решены все упражнения выше неё (отметки в localStorage). */
+  private renderGate(): void {
+    let unsolved = false;
+    for (const cell of this.data.cells) {
+      if (cell.kind === 'exercise') unsolved ||= !progress.isSolved(this.id, cell.id);
+      else document.querySelector(`[data-cell="${cell.id}"][data-gated]`)?.classList.toggle('is-unlocked', !unsolved);
+    }
   }
 
   /** Код всех упражнений урока: id ячейки → текст из редактора. */

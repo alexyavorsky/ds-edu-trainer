@@ -2,6 +2,10 @@
 /**
  * Демонстрация: `<Demo id="…" title="…" />` — ячейка из lesson.py. Код можно выполнить, изменить и вернуть;
  * до запуска виден сохранённый вывод. Изменённый код не сохраняется. Выполняется в сеансе урока.
+ *
+ * Сохранённый вывод демонстрации, перед которой в уроке есть упражнение, помечен data-gated: пока упражнения
+ * выше не решены, скрипт урока прячет его за плашкой (docs/COURSES_PLAN.md, «Ячейки и состояние»). Без JS
+ * вывод виден — решить упражнение без JS нельзя, и скрытый вывод остался бы скрытым навсегда.
  */
 import { Code } from 'astro:components';
 import { cellOf, findLesson, storedOutput } from '../../lib/courses/site';
@@ -19,9 +23,11 @@ if (cell.kind !== 'demo') throw new Error(`${lesson.meta.id}: <Demo id="${id}"> 
 const output = storedOutput(lesson, id);
 const plots = Array.from({ length: output?.plots ?? 0 }, (_, n) => `/course-plots/${course.slug}/${lesson.slug}/${id}-${n + 1}.svg`);
 const raises = cell.flags.raises;
+const at = lesson.blocks.findIndex((b) => b.type === 'demo' && b.id === id);
+const gated = !!output && lesson.blocks.slice(0, at).some((b) => b.type === 'exercise');
 ---
 
-<figure class="cell cell-demo" data-cell={id}>
+<figure class="cell cell-demo" data-cell={id} data-gated={gated ? '' : undefined}>
   <figcaption class="cell-head">
     <span class="count" data-count title="Номер выполнения в этом сеансе">[ ]</span>
     <span class="cell-title">{title ?? 'Код'}</span>
@@ -45,5 +51,20 @@ const raises = cell.flags.raises;
     <Code code={cell.code} lang="python" theme="vitesse-dark" />
   </div>
   {output && <CellOutput output={output} plots={plots} title={title} />}
+  {
+    gated && (
+      <div class="out-gate">
+        <span class="gate-text">Вывод появится, когда решите упражнения выше — чтобы он не подсказал ответ.</span>
+        <span class="gate-actions">
+          <button type="button" class="btn btn-ghost small" data-gate-show title="Показать сохранённый вывод этой ячейки">
+            Показать всё равно
+          </button>
+          <button type="button" class="btn btn-ghost small" data-gate-all title="Показать сохранённый вывод всех ячеек урока">
+            Весь вывод урока
+          </button>
+        </span>
+      </div>
+    )
+  }
   <div class="cell-live" data-live hidden></div>
 </figure>

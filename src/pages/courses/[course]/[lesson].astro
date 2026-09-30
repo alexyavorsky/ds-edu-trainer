@@ -99,6 +99,8 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
       </div>
       <p class="kernel-notice" data-kernel-notice hidden></p>
 
+      <!-- до разметки ячеек: с JS сохранённый вывод ниже нерешённого упражнения скрыт сразу, без мелькания -->
+      <script is:inline>document.documentElement.classList.add('gate-on');</script>
       <article class="prose lesson-prose">
         <Content components={courseComponents} />
       </article>

@@ -93,6 +93,35 @@
 .cell-out[hidden] {
   display: none;
 }
+
+/* Скрытие сохранённого вывода ниже нерешённого упражнения. html.gate-on ставит встроенный скрипт страницы
+   урока до разметки ячеек (без JS вывод виден); is-unlocked — упражнения выше решены (lesson.ts), is-open —
+   «Показать всё равно» или ячейку уже выполняли, has-live — сейчас показан живой вывод. */
+.out-gate {
+  display: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 10px 12px 10px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.gate-text {
+  flex: 1 1 260px;
+}
+.gate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.gate-on .cell-demo[data-gated]:not(.is-unlocked):not(.is-open) > .cell-out {
+  display: none;
+}
+.gate-on .cell-demo[data-gated]:not(.is-unlocked):not(.is-open):not(.has-live) > .out-gate {
+  display: flex;
+}
 .out-label {
   display: block;
   padding: 8px 16px 0;
