@@ -15,7 +15,7 @@
     },
     "index-type": {
       "lines": [
-        "DatetimeIndex",
+        "<class 'pandas.DatetimeIndex'>",
         "2025-01-01 00:00:00 2025-12-31 00:00:00"
       ],
       "result": null,
@@ -39,17 +39,17 @@
       "result": [
         "            temp_min  temp_max  precip_mm  wind_ms",
         "date",
-        "2025-03-01       0.4       4.6        8.5      3.3",
-        "2025-03-02      -1.9       4.2        0.0      6.2",
-        "2025-03-03      -2.0       4.3        2.4      1.4"
+        "2025-05-01       8.9      13.3        0.0      2.2",
+        "2025-05-02      12.0      16.3       14.7      5.1",
+        "2025-05-03       6.8      12.5        0.0      2.2"
       ],
-      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>temp_min</th>\n      <th>temp_max</th>\n      <th>precip_mm</th>\n      <th>wind_ms</th>\n    </tr>\n    <tr>\n      <th>date</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2025-03-01</th>\n      <td>0.4</td>\n      <td>4.6</td>\n      <td>8.5</td>\n      <td>3.3</td>\n    </tr>\n    <tr>\n      <th>2025-03-02</th>\n      <td>-1.9</td>\n      <td>4.2</td>\n      <td>0.0</td>\n      <td>6.2</td>\n    </tr>\n    <tr>\n      <th>2025-03-03</th>\n      <td>-2.0</td>\n      <td>4.3</td>\n      <td>2.4</td>\n      <td>1.4</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>temp_min</th>\n      <th>temp_max</th>\n      <th>precip_mm</th>\n      <th>wind_ms</th>\n    </tr>\n    <tr>\n      <th>date</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2025-05-01</th>\n      <td>8.9</td>\n      <td>13.3</td>\n      <td>0.0</td>\n      <td>2.2</td>\n    </tr>\n    <tr>\n      <th>2025-05-02</th>\n      <td>12.0</td>\n      <td>16.3</td>\n      <td>14.7</td>\n      <td>5.1</td>\n    </tr>\n    <tr>\n      <th>2025-05-03</th>\n      <td>6.8</td>\n      <td>12.5</td>\n      <td>0.0</td>\n      <td>2.2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
       "error": null
     },
     "month-len": {
       "lines": [
         "31",
-        "1.6129032258064515"
+        "15.545161290322582"
       ],
       "result": null,
       "html": null,
@@ -70,7 +70,7 @@
     "slice-months": {
       "lines": [
         "92",
-        "2025-06-01 00:00:00 2025-08-31 00:00:00"
+        "2025-03-01 00:00:00 2025-05-31 00:00:00"
       ],
       "result": null,
       "html": null,

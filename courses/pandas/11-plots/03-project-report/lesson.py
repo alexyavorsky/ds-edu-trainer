@@ -31,7 +31,7 @@ def test_prepare():
     assert "revenue" in result.columns and "month" in result.columns, "в таблице, которую возвращает prepare, нужны столбцы revenue и month"
     assert result["revenue"].sum() == 3301420, "revenue — цена × количество"
     assert result["month"].iloc[0] == 1 and result["month"].iloc[-1] == 12, "month — номер месяца из столбца date: d[\"date\"].dt.month"
-    assert "revenue" not in raw.columns, "функция изменила исходную таблицу raw: возвращайте новую таблицу через assign"
+    assert "revenue" not in raw.columns, "функция изменила исходную таблицу raw: возвращайте новую таблицу через assign. Исправив функцию, выполните первую ячейку урока заново — она вернёт raw в исходный вид"
 
 
 def test_orders():

@@ -6,8 +6,8 @@ import pandas as pd
 
 orders = pd.read_csv("data/shop_orders.csv", parse_dates=["date"])
 orders["revenue"] = orders["price"] * orders["quantity"]
-monthly = orders.set_index("date")["revenue"].resample("ME").sum()
-monthly.index = monthly.index.month
+orders["month"] = orders["date"].dt.month
+monthly = orders.groupby("month")["revenue"].sum()
 monthly.head(3)
 
 # %% first
@@ -19,19 +19,17 @@ ax.set_xlabel("месяц")
 ax.set_ylabel("₽")
 
 # %% line [exercise]
-items = orders.set_index("date")["quantity"].resample("ME").sum()
-items.index = items.index.month
+items = orders.groupby("month")["quantity"].sum()
 ax = items.plot(title="Продано штук по месяцам")
 ax.set_ylabel("штук")
 # ─── заготовка ───
-items = orders.set_index("date")["quantity"].resample("ME").sum()
-items.index = items.index.month
+items = orders.groupby("month")["quantity"].sum()
 ax = ...
 # ─── проверка ───
 def test_line():
     "ax — линейный график ряда items"
     assert hasattr(ax, "get_title") and hasattr(ax, "lines"), f"ax — это {type(ax).__name__}, а нужен график: ax = items.plot(...)"
-    assert len(ax.lines) == 1, f"на графике линий: {len(ax.lines)}, а нужна одна — items.plot(...)"
+    assert len(ax.lines) == 1, f"на графике линий: {len(ax.lines)}, а нужна одна. Если вы вызвали plot в этой ячейке дважды, линии сложились на одном графике — оставьте один вызов"
     assert list(ax.lines[0].get_ydata()) == items.tolist(), "на графике не те значения: строить нужно ряд items"
 
 
@@ -41,18 +39,15 @@ def test_labels():
     assert ax.get_title() == "Продано штук по месяцам", f"заголовок сейчас {ax.get_title()!r}, а нужен «Продано штук по месяцам»: параметр title="
     assert ax.get_ylabel() == "штук", f"подпись оси Y сейчас {ax.get_ylabel()!r}, а нужна «штук»: ax.set_ylabel(\"штук\")"
 # ─── другое решение ───
-items = orders.set_index("date")["quantity"].resample("ME").sum()
-items.index = items.index.month
+items = orders.groupby("month")["quantity"].sum()
 ax = items.plot(kind="line")
 ax.set_title("Продано штук по месяцам")
 ax.set_ylabel("штук")
 # ─── ошибка ───
-items = orders.set_index("date")["quantity"].resample("ME").sum()
-items.index = items.index.month
+items = orders.groupby("month")["quantity"].sum()
 ax = items.plot()
 # ─── ошибка ───
-items = orders.set_index("date")["quantity"].resample("ME").sum()
-items.index = items.index.month
+items = orders.groupby("month")["quantity"].sum()
 ax = monthly.plot(title="Продано штук по месяцам")
 ax.set_ylabel("штук")
 
@@ -148,7 +143,6 @@ ax = moscow_temp.plot(title="Дневной максимум в Москве")
 ax.set_xlabel("°C")
 
 # %% table
-orders["month"] = orders["date"].dt.month
 by_channel = orders.pivot_table(values="revenue", index="month", columns="channel", aggfunc="sum")
 by_channel.head(3)
 
@@ -161,43 +155,40 @@ ax = daily.plot(title="Выручка по дням и среднее за 7 д�
 daily.rolling(7).mean().plot(ax=ax)
 
 # %% cities [exercise]
-city_temp = weather.pivot_table(values="temp_max", index="date", columns="city", aggfunc="mean")
-month_temp = city_temp.resample("ME").mean()
-month_temp.index = month_temp.index.month
+weather["month"] = weather["date"].dt.month
+month_temp = weather.pivot_table(values="temp_max", index="month", columns="city", aggfunc="mean")
 ax = month_temp[["Сочи", "Москва", "Новосибирск"]].plot(title="Средний дневной максимум по месяцам")
 ax.set_ylabel("°C")
 # ─── заготовка ───
-city_temp = ...
+weather["month"] = weather["date"].dt.month
 month_temp = ...
 ax = ...
 # ─── проверка ───
-def test_tables():
-    "city_temp — дни × города, month_temp — месяцы × города"
-    assert isinstance(city_temp, pd.DataFrame) and city_temp.shape == (365, 5), "city_temp — сводная таблица 365 дней × 5 городов: weather.pivot_table(values=\"temp_max\", index=\"date\", columns=\"city\", aggfunc=\"mean\")"
-    assert isinstance(month_temp, pd.DataFrame) and month_temp.shape == (12, 5), "month_temp — 12 месяцев × 5 городов: city_temp.resample(\"ME\").mean()"
-    assert list(month_temp.index) == list(range(1, 13)), "индекс month_temp — номера месяцев 1–12: month_temp.index = month_temp.index.month"
-    assert abs(month_temp.loc[7, "Сочи"] - 24.35) < 0.01, "в month_temp должны быть средние temp_max за месяц"
+def test_table():
+    "month_temp — средний дневной максимум: месяцы × города"
+    assert isinstance(month_temp, pd.DataFrame), f"month_temp — это {type(month_temp).__name__}, а нужна таблица: weather.pivot_table(...)"
+    assert month_temp.shape == (12, 5), f"у month_temp размер {month_temp.shape}, а нужно 12 месяцев × 5 городов: index=\"month\", columns=\"city\""
+    assert list(month_temp.index) == list(range(1, 13)) and "Сочи" in month_temp.columns, "в строках — месяцы 1–12, в столбцах — города"
+    assert abs(month_temp.loc[7, "Сочи"] - 24.35) < 0.01, "в ячейках должен быть средний temp_max за месяц: values=\"temp_max\", aggfunc=\"mean\""
 
 
 def test_plot():
     "ax — три линии: Сочи, Москва, Новосибирск"
     assert hasattr(ax, "lines") and hasattr(ax, "get_title"), f"ax — это {type(ax).__name__}, а нужен график: ax = month_temp[[...]].plot(...)"
     assert len(ax.lines) != 5, "на графике пять линий, а нужны три города: выберите столбцы списком до .plot"
-    assert len(ax.lines) == 3, f"линий на графике: {len(ax.lines)}, а нужны три"
+    assert len(ax.lines) == 3, f"линий на графике: {len(ax.lines)}, а нужны три. Если вы строили график в этой ячейке дважды, оставьте один вызов plot"
     labels = [line.get_label() for line in ax.lines]
     assert labels == ["Сочи", "Москва", "Новосибирск"], f"линии сейчас {labels}, а нужны Сочи, Москва, Новосибирск — в этом порядке"
     assert ax.get_title() == "Средний дневной максимум по месяцам", f"заголовок сейчас {ax.get_title()!r}"
     assert ax.get_ylabel() == "°C", f"подпись оси Y сейчас {ax.get_ylabel()!r}, а нужна «°C»"
 # ─── другое решение ───
-city_temp = weather.pivot(index="date", columns="city", values="temp_max")
-month_temp = city_temp.resample("ME").mean()
-month_temp.index = month_temp.index.month
+weather["month"] = weather["date"].dt.month
+month_temp = weather.groupby(["month", "city"])["temp_max"].mean().unstack()
 ax = month_temp.loc[:, ["Сочи", "Москва", "Новосибирск"]].plot()
 ax.set_title("Средний дневной максимум по месяцам")
 ax.set_ylabel("°C")
 # ─── ошибка ───
-city_temp = weather.pivot_table(values="temp_max", index="date", columns="city", aggfunc="mean")
-month_temp = city_temp.resample("ME").mean()
-month_temp.index = month_temp.index.month
+weather["month"] = weather["date"].dt.month
+month_temp = weather.pivot_table(values="temp_max", index="month", columns="city", aggfunc="mean")
 ax = month_temp.plot(title="Средний дневной максимум по месяцам")
 ax.set_ylabel("°C")

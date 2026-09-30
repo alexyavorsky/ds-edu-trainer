@@ -15,7 +15,7 @@ sales = orders.groupby("date")["revenue"].sum().reindex(pd.date_range("2025-01-0
 sales.head(8).tolist()
 
 # %% week-mean
-sales.rolling(7).mean().head(8).round(1).tolist()
+sales.rolling(3).mean().head(8).round(1).tolist()
 
 # %% roll-quiz [quiz]
 print(pd.Series([10, 20, 30, 40]).rolling(2).mean().tolist()[-1])
@@ -92,7 +92,7 @@ def test_shift():
 
 
 def test_better():
-    "better — в сколько дней выручка выше, чем неделей раньше; better_share — доля таких дней"
+    "better — в скольких днях выручка выше, чем неделей раньше; better_share — доля таких дней"
     assert better == 187, f"better = {better!r}, а дней с ростом к прошлой неделе — 187: сумма маски change > 0"
     assert abs(better_share - 187 / 365) > 1e-9, "доля посчитана от 365 дней, но у первых семи дней сравнивать не с чем: делите на число непустых значений change"
     assert abs(better_share - 187 / 358) < 1e-9, f"better_share = {better_share!r}, а доля ≈ 0.522: better, делённое на change.notna().sum()"
@@ -113,9 +113,9 @@ better = (change > 0).sum()
 better_share = (change > 0).mean()
 
 # %% pct
+print(pd.Series([100, 120, 90]).pct_change().round(2).tolist())
 monthly = sales.resample("ME").sum()
 print(monthly.head(3).tolist())
-print(monthly.pct_change().head(3).round(3).tolist())
 
 # %% growth [exercise]
 growth = monthly.pct_change().round(3)

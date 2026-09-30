@@ -189,6 +189,12 @@ tea_by_band = data.pivot_table(values="tea", index="band", aggfunc="mean")["tea"
 data["band"] = pd.cut(data["temp"], bins=[-50, 0, 15, 50], labels=["мороз", "прохладно", "тепло"])
 tea_by_band = data.groupby("band")["tea"].sum().round(1)
 
+# %% within
+data["month"] = data.index.month
+temp_dev = data["temp"] - data.groupby("month")["temp"].transform("mean")
+tea_dev = data["tea"] - data.groupby("month")["tea"].transform("mean")
+print(round(temp_dev.corr(tea_dev), 2))
+
 # %% summary
 print("Корреляция температуры и продаж чая:")
 print("  по дням   ", round(r_day, 2))

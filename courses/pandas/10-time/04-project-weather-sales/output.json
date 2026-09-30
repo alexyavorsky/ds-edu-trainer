@@ -45,6 +45,14 @@
       "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>temp</th>\n      <th>tea</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2025-01-31</th>\n      <td>-3.8</td>\n      <td>27400</td>\n    </tr>\n    <tr>\n      <th>2025-02-28</th>\n      <td>-4.7</td>\n      <td>26300</td>\n    </tr>\n    <tr>\n      <th>2025-03-31</th>\n      <td>1.6</td>\n      <td>17910</td>\n    </tr>\n    <tr>\n      <th>2025-04-30</th>\n      <td>10.9</td>\n      <td>11600</td>\n    </tr>\n    <tr>\n      <th>2025-05-31</th>\n      <td>15.5</td>\n      <td>8630</td>\n    </tr>\n    <tr>\n      <th>2025-06-30</th>\n      <td>20.1</td>\n      <td>18940</td>\n    </tr>\n    <tr>\n      <th>2025-07-31</th>\n      <td>21.7</td>\n      <td>10110</td>\n    </tr>\n    <tr>\n      <th>2025-08-31</th>\n      <td>21.6</td>\n      <td>19580</td>\n    </tr>\n    <tr>\n      <th>2025-09-30</th>\n      <td>16.0</td>\n      <td>17040</td>\n    </tr>\n    <tr>\n      <th>2025-10-31</th>\n      <td>10.2</td>\n      <td>10450</td>\n    </tr>\n    <tr>\n      <th>2025-11-30</th>\n      <td>2.1</td>\n      <td>27610</td>\n    </tr>\n    <tr>\n      <th>2025-12-31</th>\n      <td>-2.6</td>\n      <td>35120</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
       "error": null
     },
+    "within": {
+      "lines": [
+        "0.05"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
     "summary": {
       "lines": [
         "Корреляция температуры и продаж чая:",

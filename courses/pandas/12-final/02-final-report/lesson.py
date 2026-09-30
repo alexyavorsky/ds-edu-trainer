@@ -51,6 +51,7 @@ worst_month = ...
 def test_by_month():
     "by_month — чистая выручка, прибыль и рост по месяцам"
     assert isinstance(by_month, pd.DataFrame), f"by_month — это {type(by_month).__name__}, а нужна таблица: data.groupby(\"month\").agg(...)"
+    assert list(by_month.index) == list(range(1, 13)), "в индексе by_month должны быть номера месяцев 1–12: группируйте по столбцу month — data.groupby(\"month\")"
     assert list(by_month.columns) == ["net", "profit", "growth"], f"столбцы сейчас {list(by_month.columns)}, а нужны net, profit, growth"
     assert len(by_month) == 12 and by_month.loc[1, "net"] == 297120 and by_month.loc[1, "profit"] == 140940, "в by_month 12 месяцев; январь: net — 297120, profit — 140940"
     assert by_month["growth"].isna().sum() == 1, "у января нет прошлого месяца — первое значение growth должно быть пропуском: pct_change()"

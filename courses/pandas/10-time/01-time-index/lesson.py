@@ -9,18 +9,18 @@ moscow = weather[weather["city"] == "Москва"].set_index("date").drop(colum
 moscow.head(3)
 
 # %% index-type
-print(type(moscow.index).__name__)
+print(type(moscow.index))
 print(moscow.index.min(), moscow.index.max())
 
 # %% one-day
 moscow.loc["2025-05-09"]
 
 # %% one-month
-moscow.loc["2025-03"].head(3)
+moscow.loc["2025-05"].head(3)
 
 # %% month-len
-print(len(moscow.loc["2025-03"]))
-print(moscow.loc["2025-03", "temp_max"].mean())
+print(len(moscow.loc["2025-05"]))
+print(moscow.loc["2025-05", "temp_max"].mean())
 
 # %% feb-quiz [quiz]
 print(len(moscow.loc["2025-02"]))
@@ -62,9 +62,9 @@ march_warmest = march["temp_max"].max()
 moscow.loc["2025-12-29":"2025-12-31"]
 
 # %% slice-months
-summer = moscow.loc["2025-06":"2025-08"]
-print(len(summer))
-print(summer.index.min(), summer.index.max())
+spring = moscow.loc["2025-03":"2025-05"]
+print(len(spring))
+print(spring.index.min(), spring.index.max())
 
 # %% seasons [exercise]
 summer = moscow.loc["2025-06":"2025-08"]

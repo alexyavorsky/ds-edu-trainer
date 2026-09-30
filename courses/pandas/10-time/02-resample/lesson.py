@@ -7,17 +7,24 @@ import pandas as pd
 orders = pd.read_csv("data/shop_orders.csv", parse_dates=["date"])
 orders["revenue"] = orders["price"] * orders["quantity"]
 daily = orders.groupby("date")["revenue"].sum()
-sales = daily.reindex(pd.date_range("2025-01-01", "2025-12-31"), fill_value=0)
-sales.head(4)
+calendar = pd.date_range("2025-01-01", "2025-12-31")
+sales = daily.reindex(calendar, fill_value=0)
+order_count = orders.groupby("date")["order_id"].nunique().reindex(calendar, fill_value=0)
+order_count.head(4)
 
 # %% month-end
-sales.resample("ME").sum().head(4)
+order_count.resample("ME").sum().head(4)
 
 # %% month-start
-sales.resample("MS").sum().head(4)
+order_count.resample("MS").sum().head(4)
 
 # %% old-m [raises=ValueError]
-sales.resample("M").sum()
+order_count.resample("M").sum()
+
+# %% stamp
+busiest = order_count.resample("ME").sum().idxmax()
+print(busiest)
+print(busiest.month, busiest.quarter)
 
 # %% months [exercise]
 monthly = sales.resample("ME").sum()
@@ -55,12 +62,12 @@ best_month = monthly.idxmax()
 worst_month = monthly.idxmin()
 
 # %% weekly
-weekly = sales.resample("W").sum()
-print(len(weekly))
-weekly.head(3)
+weekly_orders = order_count.resample("W").sum()
+print(len(weekly_orders))
+weekly_orders.head(3)
 
 # %% weekly-edges
-print(sales.resample("W").count().iloc[[0, 1, -1]])
+print(order_count.resample("W").count().iloc[[0, 1, -1]])
 
 # %% weeks-quiz [quiz]
 two_weeks = pd.Series(1, index=pd.date_range("2025-03-03", "2025-03-16"))
@@ -135,7 +142,7 @@ climate = moscow.resample("ME").agg(temp=("temp_max", "mean"), rain=("precip_mm"
 rainiest = climate["rain"].idxmax().month
 
 # %% quarters
-sales.resample("QE").sum()
+order_count.resample("QE").sum()
 
 # %% empty-periods
 print(daily.resample("D").sum().loc["2025-07-01":"2025-07-03"])

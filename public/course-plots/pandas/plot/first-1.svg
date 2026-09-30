@@ -105,7 +105,7 @@ L 0 3.5
      </g>
     </g>
     <g id="text_7">
-     <text style="font-size: 10px; font-family: 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #b7bac1" x="230.935" y="235.060562" transform="rotate(-0 230.935 235.060562)">date</text>
+     <text style="font-size: 10px; font-family: 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #b7bac1" x="230.935" y="235.060562" transform="rotate(-0 230.935 235.060562)">month</text>
     </g>
    </g>
    <g id="matplotlib.axis_2">

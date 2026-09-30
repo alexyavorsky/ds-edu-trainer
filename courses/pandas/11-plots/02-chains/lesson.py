@@ -190,7 +190,7 @@ def test_function():
     assert isinstance(result, pd.DataFrame), f"add_month вернула {type(result).__name__}, а должна возвращать таблицу"
     assert "month" in result.columns, "в таблице, которую возвращает add_month, нет столбца month"
     assert result["month"].iloc[0] == 1 and result["month"].iloc[-1] == 12, "month — номер месяца из столбца date: table[\"date\"].dt.month"
-    assert "month" not in orders.columns, "функция изменила исходную таблицу orders: возвращайте новую таблицу через assign, а не записывайте столбец в table"
+    assert "month" not in orders.columns, "функция изменила исходную таблицу orders: возвращайте новую таблицу через assign, а не записывайте столбец в table. Исправив функцию, выполните первую ячейку урока заново — она вернёт orders в исходный вид"
 
 
 def test_by_month():
