@@ -176,7 +176,7 @@ def test_plot():
     "ax — три линии: Сочи, Москва, Новосибирск"
     assert hasattr(ax, "lines") and hasattr(ax, "get_title"), f"ax — это {type(ax).__name__}, а нужен график: ax = month_temp[[...]].plot(...)"
     assert len(ax.lines) != 5, "на графике пять линий, а нужны три города: выберите столбцы списком до .plot"
-    assert len(ax.lines) == 3, f"линий на графике: {len(ax.lines)}, а нужны три. Если вы строили график в этой ячейке дважды, оставьте один вызов plot"
+    assert len(ax.lines) == 3, f"линий на графике: {len(ax.lines)}, а нужны три: выберите столбцы «Сочи», «Москва», «Новосибирск» списком до .plot"
     labels = [line.get_label() for line in ax.lines]
     assert labels == ["Сочи", "Москва", "Новосибирск"], f"линии сейчас {labels}, а нужны Сочи, Москва, Новосибирск — в этом порядке"
     assert ax.get_title() == "Средний дневной максимум по месяцам", f"заголовок сейчас {ax.get_title()!r}"

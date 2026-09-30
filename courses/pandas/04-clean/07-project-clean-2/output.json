@@ -2,7 +2,9 @@
   "generated": "Pyodide 314.0.7 · pandas 3.0.2",
   "cells": {
     "prepare": {
-      "lines": [],
+      "lines": [
+        "полных повторов в сырой выгрузке: 10"
+      ],
       "result": [
         "  customer_id        name          city signup_date     segment  \\",
         "0        C001   Сергей Ю.  Екатеринбург  2025-06-12  постоянный",
@@ -22,7 +24,9 @@
       "error": null
     },
     "bonus-before": {
-      "lines": [],
+      "lines": [
+        "пустых полей: 11"
+      ],
       "result": [
         "bonus",
         "0        38",

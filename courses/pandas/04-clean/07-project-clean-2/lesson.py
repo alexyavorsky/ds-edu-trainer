@@ -5,12 +5,14 @@
 import pandas as pd
 
 customers = pd.read_csv("data/customers_raw.csv")
+raw_duplicates = customers.duplicated().sum()
 short = {"Спб": "Санкт-Петербург", "С.-Петербург": "Санкт-Петербург", "Екб": "Екатеринбург"}
 customers["customer_id"] = customers["customer_id"].str.strip().str.upper()
 customers["name"] = customers["name"].str.strip().str.replace("  ", " ").str.title()
 customers["city"] = customers["city"].str.strip().str.title().replace(short)
 customers["segment"] = customers["segment"].str.strip().str.lower()
 customers["email"] = customers["email"].str.lower()
+print("полных повторов в сырой выгрузке:", raw_duplicates)
 customers.head(5)
 
 # %% signup [exercise]
@@ -48,6 +50,7 @@ customers["signup"] = pd.to_datetime(customers["signup_date"], format="mixed")
 no_date = customers["signup"].isna().sum()
 
 # %% bonus-before
+print("пустых полей:", customers["bonus"].isna().sum())
 customers["bonus"].value_counts().head(8)
 
 # %% points [exercise]
@@ -98,6 +101,7 @@ def test_clean():
     assert isinstance(clean, pd.DataFrame), f"clean — это {type(clean).__name__}, а нужна таблица"
     assert list(clean.columns) == ["customer_id", "name", "city", "signup", "segment", "email", "points"], f"столбцы сейчас {list(clean.columns)}, а нужны из списка columns"
     assert len(clean) != 257, "в clean все 257 строк: дубликаты не удалены — drop_duplicates()"
+    assert len(clean) != 245, "осталось 5 лишних строк: drop_duplicates вызван до отбора columns — сравнились и сырые signup_date и bonus"
     assert len(clean) == 240, f"в clean {len(clean)} строк, а клиентов 240"
     assert clean["customer_id"].nunique() == 240, "в clean повторяются customer_id"
 
@@ -113,6 +117,9 @@ clean = customers.drop_duplicates(subset=["customer_id"])[columns].sort_values("
 # ─── ошибка ───
 columns = ["customer_id", "name", "city", "signup", "segment", "email", "points"]
 clean = customers[columns].sort_values("customer_id").reset_index(drop=True)
+# ─── ошибка ───
+columns = ["customer_id", "name", "city", "signup", "segment", "email", "points"]
+clean = customers.drop_duplicates()[columns].sort_values("customer_id").reset_index(drop=True)
 # ─── ошибка ───
 columns = ["customer_id", "name", "city", "signup", "segment", "email", "points"]
 clean = customers[columns].drop_duplicates().reset_index(drop=True).sort_values("customer_id")

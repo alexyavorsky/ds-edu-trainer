@@ -141,6 +141,7 @@ def test_by_month():
 
 def test_answers():
     "months_ok — в скольких месяцах план выполнен, worst_month — худший месяц"
+    assert months_ok != 6, "months_ok = 6: похоже, вы считали по округлённой доле done >= 1 — в июле 183 950 / 184 000 = 0.9997 округлилось до 1.0. Сравнивайте сами суммы: by_month[\"fact\"] >= by_month[\"plan\"]"
     assert months_ok == 5, f"months_ok = {months_ok!r}, а план выполнен в 5 месяцах: сумма маски by_month[\"fact\"] >= by_month[\"plan\"]"
     assert worst_month == 10, f"worst_month = {worst_month!r}, а хуже всего план выполнен в октябре (10): by_month[\"done\"].idxmin()"
 # ─── другое решение ───
@@ -153,6 +154,11 @@ by_month = flat.groupby("month").agg(plan=("plan", "sum"), fact=("fact", "sum"))
 by_month["done"] = (by_month["fact"] / by_month["plan"]).round(3)
 months_ok = (by_month["done"] > 1).sum()
 worst_month = by_month["done"].idxmax()
+# ─── ошибка ───
+by_month = flat.groupby("month").agg(plan=("plan", "sum"), fact=("fact", "sum"))
+by_month["done"] = (by_month["fact"] / by_month["plan"]).round(3)
+months_ok = (by_month["done"] >= 1).sum()
+worst_month = by_month["done"].idxmin()
 
 # %% cities [exercise]
 flat["ok"] = flat["fact"] >= flat["plan"]

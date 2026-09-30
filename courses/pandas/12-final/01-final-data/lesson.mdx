@@ -32,7 +32,7 @@ data: [orders.csv, products.csv, customers_raw.csv, returns_raw.csv, shop_orders
 <Hint>Все файлы лежат в папке `data/`. Даты при чтении — параметр `parse_dates=["date"]`.</Hint>
 </Exercise>
 
-<Demo id="look" title="Грязные выгрузки" />
+<Demo id="look" title="Грязные выгрузки" gate="off" />
 
 ## Шаг 2. Клиенты
 
@@ -105,7 +105,7 @@ data: [orders.csv, products.csv, customers_raw.csv, returns_raw.csv, shop_orders
 <Hint>Все пропуски таблицы: `data.isna().sum().sum()` — сумма по столбцам и ещё раз сумма.</Hint>
 </Exercise>
 
-<Demo id="result" title="Рабочая таблица" />
+<Demo id="result" title="Рабочая таблица" gate="off" />
 
 ## Что получилось
 

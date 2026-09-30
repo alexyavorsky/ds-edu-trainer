@@ -108,7 +108,10 @@ def test_catalog():
     assert "currency" not in catalog.columns and "is_costly" not in catalog.columns, "в catalog остались столбцы currency или is_costly: drop(columns=[...])"
     assert "name" not in catalog.columns, "в catalog остался столбец name: rename(columns={\"name\": \"product\"})"
     assert "product" in catalog.columns, "в catalog нет столбца product: rename(columns={\"name\": \"product\"})"
-    assert catalog.shape[1] == products.shape[1] - 2, f"в catalog {catalog.shape[1]} столбцов, а должно быть на два меньше, чем в products: удалить нужно только currency и is_costly"
+    expected = {"product_id", "product", "category", "price", "cost", "margin", "markup"}
+    lost = sorted(expected - set(catalog.columns))
+    assert not lost, f"в catalog нет столбцов {lost}: удалить нужно только currency и is_costly"
+    assert set(catalog.columns) == expected, f"в catalog лишние столбцы {sorted(set(catalog.columns) - expected)}: удалить нужно currency и is_costly"
     assert len(catalog) == 20, f"в catalog {len(catalog)} строк, а товаров 20"
 
 
@@ -127,6 +130,8 @@ catalog = products[["product_id", "name", "category", "price", "cost", "margin",
 catalog = products.rename(columns={"name": "product"})
 # ─── ошибка ───
 catalog = products.drop(columns=["currency", "is_costly"])
+# ─── ошибка ───
+catalog = products.rename(columns={"name": "product"}).drop(columns=["currency", "is_costly", "markup"])
 
 # %% profit [exercise]
 orders["discount"] = orders["revenue"] * 0.05

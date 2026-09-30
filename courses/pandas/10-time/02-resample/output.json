@@ -2,13 +2,17 @@
   "generated": "Pyodide 314.0.7 · pandas 3.0.2",
   "cells": {
     "daily": {
-      "lines": [],
+      "lines": [
+        "2025-01-01     9060",
+        "2025-01-02    10450",
+        "2025-01-03    18620",
+        "Freq: D, Name: revenue, dtype: int64"
+      ],
       "result": [
         "2025-01-01    3",
         "2025-01-02    4",
         "2025-01-03    5",
-        "2025-01-04    3",
-        "Freq: D, Name: order_id, dtype: int64"
+        "Freq: D, Name: orders, dtype: int64"
       ],
       "html": null,
       "error": null
@@ -20,7 +24,7 @@
         "2025-02-28    138",
         "2025-03-31    134",
         "2025-04-30    133",
-        "Freq: ME, Name: order_id, dtype: int64"
+        "Freq: ME, Name: orders, dtype: int64"
       ],
       "html": null,
       "error": null
@@ -32,7 +36,7 @@
         "2025-02-01    138",
         "2025-03-01    134",
         "2025-04-01    133",
-        "Freq: MS, Name: order_id, dtype: int64"
+        "Freq: MS, Name: orders, dtype: int64"
       ],
       "html": null,
       "error": null
@@ -45,8 +49,8 @@
     },
     "stamp": {
       "lines": [
-        "2025-12-31 00:00:00",
-        "12 4"
+        "2025-05-25 00:00:00",
+        "5 2"
       ],
       "result": null,
       "html": null,
@@ -60,7 +64,7 @@
         "2025-01-05    18",
         "2025-01-12    39",
         "2025-01-19    40",
-        "Freq: W-SUN, Name: order_id, dtype: int64"
+        "Freq: W-SUN, Name: orders, dtype: int64"
       ],
       "html": null,
       "error": null
@@ -70,7 +74,7 @@
         "2025-01-05    5",
         "2025-01-12    7",
         "2026-01-04    3",
-        "Name: order_id, dtype: int64"
+        "Name: orders, dtype: int64"
       ],
       "result": null,
       "html": null,
@@ -95,7 +99,7 @@
         "2025-06-30    401",
         "2025-09-30    302",
         "2025-12-31    458",
-        "Freq: QE-DEC, Name: order_id, dtype: int64"
+        "Freq: QE-DEC, Name: orders, dtype: int64"
       ],
       "html": null,
       "error": null
