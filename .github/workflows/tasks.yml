@@ -47,6 +47,7 @@ jobs:
       bundles_matrix: ${{ steps.plan.outputs.bundles_matrix }}
       browsers_matrix: ${{ steps.plan.outputs.browsers_matrix }}
       browser_pages: ${{ steps.plan.outputs.browser_pages }}
+      browser_probes: ${{ steps.plan.outputs.browser_probes }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -212,10 +213,11 @@ jobs:
       - name: Браузер Playwright (из кэша — только проверка)
         run: npx playwright install ${{ matrix.browser }}
       - run: npm run build
-      - name: Эталоны задач и уроки курсов в браузере; в части 1 — глубина рекурсии не меньше бюджета тестов
-        run: node scripts/validate_browsers.ts ${{ matrix.browser }} --shard ${{ matrix.shard }} --pages ${{ needs.plan.outputs.browser_pages }} --timings timings.json
+      - name: Эталоны задач и уроки курсов в браузере; в части 1 — глубина рекурсии не меньше бюджета тестов (если проверяется всё)
+        run: node scripts/validate_browsers.ts ${{ matrix.browser }} --shard ${{ matrix.shard }} --pages ${{ needs.plan.outputs.browser_pages }} --timings timings.json $NO_PROBES
         env:
-          CHECK_ONLY: ${{ needs.plan.outputs.ids_browsers }}
+          CHECK_ONLY: ${{ needs.plan.outputs.ids_browsers }} # пусто — всё
+          NO_PROBES: ${{ needs.plan.outputs.browser_probes != 'true' && '--no-probes' || '' }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:

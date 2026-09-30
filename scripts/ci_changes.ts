@@ -18,7 +18,8 @@
  *
  * Вывод: таблица в консоль, в GitHub Actions — ключи в $GITHUB_OUTPUT и сводка в $GITHUB_STEP_SUMMARY:
  *   full=true|false, run_<задание>=true|false, ids_<задание>=id1,id2 (пусто — все),
- *   bundles_matrix, browsers_matrix — JSON для strategy.matrix, browser_pages — страниц в задании браузера.
+ *   bundles_matrix, browsers_matrix — JSON для strategy.matrix, browser_pages — вкладок в задании браузера,
+ *   browser_probes — выполнять ли пробы глубины рекурсии.
  */
 import { execFileSync } from 'node:child_process';
 import { appendFileSync, existsSync, readFileSync } from 'node:fs';
@@ -103,8 +104,8 @@ const BROWSERS_FULL = ['chromium', 'firefox', 'webkit'];
 const BROWSERS_MIN = ['chromium', 'webkit'];
 /** На сколько заданий делить проверку одного браузера, если проверяется всё (замеры — docs/reports/ci-speedup.md). */
 const BROWSER_SHARDS = 3;
-/** Страниц браузера параллельно в одном задании (validate_browsers.ts --pages): у раннера macOS 3 ядра. */
-const BROWSER_PAGES = 1;
+/** Вкладок браузера параллельно в одном задании (validate_browsers.ts --pages): у раннера macOS 3 ядра. */
+const BROWSER_PAGES = 2;
 /** Выбрано меньше стольких задач и уроков — одна часть на браузер. */
 const ONE_SHARD_LIMIT = 12;
 
@@ -190,6 +191,8 @@ function main(argv: string[]): void {
     full: String(p.full),
     bundles_matrix: JSON.stringify({ include: p.full ? BUNDLES_FULL : BUNDLES_MIN }),
     browser_pages: String(BROWSER_PAGES),
+    // пробы глубины проверяют воркер и браузер, а не содержимое: на ветке — только если проверяется всё
+    browser_probes: String(p.full || (b.run && b.ids === null)),
     browsers_matrix: JSON.stringify({ browser: browsers, shard: Array.from({ length: shards }, (_, i) => `${i + 1}/${shards}`) }),
   };
   for (const [name, job] of Object.entries(p.jobs)) {

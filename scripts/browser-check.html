@@ -3,7 +3,8 @@
 <title>Проверка Python в браузере</title>
 <!--
   Страница для scripts/validate_browsers.ts: запускает воркер production-сборки сайта (dist/) — тот же код,
-  что на страницах задач, — и выполняет в нём все задачи и пробы глубины рекурсии. Результат — window.__result.
+  что на страницах задач, — и выполняет в нём задачи, уроки и пробы глубины рекурсии. Результат — window.__result;
+  каждая готовая задача и урок сразу передаются в window.__itemDone.
 -->
 <pre id="log"></pre>
 <script type="module">
@@ -15,15 +16,12 @@
   const allLessons = await lessons.json();
   const { timeoutFactor, defaultTestTimeout, probes } = await config.json();
   const only = params.get('only')?.split(',');
-  // Часть проверки (validate_browsers.ts --shard/--pages): shard=k/n — элементы с номером i % n === k по общему
-  // списку «задачи, затем уроки»; probes=0 — без проб глубины (их выполняет одна часть на браузер)
-  const [shardIndex, shardCount] = (params.get('shard') ?? '0/1').split('/').map(Number);
+  // Что выполнить: only — список id (validate_browsers.ts делит задачи и уроки на части сам и повторяет
+  // оставшиеся, если вкладка упала); probes=0 — без проб глубины; items=0 — только пробы
   const withProbes = params.get('probes') !== '0';
-  const selectedTasks = allTasks.filter((t) => !only || only.includes(t.id));
-  const selectedLessons = allLessons.filter((l) => !only || only.includes(l.id));
-  const mine = (i) => i % shardCount === shardIndex;
-  const myTasks = selectedTasks.filter((_, i) => mine(i));
-  const myLessons = selectedLessons.filter((_, i) => mine(selectedTasks.length + i));
+  const withItems = params.get('items') !== '0';
+  const myTasks = withItems ? allTasks.filter((t) => !only || only.includes(t.id)) : [];
+  const myLessons = withItems ? allLessons.filter((l) => !only || only.includes(l.id)) : [];
 
   /** Один воркер; при таймауте или падении завершается, как на сайте. */
   class Python {
@@ -131,7 +129,9 @@
         if (end.type !== 'done') break;
       }
       py.stop();
-      result.timings.items.push({ kind: 'task', id: task.id, seconds: clock() - taskStarted });
+      const taskTiming = { kind: 'task', id: task.id, seconds: clock() - taskStarted };
+      result.timings.items.push(taskTiming);
+      await window.__itemDone?.({ ...taskTiming, rows: result.tasks.filter((t) => t.id === task.id) });
     }
     // Уроки курсов: все ячейки с эталонами по порядку в одном сеансе, как их выполняет страница урока
     const same = (a, b) => JSON.stringify([a.lines, a.result, a.error]) === JSON.stringify([b.lines, b.result, b.error]);
@@ -158,7 +158,9 @@
         if (end.type !== 'done') break;
       }
       py.stop();
-      result.timings.items.push({ kind: 'lesson', id: lesson.id, seconds: clock() - lessonStarted });
+      const lessonTiming = { kind: 'lesson', id: lesson.id, seconds: clock() - lessonStarted };
+      result.timings.items.push(lessonTiming);
+      await window.__itemDone?.({ ...lessonTiming, rows: result.lessons.filter((l) => l.id === lesson.id) });
       log(`урок ${lesson.id}: выполнен`);
     }
   } catch (error) {
