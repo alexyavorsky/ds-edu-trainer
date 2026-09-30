@@ -84,9 +84,10 @@ print(np.round(temps.mean(axis=1), 2))
 print(np.round(filled.mean(axis=1), 2))
 
 # %% cube-weeks
-by_week = filled.reshape(3, 4, 7)
-print(by_week.shape)
-print(by_week[0])       # центр: 4 строки-недели по 7 дней
+sample = np.arange(1, 29).reshape(2, 14)     # 2 ряда по 14 дней — две недели
+sample_weeks = sample.reshape(2, 2, 7)       # ряд → неделя → день недели
+print(sample_weeks.shape)
+print(sample_weeks[0])       # первый ряд: 2 строки-недели по 7 дней
 
 # %% weekly [exercise]
 weekly = filled.reshape(3, 4, 7).mean(axis=2)
