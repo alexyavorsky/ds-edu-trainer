@@ -3,7 +3,7 @@
  * В режиме разработки — заново при каждом запросе: правка lesson.py сразу видна.
  */
 import { createHash } from 'node:crypto';
-import type { CodeCell, StoredOutput } from './format.ts';
+import { demoGates, type CodeCell, type GateOwner, type StoredOutput } from './format.ts';
 import { courseLessons, lessonFiles, lessonPackages, loadCourses, type CourseSource, type LessonSource } from './load.ts';
 
 let cache: CourseSource[] | null = null;
@@ -30,6 +30,18 @@ export function cellOf(lesson: LessonSource, id: string): CodeCell {
   const cell = lesson.cells.find((c) => c.id === id);
   if (!cell) throw new Error(`${lesson.meta.id}: в lesson.py нет ячейки «${id}»`);
   return cell;
+}
+
+/** Упражнение, до решения которого скрыт сохранённый вывод демонстрации (null — не скрыт). */
+export function gateOf(lesson: LessonSource, demoId: string): GateOwner | null {
+  const raises = (id: string) => !!lesson.cells.find((c) => c.id === id)?.flags.raises;
+  return demoGates(lesson.blocks, raises).get(demoId) ?? null;
+}
+
+/** Упражнение урока по id (для <After>). */
+export function exerciseBlock(lesson: LessonSource, id: string): GateOwner | null {
+  const b = lesson.blocks.find((x) => x.type === 'exercise' && x.id === id);
+  return b && b.type === 'exercise' ? { id: b.id, title: b.title } : null;
 }
 
 export function storedOutput(lesson: LessonSource, id: string): StoredOutput | null {

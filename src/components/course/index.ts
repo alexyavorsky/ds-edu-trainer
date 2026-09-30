@@ -5,6 +5,7 @@ import GroupbyDiagram from '../reference/diagrams/GroupbyDiagram.astro';
 import MeltPivotDiagram from '../reference/diagrams/MeltPivotDiagram.astro';
 import MergeDiagram from '../reference/diagrams/MergeDiagram.astro';
 import StackUnstackDiagram from '../reference/diagrams/StackUnstackDiagram.astro';
+import After from './After.astro';
 import Demo from './Demo.astro';
 import Exercise from './Exercise.astro';
 import Explain from './Explain.astro';
@@ -21,6 +22,7 @@ export const courseComponents = {
   Explain,
   Note,
   Mistake,
+  After,
   AxisDiagram,
   BroadcastDiagram,
   GroupbyDiagram,

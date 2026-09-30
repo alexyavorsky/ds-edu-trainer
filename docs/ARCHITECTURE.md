@@ -276,7 +276,7 @@ courses/data/            наборы данных (generate.py, README.md — �
 courses/prelude.py       настройки отображения для сеанса урока
 src/lib/courses/         format.ts (разбор lesson.py и lesson.mdx), load.ts (курсы с диска), site.ts (для страниц),
                          notebook.ts (экспорт .ipynb)
-src/components/course/   Demo, Exercise, Hint, Quiz, Explain, Note, Mistake, CellOutput, CourseSidebar
+src/components/course/   Demo, Exercise, Hint, Quiz, Explain, Note, Mistake, After, GatePlaque, CellOutput, CourseSidebar
 src/scripts/course/      lesson.ts (ячейки и состояние урока), progress.ts (прогресс в localStorage)
 src/pages/courses/       /courses · /courses/<курс> · /courses/<курс>/<урок> (+ .ipynb) · /courses/data/<файл>
 runtime/lesson_exec.py   сеанс урока: ячейки как в Jupyter, проверка упражнения раннером задач — общий для
@@ -293,6 +293,7 @@ runtime/lesson_exec.py   сеанс урока: ячейки как в Jupyter, 
   выполняет `scripts/validate_browsers.ts`: не больше 5 минут на урок (`LESSON_TIMEOUT`, `--lesson-timeout`),
   зависший урок останавливается с ошибкой «браузер, урок, последняя начатая ячейка, сколько прошло», остальные
   проверяются дальше (COURSES_PLAN.md, «Проверка»).
-- Сохранённый вывод демонстраций ниже нерешённого упражнения скрыт за плашкой (`data-gated` в `<Demo>`,
-  класс `gate-on` на `<html>` ставит встроенный скрипт страницы урока, открывает `lesson.ts` по отметкам решения);
-  без JS вывод виден — COURSES_PLAN.md, «Ячейки и состояние».
+- Ответ упражнения до его решения скрыт: вывод демонстраций раздела упражнения (`demoGates` в format.ts,
+  `data-gate` в `<Demo>`) и текст `<After>`. Начальное состояние по localStorage и кнопки плашек — встроенный
+  скрипт страницы урока, дальнейшее открытие — `lesson.ts`; без JS всё видно — COURSES_PLAN.md, «Ячейки и
+  состояние».

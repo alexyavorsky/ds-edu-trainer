@@ -99,8 +99,45 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
       </div>
       <p class="kernel-notice" data-kernel-notice hidden></p>
 
-      <!-- до разметки ячеек: с JS сохранённый вывод ниже нерешённого упражнения скрыт сразу, без мелькания -->
-      <script is:inline>document.documentElement.classList.add('gate-on');</script>
+      <!--
+        Скрытие ответа до решения упражнения (docs/COURSES_PLAN.md, «Ячейки и состояние»). Скрипт стоит до разметки
+        ячеек и не зависит от модуля урока: ставит gate-on, по прогрессу из localStorage открывает (is-unlocked)
+        решённое ещё до отрисовки — MutationObserver срабатывает раньше первой отрисовки добавленных узлов, — и
+        обрабатывает кнопки плашек. Дальше решение упражнений и отметку урока отслеживает lesson.ts.
+      -->
+      <script is:inline define:vars={{ gateLesson: lesson.meta.id }}>
+        (() => {
+          const root = document.documentElement;
+          root.classList.add('gate-on');
+          const solved = new Set();
+          let all = false;
+          try {
+            const store = JSON.parse(localStorage.getItem('edu:course:v1') || '{}');
+            all = store.done?.[gateLesson]?.v === true;
+            for (const key of Object.keys(store.ex || {})) if (key.startsWith(gateLesson + '/')) solved.add(key.slice(gateLesson.length + 1));
+          } catch {}
+          const open = (el) => (all || solved.has(el.dataset.gate)) && el.classList.add('is-unlocked');
+          const observer = new MutationObserver((records) => {
+            for (const r of records)
+              for (const n of r.addedNodes) {
+                if (n.nodeType !== 1) continue;
+                if (n.matches('[data-gate]')) open(n);
+                n.querySelectorAll('[data-gate]').forEach(open);
+              }
+          });
+          observer.observe(document, { childList: true, subtree: true });
+          document.addEventListener('DOMContentLoaded', () => {
+            observer.disconnect();
+            document.querySelectorAll('[data-gate]').forEach(open);
+          });
+          document.addEventListener('click', (e) => {
+            const button = e.target instanceof Element && e.target.closest('[data-gate-show], [data-gate-all]');
+            if (!button) return;
+            const targets = button.hasAttribute('data-gate-all') ? document.querySelectorAll('[data-gate]') : [button.closest('[data-gate]')];
+            targets.forEach((el) => el?.classList.add('is-open'));
+          });
+        })();
+      </script>
       <article class="prose lesson-prose">
         <Content components={courseComponents} />
       </article>

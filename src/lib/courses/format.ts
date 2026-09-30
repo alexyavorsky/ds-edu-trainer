@@ -146,13 +146,13 @@ export interface QuizOption {
 
 export type Block =
   | { type: 'text'; text: string; line: number }
-  | { type: 'demo'; id: string; title: string; line: number }
+  | { type: 'demo'; id: string; title: string; gate: string | null; line: number } // gate="off" — вывод не скрывать
   | { type: 'exercise'; id: string; title: string; prompt: string; hints: string[]; line: number }
   | { type: 'quiz'; id: string; question: string; options: QuizOption[]; explain: string; line: number }
   | { type: 'component'; name: string; attrs: Record<string, string>; body: string | null; line: number };
 
 /** Компоненты, которые можно писать в уроке (кроме Demo/Exercise/Quiz). Схемы — из справочника. */
-export const TEXT_COMPONENTS = new Set(['Note', 'Mistake']);
+export const TEXT_COMPONENTS = new Set(['Note', 'Mistake', 'After']);
 export const DIAGRAMS = new Set(['AxisDiagram', 'BroadcastDiagram', 'GroupbyDiagram', 'MeltPivotDiagram', 'StackUnstackDiagram', 'MergeDiagram']);
 
 const SELF_RE = /^<([A-Z]\w*)((?:\s+\w+="[^"]*")*)\s*\/>\s*$/;
@@ -233,7 +233,7 @@ export function parseLessonMdx(text: string): Parsed<Block[]> {
     }
     if (name === 'Demo') {
       if (inner) problems.push(`строка ${at}: <Demo id="…" /> пишется без содержимого`);
-      blocks.push({ type: 'demo', id: attrs.id ?? '', title: attrs.title ?? '', line: at });
+      blocks.push({ type: 'demo', id: attrs.id ?? '', title: attrs.title ?? '', gate: attrs.gate ?? null, line: at });
     } else if (name === 'Exercise') {
       const [hints, prompt] = extract(inner ?? [], 'Hint');
       blocks.push({ type: 'exercise', id: attrs.id ?? '', title: attrs.title ?? '', prompt: trimBlock(prompt), hints, line: at });
@@ -256,6 +256,30 @@ export function parseLessonMdx(text: string): Parsed<Block[]> {
   if (!fence) flushText();
   else problems.push('незакрытый блок кода ```');
   return { value: blocks, problems };
+}
+
+// ─── Скрытие ответа до решения упражнения ────────────────────────────────────
+
+export interface GateOwner {
+  id: string;
+  title: string;
+}
+
+/**
+ * Упражнения, до решения которых скрыт сохранённый вывод демонстраций (docs/COURSES_PLAN.md, «Ячейки и
+ * состояние»): демонстрация в разделе упражнения — после него и до ближайшего заголовка `#`/`##` или следующего
+ * упражнения. Не скрываются демонстрации [raises] (показ ошибки, а не ответа) и помеченные gate="off".
+ * Возвращает id демонстрации → её упражнение.
+ */
+export function demoGates(blocks: Block[], raises: (demoId: string) => boolean): Map<string, GateOwner> {
+  const gates = new Map<string, GateOwner>();
+  let owner: GateOwner | null = null;
+  for (const b of blocks) {
+    if (b.type === 'exercise') owner = { id: b.id, title: b.title };
+    else if (b.type === 'text' && /^#{1,2}\s/m.test(b.text)) owner = null;
+    else if (b.type === 'demo' && owner && b.gate !== 'off' && !raises(b.id)) gates.set(b.id, owner);
+  }
+  return gates;
 }
 
 // ─── Сохранённый вывод (output.json — пишет валидатор) ───────────────────────

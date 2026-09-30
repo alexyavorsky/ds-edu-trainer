@@ -1,0 +1,21 @@
+---
+/**
+ * Текст с ответом упражнения: `<After id="упражнение">…</After>` — скрыт до решения упражнения, как вывод
+ * демонстраций (data-gate, docs/COURSES_PLAN.md, «Ячейки и состояние»). Без JS виден.
+ */
+import { exerciseBlock, findLesson } from '../../lib/courses/site';
+import GatePlaque from './GatePlaque.astro';
+
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+const { lesson } = findLesson(Astro.locals.lesson!);
+const exercise = exerciseBlock(lesson, id);
+if (!exercise) throw new Error(`${lesson.meta.id}: <After id="${id}"> — нет такого упражнения`);
+---
+
+<div class="after" data-gate={id}>
+  <div class="after-body"><slot /></div>
+  <GatePlaque text={`Пояснение с ответом появится, когда решите упражнение «${exercise.title}».`} />
+</div>

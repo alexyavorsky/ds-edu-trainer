@@ -10,9 +10,10 @@
  *   ученик что-то написал, проверяется; не решённое (или пропущенное) заменяется эталонным решением —
  *   следующие ячейки не ломаются, а код ученика остаётся в редакторе.
  * - Код упражнений сохраняется в localStorage, изменённый код демонстраций — нет.
- * - Сохранённый вывод демонстраций ниже первого нерешённого упражнения скрыт за плашкой (renderGate), чтобы
- *   не подсказать ответ; «Показать всё равно» открывает одну ячейку, «Весь вывод урока» — все. Живой вывод
- *   виден всегда, и выполненная ячейка остаётся открытой.
+ * - Ответ упражнения — сохранённый вывод демонстраций его раздела и текст <After> — скрыт плашкой, пока
+ *   упражнение не решено (data-gate). Начальное состояние и кнопки плашек — встроенный скрипт страницы;
+ *   здесь — открытие при решении и отметке «Урок пройден» (renderGate). Живой вывод виден всегда, и выполненная
+ *   ячейка остаётся открытой до перезагрузки страницы.
  * Код выполняется только по нажатию — никогда из ссылки или параметров URL.
  */
 import { python, type RunEnd } from '../../lib/python/client';
@@ -559,29 +560,21 @@ class Lesson {
     this.initGate();
   }
 
-  // ─── Скрытие сохранённого вывода ниже нерешённого упражнения ───
-
-  private gated(): HTMLElement[] {
-    return [...document.querySelectorAll<HTMLElement>('.cell-demo[data-gated]')];
-  }
+  // ─── Скрытие ответа до решения упражнения ───
 
   private initGate(): void {
-    for (const root of this.gated()) {
-      root.querySelector('[data-gate-show]')?.addEventListener('click', () => root.classList.add('is-open'));
-      root.querySelector('[data-gate-all]')?.addEventListener('click', () => this.gated().forEach((r) => r.classList.add('is-open')));
-    }
     this.renderGate();
     document.addEventListener(progress.COURSE_EVENT, () => this.renderGate());
     window.addEventListener('storage', (e) => e.key === progress.STORE_KEY && this.renderGate());
   }
 
-  /** Вывод демонстрации открыт, если решены все упражнения выше неё (отметки в localStorage). */
+  /** Скрытое открыто, если «его» упражнение решено или урок отмечен пройденным (в том числе вручную). */
   private renderGate(): void {
-    let unsolved = false;
-    for (const cell of this.data.cells) {
-      if (cell.kind === 'exercise') unsolved ||= !progress.isSolved(this.id, cell.id);
-      else document.querySelector(`[data-cell="${cell.id}"][data-gated]`)?.classList.toggle('is-unlocked', !unsolved);
-    }
+    const exercises = this.data.cells.filter((c) => c.kind === 'exercise').map((c) => c.id);
+    const done = progress.isDone(this.id, exercises);
+    document.querySelectorAll<HTMLElement>('[data-gate]').forEach((el) => {
+      el.classList.toggle('is-unlocked', done || progress.isSolved(this.id, el.dataset.gate!));
+    });
   }
 
   /** Код всех упражнений урока: id ячейки → текст из редактора. */

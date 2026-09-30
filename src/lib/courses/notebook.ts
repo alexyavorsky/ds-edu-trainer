@@ -93,6 +93,7 @@ function setupCell(course: CourseSource, lesson: LessonSource, root: string): st
 
 function componentMarkdown(block: Extract<Block, { type: 'component' }>, siteUrl: string | null, lessonPath: string): string {
   if (block.name === 'Mistake') return quote(`**Типичная ошибка: ${block.attrs.title ?? ''}.**\n\n${block.body ?? ''}`);
+  if (block.name === 'After') return `*После решения упражнения выше:* ${block.body ?? ''}`;
   if (block.name === 'Note') return quote(`${block.attrs.title ? `**${block.attrs.title}.** ` : ''}${block.body ?? ''}`);
   return siteUrl ? `*Схема — в уроке на сайте: ${siteUrl}${lessonPath}*` : '*Схема — в уроке на сайте.*';
 }
