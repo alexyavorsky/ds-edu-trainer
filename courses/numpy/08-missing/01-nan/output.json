@@ -1,0 +1,60 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "what": {
+      "lines": [
+        "[ 4. nan  7.]",
+        "float64",
+        "[ 5. nan  8.]",
+        "nan nan"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "nan-eq": {
+      "lines": [
+        "False",
+        "[False False False]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "isnan": {
+      "lines": [
+        "[False  True False]",
+        "1",
+        "[4. 7.]",
+        "5.5"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "nan-funcs": {
+      "lines": [
+        "5.5 11.0",
+        "7.0 4.0"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "nan-axis": {
+      "lines": [
+        "[nan nan]",
+        "[2. 6.]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "int-nan": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: cannot convert float NaN to integer"
+    }
+  }
+}

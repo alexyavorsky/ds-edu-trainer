@@ -1,0 +1,96 @@
+---
+/**
+ * Упражнение: `<Exercise id="…" title="…">условие <Hint>…</Hint></Exercise>`. Заготовка, эталон и проверки —
+ * в lesson.py. «Проверить» выполняет код ученика в сеансе урока и запускает тесты на его состоянии.
+ * Код сохраняется в localStorage, подсказки открываются по одной.
+ */
+import { Code } from 'astro:components';
+import { cellOf, findLesson } from '../../lib/courses/site';
+import Icon from '../Icon.astro';
+
+interface Props {
+  id: string;
+  title: string;
+}
+const { id, title } = Astro.props;
+const { lesson } = findLesson(Astro.locals.lesson!);
+const cell = cellOf(lesson, id);
+if (cell.kind !== 'exercise') throw new Error(`${lesson.meta.id}: <Exercise id="${id}"> — ячейка не упражнение`);
+const number = lesson.blocks.filter((b) => b.type === 'exercise').findIndex((b) => b.type === 'exercise' && b.id === id) + 1;
+const block = lesson.blocks.find((b) => b.type === 'exercise' && b.id === id);
+const hints = block?.type === 'exercise' ? block.hints.length : 0;
+---
+
+<section class="cell cell-exercise" data-cell={id} aria-label={`Упражнение ${number}: ${title}`}>
+  <header class="cell-head ex-head">
+    <span class="count" data-count title="Номер выполнения в этом сеансе">[ ]</span>
+    <span class="ex-label">Упражнение {number}</span>
+    <span class="cell-title">{title}</span>
+    <span class="solved-mark" data-solved-mark><Icon name="check" size={14} /> решено</span>
+  </header>
+  <div class="ex-prompt"><slot /></div>
+
+  <div class="ex-notice" data-starter-changed hidden>
+    <p>Заготовка упражнения обновилась с тех пор, как вы сохранили свой код.</p>
+    <div class="ex-row">
+      <button type="button" class="btn small" data-keep-mine>Оставить мой код</button>
+      <button type="button" class="btn btn-ghost small" data-take-new>Взять новую заготовку</button>
+    </div>
+  </div>
+  <div class="ex-notice is-danger" data-reset-confirm hidden>
+    <p>Вернуть заготовку? Ваш код в этом упражнении будет удалён.</p>
+    <div class="ex-row">
+      <button type="button" class="btn small danger" data-reset-yes>Вернуть заготовку</button>
+      <button type="button" class="btn btn-ghost small" data-reset-no>Отмена</button>
+    </div>
+  </div>
+
+  <div class="ex-editor" data-editor>
+    <div class="placeholder" data-editor-placeholder>
+      <Code code={cell.starter} lang="python" theme="vitesse-dark" />
+    </div>
+  </div>
+
+  <div class="ex-row ex-actions">
+    <button type="button" class="btn btn-primary check" data-check>
+      <span class="spinner" aria-hidden="true"></span>
+      <Icon name="play" />
+      <span data-check-label>Проверить</span>
+      <kbd class="shortcut" data-shortcut>Ctrl+Enter</kbd>
+    </button>
+    {
+      hints > 0 && (
+        <button type="button" class="btn small" data-hint-next>
+          <Icon name="bulb" />
+          <span data-hint-label>Подсказка</span>
+          <span class="counter" data-hint-counter>0 / {hints}</span>
+        </button>
+      )
+    }
+    <button type="button" class="btn btn-ghost small" data-solution-toggle aria-expanded="false">
+      <Icon name="eye" />
+      <span data-solution-label>Решение</span>
+    </button>
+    <span class="ex-spacer"></span>
+    <button type="button" class="btn btn-ghost small icon" data-above title="Выполнить все ячейки выше" aria-label="Выполнить все ячейки выше">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V7"/><path d="m6 11 6-6 6 6"/><path d="M5 3h14"/></svg>
+    </button>
+    <button type="button" class="btn btn-ghost small icon" data-reset title="Вернуть заготовку" aria-label="Вернуть заготовку">
+      <Icon name="reset" />
+    </button>
+  </div>
+  <p class="ex-status" data-status aria-live="polite"></p>
+
+  <div class="ex-results" data-results hidden>
+    <p class="summary" data-summary></p>
+    <ul class="tests" data-tests></ul>
+  </div>
+  <div class="cell-live" data-live hidden></div>
+  <p class="ex-note" data-substituted hidden>
+    Упражнение пока не решено, поэтому для ячеек ниже выполнено эталонное решение — ваш код не изменён.
+  </p>
+  <div class="ex-solution" data-solution hidden>
+    <span class="out-label">Эталонное решение</span>
+    <Code code={cell.solution} lang="python" theme="vitesse-dark" />
+  </div>
+</section>

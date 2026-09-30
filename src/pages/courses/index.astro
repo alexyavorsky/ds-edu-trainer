@@ -1,0 +1,138 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { courseLessons } from '../../lib/courses/load';
+import { getCourses } from '../../lib/courses/site';
+import { lessonsLabel, modulesLabel } from '../../lib/labels';
+
+const courses = getCourses().map((course) => {
+  const lessons = courseLessons(course);
+  return {
+    course,
+    lessons,
+    progress: lessons.map((l) => `${l.meta.id}:${l.cells.filter((c) => c.kind === 'exercise').map((c) => c.id).join(',')}`).join(';'),
+  };
+});
+---
+
+<BaseLayout title="Курсы" description="Интерактивные курсы NumPy и pandas с нуля: объяснение, код и упражнения прямо в браузере.">
+  <section class="hero">
+    <p class="eyebrow">Курсы</p>
+    <h1>Учиться с нуля</h1>
+    <p class="lead">
+      Курс ведёт по шагам: одно новое понятие — короткое объяснение, код, который можно выполнить и изменить, и упражнение с
+      проверкой. Нужен только базовый Python; всё выполняется в браузере.
+    </p>
+    <p class="roles">
+      <span><b>Курс</b> — учит по порядку.</span>
+      <span><a href="/reference">Справочник</a> — чтобы быстро вспомнить.</span>
+      <span><a href="/">Задачи</a> — самостоятельная практика.</span>
+    </p>
+  </section>
+
+  <div class="grid">
+    {
+      courses.map(({ course, lessons, progress }) => (
+        <a href={`/courses/${course.slug}`} class="course card">
+          <h2>{course.meta.title}</h2>
+          <p class="desc">{course.meta.summary}</p>
+          <p class="stats">
+            {modulesLabel(course.modules.length)} · {lessonsLabel(lessons.length)}
+          </p>
+          <div class="progress" data-course-progress data-lessons={progress}>
+            <div class="track" aria-hidden="true"><div class="bar" data-progress-bar></div></div>
+            <span class="label">
+              <span data-progress-count>0</span> из {lessons.length}
+            </span>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .hero {
+    margin-bottom: 32px;
+  }
+  .hero h1 {
+    margin-top: 8px;
+    font-size: clamp(30px, 6vw, 42px);
+    letter-spacing: -0.03em;
+  }
+  .lead {
+    max-width: 640px;
+    margin: 12px 0 0;
+    font-size: 16.5px;
+    color: var(--text-2);
+  }
+  .roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin: 14px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .roles b {
+    color: var(--text);
+    font-weight: 500;
+  }
+  .roles a {
+    color: var(--accent-strong);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+  }
+  .course {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    transition: border-color 0.15s;
+  }
+  .course:hover {
+    border-color: var(--border-strong);
+  }
+  .course h2 {
+    font-size: 22px;
+  }
+  .desc {
+    margin: 0;
+    color: var(--text-2);
+    font-size: 14.5px;
+  }
+  .stats {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 8px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .track {
+    flex: 1;
+    height: 4px;
+    border-radius: 99px;
+    background: var(--surface-3);
+    overflow: hidden;
+  }
+  .bar {
+    width: 0;
+    height: 100%;
+    background: var(--easy);
+  }
+</style>
+
+<script>
+  import { watchCourseProgress } from '../../scripts/course/progress';
+
+  watchCourseProgress();
+</script>

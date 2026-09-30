@@ -25,3 +25,16 @@ export function bugsLabel(n: number): string {
 export function tasksLabel(n: number): string {
   return `${n} ${pluralRu(n, 'задача', 'задачи', 'задач')}`;
 }
+
+export function modulesLabel(n: number): string {
+  return `${n} ${pluralRu(n, 'модуль', 'модуля', 'модулей')}`;
+}
+
+export function lessonsLabel(n: number): string {
+  return `${n} ${pluralRu(n, 'урок', 'урока', 'уроков')}`;
+}
+
+/** Длительность курса: «≈ 40 мин», «≈ 12 ч». */
+export function durationLabel(minutes: number): string {
+  return minutes < 90 ? `≈ ${minutes} мин` : `≈ ${Math.round(minutes / 60)} ч`;
+}

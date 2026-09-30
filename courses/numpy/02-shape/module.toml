@@ -1,0 +1,8 @@
+title = "Создание и форма"
+summary = "Как создать массив нужного размера без списков, что такое двумерный массив, форма и тип данных, как загрузить числа из файла."
+outcomes = [
+  "создавать массивы нужного размера: <code>zeros</code>, <code>ones</code>, <code>full</code>, <code>arange</code>, <code>linspace</code>",
+  "понимать форму двумерного массива: <code>shape</code>, <code>ndim</code>, <code>size</code>",
+  "знать тип элементов и менять его: <code>dtype</code>, <code>astype</code>",
+  "загружать числа из CSV-файла и сохранять результат: <code>np.loadtxt</code>, <code>np.savetxt</code>",
+]

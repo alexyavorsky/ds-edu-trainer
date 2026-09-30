@@ -1,0 +1,45 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "rng": {
+      "lines": [
+        "[9 7 6 3 4]",
+        "[0.01652764 0.81327024 0.91275558]",
+        "[[ 4 50 60 97]",
+        " [72 63 54 55]]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "seed": {
+      "lines": [
+        "[45 99 99 38 95]",
+        "[45 99 99 38 95]",
+        "True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "events": {
+      "lines": [
+        "10 0.2",
+        "100 0.3",
+        "10000 0.2987"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "choice": {
+      "lines": [
+        "['орёл' 'орёл' 'решка' 'орёл' 'решка' 'решка']",
+        "[ 2  1  5  4 10]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

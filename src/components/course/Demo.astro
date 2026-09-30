@@ -1,0 +1,48 @@
+---
+/**
+ * Демонстрация: `<Demo id="…" title="…" />` — ячейка из lesson.py. Код можно выполнить, изменить и вернуть;
+ * до запуска виден сохранённый вывод. Изменённый код не сохраняется. Выполняется в сеансе урока.
+ */
+import { Code } from 'astro:components';
+import { cellOf, findLesson, storedOutput } from '../../lib/courses/site';
+import Icon from '../Icon.astro';
+import CellOutput from './CellOutput.astro';
+
+interface Props {
+  id: string;
+  title?: string;
+}
+const { id, title } = Astro.props;
+const { lesson } = findLesson(Astro.locals.lesson!);
+const cell = cellOf(lesson, id);
+if (cell.kind !== 'demo') throw new Error(`${lesson.meta.id}: <Demo id="${id}"> — ячейка не демонстрация`);
+const output = storedOutput(lesson, id);
+const raises = cell.flags.raises;
+---
+
+<figure class="cell cell-demo" data-cell={id}>
+  <figcaption class="cell-head">
+    <span class="count" data-count title="Номер выполнения в этом сеансе">[ ]</span>
+    <span class="cell-title">{title ?? 'Код'}</span>
+    {raises && <span class="tag">ошибка: {raises}</span>}
+    <span class="tools">
+      <button type="button" class="btn btn-ghost cbtn" data-above title="Выполнить все ячейки выше" aria-label="Выполнить все ячейки выше">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V7"/><path d="m6 11 6-6 6 6"/><path d="M5 3h14"/></svg>
+      </button>
+      <button type="button" class="btn btn-ghost cbtn" data-edit title="Изменить код и выполнить свой вариант">
+        <Icon name="edit" />
+        <span class="text" data-edit-label>Изменить</span>
+      </button>
+      <button type="button" class="btn btn-ghost cbtn run" data-run title="Выполнить ячейку">
+        <span class="spinner" aria-hidden="true"></span>
+        <Icon name="play" />
+        <span class="text">Выполнить</span>
+      </button>
+    </span>
+  </figcaption>
+  <div class="cell-code" data-code>
+    <Code code={cell.code} lang="python" theme="vitesse-dark" />
+  </div>
+  {output && <CellOutput output={output} />}
+  <div class="cell-live" data-live hidden></div>
+</figure>

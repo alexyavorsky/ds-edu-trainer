@@ -1,6 +1,7 @@
 # Архитектура
 
-Личный тренажёр задач по книгам и темам + справочник. Статический сайт (Astro → Vercel), бэкенда нет.
+Личный тренажёр задач по книгам и темам + справочник + интерактивные курсы. Статический сайт (Astro → Vercel),
+бэкенда нет.
 
 ## Принцип
 
@@ -263,3 +264,30 @@ src/scripts/python/  editor.ts (CodeMirror 6, отдельный чанк), task
 справочника выполняются тем же ядром; что в браузере работает иначе, записано в `reference/browser.json`:
 `differs` — вывод или график отличается (пометка «в браузере pandas X.Y…»), `unavailable` — не работает (кнопка
 неактивна, причина под примером). Расхождение с файлом — ошибка; обновить: `--update`.
+
+## Курсы
+
+Интерактивные курсы NumPy и pandas: урок — ноутбук из ячеек текста, кода, упражнений и вопросов, одно
+пространство имён Python на урок. Программа, формат, устройство состояния и проверка — [COURSES_PLAN.md](COURSES_PLAN.md).
+
+```
+courses/<курс>/course.toml, NN-<модуль>/module.toml, NN-<модуль>/NN-<урок>/{lesson.mdx, lesson.py, output.json}
+courses/data/            наборы данных (generate.py, README.md — лицензия CC0)
+courses/prelude.py       настройки отображения для сеанса урока
+src/lib/courses/         format.ts (разбор lesson.py и lesson.mdx), load.ts (курсы с диска), site.ts (для страниц),
+                         notebook.ts (экспорт .ipynb)
+src/components/course/   Demo, Exercise, Hint, Quiz, Explain, Note, Mistake, CellOutput, CourseSidebar
+src/scripts/course/      lesson.ts (ячейки и состояние урока), progress.ts (прогресс в localStorage)
+src/pages/courses/       /courses · /courses/<курс> · /courses/<курс>/<урок> (+ .ipynb) · /courses/data/<файл>
+runtime/lesson_exec.py   сеанс урока: ячейки как в Jupyter, проверка упражнения раннером задач — общий для
+                         браузера и валидатора
+```
+
+- В воркере урок — запросы `kind: 'lesson'` (`prepare` · `cell` · `check` · `quiz`) с id сеанса: новый id —
+  новое пространство имён. `python.generation` растёт с каждым новым воркером — по нему урок узнаёт, что
+  состояние потеряно (таймаут, падение, нехватка памяти).
+- Файлы данных урока воркер берёт один раз (`fetch` с `/courses/data/…`, в Node.js — с диска) и копирует
+  в `data/` каждого сеанса.
+- Проверка — `node scripts/validate_courses.ts [--update] [--strict]` (Pyodide через `scripts/node-python.ts`
+  и CPython через `scripts/course_cpython.py`), в CI — задание «Курсы»; в трёх браузерах уроки с эталонами
+  выполняет `scripts/validate_browsers.ts`.

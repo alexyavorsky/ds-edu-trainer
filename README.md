@@ -2,8 +2,9 @@
 
 Личный сайт для повторения материала: задачи строго по главам книги. Решать можно прямо на сайте — Python
 выполняется в браузере (Pyodide), — или в своём редакторе: файл с тестами копируется одной кнопкой.
-Сейчас есть «Грокаем алгоритмы» (1-е издание): 10 глав, 80 задач, и справочник по NumPy 2.5 и pandas 3.0:
-99 статей, 744 проверенных примера. Задачи по NumPy и pandas — «скоро».
+Сейчас есть «Грокаем алгоритмы» (1-е издание): 10 глав, 80 задач, справочник по NumPy 2.5 и pandas 3.0:
+99 статей, 744 проверенных примера, и курсы с нуля — уроки-ноутбуки с упражнениями: NumPy (10 модулей,
+43 урока) и pandas (пишется; программа — [docs/COURSES_PLAN.md](docs/COURSES_PLAN.md)). Задачи по NumPy и pandas — «скоро».
 
 ## Быстрый старт
 
@@ -29,6 +30,14 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 2. Создайте `<slug>.mdx` по образцу `reference/numpy/broadcasting.mdx` и `<slug>.py` с ячейками `# %% id`.
 3. Запустите `validate_reference.py <тема>/<slug> --update` — вывод впишется в `.py`, на сайте он появится сам.
 
+## Как добавить урок курса
+
+1. Создайте папку `courses/<курс>/<NN-модуль>/<NN-урок>/` с `lesson.mdx` (текст и места ячеек) и `lesson.py`
+   (код ячеек) по образцу `courses/numpy/01-start/02-first-array/`. Формат — [docs/COURSES_PLAN.md](docs/COURSES_PLAN.md).
+2. Запустите `node scripts/validate_courses.ts <id урока> --update` — урок выполнится в Pyodide и CPython,
+   сохранённый вывод запишется в `output.json`.
+3. Всё — урок появится в программе курса. Удалили папку — урок исчез.
+
 ## Как добавить задачу
 
 1. Создайте папку `challenges/<книга>/<NN-глава>/<slug>/` с файлами:
@@ -52,6 +61,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 | `.venv/bin/python scripts/validate_reference.py --strict` | справочник: структура, ссылки, все примеры выполняются и дают показанный вывод и графики; замеры времени выполняются, но числа не сравниваются |
 | `node scripts/validate_pyodide.ts` | то же в Python для браузера (Pyodide в Node.js): эталоны проходят, заготовки — нет; примеры справочника сверяются с `reference/browser.json` (`--update` — обновить) |
 | `node scripts/validate_browsers.ts` | эталоны в Chromium, Firefox и WebKit (Playwright, после `npm run build`) и пробы глубины рекурсии: в Safari стек меньше всего |
+| `node scripts/validate_courses.ts` | курсы: структура, понятия по порядку, каждый урок целиком с эталонами, заготовками, другими решениями и ошибками — в Pyodide и CPython; сохранённый вывод совпадает (`--update` — записать); ноутбук .ipynb выполняется |
 | `npm run check` | типы TypeScript / Astro |
 
 ## Деплой

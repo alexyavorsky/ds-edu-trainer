@@ -1,0 +1,298 @@
+---
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { courseLessons, lessonUrl } from '../../../lib/courses/load';
+import { getCourses } from '../../../lib/courses/site';
+import { durationLabel, lessonsLabel, modulesLabel } from '../../../lib/labels';
+
+export function getStaticPaths() {
+  return getCourses().map((course) => ({ params: { course: course.slug }, props: { course } }));
+}
+
+const { course } = Astro.props;
+const lessons = courseLessons(course);
+const exercisesOf = (l: (typeof lessons)[number]) => l.cells.filter((c) => c.kind === 'exercise').map((c) => c.id).join(',');
+const minutes = lessons.reduce((sum, l) => sum + l.meta.minutes, 0);
+const first = lessons[0];
+---
+
+<BaseLayout title={`Курс ${course.meta.title}`} description={course.meta.summary}>
+  <Breadcrumbs items={[{ label: 'Курсы', href: '/courses' }, { label: course.meta.title }]} />
+  <section class="hero">
+    <p class="eyebrow">Курс с нуля</p>
+    <h1>{course.meta.title}</h1>
+    <p class="lead">{course.meta.summary}</p>
+    <div class="facts">
+      <span>{modulesLabel(course.modules.length)}</span>
+      <span>{lessonsLabel(lessons.length)}</span>
+      <span>{durationLabel(minutes)}</span>
+    </div>
+    <div class="progress" data-course-progress data-lessons={lessons.map((l) => `${l.meta.id}:${exercisesOf(l)}`).join(';')}>
+      <div class="track" aria-hidden="true"><div class="bar" data-progress-bar></div></div>
+      <span class="label">пройдено <span data-progress-count>0</span> из {lessons.length}</span>
+    </div>
+    {
+      first && (
+        <a class="btn btn-primary start" href={lessonUrl(first)} data-continue data-course={course.slug}>
+          <span data-continue-label>Начать курс</span>
+        </a>
+      )
+    }
+  </section>
+
+  <section class="about">
+    <div class="card">
+      <h2 class="section-title">Для кого</h2>
+      <p>{course.meta.audience}</p>
+    </div>
+    <div class="card">
+      <h2 class="section-title">Что нужно знать</h2>
+      <ul>
+        {course.meta.prerequisites.map((p) => <li set:html={p} />)}
+      </ul>
+    </div>
+    <div class="card">
+      <h2 class="section-title">Как устроены уроки</h2>
+      <p>
+        Урок — это ноутбук: короткое объяснение, код, который можно выполнить и изменить, упражнения с проверкой и вопросы.
+        Python работает прямо в браузере; урок можно скачать как .ipynb для Jupyter или Colab.
+      </p>
+    </div>
+  </section>
+
+  <section class="program">
+    <h2 class="section-title">Программа</h2>
+    {
+      course.modules.map((m) => (
+        <article class="module card">
+          <header>
+            <span class="num">Модуль {m.number}</span>
+            <h3>{m.meta.title}</h3>
+            <p class="muted">{m.meta.summary}</p>
+          </header>
+          <ol class="lessons">
+            {m.lessons.map((l) => (
+              <li>
+                <a href={lessonUrl(l)} data-lesson-mark={l.meta.id} data-exercises={exercisesOf(l)} data-title={l.meta.title} class:list={[l.meta.kind === 'project' && 'is-project']}>
+                  <span class="mark" aria-hidden="true" />
+                  <span class="title">
+                    {l.meta.kind === 'project' && <span class="tag">мини-проект</span>}
+                    {l.meta.optional && <span class="tag">дополнительно</span>}
+                    {l.meta.title}
+                    <span class="line">{l.meta.summary}</span>
+                  </span>
+                  <span class="min">{l.meta.minutes} мин</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+          {m.meta.outcomes.length > 0 && (
+            <div class="outcomes">
+              <span class="label">После модуля вы умеете</span>
+              <ul>
+                {m.meta.outcomes.map((o) => (
+                  <li set:html={o} />
+                ))}
+              </ul>
+            </div>
+          )}
+        </article>
+      ))
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    margin: 8px 0 32px;
+  }
+  .hero h1 {
+    margin-top: 8px;
+    font-size: clamp(30px, 6vw, 42px);
+    letter-spacing: -0.03em;
+  }
+  .lead {
+    max-width: 640px;
+    margin: 12px 0 0;
+    font-size: 16.5px;
+    color: var(--text-2);
+  }
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin-top: 14px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 420px;
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .track {
+    flex: 1;
+    height: 5px;
+    border-radius: 99px;
+    background: var(--surface-3);
+    overflow: hidden;
+  }
+  .bar {
+    width: 0;
+    height: 100%;
+    border-radius: 99px;
+    background: var(--easy);
+    transition: width 0.3s;
+  }
+  .start {
+    margin-top: 20px;
+    height: 40px;
+    padding: 0 18px;
+  }
+  .about {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .about .card {
+    padding: 16px 18px;
+  }
+  .about p,
+  .about ul {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--text-2);
+  }
+  .about ul {
+    padding-left: 18px;
+  }
+  .about li + li {
+    margin-top: 4px;
+  }
+  .about :global(a) {
+    color: var(--accent-strong);
+  }
+  .module {
+    margin-bottom: 14px;
+    padding: 18px 18px 14px;
+  }
+  .num {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+  .module h3 {
+    margin-top: 4px;
+    font-size: 19px;
+  }
+  .module header p {
+    margin: 6px 0 0;
+    font-size: 14px;
+  }
+  .lessons {
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
+  }
+  .lessons a {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 9px 8px;
+    border-radius: var(--radius-xs);
+  }
+  .lessons a:hover {
+    background: var(--surface-2);
+  }
+  .lessons .title {
+    flex: 1;
+    min-width: 0;
+    font-weight: 500;
+  }
+  .lessons .line {
+    display: block;
+    font-weight: 400;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .lessons .tag {
+    margin-right: 8px;
+    padding: 1px 7px;
+    border-radius: 5px;
+    background: var(--medium-soft);
+    color: var(--medium);
+    font-size: 11.5px;
+    font-weight: 500;
+  }
+  .min {
+    flex: none;
+    font-size: 12.5px;
+    color: var(--faint);
+  }
+  .mark {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    margin-top: 4px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 50%;
+  }
+  .is-project .mark {
+    border-radius: 4px;
+  }
+  a:global(.is-done) .mark {
+    border-color: var(--easy);
+    background: var(--easy) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2308090a' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 10px no-repeat;
+  }
+  .outcomes {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: var(--radius-xs);
+    background: var(--surface-2);
+  }
+  .outcomes .label {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .outcomes ul {
+    margin: 6px 0 0;
+    padding-left: 18px;
+    font-size: 14px;
+    color: var(--text-2);
+  }
+  .outcomes :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    color: var(--text);
+  }
+  @media (max-width: 560px) {
+    .min {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { getLast, watchCourseProgress } from '../../../scripts/course/progress';
+
+  watchCourseProgress();
+  const button = document.querySelector<HTMLAnchorElement>('[data-continue]');
+  const last = button && getLast(button.dataset.course!);
+  if (button && last) {
+    const link = document.querySelector<HTMLAnchorElement>(`[data-lesson-mark="${last}"]`);
+    if (link) {
+      button.href = link.href;
+      button.querySelector('[data-continue-label]')!.textContent = `Продолжить: ${link.dataset.title}`;
+    }
+  }
+</script>

@@ -15,8 +15,16 @@ const read = (path: string) => readFileSync(join(root, path), 'utf-8');
 
 const engine = new Engine({
   loadPyodide: (options) => loadPyodide({ ...options, packageCacheDir: process.env.PYODIDE_CACHE || undefined }),
-  modules: { pyodide_driver: read('runtime/pyodide_driver.py'), reference_exec: read('runtime/reference_exec.py') },
+  modules: {
+    pyodide_driver: read('runtime/pyodide_driver.py'),
+    reference_exec: read('runtime/reference_exec.py'),
+    lesson_exec: read('runtime/lesson_exec.py'),
+    runner: read('runtime/runner.py'),
+  },
   prelude: read('reference/prelude.py'),
+  coursePrelude: read('courses/prelude.py'),
+  // «/courses/data/x.csv» → courses/data/x.csv
+  fetchFile: async (url) => new Uint8Array(readFileSync(join(root, url.replace(/^\//, '')))),
   maxLines: PYTHON_CONFIG.maxLines,
   maxChars: PYTHON_CONFIG.maxChars,
   memoryLimitMB: PYTHON_CONFIG.memoryLimitMB,

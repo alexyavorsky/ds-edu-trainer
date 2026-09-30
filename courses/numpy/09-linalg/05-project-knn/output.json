@@ -1,0 +1,52 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "data": {
+      "lines": [
+        "(8, 6) (5,)",
+        "['эспрессо' 'капучино' 'латте' 'раф' 'чай']"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "recommend": {
+      "lines": [
+        "[1.7 2.3 4.7 4.7 3.3 4.7]",
+        "[3.2 3.4 3.4 3.  3.  2.9]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "days": {
+      "lines": [
+        "(12, 3) (12,)"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "naive-days": {
+      "lines": [
+        "[[18  1  0]",
+        " [16  1  0]",
+        " [19  0  0]",
+        " [15  0  1]]",
+        "[260 265 155 200]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "summary": {
+      "lines": [
+        "соседи без нормализации: 2 выходных из 4 → 220.0 чашек",
+        "соседи после нормализации: 0 выходных из 4 → 147.5 чашек"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

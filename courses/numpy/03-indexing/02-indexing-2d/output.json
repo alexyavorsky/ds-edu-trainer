@@ -1,0 +1,47 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "load": {
+      "lines": [
+        "(365, 4)"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "cell": {
+      "lines": [
+        "-3.2",
+        "-7.1"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "row-col": {
+      "lines": [
+        "[ 2.  -9.7 -3.2  0. ]",
+        "(365,) 27.2"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "block": {
+      "lines": [
+        "(7, 2)"
+      ],
+      "result": [
+        "array([[ -9.9,  -3.2],",
+        "       [ -9.7,  -3.2],",
+        "       [ -9. ,  -3.7],",
+        "       [-14.2,  -7.2],",
+        "       [-12.6,  -7.2],",
+        "       [-12.4,  -7.8],",
+        "       [-12.8,  -8. ]])"
+      ],
+      "html": null,
+      "error": null
+    }
+  }
+}

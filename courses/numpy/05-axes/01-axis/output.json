@@ -1,0 +1,32 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "sales": {
+      "lines": [
+        "(3, 4)",
+        "1830"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "axis-sums": {
+      "lines": [
+        "[410 415 455 550]",
+        "[575 415 840]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "weeks": {
+      "lines": [
+        "(52,)",
+        "самая холодная неделя: 7 — -6.5 °C"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

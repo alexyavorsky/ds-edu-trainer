@@ -1,0 +1,49 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "normal": {
+      "lines": [
+        "[172.8 176.6 172.6 159.6 177.2 173.6]",
+        "169.6 7.9"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "within": {
+      "lines": [
+        "0.699"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "uniform": {
+      "lines": [
+        "[2.62 2.98 8.14 0.92 6.  ]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "histogram": {
+      "lines": [
+        "[  7 104 401 401  81   5   1]",
+        "[140 150 160 170 180 190 200 210]",
+        "1000"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "bincount": {
+      "lines": [
+        "[  0 109  98  97  93 108  95]",
+        "[109  98  97  93 108  95]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

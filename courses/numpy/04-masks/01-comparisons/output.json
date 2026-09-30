@@ -1,0 +1,55 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "load": {
+      "lines": [
+        "[-4.5 -3.4 -0.9  0.5  4.6  4.2  4.3  2.4]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "mask": {
+      "lines": [
+        "[False False False  True  True  True  True  True]",
+        "(365,) bool"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "two-arrays": {
+      "lines": [
+        "[ True  True  True  True  True]",
+        "True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "count": {
+      "lines": [
+        "259",
+        "0.7095890410958904"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "any-all": {
+      "lines": [
+        "True",
+        "False"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "if-mask": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()"
+    }
+  }
+}

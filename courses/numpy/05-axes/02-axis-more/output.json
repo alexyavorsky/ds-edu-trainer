@@ -1,0 +1,50 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "data": {
+      "lines": [
+        "(3, 12)"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "argmax-axis": {
+      "lines": [
+        "[11  9  7]",
+        "[12 10  8]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "cumsum": {
+      "lines": [
+        "[ 40  82 127 177 225 277 332 390 440 487 547 622]",
+        "622"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "cumsum-axis": {
+      "lines": [
+        "[[  40   82  127  177  225  277  332  390  440  487  547  622]",
+        " [  30   58   91  126  166  204  240  275  314  372  417  472]",
+        " [  70  142  210  285  365  450  540  665  747  826  921 1041]]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "first-true": {
+      "lines": [
+        "[False False False False False False  True  True  True  True  True  True]",
+        "[7 9 5]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

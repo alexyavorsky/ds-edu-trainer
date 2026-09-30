@@ -94,4 +94,21 @@ const reference = defineCollection({
   }),
 });
 
-export const collections = { books, chapters, challenges, topics, reference };
+/** Уроки курсов: текст — lesson.mdx, код ячеек — lesson.py рядом (src/lib/courses). id — из frontmatter. */
+const lessons = defineCollection({
+  loader: glob({ pattern: '*/*/*/lesson.mdx', base: './courses', generateId: ({ data }) => String(data.id) }),
+  schema: z.object({
+    id: z.string().regex(/^[a-z]+-[a-z0-9]+(-[a-z0-9]+)*$/),
+    title: z.string(),
+    summary: z.string(),
+    minutes: z.number().int().min(5).max(30),
+    kind: z.enum(['lesson', 'project']).default('lesson'),
+    optional: z.boolean().default(false), // «дополнительно»: урок можно пропустить, дальше он не нужен
+    introduces: z.array(z.string()).default([]),
+    reference: z.array(articleRef).default([]),
+    data: z.array(z.string()).default([]),
+    packages: z.array(z.string()).default([]),
+  }),
+});
+
+export const collections = { books, chapters, challenges, topics, reference, lessons };

@@ -8,7 +8,7 @@
  * - Код выполняется только по явному запуску пользователя — никогда из ссылки или параметров URL.
  */
 import { PACKAGE_LABEL, PYTHON_CONFIG } from './config.ts';
-import type { ExampleDone, FromWorker, RunInput, RunRequest, TaskDone, TestInfo, TestResult } from './protocol.ts';
+import type { ExampleDone, FromWorker, LessonDone, RunInput, RunRequest, TaskDone, TestInfo, TestResult } from './protocol.ts';
 
 export type EngineState = 'idle' | 'loading' | 'ready' | 'failed';
 
@@ -23,7 +23,7 @@ export interface RunHandlers {
 }
 
 export type RunEnd =
-  | { type: 'done'; data: TaskDone | ExampleDone }
+  | { type: 'done'; data: TaskDone | ExampleDone | LessonDone }
   | { type: 'timeout'; seconds: number; tests: TestInfo[] | null; testIndex: number | null }
   | { type: 'crash'; message: string }
   | { type: 'load-error'; message: string }
@@ -47,6 +47,8 @@ const factor = PYTHON_CONFIG.timeoutFactor;
 class PythonHost {
   state: EngineState = 'idle';
   statusText = '';
+  /** Номер воркера: растёт с каждым новым Python — состояние уроков прошлого воркера потеряно. */
+  generation = 0;
   private worker: Worker | null = null;
   private ready: Promise<void> | null = null;
   private resolveReady?: () => void;
@@ -85,6 +87,7 @@ class PythonHost {
     });
     this.ready.catch(() => {});
     this.setState('loading', 'Загружаем Python…');
+    this.generation++;
     let worker: Worker;
     try {
       worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module', name: 'python' });
@@ -152,7 +155,7 @@ class PythonHost {
       case 'started':
         h.onStatus?.('');
         h.onStarted?.();
-        // до первого теста выполняется код решения вне функций; у примера — единый лимит
+        // до первого теста выполняется код решения вне функций; у примера и ячейки урока — единый лимит
         this.arm(run, run.kind === 'task' ? PYTHON_CONFIG.defaultTestTimeout * factor : PYTHON_CONFIG.exampleTimeout);
         break;
       case 'retried':
@@ -194,6 +197,19 @@ class PythonHost {
         if (message.memory) this.restart(); // WebAssembly не отдаёт память обратно — начинаем с чистого листа
         break;
     }
+  }
+
+  /** Останавливает текущий запуск: воркер завершается, следующий запуск получит новый Python. */
+  stop(): void {
+    const active = this.active;
+    if (!active) return;
+    this.restart();
+    active.finish({ type: 'crash', message: 'остановлено' });
+  }
+
+  /** Идёт ли сейчас запуск. */
+  get busy(): boolean {
+    return this.active !== null;
   }
 
   private arm(run: ActiveRun, seconds: number): void {

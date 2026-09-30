@@ -1,0 +1,7 @@
+title = "Случайные числа"
+summary = "Генератор случайных чисел с seed, распределения и гистограммы, и моделирование: тысячи экспериментов одной операцией вместо цикла."
+outcomes = [
+  "получать воспроизводимые случайные числа: <code>np.random.default_rng(seed)</code>, <code>integers</code>, <code>random</code>, <code>choice</code>",
+  "генерировать данные с нужным распределением и смотреть на них: <code>normal</code>, <code>uniform</code>, <code>np.histogram</code>, <code>np.bincount</code>",
+  "моделировать случайные процессы векторно и оценивать вероятности по доле исходов",
+]

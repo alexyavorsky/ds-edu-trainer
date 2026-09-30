@@ -1,0 +1,15 @@
+---
+/** Типичная ошибка новичка — объясняется там, где она возникает: `<Mistake title="…">текст</Mistake>`. */
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+
+<aside class="callout callout-mistake">
+  <p class="callout-title">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    <span>Типичная ошибка: {title}</span>
+  </p>
+  <div class="callout-body"><slot /></div>
+</aside>

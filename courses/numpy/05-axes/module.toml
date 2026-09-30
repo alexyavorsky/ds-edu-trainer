@@ -1,0 +1,8 @@
+title = "Оси и статистика"
+summary = "Итоги по строкам и по столбцам таблицы, накопленные суммы, медиана и разброс, сортировка и подсчёт уникальных значений."
+outcomes = [
+  "считать итоги по строкам и столбцам: <code>axis=0</code> и <code>axis=1</code> — и не путать их",
+  "находить, где максимум в каждой строке, считать накопленные суммы: <code>argmax(axis=…)</code>, <code>cumsum</code>",
+  "описывать данные: <code>np.median</code>, <code>std</code>, <code>np.percentile</code>, <code>np.round</code>",
+  "сортировать и ранжировать, считать уникальные значения: <code>np.sort</code>, <code>np.argsort</code>, <code>np.unique</code>",
+]

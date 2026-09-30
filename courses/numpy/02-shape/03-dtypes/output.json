@@ -1,0 +1,56 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "kinds": {
+      "lines": [
+        "int32 float64 bool"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "mixed": {
+      "lines": [],
+      "result": [
+        "array([1. , 2.5, 3. ])"
+      ],
+      "html": null,
+      "error": null
+    },
+    "astype": {
+      "lines": [
+        "[ 99 149  20]",
+        "[ 99.9  149.5   20.99]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "dtype-arg": {
+      "lines": [
+        "[0 0 0]",
+        "[1. 2. 3.]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "bools": {
+      "lines": [
+        "3",
+        "0.6"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "overflow": {
+      "lines": [],
+      "result": [
+        "array([-106,  -86], dtype=int8)"
+      ],
+      "html": null,
+      "error": null
+    }
+  }
+}

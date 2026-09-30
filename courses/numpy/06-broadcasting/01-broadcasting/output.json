@@ -1,0 +1,42 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "row": {
+      "lines": [
+        "(3, 4) (4,)"
+      ],
+      "result": [
+        "array([[140,  90,  50, 340],",
+        "       [150,  95,  55, 330],",
+        "       [130, 100,  45, 350]])"
+      ],
+      "html": null,
+      "error": null
+    },
+    "deviation": {
+      "lines": [
+        "(5,)",
+        "[[  0.2 -17.8  -1.   12.3  15. ]",
+        " [  2.2  -0.8  -1.    7.3  21. ]",
+        " [ -6.8  -8.8   3.   -9.7   4. ]]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "mismatch": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: operands could not be broadcast together with shapes (3,4) (3,) "
+    },
+    "weeks": {
+      "lines": [
+        "(52, 7) (7,)"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}
