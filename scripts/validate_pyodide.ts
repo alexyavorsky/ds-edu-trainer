@@ -20,13 +20,13 @@
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { availableParallelism } from 'node:os';
 import { join, relative } from 'node:path';
-import { Worker } from 'node:worker_threads';
 import { parse as parseToml } from 'smol-toml';
 import { bundleFooter } from '../src/lib/bundle.ts';
 import { parseExamples, type ExampleCell } from '../src/lib/examples.ts';
 import { MICROPIP_PACKAGES, PYODIDE_VERSION, PYTHON_CONFIG } from '../src/lib/python/config.ts';
 import { examplePackages } from '../src/lib/python/packages.ts';
-import type { ExampleDone, FromWorker, RunInput, TaskDone, TestInfo, TestResult } from '../src/lib/python/protocol.ts';
+import type { ExampleDone, TaskDone, TestResult } from '../src/lib/python/protocol.ts';
+import { NodePython, pool, type RunEnd } from './node-python.ts';
 
 const root = join(import.meta.dirname, '..');
 const read = (path: string) => readFileSync(path, 'utf-8');
@@ -34,102 +34,6 @@ const dirs = (path: string) =>
   existsSync(path) ? readdirSync(path).filter((n) => !/^[._]/.test(n) && statSync(join(path, n)).isDirectory()).sort() : [];
 const STATUS_PATH = join(root, 'reference', 'browser.json');
 const factor = PYTHON_CONFIG.timeoutFactor;
-
-// ─── Воркер с таймаутами (как src/lib/python/client.ts) ─────────────────────
-
-type RunEnd =
-  | { type: 'done'; data: TaskDone | ExampleDone; tests: TestInfo[] | null; elapsed: number[]; retried: string | null }
-  | { type: 'timeout'; seconds: number; tests: TestInfo[] | null; testIndex: number | null; elapsed: number[] }
-  | { type: 'crash' | 'package-error' | 'load-error'; message: string };
-
-class NodePython {
-  private worker: Worker | null = null;
-  private listener: ((m: FromWorker) => void) | null = null;
-  private nextId = 1;
-
-  private spawn(): Worker {
-    const worker = new Worker(new URL('./pyodide-worker.ts', import.meta.url));
-    worker.on('message', (m: FromWorker) => this.listener?.(m));
-    worker.on('error', (e) => this.listener?.({ type: 'fatal', runId: -1, message: String(e) }));
-    return worker;
-  }
-
-  stop(): void {
-    void this.worker?.terminate();
-    this.worker = null;
-  }
-
-  run(request: RunInput): Promise<RunEnd> {
-    this.worker ??= this.spawn();
-    const id = this.nextId++;
-    return new Promise((resolve) => {
-      let tests: TestInfo[] | null = null;
-      let testIndex: number | null = null;
-      let retried: string | null = null;
-      const elapsed: number[] = [];
-      let timer: ReturnType<typeof setTimeout> | undefined;
-      const finish = (end: RunEnd) => {
-        clearTimeout(timer);
-        this.listener = null;
-        if (end.type !== 'done' || (end.data as { memory?: boolean }).memory) this.stop();
-        resolve(end);
-      };
-      const arm = (seconds: number) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => finish({ type: 'timeout', seconds, tests, testIndex, elapsed }), seconds * 1000);
-      };
-      this.listener = (m) => {
-        if (m.type === 'load-error') return finish({ type: 'load-error', message: m.message });
-        if (m.type === 'fatal' && (m.runId === id || m.runId === -1)) return finish({ type: 'crash', message: m.message });
-        if (!('runId' in m) || m.runId !== id) return;
-        switch (m.type) {
-          case 'package-error':
-            return finish({ type: 'package-error', message: m.message });
-          case 'started':
-            return arm(request.kind === 'task' ? PYTHON_CONFIG.defaultTestTimeout * factor : PYTHON_CONFIG.exampleTimeout);
-          case 'retried':
-            retried = m.name;
-            return;
-          case 'restart':
-            // как на сайте: новый Python и тот же запуск
-            this.stop();
-            this.worker = this.spawn();
-            this.worker.postMessage({ type: 'run', request: { ...request, runId: id } });
-            return;
-          case 'tests':
-            tests = m.tests;
-            return;
-          case 'test-start':
-            testIndex = m.index;
-            return arm((tests?.[m.index]?.timeout ?? PYTHON_CONFIG.defaultTestTimeout) * factor);
-          case 'test':
-            testIndex = null;
-            elapsed[m.index] = m.elapsed;
-            return arm(PYTHON_CONFIG.defaultTestTimeout * factor);
-          case 'done':
-            return finish({ type: 'done', data: m, tests, elapsed, retried });
-        }
-      };
-      this.worker!.postMessage({ type: 'run', request: { ...request, runId: id } });
-    });
-  }
-}
-
-/** Пул воркеров: задания выполняются параллельно, у каждого воркера — по одному за раз. */
-async function pool<T>(jobs: (() => (py: NodePython) => Promise<T>)[], size: number): Promise<T[]> {
-  const results: T[] = new Array(jobs.length);
-  let next = 0;
-  const workers = Array.from({ length: Math.min(size, jobs.length) }, async () => {
-    const py = new NodePython();
-    while (next < jobs.length) {
-      const i = next++;
-      results[i] = await jobs[i]()(py);
-    }
-    py.stop();
-  });
-  await Promise.all(workers);
-  return results;
-}
 
 // ─── Задачи ─────────────────────────────────────────────────────────────────
 

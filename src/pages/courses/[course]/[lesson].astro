@@ -1,0 +1,393 @@
+---
+import { getCollection, render } from 'astro:content';
+import Badge from '../../../components/Badge.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import BugReportLink from '../../../components/BugReportLink.astro';
+import PrevNext from '../../../components/PrevNext.astro';
+import { courseComponents } from '../../../components/course';
+import CourseSidebar from '../../../components/course/CourseSidebar.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { courseLessons, lessonUrl, type LessonSource } from '../../../lib/courses/load';
+import { findLesson, lessonPageData } from '../../../lib/courses/site';
+import { articleUrl } from '../../../lib/reference';
+import '../../../styles/course.css';
+
+export async function getStaticPaths() {
+  return (await getCollection('lessons')).map((entry) => {
+    const { course, lesson } = findLesson(entry.id);
+    return { params: { course: course.slug, lesson: lesson.slug }, props: { entry } };
+  });
+}
+
+const { entry } = Astro.props;
+const { course, lesson } = findLesson(entry.id);
+Astro.locals.lesson = entry.id; // для <Demo>, <Exercise> внутри урока
+const { Content } = await render(entry);
+
+const order = courseLessons(course);
+const pos = order.findIndex((l) => l.meta.id === lesson.meta.id);
+const link = (l?: LessonSource) => l && { href: lessonUrl(l), label: l.meta.title };
+const module = course.modules.find((m) => m.slug === lesson.module)!;
+const lastInModule = module.lessons[module.lessons.length - 1] === lesson;
+const exercises = lesson.cells.filter((c) => c.kind === 'exercise').length;
+const titles = new Map((await getCollection('reference')).map((a) => [a.id, a.data.title]));
+const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u003c');
+---
+
+<BaseLayout title={`${lesson.meta.title} — курс ${course.meta.title}`} description={lesson.meta.summary} lessonId={lesson.meta.id} wide>
+  <div class="course-layout">
+    <aside class="sidebar" id="course-sidebar" data-drawer aria-label="Программа курса">
+      <div class="drawer-head">
+        <span>Программа</span>
+        <button type="button" class="btn btn-ghost" data-drawer-close aria-label="Закрыть">✕</button>
+      </div>
+      <CourseSidebar course={course} currentId={lesson.meta.id} />
+    </aside>
+    <div class="overlay" data-drawer-overlay hidden></div>
+
+    <div class="lesson-main">
+      <div class="topbar">
+        <button type="button" class="btn drawer-open" data-drawer-open aria-controls="course-sidebar" aria-expanded="false">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          Программа
+        </button>
+        <a class="btn btn-ghost ipynb" href={`${lessonUrl(lesson)}.ipynb`} download={`${lesson.meta.id}.ipynb`} title="Урок как Jupyter-ноутбук: текст, код, упражнения с проверками и данные — для Jupyter и Google Colab">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
+          Скачать .ipynb
+        </a>
+      </div>
+
+      <Breadcrumbs
+        items={[
+          { label: 'Курсы', href: '/courses' },
+          { label: course.meta.title, href: `/courses/${course.slug}` },
+          { label: `Модуль ${module.number}. ${module.meta.title}` },
+        ]}
+      />
+      <header class="head">
+        <div class="meta">
+          {lesson.meta.kind === 'project' ? <Badge tone="medium">мини-проект</Badge> : <Badge>урок {module.lessons.indexOf(lesson) + 1} из {module.lessons.length}</Badge>}
+          <span class="minutes">≈ {lesson.meta.minutes} мин</span>
+          {exercises > 0 && (
+            <span class="minutes">
+              упражнения: <span data-lesson-solved>0</span> из {exercises}
+            </span>
+          )}
+        </div>
+        <h1>{lesson.meta.title}</h1>
+        <p class="summary">{lesson.meta.summary}</p>
+      </header>
+
+      <div class="kernel" data-kernel>
+        <span class="dot" aria-hidden="true"></span>
+        <span class="kernel-text" data-kernel-text aria-live="polite">Python запустится при первом выполнении</span>
+        <button type="button" class="btn btn-ghost small" data-run-all title="Выполнить все ячейки урока по порядку">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5v15l10-7.5z"/><path d="M19 5v14"/></svg>
+          <span class="kernel-label">Выполнить всё</span>
+        </button>
+        <button type="button" class="btn btn-ghost small" data-restart title="Сбросить состояние: удалить все переменные урока">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+          <span class="kernel-label">Перезапустить</span>
+        </button>
+      </div>
+      <p class="kernel-notice" data-kernel-notice hidden></p>
+
+      <article class="prose lesson-prose">
+        <Content components={courseComponents} />
+      </article>
+
+      {
+        lesson.meta.reference.length > 0 && (
+          <section class="more">
+            <h2 class="section-title">Подробнее в справочнике</h2>
+            <ul class="chips">
+              {lesson.meta.reference.map((id) => (
+                <li>
+                  <a href={articleUrl(id)}>{titles.get(id) ?? id}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+      {
+        lastInModule && (
+          <section class="more">
+            <h2 class="section-title">Практика по модулю</h2>
+            <p class="muted">
+              Задачи по {course.meta.title} для самостоятельной практики появятся в разделе{' '}
+              <a href={`/${course.slug}`}>«Задачи → {course.meta.title}»</a>.
+            </p>
+          </section>
+        )
+      }
+
+      <footer class="lesson-foot">
+        <label class="done-toggle">
+          <input type="checkbox" data-lesson-done />
+          <span>Урок пройден</span>
+          <span class="muted">— отмечается сам, когда решены все упражнения</span>
+        </label>
+        <BugReportLink lessonId={lesson.meta.id} />
+      </footer>
+
+      <PrevNext prev={link(order[pos - 1])} next={link(order[pos + 1])} />
+    </div>
+  </div>
+  <script type="application/json" id="lesson-data" set:html={data} />
+</BaseLayout>
+
+<style>
+  .course-layout {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 44px;
+    align-items: start;
+    max-width: 1100px;
+  }
+  .sidebar {
+    position: sticky;
+    top: 76px;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  .drawer-head,
+  .drawer-open,
+  .overlay {
+    display: none;
+  }
+  .lesson-main {
+    min-width: 0;
+    max-width: 800px;
+  }
+  .topbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .ipynb {
+    height: 34px;
+  }
+  .head {
+    margin-bottom: 20px;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+    margin-bottom: 12px;
+  }
+  .minutes {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .head h1 {
+    font-size: clamp(26px, 5vw, 34px);
+    letter-spacing: -0.03em;
+    overflow-wrap: anywhere;
+  }
+  .summary {
+    margin: 10px 0 0;
+    font-size: 16px;
+    color: var(--text-2);
+  }
+  .kernel {
+    position: sticky;
+    top: 57px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 8px;
+    padding: 4px 4px 4px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: rgb(14 15 17 / 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .dot {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--faint);
+  }
+  .kernel.is-busy .dot {
+    background: var(--accent);
+    animation: pulse 1s ease-in-out infinite alternate;
+  }
+  @keyframes pulse {
+    to {
+      opacity: 0.3;
+    }
+  }
+  .kernel-text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .small {
+    height: 30px;
+    padding: 0 10px;
+    font-size: 12.5px;
+  }
+  .kernel-notice {
+    margin: 0 0 8px;
+    padding: 8px 12px;
+    border-radius: var(--radius-xs);
+    background: var(--medium-soft);
+    color: var(--medium);
+    font-size: 13px;
+  }
+  .kernel-notice[hidden] {
+    display: none;
+  }
+  .lesson-prose {
+    margin-top: 20px;
+  }
+  .lesson-prose :global(a) {
+    color: var(--accent-strong);
+  }
+  .lesson-prose :global(a:hover) {
+    text-decoration: underline;
+  }
+  .lesson-prose :global(h2) {
+    margin: 34px 0 10px;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    text-transform: none;
+  }
+  .more {
+    margin-top: 32px;
+  }
+  .more a,
+  .chips a {
+    color: var(--accent-strong);
+  }
+  .chips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    font-size: 14px;
+  }
+  .more p {
+    margin: 0;
+    font-size: 14px;
+  }
+  .lesson-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .done-toggle {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .done-toggle input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--easy);
+  }
+  .done-toggle .muted {
+    font-size: 12.5px;
+  }
+
+  @media (max-width: 900px) {
+    .course-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .sidebar {
+      position: fixed;
+      z-index: 50;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: min(320px, 86vw);
+      max-height: none;
+      padding: 0 16px 24px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+    }
+    .sidebar.is-open {
+      transform: none;
+      box-shadow: 0 0 60px rgb(0 0 0 / 0.6);
+    }
+    .drawer-head {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      margin-bottom: 8px;
+      background: var(--surface);
+      font-weight: 600;
+    }
+    .overlay:not([hidden]) {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: rgb(0 0 0 / 0.5);
+    }
+    .drawer-open {
+      display: inline-flex;
+      margin-right: auto;
+      height: 34px;
+    }
+  }
+  @media (max-width: 560px) {
+    .kernel-label {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { initLesson } from '../../../scripts/course/lesson';
+  import { watchCourseProgress } from '../../../scripts/course/progress';
+
+  initLesson();
+  watchCourseProgress();
+
+  const drawer = document.querySelector<HTMLElement>('[data-drawer]');
+  const overlay = document.querySelector<HTMLElement>('[data-drawer-overlay]');
+  const opener = document.querySelector<HTMLButtonElement>('[data-drawer-open]');
+  const setOpen = (open: boolean) => {
+    drawer?.classList.toggle('is-open', open);
+    if (overlay) overlay.hidden = !open;
+    opener?.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) drawer?.querySelector<HTMLElement>('.is-current')?.scrollIntoView({ block: 'center' });
+  };
+  opener?.addEventListener('click', () => setOpen(true));
+  overlay?.addEventListener('click', () => setOpen(false));
+  document.querySelector('[data-drawer-close]')?.addEventListener('click', () => setOpen(false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+</script>

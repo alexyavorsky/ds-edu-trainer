@@ -1,0 +1,160 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "load": {
+      "lines": [],
+      "result": [
+        "      order_id        date customer_id         city      channel    category  \\",
+        "0        10001  2025-01-01        C095       Москва  маркетплейс  Аксессуары",
+        "1        10001  2025-01-01        C095       Москва  маркетплейс         Чай",
+        "2        10002  2025-01-01        C059       Москва   приложение    Сладости",
+        "3        10002  2025-01-01        C059       Москва   приложение         Чай",
+        "4        10003  2025-01-01        C203       Казань         сайт        Кофе",
+        "...        ...         ...         ...          ...          ...         ...",
+        "2443     11573  2025-12-31        C196       Казань   приложение        Кофе",
+        "2444     11574  2025-12-31        C067       Москва         сайт    Сладости",
+        "2445     11575  2025-12-31        C057  Новосибирск  маркетплейс    Сладости",
+        "2446     11575  2025-12-31        C057  Новосибирск  маркетплейс  Аксессуары",
+        "2447     11576  2025-12-31        C158       Казань   приложение    Сладости",
+        "",
+        "                 product  price  quantity",
+        "0       Кофемолка ручная   3200         2",
+        "1     Травяной сбор 50 г    260         1",
+        "2        Шоколад горький    180         1",
+        "3       Чёрный чай 100 г    350         1",
+        "4          Эфиопия 250 г    790         1",
+        "...                  ...    ...       ...",
+        "2443       Эфиопия 250 г    790         3",
+        "2444     Печенье овсяное    150         1",
+        "2445     Печенье овсяное    150         2",
+        "2446    Фильтры бумажные    240         1",
+        "2447               Зефир    210         2",
+        "",
+        "[2448 rows x 9 columns]"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Чай</td>\n      <td>Травяной сбор 50 г</td>\n      <td>260</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>10002</td>\n      <td>2025-01-01</td>\n      <td>C059</td>\n      <td>Москва</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n      <td>Шоколад горький</td>\n      <td>180</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>10002</td>\n      <td>2025-01-01</td>\n      <td>C059</td>\n      <td>Москва</td>\n      <td>приложение</td>\n      <td>Чай</td>\n      <td>Чёрный чай 100 г</td>\n      <td>350</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>10003</td>\n      <td>2025-01-01</td>\n      <td>C203</td>\n      <td>Казань</td>\n      <td>сайт</td>\n      <td>Кофе</td>\n      <td>Эфиопия 250 г</td>\n      <td>790</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>...</th>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n      <td>...</td>\n    </tr>\n    <tr>\n      <th>2443</th>\n      <td>11573</td>\n      <td>2025-12-31</td>\n      <td>C196</td>\n      <td>Казань</td>\n      <td>приложение</td>\n      <td>Кофе</td>\n      <td>Эфиопия 250 г</td>\n      <td>790</td>\n      <td>3</td>\n    </tr>\n    <tr>\n      <th>2444</th>\n      <td>11574</td>\n      <td>2025-12-31</td>\n      <td>C067</td>\n      <td>Москва</td>\n      <td>сайт</td>\n      <td>Сладости</td>\n      <td>Печенье овсяное</td>\n      <td>150</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>2445</th>\n      <td>11575</td>\n      <td>2025-12-31</td>\n      <td>C057</td>\n      <td>Новосибирск</td>\n      <td>маркетплейс</td>\n      <td>Сладости</td>\n      <td>Печенье овсяное</td>\n      <td>150</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>2446</th>\n      <td>11575</td>\n      <td>2025-12-31</td>\n      <td>C057</td>\n      <td>Новосибирск</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Фильтры бумажные</td>\n      <td>240</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>2447</th>\n      <td>11576</td>\n      <td>2025-12-31</td>\n      <td>C158</td>\n      <td>Казань</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n      <td>Зефир</td>\n      <td>210</td>\n      <td>2</td>\n    </tr>\n  </tbody>\n</table>\n<p>2448 rows × 9 columns</p>\n</div>",
+      "error": null
+    },
+    "load-error": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "FileNotFoundError: [Errno 44] No such file or directory: 'shop_orders.csv'"
+    },
+    "head": {
+      "lines": [],
+      "result": [
+        "   order_id        date customer_id    city      channel    category  \\",
+        "0     10001  2025-01-01        C095  Москва  маркетплейс  Аксессуары",
+        "1     10001  2025-01-01        C095  Москва  маркетплейс         Чай",
+        "2     10002  2025-01-01        C059  Москва   приложение    Сладости",
+        "3     10002  2025-01-01        C059  Москва   приложение         Чай",
+        "4     10003  2025-01-01        C203  Казань         сайт        Кофе",
+        "",
+        "              product  price  quantity",
+        "0    Кофемолка ручная   3200         2",
+        "1  Травяной сбор 50 г    260         1",
+        "2     Шоколад горький    180         1",
+        "3    Чёрный чай 100 г    350         1",
+        "4       Эфиопия 250 г    790         1"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Чай</td>\n      <td>Травяной сбор 50 г</td>\n      <td>260</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>10002</td>\n      <td>2025-01-01</td>\n      <td>C059</td>\n      <td>Москва</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n      <td>Шоколад горький</td>\n      <td>180</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>10002</td>\n      <td>2025-01-01</td>\n      <td>C059</td>\n      <td>Москва</td>\n      <td>приложение</td>\n      <td>Чай</td>\n      <td>Чёрный чай 100 г</td>\n      <td>350</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>10003</td>\n      <td>2025-01-01</td>\n      <td>C203</td>\n      <td>Казань</td>\n      <td>сайт</td>\n      <td>Кофе</td>\n      <td>Эфиопия 250 г</td>\n      <td>790</td>\n      <td>1</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "tail": {
+      "lines": [],
+      "result": [
+        "      order_id        date customer_id         city      channel    category  \\",
+        "2445     11575  2025-12-31        C057  Новосибирск  маркетплейс    Сладости",
+        "2446     11575  2025-12-31        C057  Новосибирск  маркетплейс  Аксессуары",
+        "2447     11576  2025-12-31        C158       Казань   приложение    Сладости",
+        "",
+        "               product  price  quantity",
+        "2445   Печенье овсяное    150         2",
+        "2446  Фильтры бумажные    240         1",
+        "2447             Зефир    210         2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2445</th>\n      <td>11575</td>\n      <td>2025-12-31</td>\n      <td>C057</td>\n      <td>Новосибирск</td>\n      <td>маркетплейс</td>\n      <td>Сладости</td>\n      <td>Печенье овсяное</td>\n      <td>150</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>2446</th>\n      <td>11575</td>\n      <td>2025-12-31</td>\n      <td>C057</td>\n      <td>Новосибирск</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Фильтры бумажные</td>\n      <td>240</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>2447</th>\n      <td>11576</td>\n      <td>2025-12-31</td>\n      <td>C158</td>\n      <td>Казань</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n      <td>Зефир</td>\n      <td>210</td>\n      <td>2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "no-parens": {
+      "lines": [],
+      "result": [
+        "<bound method NDFrame.head of       order_id        date customer_id         city      channel    category  \\",
+        "0        10001  2025-01-01        C095       Москва  маркетплейс  Аксессуары",
+        "1        10001  2025-01-01        C095       Москва  маркетплейс         Чай",
+        "2        10002  2025-01-01        C059       Москва   приложение    Сладости",
+        "3        10002  2025-01-01        C059       Москва   приложение         Чай",
+        "4        10003  2025-01-01        C203       Казань         сайт        Кофе",
+        "...        ...         ...         ...          ...          ...         ...",
+        "2443     11573  2025-12-31        C196       Казань   приложение        Кофе",
+        "2444     11574  2025-12-31        C067       Москва         сайт    Сладости",
+        "2445     11575  2025-12-31        C057  Новосибирск  маркетплейс    Сладости",
+        "2446     11575  2025-12-31        C057  Новосибирск  маркетплейс  Аксессуары",
+        "2447     11576  2025-12-31        C158       Казань   приложение    Сладости",
+        "",
+        "                 product  price  quantity",
+        "0       Кофемолка ручная   3200         2",
+        "1     Травяной сбор 50 г    260         1",
+        "2        Шоколад горький    180         1",
+        "3       Чёрный чай 100 г    350         1",
+        "4          Эфиопия 250 г    790         1",
+        "...                  ...    ...       ...",
+        "2443       Эфиопия 250 г    790         3",
+        "2444     Печенье овсяное    150         1",
+        "2445     Печенье овсяное    150         2",
+        "2446    Фильтры бумажные    240         1",
+        "2447               Зефир    210         2",
+        "",
+        "[2448 rows x 9 columns]>"
+      ],
+      "html": null,
+      "error": null
+    },
+    "shape": {
+      "lines": [],
+      "result": [
+        "(2448, 9)"
+      ],
+      "html": null,
+      "error": null
+    },
+    "len": {
+      "lines": [
+        "2448",
+        "2448"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "columns": {
+      "lines": [],
+      "result": [
+        "Index(['order_id', 'date', 'customer_id', 'city', 'channel', 'category',",
+        "       'product', 'price', 'quantity'],",
+        "      dtype='str')"
+      ],
+      "html": null,
+      "error": null
+    },
+    "nrows": {
+      "lines": [],
+      "result": [
+        "   order_id        date customer_id    city      channel    category  \\",
+        "0     10001  2025-01-01        C095  Москва  маркетплейс  Аксессуары",
+        "1     10001  2025-01-01        C095  Москва  маркетплейс         Чай",
+        "2     10002  2025-01-01        C059  Москва   приложение    Сладости",
+        "3     10002  2025-01-01        C059  Москва   приложение         Чай",
+        "",
+        "              product  price  quantity",
+        "0    Кофемолка ручная   3200         2",
+        "1  Травяной сбор 50 г    260         1",
+        "2     Шоколад горький    180         1",
+        "3    Чёрный чай 100 г    350         1"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Чай</td>\n      <td>Травяной сбор 50 г</td>\n      <td>260</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>10002</td>\n      <td>2025-01-01</td>\n      <td>C059</td>\n      <td>Москва</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n      <td>Шоколад горький</td>\n      <td>180</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>10002</td>\n      <td>2025-01-01</td>\n      <td>C059</td>\n      <td>Москва</td>\n      <td>приложение</td>\n      <td>Чай</td>\n      <td>Чёрный чай 100 г</td>\n      <td>350</td>\n      <td>1</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    }
+  }
+}

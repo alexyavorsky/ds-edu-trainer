@@ -1,0 +1,12 @@
+---
+/** Заметка на полях урока: `<Note title="…">текст</Note>`. */
+interface Props {
+  title?: string;
+}
+const { title } = Astro.props;
+---
+
+<aside class="callout callout-note">
+  {title && <p class="callout-title">{title}</p>}
+  <div class="callout-body"><slot /></div>
+</aside>

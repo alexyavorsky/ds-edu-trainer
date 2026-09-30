@@ -1,0 +1,8 @@
+title = "Первые шаги"
+summary = "Открыть таблицу, посмотреть на неё и понять, из чего она состоит: DataFrame, Series, индекс."
+outcomes = [
+  "загрузить CSV-файл: <code>pd.read_csv</code>",
+  "посмотреть на таблицу: <code>head</code>, <code>tail</code>, <code>shape</code>, <code>columns</code>, <code>info</code>, <code>describe</code>",
+  "взять столбец и посчитать по нему сумму, среднее, число разных значений",
+  "создать небольшую таблицу своими руками",
+]

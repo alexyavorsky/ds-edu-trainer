@@ -216,3 +216,59 @@ def run_example(payload_json: str) -> None:
         elapsed=round(elapsed, 4),
         memory=isinstance(error, MemoryError),
     )
+
+
+# ─── Курсы ──────────────────────────────────────────────────────────────────
+
+COURSE_DATA = "/home/pyodide/course-data"  # файлы данных курсов: их записывает engine.ts
+_lesson: tuple[str, object] | None = None  # (id сеанса, LessonSession) — один урок на страницу
+
+
+def _lesson_session(payload: dict):
+    """Сеанс урока: новый, если страница начала новый (первый запуск, «Перезапустить», новый Python)."""
+    global _lesson
+    from lesson_exec import LessonSession
+    from reference_exec import ExampleRunner
+
+    key = f"{payload['lesson']}#{payload['session']}"
+    if _lesson is None or _lesson[0] != key:
+        if _lesson is not None:
+            _lesson[1].close()
+        runner = ExampleRunner(_config["coursePrelude"], "courses/prelude.py")
+        files = [f["name"] for f in payload.get("files", [])]
+        session = LessonSession(runner, COURSE_DATA, files, _config["maxChars"], _config["maxLines"])
+        _lesson = (key, session)
+    return _lesson[1]
+
+
+def run_lesson(payload_json: str) -> None:
+    """payload: op (cell · check · quiz), lesson, session, files, cell, code; у check — tests и targets."""
+    payload = json.loads(payload_json)
+    session = _lesson_session(payload)
+    filename = f"{payload['lesson']}:{payload['cell']}"
+    started = time.perf_counter()
+    if payload["op"] != "check":
+        cell = session.run_cell(payload["code"], filename, scratch=payload["op"] == "quiz")
+        _send(type="done", op=payload["op"], elapsed=round(time.perf_counter() - started, 4), memory=isinstance(cell.error, MemoryError), **cell.as_dict())
+        return
+
+    test_started = [0.0]
+
+    def on_start(index: int) -> None:
+        _send(type="test-start", index=index)
+        test_started[0] = time.perf_counter()
+
+    def on_result(index: int, result: dict) -> None:
+        _send(type="test", index=index, result=result, elapsed=round(time.perf_counter() - test_started[0], 4))
+
+    outcome = session.check(
+        payload["code"], payload["tests"], payload["targets"], filename,
+        on_tests=lambda tests: _send(type="tests", tests=tests), on_start=on_start, on_result=on_result,
+    )
+    cell = outcome["cell"]
+    memory = isinstance(cell.error, MemoryError) or any(_is_memory_error(r["error_type"], r["message"]) for r in outcome["results"])
+    gc.collect()
+    _send(
+        type="done", op="check", phase=outcome["phase"], results=outcome["results"],
+        elapsed=round(time.perf_counter() - started, 4), memory=memory, **cell.as_dict(),
+    )

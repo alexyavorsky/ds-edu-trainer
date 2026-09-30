@@ -9,9 +9,12 @@ import type { FromWorker, RunRequest } from './protocol.ts';
 export interface EngineOptions {
   loadPyodide: (options: Record<string, unknown>) => Promise<PyodideAPI>;
   indexURL?: string;
-  /** Исходники Python: имя модуля → код (pyodide_driver, reference_exec). */
+  /** Исходники Python: имя модуля → код (pyodide_driver, reference_exec, lesson_exec, runner). */
   modules: Record<string, string>;
   prelude: string;
+  coursePrelude: string;
+  /** Файлы данных курсов: в браузере — fetch, при проверке в Node.js — чтение с диска. */
+  fetchFile: (url: string) => Promise<Uint8Array>;
   maxLines: number;
   maxChars: number;
   memoryLimitMB: number;
@@ -22,7 +25,10 @@ export interface EngineOptions {
 interface Driver {
   run_task(payload: string): void;
   run_example(payload: string): void;
+  run_lesson(payload: string): void;
 }
+
+const COURSE_DATA = '/home/pyodide/course-data'; // как в runtime/pyodide_driver.py
 
 /**
  * Ограничивает рост памяти WebAssembly: Emscripten растит кучу через WebAssembly.Memory.grow, и отказ
@@ -46,6 +52,7 @@ export class Engine {
   private pyodide?: PyodideAPI;
   private driver?: Driver;
   private loaded = new Set<string>();
+  private files = new Set<string>();
   private runId = 0;
   /** Перехват сообщений Python: вернуть false — сообщение не уходит странице. */
   private intercept: ((message: FromWorker) => boolean) | null = null;
@@ -74,10 +81,11 @@ export class Engine {
       pyodide.setStdin({ error: true });
       const dir = '/home/pyodide/edu';
       pyodide.FS.mkdirTree(dir);
+      pyodide.FS.mkdirTree(COURSE_DATA);
       for (const [name, source] of Object.entries(o.modules)) pyodide.FS.writeFile(`${dir}/${name}.py`, source);
       pyodide.runPython(`import sys; sys.path.insert(0, ${JSON.stringify(dir)})`);
       const driver = pyodide.pyimport('pyodide_driver') as unknown as Driver & { setup(post: unknown, config: string): void };
-      const config = JSON.stringify({ maxLines: o.maxLines, maxChars: o.maxChars, prelude: o.prelude });
+      const config = JSON.stringify({ maxLines: o.maxLines, maxChars: o.maxChars, prelude: o.prelude, coursePrelude: o.coursePrelude });
       driver.setup((json: string) => this.emit({ ...JSON.parse(json), runId: this.runId }), config);
       this.pyodide = pyodide;
       this.driver = driver;
@@ -107,6 +115,15 @@ export class Engine {
     }
   }
 
+  /** Файлы данных урока — один раз за жизнь воркера; сеанс копирует их себе в data/. */
+  private async ensureFiles(files: { name: string; url: string }[]): Promise<void> {
+    for (const file of files) {
+      if (this.files.has(file.name)) continue;
+      this.pyodide!.FS.writeFile(`${COURSE_DATA}/${file.name}`, await this.options.fetchFile(file.url));
+      this.files.add(file.name);
+    }
+  }
+
   /** Пакет Pyodide (или из списка micropip), дающий модуль, — для повтора после ModuleNotFoundError. */
   private packageFor(module: string): string | null {
     const top = module.split('.')[0];
@@ -129,14 +146,28 @@ export class Engine {
       }
       try {
         await this.ensurePackages(request.packages);
+        if (request.kind === 'lesson') await this.ensureFiles(request.files);
         if (request.kind === 'example') {
           await this.pyodide!.loadPackagesFromImports(`${request.setup}\n${request.code}`, { messageCallback: () => {} });
+        }
+        if (request.kind === 'lesson' && request.op !== 'prepare') {
+          // ученик мог дописать импорт (например, matplotlib) — пакет ставится до запуска
+          await this.pyodide!.loadPackagesFromImports(request.code, { messageCallback: () => {} });
         }
       } catch (error) {
         post({ type: 'package-error', runId: request.runId, message: errorText(error) });
         return;
       }
+      if (request.kind === 'lesson' && request.op === 'prepare') {
+        post(emptyLessonDone(request.runId));
+        return;
+      }
       post({ type: 'started', runId: request.runId });
+      if (request.kind === 'lesson') {
+        const { kind, runId, packages, ...payload } = request;
+        this.driver!.run_lesson(JSON.stringify(payload));
+        return;
+      }
       if (request.kind === 'task') {
         this.driver!.run_task(JSON.stringify({ code: request.code, footer: request.footer }));
         return;
@@ -169,6 +200,10 @@ export class Engine {
       post({ type: 'fatal', runId: request.runId, message: errorText(error) });
     }
   }
+}
+
+function emptyLessonDone(runId: number): FromWorker {
+  return { type: 'done', runId, op: 'prepare', lines: [], result: null, html: null, error: null, plots: [], warnings: [], truncated: false, elapsed: 0, memory: false };
 }
 
 function errorText(error: unknown): string {

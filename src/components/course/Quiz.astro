@@ -1,0 +1,40 @@
+---
+/**
+ * Вопрос с выбором: `<Quiz id="…">вопрос, варианты «- [ ] …» / «- [x] …», <Explain>…</Explain></Quiz>`.
+ * Варианты MDX отрисовывает списком задач; здесь он превращается в кнопки (верный — data-correct).
+ */
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+const html = await Astro.slots.render('default');
+const list = /<ul class="contains-task-list">([\s\S]*?)<\/ul>/.exec(html);
+if (!list) throw new Error(`<Quiz id="${id}">: нет вариантов «- [ ] …»`);
+const options = [...list[1].matchAll(/<li class="task-list-item">([\s\S]*?)<\/li>/g)].map((m) => ({
+  correct: /<input[^>]*\bchecked\b[^>]*>/.test(m[1]),
+  html: m[1].replace(/<input[^>]*>\s*/, '').trim(),
+}));
+const explain = /<div class="quiz-explain"[^>]*>[\s\S]*?<\/div>/.exec(html)?.[0] ?? '';
+const question = html.replace(list[0], '').replace(explain, '');
+---
+
+<section class="cell cell-quiz" data-quiz={id}>
+  <header class="cell-head">
+    <span class="quiz-label">Вопрос</span>
+  </header>
+  <div class="quiz-body">
+    <div class="quiz-question" set:html={question} />
+    <div class="quiz-options" role="group" aria-label="Варианты ответа">
+      {
+        options.map((o, i) => (
+          <button type="button" class="quiz-option" data-option={i} data-correct={o.correct ? '' : undefined}>
+            <span class="quiz-mark" aria-hidden="true" />
+            <span class="quiz-text" set:html={o.html} />
+          </button>
+        ))
+      }
+    </div>
+    <p class="quiz-feedback" data-feedback aria-live="polite"></p>
+    <Fragment set:html={explain} />
+  </div>
+</section>

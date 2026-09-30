@@ -1,0 +1,35 @@
+# Данные курсов
+
+Все наборы **вымышленные**: их создаёт `generate.py` (seed фиксирован). Лицензия — **CC0 1.0**
+(общественное достояние): можно использовать как угодно, без указания автора.
+
+Уроки берут файлы по имени из поля `data` во frontmatter урока; в браузере файл загружается в папку
+`data/` сеанса урока, в Jupyter-ноутбуке — встроен в первую ячейку. Код урока читает его как
+`pd.read_csv("data/shop_orders.csv")`.
+
+## Магазин «Кофейная лавка» (2025 год)
+
+| Файл | Строк | Что внутри |
+| --- | --- | --- |
+| `shop_orders.csv` | 2448 | покупки одной таблицей: `order_id, date, customer_id, city, channel, category, product, price, quantity` — одна строка = один товар в заказе |
+| `orders.csv` | 2448 | те же покупки со ссылками: `order_id, date, customer_id, product_id, quantity, channel` |
+| `products.csv` | 20 | `product_id, name, category, price, cost` |
+| `customers.csv` | 240 | `customer_id, name, city, signup_date, segment` |
+
+`shop_orders.csv` — это `orders` ⋈ `products` ⋈ `customers`: на нём учатся первые модули pandas, на трёх
+отдельных таблицах — соединению (`merge`). В данных есть сезонность (чай зимой, сладости и посуда
+в декабре, спад летом) и выходные.
+
+## Погода (2025 год)
+
+| Файл | Строк | Что внутри |
+| --- | --- | --- |
+| `weather.csv` | 1825 | `date, city, temp_min, temp_max, precip_mm, wind_ms` — 5 городов × 365 дней, около 1 % значений пропущено |
+| `moscow_2025.csv` | 365 | только числа для NumPy: `day, temp_min, temp_max, precip_mm` (Москва, без пропусков) |
+
+## Оценки студентов
+
+| Файл | Строк | Что внутри |
+| --- | --- | --- |
+| `grades.csv` | 300 | длинный формат: `student, group, subject, term, score` — 30 студентов, 3 группы, 5 предметов, 2 семестра, баллы 0–100 |
+| `scores.csv` | 30 | широкий формат для NumPy: `student_id` и баллы первого семестра по 5 предметам |

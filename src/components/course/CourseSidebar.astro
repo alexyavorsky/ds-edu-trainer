@@ -1,0 +1,102 @@
+---
+/** Программа курса сбоку от урока: модули и уроки, отметки пройденных. На узком экране — выдвижная панель. */
+import { lessonUrl, type CourseSource } from '../../lib/courses/load';
+
+interface Props {
+  course: CourseSource;
+  currentId?: string;
+}
+const { course, currentId } = Astro.props;
+const exercises = (l: CourseSource['modules'][number]['lessons'][number]) => l.cells.filter((c) => c.kind === 'exercise').map((c) => c.id).join(',');
+---
+
+<nav class="course-nav" aria-label={`Программа курса ${course.meta.title}`}>
+  <a class="course-nav-title" href={`/courses/${course.slug}`}>Курс {course.meta.title}</a>
+  {
+    course.modules.map((m) => (
+      <section>
+        <h2>
+          {m.number}. {m.meta.title}
+        </h2>
+        <ol>
+          {m.lessons.map((l) => (
+            <li>
+              <a
+                href={lessonUrl(l)}
+                class:list={[l.meta.id === currentId && 'is-current', l.meta.kind === 'project' && 'is-project']}
+                aria-current={l.meta.id === currentId ? 'page' : undefined}
+                data-lesson-mark={l.meta.id}
+                data-exercises={exercises(l)}
+              >
+                <span class="mark" aria-hidden="true" />
+                <span>{l.meta.title}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))
+  }
+</nav>
+
+<style>
+  .course-nav {
+    font-size: 13.5px;
+  }
+  .course-nav-title {
+    display: block;
+    margin-bottom: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  section + section {
+    margin-top: 16px;
+  }
+  h2 {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li a {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    color: var(--text-2);
+    line-height: 1.4;
+  }
+  li a:hover {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+  li a.is-current {
+    background: var(--accent-soft);
+    color: var(--text);
+    font-weight: 500;
+  }
+  .mark {
+    flex: none;
+    width: 12px;
+    height: 12px;
+    margin-top: 3px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 50%;
+  }
+  .is-project .mark {
+    border-radius: 3px;
+  }
+  a:global(.is-done) .mark {
+    border-color: var(--easy);
+    background: var(--easy) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2308090a' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 9px no-repeat;
+  }
+</style>

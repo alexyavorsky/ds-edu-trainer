@@ -4,10 +4,12 @@ import BugReportLink from './BugReportLink.astro';
 interface Props {
   taskId?: string;
   articleId?: string;
+  lessonId?: string;
 }
-const { taskId, articleId } = Astro.props;
+const { taskId, articleId, lessonId } = Astro.props;
 const path = Astro.url.pathname;
 const inReference = path.startsWith('/reference');
+const inCourses = path.startsWith('/courses');
 ---
 
 <header class="header">
@@ -19,13 +21,14 @@ const inReference = path.startsWith('/reference');
       <span class="logo-text">Тренажёр</span>
     </a>
     <nav class="nav" aria-label="Разделы">
-      <a href="/" class:list={['nav-link', !inReference && 'is-active']}>Задачи</a>
+      <a href="/" class:list={['nav-link', !inReference && !inCourses && 'is-active']}>Задачи</a>
+      <a href="/courses" class:list={['nav-link', inCourses && 'is-active']}>Курсы</a>
       <a href="/reference" class:list={['nav-link', inReference && 'is-active']}>
         Справочник
       </a>
     </nav>
     <div class="header-actions">
-      <BugReportLink taskId={taskId} articleId={articleId} compact />
+      <BugReportLink taskId={taskId} articleId={articleId} lessonId={lessonId} compact />
     </div>
   </div>
 </header>

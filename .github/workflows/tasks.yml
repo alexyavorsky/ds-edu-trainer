@@ -87,6 +87,33 @@ jobs:
           path: pyodide-report.md
           retention-days: 14
 
+  courses:
+    name: Курсы (Pyodide и CPython, ноутбуки)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Зафиксированные версии NumPy и pandas для проверки в CPython
+        run: pip install -r requirements-dev.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Кэш пакетов Pyodide
+        uses: actions/cache@v4
+        with:
+          path: .pyodide-cache
+          key: pyodide-packages-${{ hashFiles('src/lib/python/config.ts', 'package-lock.json') }}
+      - name: Уроки целиком с эталонами, заготовками, другими решениями и ошибками; вывод совпадает с сохранённым; ноутбуки выполняются
+        run: node scripts/validate_courses.ts --python python
+        env:
+          PYODIDE_CACHE: ${{ github.workspace }}/.pyodide-cache
+
   browsers:
     name: Python в браузерах (Chromium, Firefox, WebKit на macOS)
     # macOS: стек WebKit здесь такой же, как у Safari (на Linux он в разы больше и бюджет глубины не проверяет)

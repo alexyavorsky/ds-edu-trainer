@@ -10,9 +10,10 @@ interface Props {
   description?: string;
   taskId?: string;
   articleId?: string;
+  lessonId?: string;
   wide?: boolean; // шире обычного контейнера — для статей справочника с боковыми колонками
 }
-const { title, description = 'Задачи по книгам и темам для быстрого повторения.', taskId, articleId, wide = false } = Astro.props;
+const { title, description = 'Задачи по книгам и темам для быстрого повторения.', taskId, articleId, lessonId, wide = false } = Astro.props;
 const fullTitle = title ? `${title} — Тренажёр` : 'Тренажёр задач по книгам';
 ---
 
@@ -27,7 +28,7 @@ const fullTitle = title ? `${title} — Тренажёр` : 'Тренажёр з
     <title>{fullTitle}</title>
   </head>
   <body>
-    <Header taskId={taskId} articleId={articleId} />
+    <Header taskId={taskId} articleId={articleId} lessonId={lessonId} />
     <main class:list={['container', 'main', wide && 'wide']}>
       <slot />
     </main>

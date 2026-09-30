@@ -1,0 +1,20 @@
+---
+/** Сохранённый вывод ячейки (output.json, его пишет валидатор): печать, значение последнего выражения, ошибка. */
+import type { StoredOutput } from '../../lib/courses/format';
+
+interface Props {
+  output: StoredOutput;
+}
+const { output } = Astro.props;
+const text = output.lines.join('\n');
+---
+
+<div class="cell-out" data-stored>
+  <span class="out-label">
+    {output.error ? 'Ошибка' : 'Вывод'}
+    <span class="out-hint">сохранённый · нажмите «Выполнить», чтобы получить свой</span>
+  </span>
+  {text && <pre class="out-text">{text}</pre>}
+  {output.html ? <div class="out-table" set:html={output.html} /> : output.result && <pre class="out-text">{output.result.join('\n')}</pre>}
+  {output.error && <pre class="out-text out-error">{output.error}</pre>}
+</div>

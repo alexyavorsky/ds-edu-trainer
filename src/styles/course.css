@@ -1,0 +1,627 @@
+/* Урок курса: ячейки текста, кода, упражнений и вопросов. Подключается только на странице урока. */
+
+.lesson-prose > .cell,
+.lesson-prose > .callout {
+  margin: 22px 0;
+}
+
+/* ─── Ячейка: общее ──────────────────────────────────────────────────────── */
+
+.cell {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  overflow: hidden;
+  min-width: 0;
+  font-size: 15px;
+}
+.cell-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 4px 4px 4px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+.cell-head .count {
+  flex: none;
+  min-width: 30px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--faint);
+  white-space: pre;
+}
+.cell-head .count.is-run {
+  color: var(--accent-strong);
+}
+.cell-title {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.cell-head .tag {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  color: var(--hard);
+  background: var(--hard-soft);
+}
+.cell-head .tools {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+}
+.cbtn {
+  position: relative;
+  height: 30px;
+  padding: 0 10px;
+  font-size: 12.5px;
+}
+.cell-head .run {
+  color: var(--text);
+}
+.cell pre.astro-code {
+  margin: 0 !important;
+  padding: 12px 16px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  font-size: 13px;
+  line-height: 1.65;
+  overflow-x: auto;
+}
+.cell-code .cm-editor {
+  font-size: 13px;
+}
+
+/* ─── Вывод ──────────────────────────────────────────────────────────────── */
+
+.cell-out,
+.cell-live {
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  min-width: 0;
+}
+.cell-live[hidden],
+.cell-out[hidden] {
+  display: none;
+}
+.out-label {
+  display: block;
+  padding: 8px 16px 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.out-label.is-error {
+  color: var(--hard);
+}
+.out-hint {
+  margin-left: 6px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.out-hint::before {
+  content: '· ';
+}
+.live-head .out-label {
+  padding: 8px 16px 0;
+}
+pre.out-text {
+  margin: 0;
+  padding: 6px 16px 12px;
+  border: 0;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-2);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: pre;
+}
+pre.out-text + pre.out-text,
+pre.out-text + .out-table {
+  padding-top: 0;
+}
+pre.out-error {
+  color: #f3a5a7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.live-status,
+.live-empty,
+.live-note {
+  margin: 0;
+  padding: 10px 16px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.live-status.is-error {
+  color: var(--hard);
+}
+.live-note {
+  padding-top: 0;
+  color: var(--medium);
+}
+.cell-live img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  padding: 8px 12px 14px;
+  box-sizing: border-box;
+}
+.line-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* Таблица DataFrame — как в Jupyter, в цветах сайта; широкая прокручивается внутри ячейки */
+.out-table {
+  padding: 6px 16px 14px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.out-table table.dataframe {
+  border-collapse: collapse;
+  border: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.out-table th,
+.out-table td {
+  padding: 4px 10px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+  white-space: nowrap;
+  vertical-align: top;
+}
+.out-table thead th {
+  color: var(--text);
+  font-weight: 600;
+  border-bottom-color: var(--border-strong);
+}
+.out-table tbody th {
+  color: var(--muted);
+  font-weight: 500;
+}
+.out-table tbody tr:hover {
+  background: var(--surface-2);
+}
+.out-table p {
+  margin: 8px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+/* ─── Упражнение ─────────────────────────────────────────────────────────── */
+
+.cell-exercise {
+  border-color: rgb(141 149 255 / 0.35);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.ex-head {
+  background: var(--accent-soft);
+  padding-right: 12px;
+}
+.ex-label {
+  flex: none;
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+.solved-mark {
+  display: none;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--easy);
+}
+.cell-exercise.is-solved .solved-mark {
+  display: inline-flex;
+}
+.ex-prompt {
+  padding: 12px 16px 2px 18px;
+  color: var(--text-2);
+}
+.ex-prompt > :first-child {
+  margin-top: 0;
+}
+.ex-prompt p {
+  margin: 0 0 10px;
+}
+.ex-editor {
+  margin: 4px 12px 0 14px;
+  min-height: 60px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+  overflow: hidden;
+}
+.ex-editor:focus-within {
+  border-color: var(--border-strong);
+}
+.ex-editor .placeholder pre.astro-code {
+  padding-left: 46px !important;
+}
+.ex-editor .cm-editor {
+  min-height: 60px;
+  background: var(--bg);
+}
+.ex-editor .cm-gutters {
+  background: var(--bg);
+}
+.ex-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.ex-actions {
+  padding: 10px 12px 12px 14px;
+}
+.ex-spacer {
+  flex: 1;
+}
+.btn.small {
+  height: 30px;
+  padding: 0 10px;
+  font-size: 12.5px;
+}
+.btn.small.icon {
+  width: 30px;
+  padding: 0;
+  justify-content: center;
+}
+.btn .counter {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.check {
+  height: 34px;
+}
+.check svg,
+.cbtn svg {
+  width: 13px;
+  height: 13px;
+}
+.shortcut {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgb(0 0 0 / 0.12);
+  opacity: 0.7;
+}
+.spinner {
+  display: none;
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: cell-spin 0.8s linear infinite;
+}
+.is-running .spinner {
+  display: inline-block;
+}
+.is-running > svg {
+  display: none;
+}
+.is-running {
+  pointer-events: none;
+}
+@keyframes cell-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.ex-status {
+  margin: 0;
+  padding: 0 16px 10px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.ex-status:empty {
+  display: none;
+}
+.ex-status.is-error {
+  color: var(--hard);
+}
+.ex-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 4px 12px 8px 14px;
+  padding: 8px 12px;
+  border: 1px solid rgb(238 177 83 / 0.35);
+  border-radius: var(--radius-xs);
+  background: var(--medium-soft);
+  font-size: 13px;
+}
+.ex-notice.is-danger {
+  border-color: rgb(240 122 125 / 0.35);
+  background: var(--hard-soft);
+}
+.ex-notice p {
+  margin: 0;
+}
+.ex-notice[hidden] {
+  display: none;
+}
+.danger {
+  color: var(--hard);
+}
+.ex-results {
+  border-top: 1px solid var(--border);
+}
+.ex-results[hidden] {
+  display: none;
+}
+.ex-results .summary {
+  margin: 0;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 14px;
+}
+.ex-results .summary.is-pass {
+  color: var(--easy);
+}
+.ex-results .summary.is-fail {
+  color: var(--hard);
+}
+.ex-results .summary .sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+.ex-results .tests {
+  margin: 0;
+  padding: 0 0 8px;
+  list-style: none;
+}
+.ex-results .tests:empty {
+  display: none;
+}
+.ex-results .tests li {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 2px 8px;
+  padding: 4px 16px;
+  font-size: 13.5px;
+}
+.tests .mark {
+  font-weight: 700;
+  text-align: center;
+}
+.tests .passed .mark {
+  color: var(--easy);
+}
+.tests .bad .mark {
+  color: var(--hard);
+}
+.tests .pending {
+  color: var(--muted);
+}
+.tests .running .mark {
+  color: var(--accent);
+}
+.tests .message {
+  grid-column: 2;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text-2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.ex-note {
+  margin: 0;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 12.5px;
+  color: var(--medium);
+}
+.ex-note[hidden],
+.ex-solution[hidden] {
+  display: none;
+}
+.ex-solution {
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.hint {
+  margin: 8px 0 10px;
+  padding: 10px 12px;
+  border: 1px solid rgb(238 177 83 / 0.2);
+  border-radius: var(--radius-xs);
+  background: rgb(238 177 83 / 0.06);
+}
+.hint[hidden] {
+  display: none;
+}
+.hint-n {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--medium);
+}
+.hint-body p {
+  margin: 2px 0 0;
+  font-size: 14.5px;
+}
+
+/* ─── Вопрос ─────────────────────────────────────────────────────────────── */
+
+.cell-quiz {
+  border-color: rgb(76 195 138 / 0.3);
+  box-shadow: inset 3px 0 0 var(--easy);
+}
+.cell-quiz .cell-head {
+  background: var(--easy-soft);
+}
+.quiz-label {
+  color: var(--easy);
+  font-weight: 600;
+}
+.quiz-body {
+  padding: 12px 16px 14px 18px;
+}
+.quiz-question p {
+  margin: 0 0 10px;
+}
+.quiz-options {
+  display: grid;
+  gap: 6px;
+}
+.quiz-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  background: var(--surface-2);
+  color: var(--text);
+  text-align: left;
+  font-size: 14.5px;
+  cursor: pointer;
+}
+.quiz-option:hover:not(:disabled) {
+  background: var(--surface-3);
+}
+.quiz-option:disabled {
+  cursor: default;
+}
+.quiz-mark {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+}
+.quiz-option.is-correct {
+  border-color: rgb(76 195 138 / 0.6);
+  background: var(--easy-soft);
+}
+.quiz-option.is-correct .quiz-mark {
+  border-color: var(--easy);
+  background: var(--easy);
+}
+.quiz-option.is-wrong {
+  border-color: rgb(240 122 125 / 0.5);
+  background: var(--hard-soft);
+  opacity: 0.8;
+}
+.quiz-option.is-wrong .quiz-mark {
+  border-color: var(--hard);
+}
+.quiz-feedback {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.quiz-feedback:empty {
+  display: none;
+}
+.quiz-feedback.is-pass {
+  color: var(--easy);
+}
+.quiz-feedback.is-fail {
+  color: var(--hard);
+}
+.quiz-explain {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  color: var(--text-2);
+}
+.quiz-explain[hidden] {
+  display: none;
+}
+.quiz-explain p {
+  margin: 0 0 8px;
+}
+
+/* ─── Заметки ────────────────────────────────────────────────────────────── */
+
+.callout {
+  padding: 12px 16px 2px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.callout-mistake {
+  border-left-color: var(--medium);
+}
+.callout-title {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0 0 6px !important;
+  color: var(--text);
+  font-weight: 600;
+  font-size: 15px;
+}
+.callout-title svg {
+  flex: none;
+  margin-top: 3px;
+  color: var(--medium);
+}
+.callout-body > .cell {
+  margin: 0 0 12px;
+}
+
+@media (max-width: 560px) {
+  .cbtn .text,
+  .shortcut {
+    display: none;
+  }
+  .cell-head {
+    padding-left: 10px;
+  }
+  .ex-prompt,
+  .quiz-body {
+    padding-left: 14px;
+    padding-right: 12px;
+  }
+  .ex-editor {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  .ex-actions {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}

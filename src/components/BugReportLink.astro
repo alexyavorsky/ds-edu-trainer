@@ -9,10 +9,11 @@ import Icon from './Icon.astro';
 interface Props {
   taskId?: string;
   articleId?: string;
+  lessonId?: string;
   compact?: boolean;
 }
-const { taskId, articleId, compact = false } = Astro.props;
-const subject = taskId ? `в задаче ${taskId}` : articleId ? `в статье справочника ${articleId}` : '';
+const { taskId, articleId, lessonId, compact = false } = Astro.props;
+const subject = taskId ? `в задаче ${taskId}` : articleId ? `в статье справочника ${articleId}` : lessonId ? `в уроке ${lessonId}` : '';
 const text = subject ? `Нашёл ошибку ${subject}: ` : 'Нашёл ошибку на сайте: ';
 const href = `https://t.me/${TELEGRAM_USER}?text=${encodeURIComponent(text)}`;
 ---
