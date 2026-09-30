@@ -134,6 +134,10 @@ def run_notebook(notebook: dict) -> dict:
                     exec(compile(source, f"ячейка {cell['id']}", "exec"), namespace)
             except Exception:  # noqa: BLE001 — ошибка ячейки и есть результат проверки
                 return {"outputs": outputs, "error": {"cell": cell["id"], "traceback": traceback.format_exc(limit=3)}}
+            finally:
+                plt = sys.modules.get("matplotlib.pyplot")
+                if plt is not None:
+                    plt.close("all")  # как inline-бэкенд Jupyter: фигура ячейки показана и закрыта, следующая ячейка рисует новую
             outputs.append({"cell": cell["id"], "stdout": buffer.getvalue()})
     return {"outputs": outputs, "error": None}
 

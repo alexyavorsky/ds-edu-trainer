@@ -265,6 +265,7 @@ export interface StoredOutput {
   result: string[] | null;
   html: string | null;
   error: string | null; // «Тип: сообщение» — у ячеек [raises]
+  plots?: number; // сколько графиков построила ячейка: public/course-plots/<курс>/<урок>/<ячейка>-<n>.svg
 }
 
 export interface OutputFile {

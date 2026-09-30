@@ -4,8 +4,11 @@ import type { StoredOutput } from '../../lib/courses/format';
 
 interface Props {
   output: StoredOutput;
+  /** Адреса сохранённых графиков ячейки (SVG из public/course-plots). */
+  plots?: string[];
+  title?: string;
 }
-const { output } = Astro.props;
+const { output, plots = [], title } = Astro.props;
 const text = output.lines.join('\n');
 ---
 
@@ -17,4 +20,5 @@ const text = output.lines.join('\n');
   {text && <pre class="out-text">{text}</pre>}
   {output.html ? <div class="out-table" set:html={output.html} /> : output.result && <pre class="out-text">{output.result.join('\n')}</pre>}
   {output.error && <pre class="out-text out-error">{output.error}</pre>}
+  {plots.map((src) => <img class="out-plot" src={src} alt={`График: ${title ?? 'результат ячейки'}`} loading="lazy" decoding="async" />)}
 </div>
