@@ -1,0 +1,48 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "load": {
+      "lines": [],
+      "result": [
+        "        date    city  temp_min  temp_max  precip_mm  wind_ms",
+        "0 2025-01-01  Москва      -9.9      -3.2        0.0      1.9",
+        "1 2025-01-02  Москва      -9.7      -3.2        0.0      2.3",
+        "2 2025-01-03  Москва      -9.0      -3.7        0.0      5.2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>date</th>\n      <th>city</th>\n      <th>temp_min</th>\n      <th>temp_max</th>\n      <th>precip_mm</th>\n      <th>wind_ms</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>2025-01-01</td>\n      <td>Москва</td>\n      <td>-9.9</td>\n      <td>-3.2</td>\n      <td>0.0</td>\n      <td>1.9</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>2025-01-02</td>\n      <td>Москва</td>\n      <td>-9.7</td>\n      <td>-3.2</td>\n      <td>0.0</td>\n      <td>2.3</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>2025-01-03</td>\n      <td>Москва</td>\n      <td>-9.0</td>\n      <td>-3.7</td>\n      <td>0.0</td>\n      <td>5.2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "kinds-view": {
+      "lines": [
+        "kind",
+        "ниже нуля    0.41",
+        "прохладно    0.34",
+        "тепло        0.18",
+        "жарко        0.07",
+        "Name: proportion, dtype: float64",
+        "kind",
+        "ниже нуля    0.00",
+        "прохладно    0.38",
+        "тепло        0.49",
+        "жарко        0.14",
+        "Name: proportion, dtype: float64"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "summary": {
+      "lines": [
+        "Средняя температура: Сочи 15.0 · Новосибирск 1.6",
+        "Разброс (std): Сочи 6.3 · Новосибирск 14.0",
+        "Осадки за год, мм: Сочи 795 · Новосибирск 520",
+        "Дней с осадками: Сочи 30 % · Новосибирск 40 %",
+        "Годовая амплитуда в Новосибирске: 40.1 градуса",
+        "Оттепелей в Москве за зимние месяцы: 5"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

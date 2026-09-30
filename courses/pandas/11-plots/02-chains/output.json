@@ -1,0 +1,76 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "steps": {
+      "lines": [],
+      "result": [
+        "product",
+        "Эфиопия 250 г          426600",
+        "Бразилия 1 кг          375390",
+        "Эспрессо-смесь 1 кг    372650",
+        "Name: revenue, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "chain": {
+      "lines": [],
+      "result": [
+        "product",
+        "Эфиопия 250 г          426600",
+        "Бразилия 1 кг          375390",
+        "Эспрессо-смесь 1 кг    372650",
+        "Name: revenue, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "lambda-need": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "KeyError: 'revenue'"
+    },
+    "lambda": {
+      "lines": [],
+      "result": [
+        "              product  revenue     share",
+        "1  Травяной сбор 50 г      260  0.000428",
+        "3    Чёрный чай 100 г      350  0.000576",
+        "5          Улун 100 г     1080  0.001777"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product</th>\n      <th>revenue</th>\n      <th>share</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>1</th>\n      <td>Травяной сбор 50 г</td>\n      <td>260</td>\n      <td>0.000428</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>Чёрный чай 100 г</td>\n      <td>350</td>\n      <td>0.000576</td>\n    </tr>\n    <tr>\n      <th>5</th>\n      <td>Улун 100 г</td>\n      <td>1080</td>\n      <td>0.001777</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "pipe": {
+      "lines": [],
+      "result": [
+        "           date        product  revenue",
+        "1911 2025-10-31  Бразилия 1 кг     9030",
+        "1995 2025-11-13  Бразилия 1 кг     9030",
+        "2349 2025-12-22  Бразилия 1 кг     9030"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>date</th>\n      <th>product</th>\n      <th>revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>1911</th>\n      <td>2025-10-31</td>\n      <td>Бразилия 1 кг</td>\n      <td>9030</td>\n    </tr>\n    <tr>\n      <th>1995</th>\n      <td>2025-11-13</td>\n      <td>Бразилия 1 кг</td>\n      <td>9030</td>\n    </tr>\n    <tr>\n      <th>2349</th>\n      <td>2025-12-22</td>\n      <td>Бразилия 1 кг</td>\n      <td>9030</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "loop": {
+      "lines": [
+        "0 Кофемолка ручная 6400",
+        "1 Травяной сбор 50 г 260",
+        "2 Шоколад горький 180",
+        "6840"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "loop-full": {
+      "lines": [
+        "3150009"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

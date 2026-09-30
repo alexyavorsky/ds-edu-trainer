@@ -192,6 +192,7 @@ class LessonSession:
                 on_tests([namespace["_test_info"](fn) for fn in namespace["_TESTS"]])
             results = namespace["_run_tests"](verbose=False, on_start=on_start, on_result=on_result, user_file=filename)
         for r in results:
+            r["message"] = plain_numbers(r["message"])
             m = re.fullmatch(r"NameError: name '(\w+)' is not defined", r["message"])
             if m and r["line"] is None:
                 r["message"] = f"не найдена переменная {m[1]} — проверьте имя; если она из ячейки выше, выполните ячейки выше"
@@ -199,6 +200,12 @@ class LessonSession:
 
 
 _MISSING = object()
+_NUMPY_REPR = re.compile(r"np\.(?:u?int|float)\d+\(([^()]*)\)|np\.str_\(('[^']*'|\"[^\"]*\")\)|np\.(True|False)_")
+
+
+def plain_numbers(message: str) -> str:
+    """«np.int64(66)» → «66»: в сообщениях проверок обёртки типов NumPy только мешают читать."""
+    return _NUMPY_REPR.sub(lambda m: m.group(1) or m.group(2) or m.group(3), message)
 
 
 def _importable(module: str) -> bool:

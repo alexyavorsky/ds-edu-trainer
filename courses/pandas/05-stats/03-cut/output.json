@@ -1,0 +1,107 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "intervals": {
+      "lines": [],
+      "result": [
+        "0    (-50, 0]",
+        "1    (-50, 0]",
+        "2    (-50, 0]",
+        "Name: temp_max, dtype: category",
+        "Categories (4, interval[int64, right]): [(-50, 0] < (0, 15] < (15, 25] < (25, 50]]"
+      ],
+      "html": null,
+      "error": null
+    },
+    "interval-counts": {
+      "lines": [],
+      "result": [
+        "temp_max",
+        "(-50, 0]    106",
+        "(0, 15]     129",
+        "(15, 25]    121",
+        "(25, 50]      9",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "labels": {
+      "lines": [],
+      "result": [
+        "        date  temp_max       kind",
+        "0 2025-01-01      -3.2  ниже нуля",
+        "1 2025-01-02      -3.2  ниже нуля",
+        "2 2025-01-03      -3.7  ниже нуля"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>date</th>\n      <th>temp_max</th>\n      <th>kind</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>2025-01-01</td>\n      <td>-3.2</td>\n      <td>ниже нуля</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>2025-01-02</td>\n      <td>-3.2</td>\n      <td>ниже нуля</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>2025-01-03</td>\n      <td>-3.7</td>\n      <td>ниже нуля</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "label-counts": {
+      "lines": [],
+      "result": [
+        "kind",
+        "ниже нуля    106",
+        "прохладно    129",
+        "тепло        121",
+        "жарко          9",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "edges": {
+      "lines": [
+        "[nan, Interval(0.0, 15.0, closed='right'), Interval(15.0, 25.0, closed='right'), Interval(15.0, 25.0, closed='right')]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "edges-left": {
+      "lines": [
+        "[Interval(0.0, 15.0, closed='left'), Interval(15.0, 25.0, closed='left'), Interval(15.0, 25.0, closed='left'), nan]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "outside": {
+      "lines": [],
+      "result": [
+        "0       дети",
+        "1       дети",
+        "2    молодые",
+        "3        NaN",
+        "dtype: category",
+        "Categories (2, str): ['дети' < 'молодые']"
+      ],
+      "html": null,
+      "error": null
+    },
+    "equal-width": {
+      "lines": [],
+      "result": [
+        "wind_ms",
+        "(0.487, 4.867]    272",
+        "(4.867, 9.233]     81",
+        "(9.233, 13.6]      12",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "qcut": {
+      "lines": [],
+      "result": [
+        "(149.999, 535.0]    612",
+        "(535.0, 1080.0]     665",
+        "(1080.0, 1580.0]    598",
+        "(1580.0, 9030.0]    573",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    }
+  }
+}

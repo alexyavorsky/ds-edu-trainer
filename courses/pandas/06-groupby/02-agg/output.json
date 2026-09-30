@@ -1,0 +1,110 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "list": {
+      "lines": [],
+      "result": [
+        "                     sum         mean  count",
+        "city",
+        "Екатеринбург      423350  1356.891026    312",
+        "Казань            440150  1290.762463    341",
+        "Москва           1310110  1381.972574    948",
+        "Новосибирск       324090  1256.162791    258",
+        "Санкт-Петербург   803720  1364.550085    589"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>sum</th>\n      <th>mean</th>\n      <th>count</th>\n    </tr>\n    <tr>\n      <th>city</th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Екатеринбург</th>\n      <td>423350</td>\n      <td>1356.891026</td>\n      <td>312</td>\n    </tr>\n    <tr>\n      <th>Казань</th>\n      <td>440150</td>\n      <td>1290.762463</td>\n      <td>341</td>\n    </tr>\n    <tr>\n      <th>Москва</th>\n      <td>1310110</td>\n      <td>1381.972574</td>\n      <td>948</td>\n    </tr>\n    <tr>\n      <th>Новосибирск</th>\n      <td>324090</td>\n      <td>1256.162791</td>\n      <td>258</td>\n    </tr>\n    <tr>\n      <th>Санкт-Петербург</th>\n      <td>803720</td>\n      <td>1364.550085</td>\n      <td>589</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "list-use": {
+      "lines": [
+        "440150",
+        "[1356.9, 1290.8, 1382.0, 1256.2, 1364.6]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "named": {
+      "lines": [],
+      "result": [
+        "                   total  orders   avg_price",
+        "city",
+        "Екатеринбург      423350     203  691.153846",
+        "Казань            440150     214  719.090909",
+        "Москва           1310110     627  695.253165",
+        "Новосибирск       324090     163  689.534884",
+        "Санкт-Петербург   803720     369  658.981324"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>total</th>\n      <th>orders</th>\n      <th>avg_price</th>\n    </tr>\n    <tr>\n      <th>city</th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Екатеринбург</th>\n      <td>423350</td>\n      <td>203</td>\n      <td>691.153846</td>\n    </tr>\n    <tr>\n      <th>Казань</th>\n      <td>440150</td>\n      <td>214</td>\n      <td>719.090909</td>\n    </tr>\n    <tr>\n      <th>Москва</th>\n      <td>1310110</td>\n      <td>627</td>\n      <td>695.253165</td>\n    </tr>\n    <tr>\n      <th>Новосибирск</th>\n      <td>324090</td>\n      <td>163</td>\n      <td>689.534884</td>\n    </tr>\n    <tr>\n      <th>Санкт-Петербург</th>\n      <td>803720</td>\n      <td>369</td>\n      <td>658.981324</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "named-calc": {
+      "lines": [],
+      "result": [
+        "                   total  orders   check",
+        "city",
+        "Санкт-Петербург   803720     369  2178.1",
+        "Москва           1310110     627  2089.5",
+        "Екатеринбург      423350     203  2085.5",
+        "Казань            440150     214  2056.8",
+        "Новосибирск       324090     163  1988.3"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>total</th>\n      <th>orders</th>\n      <th>check</th>\n    </tr>\n    <tr>\n      <th>city</th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Санкт-Петербург</th>\n      <td>803720</td>\n      <td>369</td>\n      <td>2178.1</td>\n    </tr>\n    <tr>\n      <th>Москва</th>\n      <td>1310110</td>\n      <td>627</td>\n      <td>2089.5</td>\n    </tr>\n    <tr>\n      <th>Екатеринбург</th>\n      <td>423350</td>\n      <td>203</td>\n      <td>2085.5</td>\n    </tr>\n    <tr>\n      <th>Казань</th>\n      <td>440150</td>\n      <td>214</td>\n      <td>2056.8</td>\n    </tr>\n    <tr>\n      <th>Новосибирск</th>\n      <td>324090</td>\n      <td>163</td>\n      <td>1988.3</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "two-keys": {
+      "lines": [],
+      "result": [
+        "city          channel",
+        "Екатеринбург  маркетплейс     83080",
+        "              приложение     150240",
+        "              сайт           190030",
+        "Казань        маркетплейс    113670",
+        "              приложение     106970",
+        "              сайт           219510",
+        "Москва        маркетплейс    343390",
+        "Name: revenue, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "two-keys-loc": {
+      "lines": [
+        "219510",
+        "channel",
+        "маркетплейс    113670",
+        "приложение     106970",
+        "сайт           219510",
+        "Name: revenue, dtype: int64"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "two-keys-len": {
+      "lines": [
+        "15",
+        "3301420",
+        "['city', 'channel']"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "two-keys-named": {
+      "lines": [],
+      "result": [
+        "                         total  lines",
+        "category   channel",
+        "Аксессуары маркетплейс   46230     24",
+        "           приложение    49520     32",
+        "           сайт          77750     52",
+        "Кофе       маркетплейс  461000    234",
+        "           приложение   540520    272",
+        "           сайт         912920    469"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th></th>\n      <th>total</th>\n      <th>lines</th>\n    </tr>\n    <tr>\n      <th>category</th>\n      <th>channel</th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th rowspan=\"3\" valign=\"top\">Аксессуары</th>\n      <th>маркетплейс</th>\n      <td>46230</td>\n      <td>24</td>\n    </tr>\n    <tr>\n      <th>приложение</th>\n      <td>49520</td>\n      <td>32</td>\n    </tr>\n    <tr>\n      <th>сайт</th>\n      <td>77750</td>\n      <td>52</td>\n    </tr>\n    <tr>\n      <th rowspan=\"3\" valign=\"top\">Кофе</th>\n      <th>маркетплейс</th>\n      <td>461000</td>\n      <td>234</td>\n    </tr>\n    <tr>\n      <th>приложение</th>\n      <td>540520</td>\n      <td>272</td>\n    </tr>\n    <tr>\n      <th>сайт</th>\n      <td>912920</td>\n      <td>469</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    }
+  }
+}

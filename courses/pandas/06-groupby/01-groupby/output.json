@@ -1,0 +1,148 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "by-hand": {
+      "lines": [
+        "60",
+        "25",
+        "32"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "first": {
+      "lines": [],
+      "result": [
+        "city",
+        "Омск     60",
+        "Пермь    25",
+        "Тула     32",
+        "Name: cups, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "result-type": {
+      "lines": [
+        "Series",
+        "['Омск', 'Пермь', 'Тула']",
+        "32"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "real": {
+      "lines": [],
+      "result": [
+        "city",
+        "Екатеринбург        423350",
+        "Казань              440150",
+        "Москва             1310110",
+        "Новосибирск         324090",
+        "Санкт-Петербург     803720",
+        "Name: revenue, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "check-total": {
+      "lines": [
+        "3301420",
+        "3301420"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "other-aggs": {
+      "lines": [
+        "category",
+        "Аксессуары    3200",
+        "Кофе          1450",
+        "Посуда        2400",
+        "Сладости       320",
+        "Чай            540",
+        "Name: price, dtype: int64",
+        "channel",
+        "маркетплейс    1397.2",
+        "приложение     1319.3",
+        "сайт           1339.4",
+        "Name: revenue, dtype: float64"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "nunique": {
+      "lines": [],
+      "result": [
+        "city",
+        "Екатеринбург       203",
+        "Казань             214",
+        "Москва             627",
+        "Новосибирск        163",
+        "Санкт-Петербург    369",
+        "Name: order_id, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "two-columns": {
+      "lines": [],
+      "result": [
+        "                 revenue  quantity",
+        "city",
+        "Екатеринбург      423350       660",
+        "Казань            440150       675",
+        "Москва           1310110      2058",
+        "Новосибирск       324090       509",
+        "Санкт-Петербург   803720      1308"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>revenue</th>\n      <th>quantity</th>\n    </tr>\n    <tr>\n      <th>city</th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Екатеринбург</th>\n      <td>423350</td>\n      <td>660</td>\n    </tr>\n    <tr>\n      <th>Казань</th>\n      <td>440150</td>\n      <td>675</td>\n    </tr>\n    <tr>\n      <th>Москва</th>\n      <td>1310110</td>\n      <td>2058</td>\n    </tr>\n    <tr>\n      <th>Новосибирск</th>\n      <td>324090</td>\n      <td>509</td>\n    </tr>\n    <tr>\n      <th>Санкт-Петербург</th>\n      <td>803720</td>\n      <td>1308</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "no-column": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "TypeError: dtype 'str' does not support operation 'mean'"
+    },
+    "size-count": {
+      "lines": [
+        "city",
+        "Казань             365",
+        "Москва             365",
+        "Новосибирск        365",
+        "Санкт-Петербург    365",
+        "Сочи               365",
+        "dtype: int64",
+        "city",
+        "Казань             363",
+        "Москва             365",
+        "Новосибирск        365",
+        "Санкт-Петербург    365",
+        "Сочи               365",
+        "Name: temp_max, dtype: int64"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "sorted": {
+      "lines": [],
+      "result": [
+        "product",
+        "Эфиопия 250 г             426600",
+        "Бразилия 1 кг             375390",
+        "Эспрессо-смесь 1 кг       372650",
+        "Колумбия 250 г            372600",
+        "Кофе без кофеина 250 г    367200",
+        "Name: revenue, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    }
+  }
+}

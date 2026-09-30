@@ -1,0 +1,127 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "info": {
+      "lines": [
+        "<class 'pandas.DataFrame'>",
+        "RangeIndex: 2448 entries, 0 to 2447",
+        "Data columns (total 9 columns):",
+        " #   Column       Non-Null Count  Dtype",
+        "---  ------       --------------  -----",
+        " 0   order_id     2448 non-null   int64",
+        " 1   date         2448 non-null   str",
+        " 2   customer_id  2448 non-null   str",
+        " 3   city         2448 non-null   str",
+        " 4   channel      2448 non-null   str",
+        " 5   category     2448 non-null   str",
+        " 6   product      2448 non-null   str",
+        " 7   price        2448 non-null   int64",
+        " 8   quantity     2448 non-null   int64",
+        "dtypes: int64(3), str(6)",
+        "memory usage: 114.8 KB"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "describe": {
+      "lines": [],
+      "result": [
+        "           order_id        price     quantity",
+        "count   2448.000000  2448.000000  2448.000000",
+        "mean   10787.296977   688.721405     2.128268",
+        "std      456.972637   537.676249     1.386154",
+        "min    10001.000000   150.000000     1.000000",
+        "25%    10390.000000   320.000000     1.000000",
+        "50%    10789.000000   540.000000     2.000000",
+        "75%    11182.000000   790.000000     3.000000",
+        "max    11576.000000  3200.000000    10.000000"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>count</th>\n      <td>2448.000000</td>\n      <td>2448.000000</td>\n      <td>2448.000000</td>\n    </tr>\n    <tr>\n      <th>mean</th>\n      <td>10787.296977</td>\n      <td>688.721405</td>\n      <td>2.128268</td>\n    </tr>\n    <tr>\n      <th>std</th>\n      <td>456.972637</td>\n      <td>537.676249</td>\n      <td>1.386154</td>\n    </tr>\n    <tr>\n      <th>min</th>\n      <td>10001.000000</td>\n      <td>150.000000</td>\n      <td>1.000000</td>\n    </tr>\n    <tr>\n      <th>25%</th>\n      <td>10390.000000</td>\n      <td>320.000000</td>\n      <td>1.000000</td>\n    </tr>\n    <tr>\n      <th>50%</th>\n      <td>10789.000000</td>\n      <td>540.000000</td>\n      <td>2.000000</td>\n    </tr>\n    <tr>\n      <th>75%</th>\n      <td>11182.000000</td>\n      <td>790.000000</td>\n      <td>3.000000</td>\n    </tr>\n    <tr>\n      <th>max</th>\n      <td>11576.000000</td>\n      <td>3200.000000</td>\n      <td>10.000000</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "describe-one": {
+      "lines": [],
+      "result": [
+        "count    2448.000000",
+        "mean      688.721405",
+        "std       537.676249",
+        "min       150.000000",
+        "25%       320.000000",
+        "50%       540.000000",
+        "75%       790.000000",
+        "max      3200.000000",
+        "Name: price, dtype: float64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "counts": {
+      "lines": [],
+      "result": [
+        "city",
+        "Москва             948",
+        "Санкт-Петербург    589",
+        "Казань             341",
+        "Екатеринбург       312",
+        "Новосибирск        258",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "counts-label": {
+      "lines": [
+        "341",
+        "Index(['Москва', 'Санкт-Петербург', 'Казань', 'Екатеринбург', 'Новосибирск'], dtype='str', name='city')"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "nunique": {
+      "lines": [
+        "5",
+        "20"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "nunique-all": {
+      "lines": [],
+      "result": [
+        "order_id       1576",
+        "date            358",
+        "customer_id     213",
+        "city              5",
+        "channel           3",
+        "category          5",
+        "product          20",
+        "price            20",
+        "quantity         10",
+        "dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "unique": {
+      "lines": [],
+      "result": [
+        "<StringArray>",
+        "['маркетплейс', 'приложение', 'сайт']",
+        "Length: 3, dtype: str"
+      ],
+      "html": null,
+      "error": null
+    },
+    "unique-list": {
+      "lines": [],
+      "result": [
+        "['маркетплейс', 'приложение', 'сайт']"
+      ],
+      "html": null,
+      "error": null
+    }
+  }
+}

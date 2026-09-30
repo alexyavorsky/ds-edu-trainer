@@ -1,0 +1,129 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "load": {
+      "lines": [
+        "['product_id', 'name', 'category', 'price', 'cost']",
+        "['customer_id', 'name', 'city', 'signup_date', 'segment']"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "left-right": {
+      "lines": [],
+      "result": [
+        "['order_id', 'date', 'customer_id', 'product_id', 'quantity', 'channel', 'id', 'name', 'category', 'price', 'cost']"
+      ],
+      "html": null,
+      "error": null
+    },
+    "same-names": {
+      "lines": [],
+      "result": [
+        "['order_id', 'date', 'customer_id', 'product_id', 'quantity', 'channel', 'name_x', 'category', 'price', 'cost', 'name_y', 'city', 'signup_date', 'segment']"
+      ],
+      "html": null,
+      "error": null
+    },
+    "suffixes": {
+      "lines": [],
+      "result": [
+        "   order_id        name_product name_customer    city",
+        "0     10001    Кофемолка ручная      Ирина О.  Москва",
+        "1     10001  Травяной сбор 50 г      Ирина О.  Москва",
+        "2     10002     Шоколад горький   Светлана П.  Москва"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>name_product</th>\n      <th>name_customer</th>\n      <th>city</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>Кофемолка ручная</td>\n      <td>Ирина О.</td>\n      <td>Москва</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>Травяной сбор 50 г</td>\n      <td>Ирина О.</td>\n      <td>Москва</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>10002</td>\n      <td>Шоколад горький</td>\n      <td>Светлана П.</td>\n      <td>Москва</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "returns": {
+      "lines": [
+        "150"
+      ],
+      "result": [
+        "   order_id product_id  quantity",
+        "0     10001        P18         2",
+        "1     10010        P16         1",
+        "2     10012        P01         2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>product_id</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>P18</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10010</td>\n      <td>P16</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>10012</td>\n      <td>P01</td>\n      <td>2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "wrong-key": {
+      "lines": [
+        "2448 2458",
+        "402.0 214"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "wrong-look": {
+      "lines": [],
+      "result": [
+        "   order_id product_id  quantity  quantity_returned",
+        "0     10001        P18         2                2.0",
+        "1     10001        P09         1                2.0"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>product_id</th>\n      <th>quantity</th>\n      <th>quantity_returned</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>P18</td>\n      <td>2</td>\n      <td>2.0</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>P09</td>\n      <td>1</td>\n      <td>2.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "wrong-dup": {
+      "lines": [
+        "    order_id product_id  quantity",
+        "12     10119        P07         1",
+        "15     10119        P05         1"
+      ],
+      "result": [
+        "     order_id product_id  quantity  quantity_returned",
+        "190     10119        P07         3                1.0",
+        "191     10119        P07         3                1.0",
+        "192     10119        P05         1                1.0",
+        "193     10119        P05         1                1.0"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>product_id</th>\n      <th>quantity</th>\n      <th>quantity_returned</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>190</th>\n      <td>10119</td>\n      <td>P07</td>\n      <td>3</td>\n      <td>1.0</td>\n    </tr>\n    <tr>\n      <th>191</th>\n      <td>10119</td>\n      <td>P07</td>\n      <td>3</td>\n      <td>1.0</td>\n    </tr>\n    <tr>\n      <th>192</th>\n      <td>10119</td>\n      <td>P05</td>\n      <td>1</td>\n      <td>1.0</td>\n    </tr>\n    <tr>\n      <th>193</th>\n      <td>10119</td>\n      <td>P05</td>\n      <td>1</td>\n      <td>1.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "fixed-look": {
+      "lines": [
+        "2448 214"
+      ],
+      "result": [
+        "     order_id product_id  quantity  quantity_returned",
+        "0       10001        P18         2                  2",
+        "1       10001        P09         1                  0",
+        "190     10119        P07         3                  1",
+        "191     10119        P05         1                  1"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>product_id</th>\n      <th>quantity</th>\n      <th>quantity_returned</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>P18</td>\n      <td>2</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>P09</td>\n      <td>1</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>190</th>\n      <td>10119</td>\n      <td>P07</td>\n      <td>3</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>191</th>\n      <td>10119</td>\n      <td>P05</td>\n      <td>1</td>\n      <td>1</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "validate-ok": {
+      "lines": [],
+      "result": [
+        "2448"
+      ],
+      "html": null,
+      "error": null
+    },
+    "validate-fail": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "MergeError: Merge keys are not unique in right dataset; not a many-to-one merge\n\nDuplicates in right:\n  order_id\n    10119\n    10289\n    10498\n    10594 ..."
+    },
+    "indicator": {
+      "lines": [],
+      "result": [
+        "_merge",
+        "both          213",
+        "left_only      27",
+        "right_only      0",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "load": {
+      "lines": [],
+      "result": [
+        "        date    city  temp_min  temp_max  precip_mm  wind_ms",
+        "0 2025-01-01  Москва      -9.9      -3.2        0.0      1.9",
+        "1 2025-01-02  Москва      -9.7      -3.2        0.0      2.3",
+        "2 2025-01-03  Москва      -9.0      -3.7        0.0      5.2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>date</th>\n      <th>city</th>\n      <th>temp_min</th>\n      <th>temp_max</th>\n      <th>precip_mm</th>\n      <th>wind_ms</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>2025-01-01</td>\n      <td>Москва</td>\n      <td>-9.9</td>\n      <td>-3.2</td>\n      <td>0.0</td>\n      <td>1.9</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>2025-01-02</td>\n      <td>Москва</td>\n      <td>-9.7</td>\n      <td>-3.2</td>\n      <td>0.0</td>\n      <td>2.3</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>2025-01-03</td>\n      <td>Москва</td>\n      <td>-9.0</td>\n      <td>-3.7</td>\n      <td>0.0</td>\n      <td>5.2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "mean-median": {
+      "lines": [
+        "1.954120879120879",
+        "0.0",
+        "0.5384615384615384"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "outlier": {
+      "lines": [
+        "70.0 70.0",
+        "208.33333333333334 72.5"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "std": {
+      "lines": [
+        "9.123013698630135 10.108617078726315",
+        "17.724931506849316 6.342617739486737"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "std-toy": {
+      "lines": [
+        "0.0",
+        "0.816496580927726",
+        "9.128709291752768"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "quantile": {
+      "lines": [
+        "10.1",
+        "18.5"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "quantiles": {
+      "lines": [],
+      "result": [
+        "0.25    -1.2",
+        "0.50    10.1",
+        "0.75    18.5",
+        "Name: temp_max, dtype: float64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "idxmax": {
+      "lines": [
+        "196"
+      ],
+      "result": [
+        "date         2025-07-16 00:00:00",
+        "city                      Москва",
+        "temp_min                    21.8",
+        "temp_max                    27.2",
+        "precip_mm                    9.5",
+        "wind_ms                      2.2",
+        "Name: 196, dtype: object"
+      ],
+      "html": null,
+      "error": null
+    },
+    "frame-stats": {
+      "lines": [],
+      "result": [
+        "temp_min     3.603288",
+        "temp_max     9.123014",
+        "precip_mm    1.954121",
+        "wind_ms      3.823836",
+        "dtype: float64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "frame-error": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "TypeError: Cannot perform reduction 'mean' with string dtype"
+    }
+  }
+}

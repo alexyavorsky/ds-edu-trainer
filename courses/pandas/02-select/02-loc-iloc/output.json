@@ -1,0 +1,169 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "row": {
+      "lines": [],
+      "result": [
+        "order_id                  10001",
+        "date                 2025-01-01",
+        "customer_id                C095",
+        "city                     Москва",
+        "channel             маркетплейс",
+        "category             Аксессуары",
+        "product        Кофемолка ручная",
+        "price                      3200",
+        "quantity                      2",
+        "Name: 0, dtype: object"
+      ],
+      "html": null,
+      "error": null
+    },
+    "slice": {
+      "lines": [],
+      "result": [
+        "   order_id        date customer_id    city     channel  category  \\",
+        "2     10002  2025-01-01        C059  Москва  приложение  Сладости",
+        "3     10002  2025-01-01        C059  Москва  приложение       Чай",
+        "4     10003  2025-01-01        C203  Казань        сайт      Кофе",
+        "",
+        "            product  price  quantity",
+        "2   Шоколад горький    180         1",
+        "3  Чёрный чай 100 г    350         1",
+        "4     Эфиопия 250 г    790         1"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2</th>\n      <td>10002</td>\n      <td>2025-01-01</td>\n      <td>C059</td>\n      <td>Москва</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n      <td>Шоколад горький</td>\n      <td>180</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>10002</td>\n      <td>2025-01-01</td>\n      <td>C059</td>\n      <td>Москва</td>\n      <td>приложение</td>\n      <td>Чай</td>\n      <td>Чёрный чай 100 г</td>\n      <td>350</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>10003</td>\n      <td>2025-01-01</td>\n      <td>C203</td>\n      <td>Казань</td>\n      <td>сайт</td>\n      <td>Кофе</td>\n      <td>Эфиопия 250 г</td>\n      <td>790</td>\n      <td>1</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "picks": {
+      "lines": [],
+      "result": [
+        "      order_id        date customer_id          city      channel    category  \\",
+        "0        10001  2025-01-01        C095        Москва  маркетплейс  Аксессуары",
+        "10       10008  2025-01-03        C001  Екатеринбург   приложение    Сладости",
+        "2447     11576  2025-12-31        C158        Казань   приложение    Сладости",
+        "",
+        "                 product  price  quantity",
+        "0       Кофемолка ручная   3200         2",
+        "10    Миндаль в шоколаде    320         3",
+        "2447               Зефир    210         2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>10</th>\n      <td>10008</td>\n      <td>2025-01-03</td>\n      <td>C001</td>\n      <td>Екатеринбург</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n      <td>Миндаль в шоколаде</td>\n      <td>320</td>\n      <td>3</td>\n    </tr>\n    <tr>\n      <th>2447</th>\n      <td>11576</td>\n      <td>2025-12-31</td>\n      <td>C158</td>\n      <td>Казань</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n      <td>Зефир</td>\n      <td>210</td>\n      <td>2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "out": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "IndexError: single positional indexer is out-of-bounds"
+    },
+    "cell": {
+      "lines": [
+        "Кофемолка ручная",
+        "2"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "block": {
+      "lines": [],
+      "result": [
+        "     city      channel    category",
+        "0  Москва  маркетплейс  Аксессуары",
+        "1  Москва  маркетплейс         Чай",
+        "2  Москва   приложение    Сладости"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Чай</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Москва</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "stats": {
+      "lines": [],
+      "result": [
+        "           order_id        price     quantity",
+        "count   2448.000000  2448.000000  2448.000000",
+        "mean   10787.296977   688.721405     2.128268",
+        "std      456.972637   537.676249     1.386154",
+        "min    10001.000000   150.000000     1.000000",
+        "25%    10390.000000   320.000000     1.000000",
+        "50%    10789.000000   540.000000     2.000000",
+        "75%    11182.000000   790.000000     3.000000",
+        "max    11576.000000  3200.000000    10.000000"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>count</th>\n      <td>2448.000000</td>\n      <td>2448.000000</td>\n      <td>2448.000000</td>\n    </tr>\n    <tr>\n      <th>mean</th>\n      <td>10787.296977</td>\n      <td>688.721405</td>\n      <td>2.128268</td>\n    </tr>\n    <tr>\n      <th>std</th>\n      <td>456.972637</td>\n      <td>537.676249</td>\n      <td>1.386154</td>\n    </tr>\n    <tr>\n      <th>min</th>\n      <td>10001.000000</td>\n      <td>150.000000</td>\n      <td>1.000000</td>\n    </tr>\n    <tr>\n      <th>25%</th>\n      <td>10390.000000</td>\n      <td>320.000000</td>\n      <td>1.000000</td>\n    </tr>\n    <tr>\n      <th>50%</th>\n      <td>10789.000000</td>\n      <td>540.000000</td>\n      <td>2.000000</td>\n    </tr>\n    <tr>\n      <th>75%</th>\n      <td>11182.000000</td>\n      <td>790.000000</td>\n      <td>3.000000</td>\n    </tr>\n    <tr>\n      <th>max</th>\n      <td>11576.000000</td>\n      <td>3200.000000</td>\n      <td>10.000000</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "loc-row": {
+      "lines": [],
+      "result": [
+        "order_id    10787.296977",
+        "price         688.721405",
+        "quantity        2.128268",
+        "Name: mean, dtype: float64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "loc-cell": {
+      "lines": [
+        "688.7214052287582",
+        "10.0"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "loc-block": {
+      "lines": [],
+      "result": [
+        "     price  quantity",
+        "min  150.0       1.0",
+        "25%  320.0       1.0",
+        "50%  540.0       2.0"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>min</th>\n      <td>150.0</td>\n      <td>1.0</td>\n    </tr>\n    <tr>\n      <th>25%</th>\n      <td>320.0</td>\n      <td>1.0</td>\n    </tr>\n    <tr>\n      <th>50%</th>\n      <td>540.0</td>\n      <td>2.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "loc-numbers": {
+      "lines": [],
+      "result": [
+        "            product  price",
+        "2   Шоколад горький    180",
+        "3  Чёрный чай 100 г    350",
+        "4     Эфиопия 250 г    790"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product</th>\n      <th>price</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2</th>\n      <td>Шоколад горький</td>\n      <td>180</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>Чёрный чай 100 г</td>\n      <td>350</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>Эфиопия 250 г</td>\n      <td>790</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "tail-labels": {
+      "lines": [],
+      "result": [
+        "      order_id        date customer_id         city      channel    category  \\",
+        "2445     11575  2025-12-31        C057  Новосибирск  маркетплейс    Сладости",
+        "2446     11575  2025-12-31        C057  Новосибирск  маркетплейс  Аксессуары",
+        "2447     11576  2025-12-31        C158       Казань   приложение    Сладости",
+        "",
+        "               product  price  quantity",
+        "2445   Печенье овсяное    150         2",
+        "2446  Фильтры бумажные    240         1",
+        "2447             Зефир    210         2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2445</th>\n      <td>11575</td>\n      <td>2025-12-31</td>\n      <td>C057</td>\n      <td>Новосибирск</td>\n      <td>маркетплейс</td>\n      <td>Сладости</td>\n      <td>Печенье овсяное</td>\n      <td>150</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>2446</th>\n      <td>11575</td>\n      <td>2025-12-31</td>\n      <td>C057</td>\n      <td>Новосибирск</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Фильтры бумажные</td>\n      <td>240</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>2447</th>\n      <td>11576</td>\n      <td>2025-12-31</td>\n      <td>C158</td>\n      <td>Казань</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n      <td>Зефир</td>\n      <td>210</td>\n      <td>2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "tail-iloc": {
+      "lines": [
+        "Печенье овсяное",
+        "Печенье овсяное"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "tail-loc": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "KeyError: 0"
+    }
+  }
+}

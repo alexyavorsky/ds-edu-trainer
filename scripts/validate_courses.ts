@@ -20,7 +20,7 @@
  * Ноутбук с эталонами выполняется в CPython без ошибок, все проверки в нём — «Прошло N из N».
  */
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { availableParallelism } from 'node:os';
 import { join } from 'node:path';
 import { type Block, type CodeCell, type ExerciseCell, type OutputFile, type StoredOutput } from '../src/lib/courses/format.ts';
@@ -265,6 +265,7 @@ interface StepResult {
   error: { type: string; mro: string[]; text: string; line: number | null } | null;
   warnings: string[];
   truncated: boolean;
+  plots?: string[]; // SVG фигур matplotlib, оставшихся открытыми после ячейки
   phase?: 'run' | 'missing' | 'tests';
   results?: TestResult[];
 }
@@ -359,10 +360,33 @@ async function runPyodide(runs: Run[], size: number): Promise<(StepResult[] | st
 }
 
 function stored(s: StepResult): StoredOutput {
-  return { lines: s.lines, result: s.result, html: s.html, error: s.error?.text ?? null };
+  const out: StoredOutput = { lines: s.lines, result: s.result, html: s.html, error: s.error?.text ?? null };
+  if (s.plots?.length) out.plots = s.plots.length; // сами SVG лежат в public/course-plots — см. syncPlots
+  return out;
 }
 
-const sameOutput = (a: StoredOutput, b: StoredOutput) => JSON.stringify([a.lines, a.result, a.error]) === JSON.stringify([b.lines, b.result, b.error]);
+// Версии matplotlib в браузере и в CPython разные, поэтому SVG не сравниваются — только число графиков.
+const sameOutput = (a: StoredOutput, b: StoredOutput) =>
+  JSON.stringify([a.lines, a.result, a.error, a.plots ?? 0]) === JSON.stringify([b.lines, b.result, b.error, b.plots ?? 0]);
+
+/** Графики демонстраций (SVG из прогона в Pyodide) — в public/course-plots/<курс>/<урок>/<ячейка>-<n>.svg. */
+function syncPlots(course: CourseSource, lesson: LessonSource, plots: Map<string, string>, update: boolean, r: Report): void {
+  const dir = join(root, 'public', 'course-plots', course.slug, lesson.slug);
+  const existing = existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.svg')) : [];
+  for (const [name, svg] of plots) {
+    const path = join(dir, name);
+    if (existsSync(path) && read(path) === svg) continue;
+    if (update) {
+      mkdirSync(dir, { recursive: true });
+      writeFileSync(path, svg);
+    } else r.error(lesson.meta.id, `график ${name}: сохранённый файл устарел или отсутствует — запустите с --update`);
+  }
+  for (const name of existing) {
+    if (plots.has(name)) continue;
+    if (update) rmSync(join(dir, name));
+    else r.error(lesson.meta.id, `график ${name}: лишний файл в public/course-plots — запустите с --update`);
+  }
+}
 
 function diffText(a: StoredOutput, b: StoredOutput): string {
   const text = (o: StoredOutput) => [...o.lines, ...(o.result ?? []), ...(o.error ? [o.error] : [])];
@@ -423,10 +447,13 @@ async function main(argv: string[]): Promise<number> {
     const main = lessonRuns.find(({ run }) => run.label === 'эталоны');
     if (!main || typeof pyodide[main.i] === 'string') continue;
     const fresh: OutputFile = { generated: `Pyodide ${PYODIDE_VERSION} · ${course.meta.title} ${npVersion(course.meta.package)}`, cells: {} };
+    const plots = new Map<string, string>();
     main.run.steps.forEach((step, k) => {
       const cell = lesson.cells.find((c) => c.id === step.cell)!;
       if (cell.kind !== 'demo') return;
-      const out = stored((pyodide[main.i] as StepResult[])[k]);
+      const result = (pyodide[main.i] as StepResult[])[k];
+      const out = stored(result);
+      (result.plots ?? []).forEach((svg, n) => plots.set(`${cell.id}-${n + 1}.svg`, svg));
       fresh.cells[cell.id] = out;
       const c = cpy[main.i][k];
       if (c && !('platform' in cell.flags) && !sameOutput(out, stored(c))) {
@@ -434,6 +461,7 @@ async function main(argv: string[]): Promise<number> {
       }
       if (c && 'platform' in cell.flags && sameOutput(out, stored(c))) r.warn(at, `ячейка ${cell.id}: вывод одинаковый — флаг [platform] не нужен`);
     });
+    syncPlots(course, lesson, plots, update, r);
     const path = join(lesson.dir, 'output.json');
     const text = `${JSON.stringify(fresh, null, 2)}\n`;
     if (update) {

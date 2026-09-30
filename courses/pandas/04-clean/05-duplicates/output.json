@@ -1,0 +1,134 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "load": {
+      "lines": [
+        "163"
+      ],
+      "result": [
+        "  return_id  order_id product_id return_date  quantity               reason",
+        "0      R001     10001        P18  17.01.2025         2                 брак",
+        "1      R002     10010        P16  2025-01-19         1  повреждена упаковка",
+        "2      R003     10012        P01  21.01.2025         2            передумал",
+        "3      R004     10018        P03  2025-01-15         5   не понравился вкус"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>return_id</th>\n      <th>order_id</th>\n      <th>product_id</th>\n      <th>return_date</th>\n      <th>quantity</th>\n      <th>reason</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>R001</td>\n      <td>10001</td>\n      <td>P18</td>\n      <td>17.01.2025</td>\n      <td>2</td>\n      <td>брак</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>R002</td>\n      <td>10010</td>\n      <td>P16</td>\n      <td>2025-01-19</td>\n      <td>1</td>\n      <td>повреждена упаковка</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>R003</td>\n      <td>10012</td>\n      <td>P01</td>\n      <td>21.01.2025</td>\n      <td>2</td>\n      <td>передумал</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>R004</td>\n      <td>10018</td>\n      <td>P03</td>\n      <td>2025-01-15</td>\n      <td>5</td>\n      <td>не понравился вкус</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "small": {
+      "lines": [],
+      "result": [
+        "  client     drink  repeat",
+        "0   Анна     латте   False",
+        "1   Олег  эспрессо   False",
+        "2   Анна     латте    True",
+        "3   Анна     какао   False",
+        "4   Олег  эспрессо    True"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>client</th>\n      <th>drink</th>\n      <th>repeat</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Анна</td>\n      <td>латте</td>\n      <td>False</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Олег</td>\n      <td>эспрессо</td>\n      <td>False</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Анна</td>\n      <td>латте</td>\n      <td>True</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>Анна</td>\n      <td>какао</td>\n      <td>False</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>Олег</td>\n      <td>эспрессо</td>\n      <td>True</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "count": {
+      "lines": [
+        "2"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "show": {
+      "lines": [],
+      "result": [
+        "    return_id  order_id product_id return_date  quantity               reason",
+        "17       R016     10151        P02  2025-02-16         2                 брак",
+        "45       R016     10151        P02  2025-02-16         2                 брак",
+        "27       R026     10323        P06  2025-03-23         1  повреждена упаковка",
+        "135      R026     10323        P06  2025-03-23         1  повреждена упаковка",
+        "13       R035     10442        P03  2025-04-19         1            Передумал",
+        "36       R035     10442        P03  2025-04-19         1            Передумал"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>return_id</th>\n      <th>order_id</th>\n      <th>product_id</th>\n      <th>return_date</th>\n      <th>quantity</th>\n      <th>reason</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>17</th>\n      <td>R016</td>\n      <td>10151</td>\n      <td>P02</td>\n      <td>2025-02-16</td>\n      <td>2</td>\n      <td>брак</td>\n    </tr>\n    <tr>\n      <th>45</th>\n      <td>R016</td>\n      <td>10151</td>\n      <td>P02</td>\n      <td>2025-02-16</td>\n      <td>2</td>\n      <td>брак</td>\n    </tr>\n    <tr>\n      <th>27</th>\n      <td>R026</td>\n      <td>10323</td>\n      <td>P06</td>\n      <td>2025-03-23</td>\n      <td>1</td>\n      <td>повреждена упаковка</td>\n    </tr>\n    <tr>\n      <th>135</th>\n      <td>R026</td>\n      <td>10323</td>\n      <td>P06</td>\n      <td>2025-03-23</td>\n      <td>1</td>\n      <td>повреждена упаковка</td>\n    </tr>\n    <tr>\n      <th>13</th>\n      <td>R035</td>\n      <td>10442</td>\n      <td>P03</td>\n      <td>2025-04-19</td>\n      <td>1</td>\n      <td>Передумал</td>\n    </tr>\n    <tr>\n      <th>36</th>\n      <td>R035</td>\n      <td>10442</td>\n      <td>P03</td>\n      <td>2025-04-19</td>\n      <td>1</td>\n      <td>Передумал</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "id-unique": {
+      "lines": [
+        "156 156",
+        "6"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "doubles-view": {
+      "lines": [],
+      "result": [
+        "    return_id  order_id product_id return_date  quantity               reason",
+        "57       R054     10594        P10  28/05/2025         1  Повреждена упаковка",
+        "162      R156     10594        P10  28/05/2025         1  Повреждена упаковка",
+        "63       R060     10662        P10  30/05/2025         1   не понравился вкус",
+        "159      R153     10662        P10  30/05/2025         1   не понравился вкус"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>return_id</th>\n      <th>order_id</th>\n      <th>product_id</th>\n      <th>return_date</th>\n      <th>quantity</th>\n      <th>reason</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>57</th>\n      <td>R054</td>\n      <td>10594</td>\n      <td>P10</td>\n      <td>28/05/2025</td>\n      <td>1</td>\n      <td>Повреждена упаковка</td>\n    </tr>\n    <tr>\n      <th>162</th>\n      <td>R156</td>\n      <td>10594</td>\n      <td>P10</td>\n      <td>28/05/2025</td>\n      <td>1</td>\n      <td>Повреждена упаковка</td>\n    </tr>\n    <tr>\n      <th>63</th>\n      <td>R060</td>\n      <td>10662</td>\n      <td>P10</td>\n      <td>30/05/2025</td>\n      <td>1</td>\n      <td>не понравился вкус</td>\n    </tr>\n    <tr>\n      <th>159</th>\n      <td>R153</td>\n      <td>10662</td>\n      <td>P10</td>\n      <td>30/05/2025</td>\n      <td>1</td>\n      <td>не понравился вкус</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "keep": {
+      "lines": [
+        "150 150",
+        "['R148', 'R149', 'R150']",
+        "['R154', 'R155', 'R156']"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "too-wide": {
+      "lines": [],
+      "result": [
+        "146"
+      ],
+      "html": null,
+      "error": null
+    },
+    "reset": {
+      "lines": [],
+      "result": [
+        "    return_id  order_id product_id return_date  quantity  \\",
+        "154      R148     11563        P06  04.01.2026         2",
+        "155      R149     11566        P09  2026-01-05         2",
+        "156      R150     11575        P11  2026-01-15         2",
+        "",
+        "                    reason",
+        "154              передумал",
+        "155  привезли не тот товар",
+        "156  привезли не тот товар"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>return_id</th>\n      <th>order_id</th>\n      <th>product_id</th>\n      <th>return_date</th>\n      <th>quantity</th>\n      <th>reason</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>154</th>\n      <td>R148</td>\n      <td>11563</td>\n      <td>P06</td>\n      <td>04.01.2026</td>\n      <td>2</td>\n      <td>передумал</td>\n    </tr>\n    <tr>\n      <th>155</th>\n      <td>R149</td>\n      <td>11566</td>\n      <td>P09</td>\n      <td>2026-01-05</td>\n      <td>2</td>\n      <td>привезли не тот товар</td>\n    </tr>\n    <tr>\n      <th>156</th>\n      <td>R150</td>\n      <td>11575</td>\n      <td>P11</td>\n      <td>2026-01-15</td>\n      <td>2</td>\n      <td>привезли не тот товар</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "reset-index": {
+      "lines": [],
+      "result": [
+        "    return_id  order_id product_id return_date  quantity  \\",
+        "147      R148     11563        P06  04.01.2026         2",
+        "148      R149     11566        P09  2026-01-05         2",
+        "149      R150     11575        P11  2026-01-15         2",
+        "",
+        "                    reason",
+        "147              передумал",
+        "148  привезли не тот товар",
+        "149  привезли не тот товар"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>return_id</th>\n      <th>order_id</th>\n      <th>product_id</th>\n      <th>return_date</th>\n      <th>quantity</th>\n      <th>reason</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>147</th>\n      <td>R148</td>\n      <td>11563</td>\n      <td>P06</td>\n      <td>04.01.2026</td>\n      <td>2</td>\n      <td>передумал</td>\n    </tr>\n    <tr>\n      <th>148</th>\n      <td>R149</td>\n      <td>11566</td>\n      <td>P09</td>\n      <td>2026-01-05</td>\n      <td>2</td>\n      <td>привезли не тот товар</td>\n    </tr>\n    <tr>\n      <th>149</th>\n      <td>R150</td>\n      <td>11575</td>\n      <td>P11</td>\n      <td>2026-01-15</td>\n      <td>2</td>\n      <td>привезли не тот товар</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "hidden": {
+      "lines": [
+        "0",
+        "5"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "sort": {
+      "lines": [],
+      "result": [
+        "   product_id                name    category  price  cost",
+        "10        P11     Печенье овсяное    Сладости    150    70",
+        "9         P10     Шоколад горький    Сладости    180    90",
+        "12        P13               Зефир    Сладости    210   100",
+        "18        P19    Фильтры бумажные  Аксессуары    240    90",
+        "8         P09  Травяной сбор 50 г         Чай    260   100"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>10</th>\n      <td>P11</td>\n      <td>Печенье овсяное</td>\n      <td>Сладости</td>\n      <td>150</td>\n      <td>70</td>\n    </tr>\n    <tr>\n      <th>9</th>\n      <td>P10</td>\n      <td>Шоколад горький</td>\n      <td>Сладости</td>\n      <td>180</td>\n      <td>90</td>\n    </tr>\n    <tr>\n      <th>12</th>\n      <td>P13</td>\n      <td>Зефир</td>\n      <td>Сладости</td>\n      <td>210</td>\n      <td>100</td>\n    </tr>\n    <tr>\n      <th>18</th>\n      <td>P19</td>\n      <td>Фильтры бумажные</td>\n      <td>Аксессуары</td>\n      <td>240</td>\n      <td>90</td>\n    </tr>\n    <tr>\n      <th>8</th>\n      <td>P09</td>\n      <td>Травяной сбор 50 г</td>\n      <td>Чай</td>\n      <td>260</td>\n      <td>100</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "desc": {
+      "lines": [],
+      "result": [
+        "   product_id                 name    category  price  cost",
+        "17        P18     Кофемолка ручная  Аксессуары   3200  1900",
+        "15        P16         Турка медная      Посуда   2400  1300",
+        "14        P15          Френч-пресс      Посуда   1890   950",
+        "0         P01  Эспрессо-смесь 1 кг        Кофе   1450   870"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>17</th>\n      <td>P18</td>\n      <td>Кофемолка ручная</td>\n      <td>Аксессуары</td>\n      <td>3200</td>\n      <td>1900</td>\n    </tr>\n    <tr>\n      <th>15</th>\n      <td>P16</td>\n      <td>Турка медная</td>\n      <td>Посуда</td>\n      <td>2400</td>\n      <td>1300</td>\n    </tr>\n    <tr>\n      <th>14</th>\n      <td>P15</td>\n      <td>Френч-пресс</td>\n      <td>Посуда</td>\n      <td>1890</td>\n      <td>950</td>\n    </tr>\n    <tr>\n      <th>0</th>\n      <td>P01</td>\n      <td>Эспрессо-смесь 1 кг</td>\n      <td>Кофе</td>\n      <td>1450</td>\n      <td>870</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "kept": {
+      "lines": [],
+      "result": [
+        "  product_id                 name category  price  cost",
+        "0        P01  Эспрессо-смесь 1 кг     Кофе   1450   870",
+        "1        P02       Колумбия 250 г     Кофе    690   380",
+        "2        P03        Эфиопия 250 г     Кофе    790   430"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>P01</td>\n      <td>Эспрессо-смесь 1 кг</td>\n      <td>Кофе</td>\n      <td>1450</td>\n      <td>870</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>P02</td>\n      <td>Колумбия 250 г</td>\n      <td>Кофе</td>\n      <td>690</td>\n      <td>380</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>P03</td>\n      <td>Эфиопия 250 г</td>\n      <td>Кофе</td>\n      <td>790</td>\n      <td>430</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "two-keys": {
+      "lines": [],
+      "result": [
+        "   product_id                    name    category  price  cost",
+        "18        P19        Фильтры бумажные  Аксессуары    240    90",
+        "19        P20             Термокружка  Аксессуары   1150   560",
+        "17        P18        Кофемолка ручная  Аксессуары   3200  1900",
+        "1         P02          Колумбия 250 г        Кофе    690   380",
+        "4         P05  Кофе без кофеина 250 г        Кофе    720   410",
+        "2         P03           Эфиопия 250 г        Кофе    790   430",
+        "3         P04           Бразилия 1 кг        Кофе   1290   780"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>18</th>\n      <td>P19</td>\n      <td>Фильтры бумажные</td>\n      <td>Аксессуары</td>\n      <td>240</td>\n      <td>90</td>\n    </tr>\n    <tr>\n      <th>19</th>\n      <td>P20</td>\n      <td>Термокружка</td>\n      <td>Аксессуары</td>\n      <td>1150</td>\n      <td>560</td>\n    </tr>\n    <tr>\n      <th>17</th>\n      <td>P18</td>\n      <td>Кофемолка ручная</td>\n      <td>Аксессуары</td>\n      <td>3200</td>\n      <td>1900</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>P02</td>\n      <td>Колумбия 250 г</td>\n      <td>Кофе</td>\n      <td>690</td>\n      <td>380</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>P05</td>\n      <td>Кофе без кофеина 250 г</td>\n      <td>Кофе</td>\n      <td>720</td>\n      <td>410</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>P03</td>\n      <td>Эфиопия 250 г</td>\n      <td>Кофе</td>\n      <td>790</td>\n      <td>430</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>P04</td>\n      <td>Бразилия 1 кг</td>\n      <td>Кофе</td>\n      <td>1290</td>\n      <td>780</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "two-orders": {
+      "lines": [],
+      "result": [
+        "   product_id                    name    category  price  cost",
+        "17        P18        Кофемолка ручная  Аксессуары   3200  1900",
+        "19        P20             Термокружка  Аксессуары   1150   560",
+        "18        P19        Фильтры бумажные  Аксессуары    240    90",
+        "0         P01     Эспрессо-смесь 1 кг        Кофе   1450   870",
+        "3         P04           Бразилия 1 кг        Кофе   1290   780",
+        "2         P03           Эфиопия 250 г        Кофе    790   430",
+        "4         P05  Кофе без кофеина 250 г        Кофе    720   410"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>17</th>\n      <td>P18</td>\n      <td>Кофемолка ручная</td>\n      <td>Аксессуары</td>\n      <td>3200</td>\n      <td>1900</td>\n    </tr>\n    <tr>\n      <th>19</th>\n      <td>P20</td>\n      <td>Термокружка</td>\n      <td>Аксессуары</td>\n      <td>1150</td>\n      <td>560</td>\n    </tr>\n    <tr>\n      <th>18</th>\n      <td>P19</td>\n      <td>Фильтры бумажные</td>\n      <td>Аксессуары</td>\n      <td>240</td>\n      <td>90</td>\n    </tr>\n    <tr>\n      <th>0</th>\n      <td>P01</td>\n      <td>Эспрессо-смесь 1 кг</td>\n      <td>Кофе</td>\n      <td>1450</td>\n      <td>870</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>P04</td>\n      <td>Бразилия 1 кг</td>\n      <td>Кофе</td>\n      <td>1290</td>\n      <td>780</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>P03</td>\n      <td>Эфиопия 250 г</td>\n      <td>Кофе</td>\n      <td>790</td>\n      <td>430</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>P05</td>\n      <td>Кофе без кофеина 250 г</td>\n      <td>Кофе</td>\n      <td>720</td>\n      <td>410</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "nlargest": {
+      "lines": [],
+      "result": [
+        "   product_id              name    category  price  cost",
+        "17        P18  Кофемолка ручная  Аксессуары   3200  1900",
+        "15        P16      Турка медная      Посуда   2400  1300",
+        "14        P15       Френч-пресс      Посуда   1890   950"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>17</th>\n      <td>P18</td>\n      <td>Кофемолка ручная</td>\n      <td>Аксессуары</td>\n      <td>3200</td>\n      <td>1900</td>\n    </tr>\n    <tr>\n      <th>15</th>\n      <td>P16</td>\n      <td>Турка медная</td>\n      <td>Посуда</td>\n      <td>2400</td>\n      <td>1300</td>\n    </tr>\n    <tr>\n      <th>14</th>\n      <td>P15</td>\n      <td>Френч-пресс</td>\n      <td>Посуда</td>\n      <td>1890</td>\n      <td>950</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "nsmallest": {
+      "lines": [],
+      "result": [
+        "               name  price",
+        "10  Печенье овсяное    150",
+        "9   Шоколад горький    180",
+        "12            Зефир    210"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>name</th>\n      <th>price</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>10</th>\n      <td>Печенье овсяное</td>\n      <td>150</td>\n    </tr>\n    <tr>\n      <th>9</th>\n      <td>Шоколад горький</td>\n      <td>180</td>\n    </tr>\n    <tr>\n      <th>12</th>\n      <td>Зефир</td>\n      <td>210</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "orders": {
+      "lines": [],
+      "result": [
+        "              product  quantity  revenue",
+        "0    Кофемолка ручная         2     6400",
+        "1  Травяной сбор 50 г         1      260",
+        "2     Шоколад горький         1      180"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product</th>\n      <th>quantity</th>\n      <th>revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Кофемолка ручная</td>\n      <td>2</td>\n      <td>6400</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Травяной сбор 50 г</td>\n      <td>1</td>\n      <td>260</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Шоколад горький</td>\n      <td>1</td>\n      <td>180</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "series-sort": {
+      "lines": [],
+      "result": [
+        "price",
+        "690    218",
+        "720    213",
+        "790    210",
+        "260    176",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "sort-index": {
+      "lines": [],
+      "result": [
+        "price",
+        "150    138",
+        "180    120",
+        "210    124",
+        "240     50",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "series-values": {
+      "lines": [],
+      "result": [
+        "city",
+        "Новосибирск     258",
+        "Екатеринбург    312",
+        "Казань          341",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    }
+  }
+}

@@ -13,10 +13,11 @@ interface Props {
   title?: string;
 }
 const { id, title } = Astro.props;
-const { lesson } = findLesson(Astro.locals.lesson!);
+const { course, lesson } = findLesson(Astro.locals.lesson!);
 const cell = cellOf(lesson, id);
 if (cell.kind !== 'demo') throw new Error(`${lesson.meta.id}: <Demo id="${id}"> — ячейка не демонстрация`);
 const output = storedOutput(lesson, id);
+const plots = Array.from({ length: output?.plots ?? 0 }, (_, n) => `/course-plots/${course.slug}/${lesson.slug}/${id}-${n + 1}.svg`);
 const raises = cell.flags.raises;
 ---
 
@@ -43,6 +44,6 @@ const raises = cell.flags.raises;
   <div class="cell-code" data-code>
     <Code code={cell.code} lang="python" theme="vitesse-dark" />
   </div>
-  {output && <CellOutput output={output} />}
+  {output && <CellOutput output={output} plots={plots} title={title} />}
   <div class="cell-live" data-live hidden></div>
 </figure>

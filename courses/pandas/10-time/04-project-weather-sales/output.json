@@ -1,0 +1,74 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "load": {
+      "lines": [
+        "948 365"
+      ],
+      "result": [
+        "              city  temp_min  temp_max  precip_mm  wind_ms",
+        "date",
+        "2025-01-01  Москва      -9.9      -3.2        0.0      1.9",
+        "2025-01-02  Москва      -9.7      -3.2        0.0      2.3",
+        "2025-01-03  Москва      -9.0      -3.7        0.0      5.2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>city</th>\n      <th>temp_min</th>\n      <th>temp_max</th>\n      <th>precip_mm</th>\n      <th>wind_ms</th>\n    </tr>\n    <tr>\n      <th>date</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2025-01-01</th>\n      <td>Москва</td>\n      <td>-9.9</td>\n      <td>-3.2</td>\n      <td>0.0</td>\n      <td>1.9</td>\n    </tr>\n    <tr>\n      <th>2025-01-02</th>\n      <td>Москва</td>\n      <td>-9.7</td>\n      <td>-3.2</td>\n      <td>0.0</td>\n      <td>2.3</td>\n    </tr>\n    <tr>\n      <th>2025-01-03</th>\n      <td>Москва</td>\n      <td>-9.0</td>\n      <td>-3.7</td>\n      <td>0.0</td>\n      <td>5.2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "corr-toy": {
+      "lines": [
+        "1.0",
+        "-0.993",
+        "0.055"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "monthly-view": {
+      "lines": [],
+      "result": [
+        "            temp    tea",
+        "2025-01-31  -3.8  27400",
+        "2025-02-28  -4.7  26300",
+        "2025-03-31   1.6  17910",
+        "2025-04-30  10.9  11600",
+        "2025-05-31  15.5   8630",
+        "2025-06-30  20.1  18940",
+        "2025-07-31  21.7  10110",
+        "2025-08-31  21.6  19580",
+        "2025-09-30  16.0  17040",
+        "2025-10-31  10.2  10450",
+        "2025-11-30   2.1  27610",
+        "2025-12-31  -2.6  35120"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>temp</th>\n      <th>tea</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2025-01-31</th>\n      <td>-3.8</td>\n      <td>27400</td>\n    </tr>\n    <tr>\n      <th>2025-02-28</th>\n      <td>-4.7</td>\n      <td>26300</td>\n    </tr>\n    <tr>\n      <th>2025-03-31</th>\n      <td>1.6</td>\n      <td>17910</td>\n    </tr>\n    <tr>\n      <th>2025-04-30</th>\n      <td>10.9</td>\n      <td>11600</td>\n    </tr>\n    <tr>\n      <th>2025-05-31</th>\n      <td>15.5</td>\n      <td>8630</td>\n    </tr>\n    <tr>\n      <th>2025-06-30</th>\n      <td>20.1</td>\n      <td>18940</td>\n    </tr>\n    <tr>\n      <th>2025-07-31</th>\n      <td>21.7</td>\n      <td>10110</td>\n    </tr>\n    <tr>\n      <th>2025-08-31</th>\n      <td>21.6</td>\n      <td>19580</td>\n    </tr>\n    <tr>\n      <th>2025-09-30</th>\n      <td>16.0</td>\n      <td>17040</td>\n    </tr>\n    <tr>\n      <th>2025-10-31</th>\n      <td>10.2</td>\n      <td>10450</td>\n    </tr>\n    <tr>\n      <th>2025-11-30</th>\n      <td>2.1</td>\n      <td>27610</td>\n    </tr>\n    <tr>\n      <th>2025-12-31</th>\n      <td>-2.6</td>\n      <td>35120</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "within": {
+      "lines": [
+        "0.05"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "summary": {
+      "lines": [
+        "Корреляция температуры и продаж чая:",
+        "  по дням    -0.17",
+        "  по неделям -0.41",
+        "  по месяцам -0.7",
+        "Осадки и выручка: 0.06",
+        "band",
+        "мороз        913.7",
+        "прохладно    544.3",
+        "тепло        489.4",
+        "Name: tea, dtype: float64"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

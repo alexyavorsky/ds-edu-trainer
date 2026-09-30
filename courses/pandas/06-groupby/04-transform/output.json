@@ -1,0 +1,125 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "toy-agg": {
+      "lines": [],
+      "result": [
+        "team",
+        "A    20.0",
+        "B    10.0",
+        "Name: score, dtype: float64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "toy-transform": {
+      "lines": [],
+      "result": [
+        "0    20.0",
+        "1    20.0",
+        "2    10.0",
+        "3    10.0",
+        "4    10.0",
+        "Name: score, dtype: float64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "toy-column": {
+      "lines": [],
+      "result": [
+        "  team  score  team_mean  diff",
+        "0    A     10       20.0 -10.0",
+        "1    A     30       20.0  10.0",
+        "2    B      5       10.0  -5.0",
+        "3    B      5       10.0  -5.0",
+        "4    B     20       10.0  10.0"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>team</th>\n      <th>score</th>\n      <th>team_mean</th>\n      <th>diff</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>A</td>\n      <td>10</td>\n      <td>20.0</td>\n      <td>-10.0</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>A</td>\n      <td>30</td>\n      <td>20.0</td>\n      <td>10.0</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>B</td>\n      <td>5</td>\n      <td>10.0</td>\n      <td>-5.0</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>B</td>\n      <td>5</td>\n      <td>10.0</td>\n      <td>-5.0</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>B</td>\n      <td>20</td>\n      <td>10.0</td>\n      <td>10.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "toy-nan": {
+      "lines": [],
+      "result": [
+        "  team  score  team_mean  wrong",
+        "0    A     10       20.0    NaN",
+        "1    A     30       20.0    NaN",
+        "2    B      5       10.0    NaN",
+        "3    B      5       10.0    NaN",
+        "4    B     20       10.0    NaN"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>team</th>\n      <th>score</th>\n      <th>team_mean</th>\n      <th>wrong</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>A</td>\n      <td>10</td>\n      <td>20.0</td>\n      <td>NaN</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>A</td>\n      <td>30</td>\n      <td>20.0</td>\n      <td>NaN</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>B</td>\n      <td>5</td>\n      <td>10.0</td>\n      <td>NaN</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>B</td>\n      <td>5</td>\n      <td>10.0</td>\n      <td>NaN</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>B</td>\n      <td>20</td>\n      <td>10.0</td>\n      <td>NaN</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "shares-sum": {
+      "lines": [],
+      "result": [
+        "city",
+        "Екатеринбург       1.0",
+        "Казань             1.0",
+        "Москва             1.0",
+        "Новосибирск        1.0",
+        "Санкт-Петербург    1.0",
+        "Name: city_share, dtype: float64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "order-total": {
+      "lines": [],
+      "result": [
+        "   order_id             product  revenue  order_total",
+        "0     10001    Кофемолка ручная     6400         6660",
+        "1     10001  Травяной сбор 50 г      260         6660",
+        "2     10002     Шоколад горький      180          530",
+        "3     10002    Чёрный чай 100 г      350          530"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>product</th>\n      <th>revenue</th>\n      <th>order_total</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>Кофемолка ручная</td>\n      <td>6400</td>\n      <td>6660</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>Травяной сбор 50 г</td>\n      <td>260</td>\n      <td>6660</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>10002</td>\n      <td>Шоколад горький</td>\n      <td>180</td>\n      <td>530</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>10002</td>\n      <td>Чёрный чай 100 г</td>\n      <td>350</td>\n      <td>530</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "order-filter": {
+      "lines": [
+        "30 12"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "norm": {
+      "lines": [],
+      "result": [
+        "        date    city  temp_max      norm",
+        "0 2025-01-01  Москва      -3.2 -3.829032",
+        "1 2025-01-02  Москва      -3.2 -3.829032",
+        "2 2025-01-03  Москва      -3.7 -3.829032"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>date</th>\n      <th>city</th>\n      <th>temp_max</th>\n      <th>norm</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>2025-01-01</td>\n      <td>Москва</td>\n      <td>-3.2</td>\n      <td>-3.829032</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>2025-01-02</td>\n      <td>Москва</td>\n      <td>-3.2</td>\n      <td>-3.829032</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>2025-01-03</td>\n      <td>Москва</td>\n      <td>-3.7</td>\n      <td>-3.829032</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "best-in-group": {
+      "lines": [],
+      "result": [
+        "        category             product  quantity  revenue",
+        "0     Аксессуары    Кофемолка ручная         2     6400",
+        "7     Аксессуары    Кофемолка ручная         2     6400",
+        "348   Аксессуары    Кофемолка ручная         2     6400",
+        "661   Аксессуары    Кофемолка ручная         2     6400",
+        "780   Аксессуары    Кофемолка ручная         2     6400",
+        "962       Посуда         Френч-пресс         4     7560",
+        "1081  Аксессуары    Кофемолка ручная         2     6400",
+        "1144  Аксессуары    Кофемолка ручная         2     6400",
+        "1255         Чай          Улун 100 г         7     3780",
+        "1353  Аксессуары    Кофемолка ручная         2     6400",
+        "1378  Аксессуары    Кофемолка ручная         2     6400",
+        "1473         Чай          Улун 100 г         7     3780",
+        "1633    Сладости  Миндаль в шоколаде         8     2560",
+        "1739         Чай          Улун 100 г         7     3780",
+        "1911        Кофе       Бразилия 1 кг         7     9030",
+        "1995        Кофе       Бразилия 1 кг         7     9030",
+        "2349        Кофе       Бразилия 1 кг         7     9030"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>category</th>\n      <th>product</th>\n      <th>quantity</th>\n      <th>revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>2</td>\n      <td>6400</td>\n    </tr>\n    <tr>\n      <th>7</th>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>2</td>\n      <td>6400</td>\n    </tr>\n    <tr>\n      <th>348</th>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>2</td>\n      <td>6400</td>\n    </tr>\n    <tr>\n      <th>661</th>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>2</td>\n      <td>6400</td>\n    </tr>\n    <tr>\n      <th>780</th>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>2</td>\n      <td>6400</td>\n    </tr>\n    <tr>\n      <th>962</th>\n      <td>Посуда</td>\n      <td>Френч-пресс</td>\n      <td>4</td>\n      <td>7560</td>\n    </tr>\n    <tr>\n      <th>1081</th>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>2</td>\n      <td>6400</td>\n    </tr>\n    <tr>\n      <th>1144</th>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>2</td>\n      <td>6400</td>\n    </tr>\n    <tr>\n      <th>1255</th>\n      <td>Чай</td>\n      <td>Улун 100 г</td>\n      <td>7</td>\n      <td>3780</td>\n    </tr>\n    <tr>\n      <th>1353</th>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>2</td>\n      <td>6400</td>\n    </tr>\n    <tr>\n      <th>1378</th>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>2</td>\n      <td>6400</td>\n    </tr>\n    <tr>\n      <th>1473</th>\n      <td>Чай</td>\n      <td>Улун 100 г</td>\n      <td>7</td>\n      <td>3780</td>\n    </tr>\n    <tr>\n      <th>1633</th>\n      <td>Сладости</td>\n      <td>Миндаль в шоколаде</td>\n      <td>8</td>\n      <td>2560</td>\n    </tr>\n    <tr>\n      <th>1739</th>\n      <td>Чай</td>\n      <td>Улун 100 г</td>\n      <td>7</td>\n      <td>3780</td>\n    </tr>\n    <tr>\n      <th>1911</th>\n      <td>Кофе</td>\n      <td>Бразилия 1 кг</td>\n      <td>7</td>\n      <td>9030</td>\n    </tr>\n    <tr>\n      <th>1995</th>\n      <td>Кофе</td>\n      <td>Бразилия 1 кг</td>\n      <td>7</td>\n      <td>9030</td>\n    </tr>\n    <tr>\n      <th>2349</th>\n      <td>Кофе</td>\n      <td>Бразилия 1 кг</td>\n      <td>7</td>\n      <td>9030</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    }
+  }
+}

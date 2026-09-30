@@ -1,0 +1,48 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "raw": {
+      "lines": [],
+      "result": [
+        "   order_id       date customer_id    city      channel    category  \\",
+        "0     10001 2025-01-01        C095  Москва  маркетплейс  Аксессуары",
+        "1     10001 2025-01-01        C095  Москва  маркетплейс         Чай",
+        "2     10002 2025-01-01        C059  Москва   приложение    Сладости",
+        "",
+        "              product  price  quantity",
+        "0    Кофемолка ручная   3200         2",
+        "1  Травяной сбор 50 г    260         1",
+        "2     Шоколад горький    180         1"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Чай</td>\n      <td>Травяной сбор 50 г</td>\n      <td>260</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>10002</td>\n      <td>2025-01-01</td>\n      <td>C059</td>\n      <td>Москва</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n      <td>Шоколад горький</td>\n      <td>180</td>\n      <td>1</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "channels-view": {
+      "lines": [],
+      "result": [
+        "channel  маркетплейс  приложение    сайт   total  site_share",
+        "month",
+        "1              81700      106380  130860  318940       0.410",
+        "2              66650       50450  133330  250430       0.532",
+        "3              86720       96070  114990  297780       0.386",
+        "4             115660       66120  157510  339290       0.464"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th>channel</th>\n      <th>маркетплейс</th>\n      <th>приложение</th>\n      <th>сайт</th>\n      <th>total</th>\n      <th>site_share</th>\n    </tr>\n    <tr>\n      <th>month</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>1</th>\n      <td>81700</td>\n      <td>106380</td>\n      <td>130860</td>\n      <td>318940</td>\n      <td>0.410</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>66650</td>\n      <td>50450</td>\n      <td>133330</td>\n      <td>250430</td>\n      <td>0.532</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>86720</td>\n      <td>96070</td>\n      <td>114990</td>\n      <td>297780</td>\n      <td>0.386</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>115660</td>\n      <td>66120</td>\n      <td>157510</td>\n      <td>339290</td>\n      <td>0.464</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "share-chart": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": null,
+      "plots": 1
+    },
+    "whole": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": null,
+      "plots": 1
+    }
+  }
+}

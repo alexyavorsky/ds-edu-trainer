@@ -1,0 +1,98 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "long": {
+      "lines": [],
+      "result": [
+        "1657"
+      ],
+      "html": null,
+      "error": null
+    },
+    "isin": {
+      "lines": [],
+      "result": [
+        "1657"
+      ],
+      "html": null,
+      "error": null
+    },
+    "not-isin": {
+      "lines": [],
+      "result": [
+        "category",
+        "Сладости      500",
+        "Посуда        183",
+        "Аксессуары    108",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "between": {
+      "lines": [
+        "466",
+        "[320, 350, 390]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "between-neither": {
+      "lines": [
+        "[350]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "loc-mask": {
+      "lines": [],
+      "result": [
+        "            date         city                 product  quantity",
+        "364   2025-02-18  Новосибирск           Эфиопия 250 г         9",
+        "401   2025-02-24       Москва       Зелёный чай 100 г         9",
+        "787   2025-04-21  Новосибирск  Кофе без кофеина 250 г        10",
+        "1469  2025-08-17       Москва           Эфиопия 250 г         9"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>date</th>\n      <th>city</th>\n      <th>product</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>364</th>\n      <td>2025-02-18</td>\n      <td>Новосибирск</td>\n      <td>Эфиопия 250 г</td>\n      <td>9</td>\n    </tr>\n    <tr>\n      <th>401</th>\n      <td>2025-02-24</td>\n      <td>Москва</td>\n      <td>Зелёный чай 100 г</td>\n      <td>9</td>\n    </tr>\n    <tr>\n      <th>787</th>\n      <td>2025-04-21</td>\n      <td>Новосибирск</td>\n      <td>Кофе без кофеина 250 г</td>\n      <td>10</td>\n    </tr>\n    <tr>\n      <th>1469</th>\n      <td>2025-08-17</td>\n      <td>Москва</td>\n      <td>Эфиопия 250 г</td>\n      <td>9</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "loc-series": {
+      "lines": [
+        "719.0909090909091"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "query": {
+      "lines": [],
+      "result": [
+        "      order_id        date customer_id         city      channel    category  \\",
+        "1143     10731  2025-06-11        C011  Новосибирск  маркетплейс  Аксессуары",
+        "1378     10893  2025-07-25        C121  Новосибирск   приложение  Аксессуары",
+        "",
+        "               product  price  quantity",
+        "1143  Кофемолка ручная   3200         1",
+        "1378  Кофемолка ручная   3200         2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>1143</th>\n      <td>10731</td>\n      <td>2025-06-11</td>\n      <td>C011</td>\n      <td>Новосибирск</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>1378</th>\n      <td>10893</td>\n      <td>2025-07-25</td>\n      <td>C121</td>\n      <td>Новосибирск</td>\n      <td>приложение</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "query-var": {
+      "lines": [],
+      "result": [
+        "6"
+      ],
+      "html": null,
+      "error": null
+    },
+    "query-error": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "UndefinedVariableError: name 'Казань' is not defined"
+    }
+  }
+}

@@ -22,7 +22,7 @@ import MiniTable from './MiniTable.astro';
         [0, 1, 2],
       ]}
     />
-    <Arrows forward={'melt(id_vars="city")'} back={'pivot(index="city", columns="month")'} />
+    <Arrows forward={'melt(id_vars="city")'} back={'pivot(index="city", columns="month", values="cups")'} />
     <MiniTable
       title="Длинный формат"
       columns={['city', 'month', 'cups']}

@@ -1,0 +1,126 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "load": {
+      "lines": [],
+      "result": [
+        "            temp_min  temp_max  precip_mm  wind_ms",
+        "date",
+        "2025-01-01      -9.9      -3.2        0.0      1.9",
+        "2025-01-02      -9.7      -3.2        0.0      2.3",
+        "2025-01-03      -9.0      -3.7        0.0      5.2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>temp_min</th>\n      <th>temp_max</th>\n      <th>precip_mm</th>\n      <th>wind_ms</th>\n    </tr>\n    <tr>\n      <th>date</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2025-01-01</th>\n      <td>-9.9</td>\n      <td>-3.2</td>\n      <td>0.0</td>\n      <td>1.9</td>\n    </tr>\n    <tr>\n      <th>2025-01-02</th>\n      <td>-9.7</td>\n      <td>-3.2</td>\n      <td>0.0</td>\n      <td>2.3</td>\n    </tr>\n    <tr>\n      <th>2025-01-03</th>\n      <td>-9.0</td>\n      <td>-3.7</td>\n      <td>0.0</td>\n      <td>5.2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "index-type": {
+      "lines": [
+        "<class 'pandas.DatetimeIndex'>",
+        "2025-01-01 00:00:00 2025-12-31 00:00:00"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "one-day": {
+      "lines": [],
+      "result": [
+        "temp_min     10.7",
+        "temp_max     15.3",
+        "precip_mm    10.2",
+        "wind_ms       3.3",
+        "Name: 2025-05-09 00:00:00, dtype: float64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "one-month": {
+      "lines": [],
+      "result": [
+        "            temp_min  temp_max  precip_mm  wind_ms",
+        "date",
+        "2025-05-01       8.9      13.3        0.0      2.2",
+        "2025-05-02      12.0      16.3       14.7      5.1",
+        "2025-05-03       6.8      12.5        0.0      2.2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>temp_min</th>\n      <th>temp_max</th>\n      <th>precip_mm</th>\n      <th>wind_ms</th>\n    </tr>\n    <tr>\n      <th>date</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2025-05-01</th>\n      <td>8.9</td>\n      <td>13.3</td>\n      <td>0.0</td>\n      <td>2.2</td>\n    </tr>\n    <tr>\n      <th>2025-05-02</th>\n      <td>12.0</td>\n      <td>16.3</td>\n      <td>14.7</td>\n      <td>5.1</td>\n    </tr>\n    <tr>\n      <th>2025-05-03</th>\n      <td>6.8</td>\n      <td>12.5</td>\n      <td>0.0</td>\n      <td>2.2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "month-len": {
+      "lines": [
+        "31",
+        "15.545161290322582"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "slice": {
+      "lines": [],
+      "result": [
+        "            temp_min  temp_max  precip_mm  wind_ms",
+        "date",
+        "2025-12-29     -10.9      -6.4        0.0      0.8",
+        "2025-12-30     -10.1      -4.8        4.1      2.4",
+        "2025-12-31      -7.1      -2.0        0.0      3.0"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>temp_min</th>\n      <th>temp_max</th>\n      <th>precip_mm</th>\n      <th>wind_ms</th>\n    </tr>\n    <tr>\n      <th>date</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2025-12-29</th>\n      <td>-10.9</td>\n      <td>-6.4</td>\n      <td>0.0</td>\n      <td>0.8</td>\n    </tr>\n    <tr>\n      <th>2025-12-30</th>\n      <td>-10.1</td>\n      <td>-4.8</td>\n      <td>4.1</td>\n      <td>2.4</td>\n    </tr>\n    <tr>\n      <th>2025-12-31</th>\n      <td>-7.1</td>\n      <td>-2.0</td>\n      <td>0.0</td>\n      <td>3.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "slice-months": {
+      "lines": [
+        "92",
+        "2025-03-01 00:00:00 2025-05-31 00:00:00"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "index-parts": {
+      "lines": [
+        "[1, 1, 1]",
+        "[2, 3, 4]",
+        "104"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "daily": {
+      "lines": [
+        "358"
+      ],
+      "result": [
+        "date",
+        "2025-01-01     9060",
+        "2025-01-02    10450",
+        "2025-01-03    18620",
+        "Name: revenue, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "missing-day": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "KeyError: '2025-07-02'"
+    },
+    "date-range": {
+      "lines": [],
+      "result": [
+        "DatetimeIndex(['2025-01-01', '2025-01-02', '2025-01-03', '2025-01-04',",
+        "               '2025-01-05'],",
+        "              dtype='datetime64[us]', freq='D')"
+      ],
+      "html": null,
+      "error": null
+    },
+    "unsorted": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "KeyError: 'Value based partial slicing on non-monotonic DatetimeIndexes with non-existing keys is not allowed.'"
+    }
+  }
+}

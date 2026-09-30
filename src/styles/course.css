@@ -154,6 +154,7 @@ pre.out-error {
   padding-top: 0;
   color: var(--medium);
 }
+.cell-out img.out-plot,
 .cell-live img {
   display: block;
   max-width: 100%;
