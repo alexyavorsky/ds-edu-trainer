@@ -1,0 +1,127 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "load": {
+      "lines": [],
+      "result": [
+        "['эспрессо-смесь 1 кг ', 'Колумбия 250 г', 'эфиопия 250 г ', 'БРАЗИЛИЯ 1 КГ', 'Кофе без кофеина 250 г', '  Чёрный чай 100 г']"
+      ],
+      "html": null,
+      "error": null
+    },
+    "no-str": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "AttributeError: 'Series' object has no attribute 'lower'"
+    },
+    "lower": {
+      "lines": [],
+      "result": [
+        "0    эспрессо-смесь 1 кг",
+        "1          колумбия 250 г",
+        "2          эфиопия 250 г",
+        "3           бразилия 1 кг",
+        "Name: name, dtype: str"
+      ],
+      "html": null,
+      "error": null
+    },
+    "len": {
+      "lines": [
+        "[20, 14, 14, 13, 22, 18]",
+        "[19, 14, 13, 13, 22, 16]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "invisible": {
+      "lines": [
+        "0",
+        "1"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "chain": {
+      "lines": [],
+      "result": [
+        "['Эспрессо-смесь 1 кг', 'Колумбия 250 г', 'Эфиопия 250 г', 'Бразилия 1 кг', 'Кофе без кофеина 250 г', 'Чёрный чай 100 г']"
+      ],
+      "html": null,
+      "error": null
+    },
+    "replace": {
+      "lines": [],
+      "result": [
+        "['1 560', '760', '830']"
+      ],
+      "html": null,
+      "error": null
+    },
+    "replace-whole": {
+      "lines": [],
+      "result": [
+        "['1 560 ₽', '760 ₽', '830 ₽']"
+      ],
+      "html": null,
+      "error": null
+    },
+    "contains": {
+      "lines": [],
+      "result": [
+        "  product_id                    name category  price        cost  stock  \\",
+        "4        P05  Кофе без кофеина 250 г     Кофе    760  нет данных   59.0",
+        "",
+        "      updated",
+        "4  13.01.2026"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n      <th>stock</th>\n      <th>updated</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>4</th>\n      <td>P05</td>\n      <td>Кофе без кофеина 250 г</td>\n      <td>Кофе</td>\n      <td>760</td>\n      <td>нет данных</td>\n      <td>59.0</td>\n      <td>13.01.2026</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "contains-case": {
+      "lines": [],
+      "result": [
+        "['Кофе без кофеина 250 г', 'Кофемолка ручная']"
+      ],
+      "html": null,
+      "error": null
+    },
+    "split": {
+      "lines": [],
+      "result": [
+        "[['Эспрессо-смесь', '1', 'кг'], ['Колумбия', '250', 'г'], ['Эфиопия', '250', 'г']]"
+      ],
+      "html": null,
+      "error": null
+    },
+    "split-item": {
+      "lines": [
+        "['Эспрессо-смесь', 'Колумбия', 'Эфиопия']",
+        "['кг', 'г', 'г']"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "slice": {
+      "lines": [
+        "['15.01.2026', '13.01.2026', '12.01.2026']",
+        "['15', '13', '12']"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "concat": {
+      "lines": [],
+      "result": [
+        "['P01: Эспрессо-смесь 1 кг', 'P02: Колумбия 250 г', 'P03: Эфиопия 250 г']"
+      ],
+      "html": null,
+      "error": null
+    }
+  }
+}

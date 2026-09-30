@@ -1,0 +1,165 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "text": {
+      "lines": [],
+      "result": [
+        "0    2025-01-01",
+        "1    2025-01-01",
+        "2    2025-01-01",
+        "Name: date, dtype: str"
+      ],
+      "html": null,
+      "error": null
+    },
+    "convert": {
+      "lines": [],
+      "result": [
+        "0   2025-01-01",
+        "1   2025-01-01",
+        "2   2025-01-01",
+        "Name: date, dtype: datetime64[us]"
+      ],
+      "html": null,
+      "error": null
+    },
+    "parts": {
+      "lines": [
+        "[2025, 2025, 2025]",
+        "[12, 12, 12]",
+        "[31, 31, 31]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "weekday": {
+      "lines": [],
+      "result": [
+        "        date  weekday",
+        "0 2025-01-01        2",
+        "1 2025-01-01        2",
+        "2 2025-01-01        2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>date</th>\n      <th>weekday</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>2025-01-01</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>2025-01-01</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>2025-01-01</td>\n      <td>2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "weekday-names": {
+      "lines": [],
+      "result": [
+        "weekday",
+        "вс    425",
+        "сб    387",
+        "вт    339",
+        "пт    333",
+        "пн    325",
+        "чт    320",
+        "ср    319",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "compare": {
+      "lines": [
+        "70",
+        "2025-01-01 00:00:00 2025-12-31 00:00:00"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "delta": {
+      "lines": [
+        "364 days 00:00:00",
+        "364"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "delta-series": {
+      "lines": [
+        "2446   364 days",
+        "2447   364 days",
+        "Name: date, dtype: timedelta64[us]",
+        "[364, 364]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "parse-dates": {
+      "lines": [],
+      "result": [
+        "order_id                int64",
+        "date           datetime64[us]",
+        "customer_id               str",
+        "dtype: object"
+      ],
+      "html": null,
+      "error": null
+    },
+    "dot-format": {
+      "lines": [
+        "['15.01.2026', '13.01.2026', '12.01.2026']"
+      ],
+      "result": [
+        "0   2026-01-15",
+        "1   2026-01-13",
+        "2   2026-01-12",
+        "Name: updated, dtype: datetime64[us]"
+      ],
+      "html": null,
+      "error": null
+    },
+    "guess-trap": {
+      "lines": [
+        "[5, 6]",
+        "[1, 1]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "returns": {
+      "lines": [],
+      "result": [
+        "['17.01.2025', '2025-01-19', '21.01.2025', '2025-01-15', '24.01.2025', '15.01.2025']"
+      ],
+      "html": null,
+      "error": null
+    },
+    "mixed-fail": {
+      "lines": [
+        "UserWarning: Parsing dates in %d.%m.%Y format when dayfirst=False (the default) was specified. Pass `dayfirst=True` or specify a format to silence this warning."
+      ],
+      "result": null,
+      "html": null,
+      "error": "ValueError: time data \"2025-01-19\" doesn't match format \"%d.%m.%Y\". You might want to try:\n    - passing `format` if your strings have a consistent format;\n    - passing `format='ISO8601'` if your strings are all ISO8601 but not necessarily in exactly the same format;\n    - passing `format='mixed'`, and the format will be inferred for each element individually. You might want to use `dayfirst` alongside this."
+    },
+    "iso-only": {
+      "lines": [
+        "0          NaT",
+        "1   2025-01-19",
+        "2          NaT",
+        "3   2025-01-15",
+        "Name: return_date, dtype: datetime64[us]",
+        "91 из 163"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "mixed-trap": {
+      "lines": [
+        "28",
+        "['2025-02-04', '2025-02-01', '2025-06-11']",
+        "[Timestamp('2025-04-02 00:00:00'), Timestamp('2025-01-02 00:00:00'), Timestamp('2025-11-06 00:00:00')]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

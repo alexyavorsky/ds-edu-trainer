@@ -1,0 +1,134 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "load": {
+      "lines": [],
+      "result": [
+        "  customer_id         name             city signup_date      segment  \\",
+        "0        C001    Сергей Ю.              Екб  2025-06-12   постоянный",
+        "1        C002   Сергей В.      екатеринбург  2025-01-14       новый",
+        "2        C003    Максим С.              Екб  2025-05-19        новый",
+        "3        C004    Андрей Д.           москва  2023-09-15        НОВЫЙ",
+        "4        C005   Наталья Е.     Екатеринбург  2024-08-24  постоянный",
+        "5        C006      Иван Е.           москва  2023-02-26        новый",
+        "6        C222    Максим Я.              Екб  24.08.2024   постоянный",
+        "7        C007   Алексей П.  САНКТ-ПЕТЕРБУРГ  2023-04-13       новый",
+        "",
+        "                     email  bonus",
+        "0  client001@lavka.example    120",
+        "1  client002@lavka.example  2 400",
+        "2  client003@lavka.example     50",
+        "3  client004@lavka.example   1900",
+        "4                      NaN    NaN",
+        "5                      NaN    450",
+        "6  client222@lavka.example    450",
+        "7  client007@lavka.example    NaN"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>customer_id</th>\n      <th>name</th>\n      <th>city</th>\n      <th>signup_date</th>\n      <th>segment</th>\n      <th>email</th>\n      <th>bonus</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>C001</td>\n      <td>Сергей Ю.</td>\n      <td>Екб</td>\n      <td>2025-06-12</td>\n      <td>постоянный</td>\n      <td>client001@lavka.example</td>\n      <td>120</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>C002</td>\n      <td>Сергей В.</td>\n      <td>екатеринбург</td>\n      <td>2025-01-14</td>\n      <td>новый</td>\n      <td>client002@lavka.example</td>\n      <td>2 400</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>C003</td>\n      <td>Максим С.</td>\n      <td>Екб</td>\n      <td>2025-05-19</td>\n      <td>новый</td>\n      <td>client003@lavka.example</td>\n      <td>50</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>C004</td>\n      <td>Андрей Д.</td>\n      <td>москва</td>\n      <td>2023-09-15</td>\n      <td>НОВЫЙ</td>\n      <td>client004@lavka.example</td>\n      <td>1900</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>C005</td>\n      <td>Наталья Е.</td>\n      <td>Екатеринбург</td>\n      <td>2024-08-24</td>\n      <td>постоянный</td>\n      <td>NaN</td>\n      <td>NaN</td>\n    </tr>\n    <tr>\n      <th>5</th>\n      <td>C006</td>\n      <td>Иван Е.</td>\n      <td>москва</td>\n      <td>2023-02-26</td>\n      <td>новый</td>\n      <td>NaN</td>\n      <td>450</td>\n    </tr>\n    <tr>\n      <th>6</th>\n      <td>C222</td>\n      <td>Максим Я.</td>\n      <td>Екб</td>\n      <td>24.08.2024</td>\n      <td>постоянный</td>\n      <td>client222@lavka.example</td>\n      <td>450</td>\n    </tr>\n    <tr>\n      <th>7</th>\n      <td>C007</td>\n      <td>Алексей П.</td>\n      <td>САНКТ-ПЕТЕРБУРГ</td>\n      <td>2023-04-13</td>\n      <td>новый</td>\n      <td>client007@lavka.example</td>\n      <td>NaN</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "info": {
+      "lines": [
+        "<class 'pandas.DataFrame'>",
+        "RangeIndex: 257 entries, 0 to 256",
+        "Data columns (total 7 columns):",
+        " #   Column       Non-Null Count  Dtype",
+        "---  ------       --------------  -----",
+        " 0   customer_id  257 non-null    str",
+        " 1   name         257 non-null    str",
+        " 2   city         257 non-null    str",
+        " 3   signup_date  251 non-null    str",
+        " 4   segment      257 non-null    str",
+        " 5   email        208 non-null    str",
+        " 6   bonus        246 non-null    str",
+        "dtypes: str(7)",
+        "memory usage: 7.1 KB"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "survey": {
+      "lines": [
+        "10",
+        "243"
+      ],
+      "result": [
+        "city",
+        "москва             48",
+        "Москва             34",
+        "Санкт-Петербург    26",
+        "Екб                23",
+        "казань             20",
+        "СПб                18",
+        "новосибирск        10",
+        "Новосибирск         9",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "city-before": {
+      "lines": [],
+      "result": [
+        "['Екатеринбург', 'Екб', 'Казань', 'Москва', 'Новосибирск', 'С.-Петербург', 'Санкт-Петербург', 'Спб']"
+      ],
+      "html": null,
+      "error": null
+    },
+    "bonus-before": {
+      "lines": [],
+      "result": [
+        "bonus",
+        "0        38",
+        "50       23",
+        "450      21",
+        "800      21",
+        "300      21",
+        "нет      20",
+        "120      18",
+        "2 400    14",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "dups": {
+      "lines": [
+        "12",
+        "17"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "check": {
+      "lines": [
+        "True",
+        "True",
+        "True",
+        "True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "summary": {
+      "lines": [
+        "строк в выгрузке: 257 → клиентов: 240",
+        "без даты регистрации: 5 · без email: 43",
+        "оптовых: 26 · средний бонус: 862",
+        "city",
+        "Москва             89",
+        "Санкт-Петербург    60",
+        "Екатеринбург       39",
+        "Казань             32",
+        "Новосибирск        20",
+        "Name: count, dtype: int64"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

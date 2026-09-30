@@ -1,0 +1,163 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "load": {
+      "lines": [],
+      "result": [
+        "  product_id                    name category    price        cost  stock  \\",
+        "0        P01    эспрессо-смесь 1 кг      Кофе  1 560 ₽         920  120.0",
+        "1        P02          Колумбия 250 г     Кофе    760 ₽         400   64.0",
+        "2        P03          эфиопия 250 г      Кофе    830 ₽         460    NaN",
+        "3        P04           БРАЗИЛИЯ 1 КГ     Кофе  1 370 ₽         850   64.0",
+        "4        P05  Кофе без кофеина 250 г     Кофе    760 ₽  нет данных   59.0",
+        "5        P06        Чёрный чай 100 г      Чай    370 ₽         160  104.0",
+        "",
+        "      updated",
+        "0  15.01.2026",
+        "1  13.01.2026",
+        "2  12.01.2026",
+        "3  16.01.2026",
+        "4  13.01.2026",
+        "5  14.01.2026"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n      <th>stock</th>\n      <th>updated</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>P01</td>\n      <td>эспрессо-смесь 1 кг</td>\n      <td>Кофе</td>\n      <td>1 560 ₽</td>\n      <td>920</td>\n      <td>120.0</td>\n      <td>15.01.2026</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>P02</td>\n      <td>Колумбия 250 г</td>\n      <td>Кофе</td>\n      <td>760 ₽</td>\n      <td>400</td>\n      <td>64.0</td>\n      <td>13.01.2026</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>P03</td>\n      <td>эфиопия 250 г</td>\n      <td>Кофе</td>\n      <td>830 ₽</td>\n      <td>460</td>\n      <td>NaN</td>\n      <td>12.01.2026</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>P04</td>\n      <td>БРАЗИЛИЯ 1 КГ</td>\n      <td>Кофе</td>\n      <td>1 370 ₽</td>\n      <td>850</td>\n      <td>64.0</td>\n      <td>16.01.2026</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>P05</td>\n      <td>Кофе без кофеина 250 г</td>\n      <td>Кофе</td>\n      <td>760 ₽</td>\n      <td>нет данных</td>\n      <td>59.0</td>\n      <td>13.01.2026</td>\n    </tr>\n    <tr>\n      <th>5</th>\n      <td>P06</td>\n      <td>Чёрный чай 100 г</td>\n      <td>Чай</td>\n      <td>370 ₽</td>\n      <td>160</td>\n      <td>104.0</td>\n      <td>14.01.2026</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "dtypes": {
+      "lines": [],
+      "result": [
+        "product_id        str",
+        "name              str",
+        "category          str",
+        "price             str",
+        "cost              str",
+        "stock         float64",
+        "updated           str",
+        "dtype: object"
+      ],
+      "html": null,
+      "error": null
+    },
+    "text-sum": {
+      "lines": [
+        "920400460",
+        "['920920', '400400', '460460']"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "text-mean": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "TypeError: Cannot perform reduction 'mean' with string dtype"
+    },
+    "astype-fail": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: invalid literal for int() with base 10: 'нет данных'"
+    },
+    "coerce": {
+      "lines": [],
+      "result": [
+        "0    920.0",
+        "1    400.0",
+        "2    460.0",
+        "3    850.0",
+        "4      NaN",
+        "5    160.0",
+        "Name: cost, dtype: float64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "coerce-rows": {
+      "lines": [],
+      "result": [
+        "   product_id                    name        cost",
+        "4         P05  Кофе без кофеина 250 г  нет данных",
+        "12        P13                   Зефир  нет данных",
+        "16        P17       Чайник заварочный           —"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>cost</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>4</th>\n      <td>P05</td>\n      <td>Кофе без кофеина 250 г</td>\n      <td>нет данных</td>\n    </tr>\n    <tr>\n      <th>12</th>\n      <td>P13</td>\n      <td>Зефир</td>\n      <td>нет данных</td>\n    </tr>\n    <tr>\n      <th>16</th>\n      <td>P17</td>\n      <td>Чайник заварочный</td>\n      <td>—</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "write-back": {
+      "lines": [
+        "float64",
+        "538.2352941176471"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "coerce-trap": {
+      "lines": [
+        "20 из 20"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "stock": {
+      "lines": [],
+      "result": [
+        "0    120.0",
+        "1     64.0",
+        "2      NaN",
+        "3     64.0",
+        "Name: stock, dtype: float64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "stock-int": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "IntCastingNaNError: Cannot convert non-finite values (NA or inf) to integer.Replace or remove non-finite values or cast to an integer typethat supports these values (e.g. 'Int64')"
+    },
+    "nullable": {
+      "lines": [],
+      "result": [
+        "0     120",
+        "1      64",
+        "2    <NA>",
+        "3      64",
+        "Name: stock, dtype: Int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "nullable-use": {
+      "lines": [
+        "3",
+        "1253",
+        "138"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "truncate": {
+      "lines": [
+        "[0, 0, 1, 2]",
+        "[0, 1, 2, 3]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "to-str": {
+      "lines": [
+        "['7', '42', '105']",
+        "[1, 0, 1]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}
