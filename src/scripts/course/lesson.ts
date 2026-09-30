@@ -16,6 +16,7 @@ import { python, type RunEnd } from '../../lib/python/client';
 import { PYTHON_CONFIG } from '../../lib/python/config';
 import type { LessonDone, LessonRun, TestInfo, TestResult } from '../../lib/python/protocol';
 import type { DemoData, ExerciseData, LessonPageData } from '../../lib/courses/site';
+import { fillNotebook } from '../../lib/courses/notebook-fill';
 import type * as EditorApi from '../python/editor';
 import * as progress from './progress';
 
@@ -242,6 +243,11 @@ class ExerciseView extends CellView {
   private view: EditorApi.EditorView | null = null;
   private editor: typeof EditorApi | null = null;
   private saveTimer: ReturnType<typeof setTimeout> | undefined;
+
+  /** Код упражнения как сейчас в редакторе (для «Скачать с моим кодом»). */
+  currentCode(): string {
+    return this.view && this.editor ? this.editor.getCode(this.view) : this.code;
+  }
 
   constructor(lesson: Lesson, root: HTMLElement, index: number, data: ExerciseData) {
     super(lesson, root, index);
@@ -546,6 +552,11 @@ class Lesson {
     this.renderBar();
   }
 
+  /** Код всех упражнений урока: id ячейки → текст из редактора. */
+  exerciseCodes(): Record<string, string> {
+    return Object.fromEntries(this.cells.flatMap((c) => (c instanceof ExerciseView ? [[c.id, c.currentCode()]] : [])));
+  }
+
   base(): Omit<LessonRun, 'runId' | 'op' | 'cell' | 'code'> {
     return { kind: 'lesson', lesson: this.id, session: this.session, files: this.data.files, packages: this.data.packages };
   }
@@ -752,6 +763,30 @@ export function initLesson(): void {
   void lesson.mountEditors();
   lesson.preload();
   document.querySelectorAll<HTMLElement>('[data-quiz]').forEach(initQuiz);
+
+  // «Скачать с моим кодом»: чистый ноутбук урока, в упражнениях — код из редакторов
+  const mine = document.querySelector<HTMLButtonElement>('[data-ipynb-mine]');
+  mine?.addEventListener('click', async () => {
+    const label = mine.querySelector<HTMLElement>('[data-label]') ?? mine;
+    const text = label.textContent;
+    mine.disabled = true;
+    try {
+      const response = await fetch(mine.dataset.ipynbMine!);
+      if (!response.ok) throw new Error(String(response.status));
+      const notebook = fillNotebook(await response.json(), lesson.exerciseCodes());
+      const url = URL.createObjectURL(new Blob([JSON.stringify(notebook, null, 1)], { type: 'application/x-ipynb+json' }));
+      const link = Object.assign(document.createElement('a'), { href: url, download: `${data.lesson}-my.ipynb` });
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      label.textContent = 'Не удалось скачать — попробуйте ещё раз';
+      setTimeout(() => (label.textContent = text), 4000);
+    } finally {
+      mine.disabled = false;
+    }
+  });
 
   // отметка «Урок пройден»: вручную или сама, когда решены все упражнения
   const toggle = document.querySelector<HTMLInputElement>('[data-lesson-done]');

@@ -1,0 +1,23 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "solve": {
+      "lines": [
+        "[130. 150.]",
+        "[690. 730.]",
+        "True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "singular": {
+      "lines": [
+        "[nan nan]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

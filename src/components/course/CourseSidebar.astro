@@ -29,7 +29,7 @@ const exercises = (l: CourseSource['modules'][number]['lessons'][number]) => l.c
                 data-exercises={exercises(l)}
               >
                 <span class="mark" aria-hidden="true" />
-                <span>{l.meta.title}</span>
+                <span>{l.meta.title}{l.meta.optional && <span class="optional"> · дополнительно</span>}</span>
               </a>
             </li>
           ))}
@@ -91,6 +91,10 @@ const exercises = (l: CourseSource['modules'][number]['lessons'][number]) => l.c
     margin-top: 3px;
     border: 1.5px solid var(--border-strong);
     border-radius: 50%;
+  }
+  .optional {
+    color: var(--muted);
+    font-size: 0.85em;
   }
   .is-project .mark {
     border-radius: 3px;

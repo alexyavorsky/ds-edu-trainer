@@ -33,15 +33,6 @@
       "result": null,
       "html": null,
       "error": null
-    },
-    "solve": {
-      "lines": [
-        "[130. 150.]",
-        "[690. 730.]"
-      ],
-      "result": null,
-      "html": null,
-      "error": null
     }
   }
 }

@@ -188,8 +188,124 @@ city_names, city_codes = np.unique(city, return_inverse=True)
 city_revenue = np.bincount(city_codes, weights=revenue)
 moscow_share = (city == "Москва").mean()
 
+# %% peek-delivery
+with open("data/delivery_h1.csv") as f:
+    lines = f.read().splitlines()
+print(len(lines) - 1, "заказов в первом полугодии")
+for line in lines[:6]:
+    print(line)
+
+# %% delivery [exercise]
+h1 = np.genfromtxt("data/delivery_h1.csv", delimiter=",", skip_header=1)
+h2 = np.genfromtxt("data/delivery_h2.csv", delimiter=",", skip_header=1)
+delivery = np.vstack([h1, h2])
+gaps = np.isnan(delivery).sum(axis=0)
+avg_days = np.nanmean(delivery[:, 1])
+# ─── заготовка ───
+delivery = ...
+gaps = ...
+avg_days = ...
+# ─── проверка ───
+def test_delivery():
+    "delivery — все заказы года: 1576 × 3"
+    assert isinstance(delivery, np.ndarray), f"delivery — это {type(delivery).__name__}, а нужна таблица из двух файлов"
+    assert delivery.shape != (1578, 3), "в delivery 1578 строк: заголовки стали строками nan — skip_header=1 у обоих файлов"
+    assert delivery.shape != (816, 6), "файлы склеены рядом; нужно друг под другом — np.vstack"
+    assert delivery.shape == (1576, 3), f"у delivery форма {delivery.shape}, а нужна (1576, 3): 816 заказов первого полугодия и 760 второго"
+    assert delivery[0, 0] == 10001, "delivery начинается не с первого полугодия: порядок — [h1, h2]"
+    assert np.isnan(delivery).any(), "в delivery нет пропусков: загружайте без filling_values — пропуски нужно посчитать"
+
+
+def test_gaps():
+    "gaps — пропуски по столбцам"
+    assert np.shape(gaps) == (3,), f"у gaps форма {np.shape(gaps)}, а столбцов три: сумма маски по axis=0"
+    assert gaps.tolist() == [0, 65, 552], f"gaps = {gaps.tolist()}, а пропусков — [0, 65, 552]"
+
+
+def test_avg():
+    "avg_days — средний срок доставки"
+    assert not np.isnan(avg_days), "avg_days = nan: обычный mean не пропускает пропуски — нужен np.nanmean"
+    assert abs(avg_days - 4.293845) < 1e-5, f"avg_days = {avg_days}, а средний срок по известным ≈ 4.29 дня (столбец 1)"
+# ─── другое решение ───
+parts = [np.genfromtxt("data/delivery_h" + half + ".csv", delimiter=",", skip_header=1) for half in ["1", "2"]]
+delivery = np.concatenate(parts)
+gaps = np.sum(np.isnan(delivery), axis=0)
+known_days = delivery[:, 1][~np.isnan(delivery[:, 1])]
+avg_days = known_days.mean()
+# ─── ошибка ───
+h1 = np.genfromtxt("data/delivery_h1.csv", delimiter=",")
+h2 = np.genfromtxt("data/delivery_h2.csv", delimiter=",")
+delivery = np.vstack([h1, h2])
+gaps = np.isnan(delivery).sum(axis=0)
+avg_days = np.nanmean(delivery[:, 1])
+# ─── ошибка ───
+h1 = np.genfromtxt("data/delivery_h1.csv", delimiter=",", skip_header=1, filling_values=0)
+h2 = np.genfromtxt("data/delivery_h2.csv", delimiter=",", skip_header=1, filling_values=0)
+delivery = np.vstack([h1, h2])
+gaps = np.isnan(delivery).sum(axis=0)
+avg_days = delivery[:, 1].mean()
+
+# %% quality [exercise]
+days = delivery[:, 1]
+rating = delivery[:, 2]
+late_share = (days[~np.isnan(days)] > 5).mean()
+avg_rating = np.nanmean(rating)
+fast_rating = np.nanmean(rating[days <= 3])
+slow_rating = np.nanmean(rating[days > 5])
+# ─── заготовка ───
+days = delivery[:, 1]
+rating = delivery[:, 2]
+late_share = ...
+avg_rating = ...
+fast_rating = ...
+slow_rating = ...
+# ─── проверка ───
+def test_late():
+    "late_share — доля опозданий среди известных сроков"
+    assert abs(late_share - 0.205584) > 1e-5, "это доля среди всех 1576 заказов: пропуски посчитаны как «вовремя» — сначала уберите их, days[~np.isnan(days)]"
+    assert abs(late_share - 0.214428) < 1e-5, f"late_share = {late_share}, а дольше 5 дней везли ≈ 21.4 % заказов с известным сроком"
+
+
+def test_rating():
+    "avg_rating — средняя оценка среди поставленных"
+    assert not np.isnan(avg_rating), "avg_rating = nan: нужен np.nanmean"
+    assert abs(avg_rating - 2.371827) > 1e-5, "пропуски заменены нулями и попали в среднее: оценки 0 не существует — считайте np.nanmean"
+    assert abs(avg_rating - 3.650391) < 1e-5, f"avg_rating = {avg_rating}, а средняя оценка ≈ 3.65"
+
+
+def test_speed():
+    "fast_rating и slow_rating — оценки быстрых и медленных доставок"
+    assert not np.isnan(fast_rating) and not np.isnan(slow_rating), "получился nan: в отобранных оценках есть пропуски — np.nanmean"
+    assert abs(fast_rating - 4.216374) < 1e-5, f"fast_rating = {fast_rating}, а заказы за 3 дня и быстрее оценивают на ≈ 4.22: rating[days <= 3]"
+    assert abs(slow_rating - 2.717489) < 1e-5, f"slow_rating = {slow_rating}, а заказы дольше 5 дней оценивают на ≈ 2.72: rating[days > 5]"
+# ─── другое решение ───
+days = delivery[:, 1]
+rating = delivery[:, 2]
+known = ~np.isnan(days)
+late_share = (days > 5).sum() / known.sum()
+rated = ~np.isnan(rating)
+avg_rating = rating[rated].mean()
+fast_rating = rating[rated & (days <= 3)].mean()
+slow_rating = rating[rated & (days > 5)].mean()
+# ─── ошибка ───
+days = delivery[:, 1]
+rating = delivery[:, 2]
+late_share = (days > 5).mean()
+avg_rating = np.nanmean(rating)
+fast_rating = np.nanmean(rating[days <= 3])
+slow_rating = np.nanmean(rating[days > 5])
+# ─── ошибка ───
+days = delivery[:, 1]
+rating = delivery[:, 2]
+late_share = (days[~np.isnan(days)] > 5).mean()
+avg_rating = np.nan_to_num(rating).mean()
+fast_rating = np.nan_to_num(rating)[days <= 3].mean()
+slow_rating = np.nan_to_num(rating)[days > 5].mean()
+
 # %% summary
 print(f"выручка за год: {total:,.0f} ₽".replace(",", " "))
 print(f"заказов: {n_orders}, средний чек: {avg_check:.0f} ₽")
 for name, share in zip(cat_names, np.round(cat_share * 100, 1)):
     print(f"  {name}: {share} %")
+print(f"доставка: в среднем {avg_days:.1f} дня, дольше 5 дней — {late_share * 100:.0f} % заказов")
+print(f"оценка быстрых доставок {fast_rating:.1f}, медленных {slow_rating:.1f}")

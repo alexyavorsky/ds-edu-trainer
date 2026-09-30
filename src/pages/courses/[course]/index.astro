@@ -77,6 +77,7 @@ const first = lessons[0];
                   <span class="mark" aria-hidden="true" />
                   <span class="title">
                     {l.meta.kind === 'project' && <span class="tag">мини-проект</span>}
+                    {l.meta.optional && <span class="tag">дополнительно</span>}
                     {l.meta.title}
                     <span class="line">{l.meta.summary}</span>
                   </span>

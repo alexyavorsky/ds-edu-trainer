@@ -37,6 +37,7 @@ export interface LessonMeta {
   summary: string;
   minutes: number;
   kind: 'lesson' | 'project';
+  optional: boolean; // «дополнительно»: дальше по курсу не понадобится, можно пропустить
   introduces: string[]; // новые понятия урока: np.array, .shape, axis=
   reference: string[]; // статьи справочника «тема/статья»
   data: string[]; // файлы из courses/data
@@ -81,6 +82,7 @@ export function lessonMeta(raw: Record<string, unknown>): LessonMeta {
     summary: String(raw.summary ?? ''),
     minutes: Number(raw.minutes ?? 0),
     kind: raw.kind === 'project' ? 'project' : 'lesson',
+    optional: raw.optional === true,
     introduces: (raw.introduces as string[]) ?? [],
     reference: (raw.reference as string[]) ?? [],
     data: (raw.data as string[]) ?? [],

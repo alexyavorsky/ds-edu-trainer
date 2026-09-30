@@ -12,6 +12,7 @@ import { join } from 'node:path';
 import { deflateSync } from 'node:zlib';
 import type { Block, CodeCell, ExerciseCell } from './format.ts';
 import { DATA_DIR, type CourseSource, type LessonSource } from './load.ts';
+import { sourceLines as lines } from './notebook-fill.ts';
 
 /** Минимальные версии: ниже — предупреждение в первой ячейке (урок написан для этих версий и новее). */
 export const MIN_VERSIONS: Record<string, string> = { numpy: '2.0', pandas: '3.0' };
@@ -24,8 +25,6 @@ interface NotebookCell {
   outputs?: never[];
   id: string;
 }
-
-const lines = (text: string) => text.split('\n').map((l, i, all) => (i < all.length - 1 ? `${l}\n` : l));
 
 function markdown(id: string, text: string): NotebookCell {
   return { cell_type: 'markdown', metadata: {}, source: lines(text), id };

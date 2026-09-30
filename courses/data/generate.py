@@ -203,8 +203,37 @@ def stations(rng: np.random.Generator) -> None:
         write(name, ["day", "temp", "humidity", "wind"], rows)
 
 
+# ─── Доставка: «грязная» выгрузка (NumPy, итоговый проект) ──────────────────
+
+
+def delivery(rng: np.random.Generator) -> None:
+    """Срок доставки и оценка каждого заказа магазина — двумя файлами по полугодиям, с пустыми полями.
+
+    Оценку ставят не все покупатели; срок иногда не записан курьерской службой. Читает orders.csv — его пишет shop().
+    """
+    with open(HERE / "orders.csv", encoding="utf-8") as f:
+        seen = {}
+        for row in csv.DictReader(f):
+            seen.setdefault(int(row["order_id"]), (int(row["date"][5:7]), row["channel"]))
+    halves = {"delivery_h1.csv": [], "delivery_h2.csv": []}
+    for order_id, (month, channel) in seen.items():
+        slow = 1.5 if channel == "маркетплейс" else 0.0      # маркетплейс везёт дольше
+        rush = 1.0 if month == 12 else 0.0                    # декабрь — очереди
+        days = int(np.clip(round(1.5 + slow + rush + rng.gamma(2.0, 1.1)), 1, 14))
+        rating = int(np.clip(round(5.2 - 0.35 * days + rng.normal(0, 0.7)), 1, 5))
+        row = [order_id, days, rating]
+        if rng.random() < 0.04:
+            row[1] = ""                                       # срок не записан
+        if rng.random() < 0.35:
+            row[2] = ""                                       # покупатель не поставил оценку
+        halves["delivery_h1.csv" if month <= 6 else "delivery_h2.csv"].append(row)
+    for name, rows in halves.items():
+        write(name, ["order_id", "days", "rating"], rows)
+
+
 if __name__ == "__main__":
     shop(np.random.default_rng(2025))
     weather(np.random.default_rng(7))
     grades(np.random.default_rng(42))
     stations(np.random.default_rng(28))
+    delivery(np.random.default_rng(314))

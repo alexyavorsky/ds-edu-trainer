@@ -26,6 +26,7 @@ import { join } from 'node:path';
 import { type Block, type CodeCell, type ExerciseCell, type OutputFile, type StoredOutput } from '../src/lib/courses/format.ts';
 import { courseLessons, DATA_DIR, lessonFiles, lessonPackages, loadCourses, type CourseSource, type LessonSource } from '../src/lib/courses/load.ts';
 import { buildNotebook } from '../src/lib/courses/notebook.ts';
+import { fillNotebook } from '../src/lib/courses/notebook-fill.ts';
 import { PYODIDE_VERSION } from '../src/lib/python/config.ts';
 import type { LessonDone, TestResult } from '../src/lib/python/protocol.ts';
 import { NodePython, pool } from './node-python.ts';
@@ -452,6 +453,10 @@ async function main(argv: string[]): Promise<number> {
     const nbIds = (notebook as { cells: { id: string }[] }).cells.map((c) => c.id);
     const dupIds = nbIds.filter((id, k) => nbIds.indexOf(id) !== k);
     if (dupIds.length) r.error(at, `ноутбук: id ячеек повторяются (${dupIds.join(', ')}) — переименуйте ячейки урока`);
+    // «Скачать с моим кодом»: чистый ноутбук + код упражнений = тот же ноутбук, что собран с эталонами
+    const clean = buildNotebook(course, lesson, { root, siteUrl: null }) as { cells: { id: string; cell_type: string; source: string[] }[] };
+    const solutions = Object.fromEntries(lesson.cells.flatMap((c) => (c.kind === 'exercise' ? [[c.id, c.solution]] : [])));
+    if (JSON.stringify(fillNotebook(clean, solutions)) !== JSON.stringify(notebook)) r.error(at, 'ноутбук: подстановка кода в чистый ноутбук (fillNotebook) не даёт ноутбук с эталонами');
     const nb = cpython(python, { mode: 'notebook', notebook }) as { outputs: { cell: string; stdout: string }[]; error: { cell: string; traceback: string } | null };
     if (nb.error) r.error(at, `ноутбук: ячейка ${nb.error.cell} падает\n${nb.error.traceback}`);
     for (const cell of lesson.cells) {

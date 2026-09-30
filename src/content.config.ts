@@ -103,6 +103,7 @@ const lessons = defineCollection({
     summary: z.string(),
     minutes: z.number().int().min(5).max(30),
     kind: z.enum(['lesson', 'project']).default('lesson'),
+    optional: z.boolean().default(false), // «дополнительно»: урок можно пропустить, дальше он не нужен
     introduces: z.array(z.string()).default([]),
     reference: z.array(articleRef).default([]),
     data: z.array(z.string()).default([]),
