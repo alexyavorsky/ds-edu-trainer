@@ -64,14 +64,34 @@
     }
   }
 
-  const result = { probes: {}, tasks: [], lessons: [], userAgent: navigator.userAgent };
+  const result = { probes: {}, tasks: [], lessons: [], restarts: [], userAgent: navigator.userAgent };
+
+  /**
+   * Новый воркер с загруженным Python. WebKit после сотни-другой воркеров в одной странице изредка не может
+   * запустить очередной (Out of bounds memory access при инициализации) — человек на сайте в таком случае
+   * перезагружает страницу. Здесь — до двух повторов после паузы; каждый повтор попадает в отчёт.
+   */
+  async function startPython(where) {
+    for (let attempt = 1; ; attempt++) {
+      const py = new Python();
+      try {
+        await py.ready;
+        return py;
+      } catch (error) {
+        py.stop();
+        if (attempt === 3) throw error;
+        result.restarts.push(`${where}: ${error.message}`);
+        log(`повторный запуск Python (${where}): ${error.message}`);
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+    }
+  }
   try {
     // Пробы: до какой глубины каждый вид рекурсии работает, а где Python падает целиком (стек WebAssembly)
     for (const [name, { depths, code }] of Object.entries(probes)) {
       result.probes[name] = {};
       for (const depth of depths) {
-        const py = new Python();
-        await py.ready;
+        const py = await startPython(`проба ${name}`);
         const end = await py.run({ kind: 'example', packages: [], setup: '', code: code.replaceAll('DEPTH', String(depth)), filename: 'probe.py', cell: name });
         py.stop();
         const outcome = end.type === 'done' ? (end.data.error ? end.data.error.type : 'ok') : end.type;
@@ -82,8 +102,7 @@
     }
     // Задачи: у каждой свой воркер — как на сайте, где у страницы задачи свой
     for (const task of allTasks.filter((t) => !only || only.includes(t.id))) {
-      const py = new Python();
-      await py.ready;
+      const py = await startPython(`задача ${task.id}`);
       for (const [variant, code] of task.variants) {
         const end = await py.run({ kind: 'task', packages: task.packages, code, footer: task.footer });
         let status = end.type;
@@ -102,8 +121,7 @@
     // Уроки курсов: все ячейки с эталонами по порядку в одном сеансе, как их выполняет страница урока
     const same = (a, b) => JSON.stringify([a.lines, a.result, a.error]) === JSON.stringify([b.lines, b.result, b.error]);
     for (const lesson of allLessons.filter((l) => !only || only.includes(l.id))) {
-      const py = new Python();
-      await py.ready;
+      const py = await startPython(`урок ${lesson.id}`);
       for (const step of lesson.steps) {
         const { expected, raises, ...rest } = step;
         const end = await py.run({ kind: 'lesson', lesson: lesson.id, session: 'browser', files: lesson.files, packages: lesson.packages, ...rest });

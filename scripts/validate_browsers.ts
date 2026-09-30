@@ -134,6 +134,7 @@ interface CheckResult {
   probes: Record<string, Record<string, string>>;
   tasks: { id: string; variant: string; status: string }[];
   lessons: { id: string; cell: string; status: string }[];
+  restarts?: string[]; // воркер Python запустился не с первого раза (browser-check.html: startPython)
   userAgent: string;
   error?: string;
 }
@@ -164,6 +165,10 @@ async function main(argv: string[]): Promise<number> {
         annotate(name, result.error);
         failed = true;
         continue;
+      }
+      for (const restart of result.restarts ?? []) {
+        console.log(`  · повторный запуск Python — ${restart}`);
+        if (process.env.GITHUB_ACTIONS === 'true') console.log(`::warning title=${name}::повторный запуск Python — ${restart.replaceAll('\n', '%0A')}`);
       }
       const summary: string[] = [];
       for (const [probe, outcomes] of Object.entries(result.probes)) {
