@@ -1,0 +1,44 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "dot": {
+      "lines": [
+        "[300 220 270]",
+        "790",
+        "790",
+        "790"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "orders": {
+      "lines": [
+        "(5, 4) (4,)",
+        "[ 790  650  540 1410  730]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "mismatch": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: matmul: Input operand 1 has a mismatch in its core dimension 0, with gufunc signature (n?,k),(k,m?)->(n?,m?) (size 3 is different from 4)"
+    },
+    "two-cols": {
+      "lines": [
+        "(5, 4) (4, 2)",
+        "[[ 790  295]",
+        " [ 650  265]",
+        " [ 540  190]",
+        " [1410  570]",
+        " [ 730  245]]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "ufuncs": {
+      "lines": [
+        "[2.         3.         1.41421356]",
+        "[3.  0.  2.5 7. ]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "log10": {
+      "lines": [
+        "[3.07918125 4.65321251 5.78532984 6.04139269 7.10037055]",
+        "[3. 5. 6. 6. 7.]",
+        "[0.         2.30258509 4.60517019]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "sigmoid": {
+      "lines": [
+        "[0.018 0.269 0.5   0.731 0.982]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "maximum": {
+      "lines": [
+        "[3 4 7 0]",
+        "[3 0 7 0]",
+        "[ 3 -2  5 -5]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "rewrite-demo": {
+      "lines": [
+        "[ 80. 135.  95. 216.]",
+        "[ 80. 135.  95. 216.]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

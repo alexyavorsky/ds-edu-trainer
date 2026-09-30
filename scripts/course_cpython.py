@@ -59,7 +59,7 @@ def dotted(node: ast.AST) -> str | None:
 
 
 def concepts(code: str) -> list[str]:
-    """np.x / pd.x — функции модулей (полным путём), .x — атрибуты и методы, x= — именованные аргументы."""
+    """np.x / pd.x — функции модулей (полным путём), .x — атрибуты и методы, x= — именованные аргументы, @ — матричное умножение."""
     tree = ast.parse(code)
     inner = {id(n.value) for n in ast.walk(tree) if isinstance(n, ast.Attribute)}
     found: set[str] = set()
@@ -78,6 +78,8 @@ def concepts(code: str) -> list[str]:
                 value = value.value
         elif isinstance(node, ast.keyword) and node.arg:
             found.add(f"{node.arg}=")
+        elif isinstance(node, (ast.BinOp, ast.AugAssign)) and isinstance(node.op, ast.MatMult):
+            found.add("@")
     return sorted(found)
 
 
