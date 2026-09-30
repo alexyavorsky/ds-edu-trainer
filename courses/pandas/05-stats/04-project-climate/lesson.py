@@ -264,4 +264,4 @@ print("Разброс (std): Сочи", round(sochi_std, 1), "· Новосиб�
 print("Осадки за год, мм: Сочи", round(sochi_total), "· Новосибирск", round(nsk_total))
 print("Дней с осадками: Сочи", round(sochi_rainy * 100), "% · Новосибирск", round(nsk_rainy * 100), "%")
 print("Годовая амплитуда в Новосибирске:", round(amplitude, 1), "градуса")
-print("Оттепелей в Москве за зиму:", len(thaws))
+print("Оттепелей в Москве за зимние месяцы:", len(thaws))

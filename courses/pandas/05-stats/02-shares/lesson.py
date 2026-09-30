@@ -91,8 +91,8 @@ steps.cumsum()
 print(pd.Series([1, 2, 3]).cumsum().tolist())
 
 # %% cum-share
-days_share = delivery["days"].value_counts(normalize=True).sort_index()
-days_share.cumsum().round(3).head(6)
+quantity_share = orders["quantity"].value_counts(normalize=True).sort_index()
+quantity_share.cumsum().round(3).head(5)
 
 # %% fast [exercise]
 cum_days = delivery["days"].value_counts(normalize=True).sort_index().cumsum()

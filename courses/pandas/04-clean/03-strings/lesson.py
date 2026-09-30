@@ -22,7 +22,9 @@ print((supplier["name"] == "Шоколад горький").sum())
 print((supplier["name"].str.strip() == "Шоколад горький").sum())
 
 # %% chain
-supplier["name"].str.strip().str.capitalize().head(6).tolist()
+stripped = supplier["name"].str.strip()
+print(stripped.str.upper().head(3).tolist())
+print(stripped.str.title().head(3).tolist())
 
 # %% names [exercise]
 supplier["name"] = supplier["name"].str.strip().str.capitalize()

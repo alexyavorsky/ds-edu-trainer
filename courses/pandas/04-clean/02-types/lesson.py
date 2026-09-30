@@ -21,31 +21,21 @@ supplier["cost"].mean()
 supplier["cost"].astype(int)
 
 # %% coerce
-cost = pd.to_numeric(supplier["cost"], errors="coerce")
-cost.head(6)
-
-# %% coerce-rows
-supplier.loc[cost.isna(), ["product_id", "name", "cost"]]
-
-# %% write-back
-supplier["cost"] = cost
-print(supplier["cost"].dtype)
-print(supplier["cost"].mean())
+answers = pd.Series(["12", "7", "нет", "3.5", "?"])
+pd.to_numeric(answers, errors="coerce")
 
 # %% fix [exercise]
-raw = pd.read_csv("data/supplier_prices.csv")
-cost_num = pd.to_numeric(raw["cost"], errors="coerce")
+cost_num = pd.to_numeric(supplier["cost"], errors="coerce")
 n_bad = cost_num.isna().sum()
 cost_total = cost_num.sum()
 # ─── заготовка ───
-raw = pd.read_csv("data/supplier_prices.csv")
 cost_num = ...
 n_bad = ...
 cost_total = ...
 # ─── проверка ───
 def test_cost():
     "cost_num — себестоимость числами"
-    assert isinstance(cost_num, pd.Series), f"cost_num — это {type(cost_num).__name__}, а нужен Series: pd.to_numeric(raw[\"cost\"], errors=\"coerce\")"
+    assert isinstance(cost_num, pd.Series), f"cost_num — это {type(cost_num).__name__}, а нужен Series: pd.to_numeric(supplier[\"cost\"], errors=\"coerce\")"
     assert cost_num.dtype == float, f"тип cost_num — {cost_num.dtype}, а должен быть float64: текст в числа переводит pd.to_numeric"
     assert len(cost_num) == 20, f"в cost_num {len(cost_num)} значений, а товаров 20: строки удалять не нужно"
     assert cost_num[0] == 920, "значения не те: переводить нужно столбец cost"
@@ -53,24 +43,30 @@ def test_cost():
 
 def test_numbers():
     "n_bad и cost_total — сколько значений не распозналось и сумма остальных"
+    assert n_bad != 17, "17 — число распознанных значений, а нужны нераспознанные: cost_num.isna().sum()"
     assert n_bad == 3, f"n_bad = {n_bad!r}, а нераспознанных значений 3: cost_num.isna().sum()"
     assert not isinstance(cost_total, str), "cost_total — склеенная строка: сумму нужно считать по cost_num, а не по текстовому столбцу"
     assert abs(cost_total - 9150) < 1e-6, f"cost_total = {cost_total!r}, а сумма распознанных значений — 9150"
 # ─── другое решение ───
-raw = pd.read_csv("data/supplier_prices.csv")
-cost_num = pd.to_numeric(raw["cost"].replace({"нет данных": None, "—": None}))
+cost_num = pd.to_numeric(supplier["cost"].replace({"нет данных": None, "—": None}))
 n_bad = len(cost_num) - cost_num.count()
 cost_total = cost_num.dropna().sum()
 # ─── ошибка ───
-raw = pd.read_csv("data/supplier_prices.csv")
-cost_num = pd.to_numeric(raw["cost"], errors="coerce")
+cost_num = pd.to_numeric(supplier["cost"], errors="coerce")
 n_bad = cost_num.notna().sum()
 cost_total = cost_num.sum()
 # ─── ошибка ───
-raw = pd.read_csv("data/supplier_prices.csv")
-cost_num = pd.to_numeric(raw["cost"], errors="coerce").dropna()
+cost_num = pd.to_numeric(supplier["cost"], errors="coerce").dropna()
 n_bad = 3
 cost_total = cost_num.sum()
+
+# %% coerce-rows
+supplier.loc[cost_num.isna(), ["product_id", "name", "cost"]]
+
+# %% write-back
+supplier["cost"] = cost_num
+print(supplier["cost"].dtype)
+print(supplier["cost"].mean())
 
 # %% coerce-trap
 price = pd.to_numeric(supplier["price"], errors="coerce")
@@ -90,6 +86,7 @@ stock.head(4)
 print(stock.isna().sum())
 print(stock.sum())
 print(stock.max())
+print((stock > 100).head(4).tolist())
 
 # %% ratings [exercise]
 delivery = pd.read_csv("data/delivery_h1.csv")

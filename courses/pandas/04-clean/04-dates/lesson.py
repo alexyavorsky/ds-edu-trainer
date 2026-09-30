@@ -89,6 +89,7 @@ print(orders["date"].min(), orders["date"].max())
 span = orders["date"].max() - orders["date"].min()
 print(span)
 print(span.days)
+print(pd.to_datetime("2025-12-31") - orders["date"].max())
 
 # %% delta-series
 since_start = orders["date"] - orders["date"].min()
@@ -102,8 +103,7 @@ fresh.dtypes.head(3)
 # %% dot-format
 supplier = pd.read_csv("data/supplier_prices.csv")
 print(supplier["updated"].head(3).tolist())
-updated = pd.to_datetime(supplier["updated"], format="%d.%m.%Y")
-updated.head(3)
+pd.to_datetime(supplier["updated"], format="%d.%m.%Y").head(3)
 
 # %% guess-trap
 guessed = pd.to_datetime(pd.Series(["05.01.2026", "06.01.2026"]))

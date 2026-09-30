@@ -66,7 +66,7 @@ print(orders.groupby("category")["price"].max())
 print(orders.groupby("channel")["revenue"].mean().round(1))
 
 # %% nunique
-orders.groupby("channel")["order_id"].nunique()
+orders.groupby("city")["order_id"].nunique()
 
 # %% rows-quiz [quiz]
 print(len(orders.groupby("channel")["price"].max()))

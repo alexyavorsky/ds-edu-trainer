@@ -62,13 +62,12 @@
     "coerce": {
       "lines": [],
       "result": [
-        "0    920.0",
-        "1    400.0",
-        "2    460.0",
-        "3    850.0",
-        "4      NaN",
-        "5    160.0",
-        "Name: cost, dtype: float64"
+        "0    12.0",
+        "1     7.0",
+        "2     NaN",
+        "3     3.5",
+        "4     NaN",
+        "dtype: float64"
       ],
       "html": null,
       "error": null
@@ -135,7 +134,8 @@
       "lines": [
         "3",
         "1253",
-        "138"
+        "138",
+        "[True, False, <NA>, False]"
       ],
       "result": null,
       "html": null,

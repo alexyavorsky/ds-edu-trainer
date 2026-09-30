@@ -24,7 +24,7 @@
 
 | Файл | Строк | Что внутри |
 | --- | --- | --- |
-| `weather.csv` | 1825 | `date, city, temp_min, temp_max, precip_mm, wind_ms` — 5 городов × 365 дней, около 1 % значений пропущено |
+| `weather.csv` | 1825 | `date, city, temp_min, temp_max, precip_mm, wind_ms` — 5 городов × 365 дней, пропущено 10 значений |
 | `moscow_2025.csv` | 365 | только числа для NumPy: `day, temp_min, temp_max, precip_mm` (Москва, без пропусков) |
 
 Метеостанции за февраль 2025 года — числа с пропусками для модуля NumPy «Пропуски и сборка данных»:

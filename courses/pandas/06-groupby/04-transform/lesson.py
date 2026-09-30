@@ -18,6 +18,10 @@ scores["team_mean"] = scores.groupby("team")["score"].transform("mean")
 scores["diff"] = scores["score"] - scores["team_mean"]
 scores
 
+# %% toy-nan
+scores["wrong"] = scores.groupby("team")["score"].mean()
+scores[["team", "score", "team_mean", "wrong"]]
+
 # %% len-quiz [quiz]
 print(len(scores.groupby("team")["score"].transform("sum")))
 
@@ -73,7 +77,7 @@ big = orders[orders["order_total"] >= 10000]
 print(len(big), big["order_id"].nunique())
 
 # %% lines [exercise]
-orders["lines"] = orders.groupby("order_id")["product"].transform("count")
+orders["lines"] = orders.groupby("order_id")["product"].transform("size")
 multi = orders[orders["lines"] >= 3]
 n_multi = multi["order_id"].nunique()
 # ─── заготовка ───
@@ -83,8 +87,8 @@ n_multi = ...
 # ─── проверка ───
 def test_lines():
     "lines — сколько позиций в заказе этой строки"
-    assert "lines" in orders.columns, "в orders нет столбца lines: orders.groupby(\"order_id\")[\"product\"].transform(\"count\")"
-    assert orders["lines"].notna().all(), "в lines пропуски: нужен transform(\"count\"), а не count() — он возвращает по одному значению на заказ"
+    assert "lines" in orders.columns, "в orders нет столбца lines: orders.groupby(\"order_id\")[\"product\"].transform(\"size\")"
+    assert orders["lines"].notna().all(), "в lines пропуски: нужен transform(\"size\"), а не size() — он возвращает по одному значению на заказ"
     assert orders["lines"].tolist()[:7] == [2, 2, 2, 2, 2, 2, 1], f"первые значения lines — {orders['lines'].tolist()[:7]}, а должны быть [2, 2, 2, 2, 2, 2, 1]: в первых трёх заказах по две позиции"
     assert orders["lines"].max() == 3 and (orders["lines"] == 1).sum() == 832, "значения не те: число строк в группе по order_id"
 
@@ -96,7 +100,7 @@ def test_multi():
     assert n_multi != 384, "384 — число строк, а заказов меньше: разные order_id считает nunique()"
     assert n_multi == 128, f"n_multi = {n_multi!r}, а заказов из трёх и более позиций — 128"
 # ─── другое решение ───
-orders["lines"] = orders.groupby("order_id")["order_id"].transform("size")
+orders["lines"] = orders.groupby("order_id")["product"].transform("count")
 multi = orders.query("lines >= 3")
 n_multi = len(multi["order_id"].unique())
 # ─── ошибка ───

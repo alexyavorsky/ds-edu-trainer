@@ -17,7 +17,7 @@ visits["repeat"] = visits.duplicated()
 visits
 
 # %% count
-print(returns.duplicated().sum())
+print(visits["repeat"].sum())
 
 # %% show
 returns[returns.duplicated(keep=False)].sort_values("return_id").head(6)

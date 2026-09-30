@@ -12,7 +12,7 @@ moscow.head(3)
 rain = moscow["precip_mm"]
 print(rain.mean())
 print(rain.median())
-print((rain == 0).mean())
+print((rain.dropna() == 0).mean())
 
 # %% outlier
 salaries = pd.Series([60, 65, 70, 75, 80])
@@ -113,7 +113,7 @@ range_nsk = novosibirsk["temp_max"].max()
 
 # %% quantile
 print(moscow["temp_max"].quantile(0.5))
-print(moscow["temp_max"].quantile(0.9))
+print(moscow["temp_max"].quantile(0.75))
 
 # %% quantiles
 moscow["temp_max"].quantile([0.25, 0.5, 0.75])

@@ -72,7 +72,8 @@
     "delta": {
       "lines": [
         "364 days 00:00:00",
-        "364"
+        "364",
+        "0 days 00:00:00"
       ],
       "result": null,
       "html": null,
