@@ -1,0 +1,8 @@
+title = "Статистика"
+summary = "Описать данные числами: типичное значение и разброс, доли и накопленные доли, интервалы."
+outcomes = [
+  "выбрать между средним и медианой и измерить разброс: <code>std</code>, <code>quantile</code>",
+  "найти, где достигается максимум и минимум: <code>idxmax</code>, <code>idxmin</code>",
+  "посчитать доли и накопленные доли: <code>value_counts(normalize=True)</code>, <code>cumsum</code>",
+  "разбить числа на интервалы: <code>pd.cut</code> и <code>pd.qcut</code>",
+]
