@@ -128,6 +128,8 @@ def run_notebook(notebook: dict) -> dict:
 
 def main() -> None:
     task = json.load(sys.stdin)
+    out = sys.stdout
+    sys.stdout = sys.stderr  # всё, что уроки печатают мимо перехвата (например, из тестов), — не в ответ JSON
     mode = task["mode"]
     if mode == "versions":
         result = versions()
@@ -144,7 +146,7 @@ def main() -> None:
         result = run_notebook(task["notebook"])
     else:
         raise SystemExit(f"неизвестный режим {mode}")
-    sys.stdout.write(json.dumps(result, ensure_ascii=False))
+    out.write(json.dumps(result, ensure_ascii=False))
 
 
 if __name__ == "__main__":

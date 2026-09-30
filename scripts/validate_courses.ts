@@ -448,6 +448,9 @@ async function main(argv: string[]): Promise<number> {
     }
     // ноутбук с эталонами выполняется в Jupyter-подобном режиме без ошибок
     const notebook = buildNotebook(course, lesson, { root, siteUrl: null, solutions: true });
+    const nbIds = (notebook as { cells: { id: string }[] }).cells.map((c) => c.id);
+    const dupIds = nbIds.filter((id, k) => nbIds.indexOf(id) !== k);
+    if (dupIds.length) r.error(at, `ноутбук: id ячеек повторяются (${dupIds.join(', ')}) — переименуйте ячейки урока`);
     const nb = cpython(python, { mode: 'notebook', notebook }) as { outputs: { cell: string; stdout: string }[]; error: { cell: string; traceback: string } | null };
     if (nb.error) r.error(at, `ноутбук: ячейка ${nb.error.cell} падает\n${nb.error.traceback}`);
     for (const cell of lesson.cells) {
@@ -455,7 +458,8 @@ async function main(argv: string[]): Promise<number> {
       const out = nb.outputs.find((o) => o.cell === cell.id);
       if (raises && out && !out.stdout.includes(`${raises}: `)) r.error(at, `ноутбук: ячейка ${cell.id} должна напечатать перехваченную ошибку ${raises}`);
     }
-    for (const out of nb.outputs.filter((o) => o.cell.endsWith('-check'))) {
+    const checkCells = new Set(lesson.cells.filter((c) => c.kind === 'exercise').map((c) => `${c.id}-check`));
+    for (const out of nb.outputs.filter((o) => checkCells.has(o.cell))) {
       if (!/Прошло (\d+) из \1 — всё верно!/.test(out.stdout)) r.error(at, `ноутбук: проверка ${out.cell} с эталоном не проходит:\n${out.stdout.trim()}`);
     }
   }
