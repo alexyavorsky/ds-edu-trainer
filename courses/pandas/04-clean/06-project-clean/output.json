@@ -76,57 +76,20 @@
       "html": null,
       "error": null
     },
-    "bonus-before": {
-      "lines": [],
+    "text-done": {
+      "lines": [
+        "240 5 3",
+        "12"
+      ],
       "result": [
-        "bonus",
-        "0        38",
-        "50       23",
-        "450      21",
-        "800      21",
-        "300      21",
-        "нет      20",
-        "120      18",
-        "2 400    14",
-        "Name: count, dtype: int64"
-      ],
-      "html": null,
-      "error": null
-    },
-    "dups": {
-      "lines": [
-        "12",
-        "17"
-      ],
-      "result": null,
-      "html": null,
-      "error": null
-    },
-    "check": {
-      "lines": [
-        "True",
-        "True",
-        "True",
-        "True"
-      ],
-      "result": null,
-      "html": null,
-      "error": null
-    },
-    "summary": {
-      "lines": [
-        "строк в выгрузке: 257 → клиентов: 240",
-        "без даты регистрации: 5 · без email: 43",
-        "оптовых: 26 · средний бонус: 862",
         "city",
-        "Москва             89",
-        "Санкт-Петербург    60",
-        "Екатеринбург       39",
-        "Казань             32",
-        "Новосибирск        20",
+        "Москва             95",
+        "Санкт-Петербург    64",
+        "Екатеринбург       42",
+        "Казань             35",
+        "Новосибирск        21",
         "Name: count, dtype: int64"
       ],
-      "result": null,
       "html": null,
       "error": null
     }
