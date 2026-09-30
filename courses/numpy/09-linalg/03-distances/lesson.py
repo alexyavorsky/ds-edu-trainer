@@ -15,6 +15,12 @@ print(np.linalg.norm(a - b))     # расстояние между точкам�
 # %% norm-quiz [quiz]
 print(np.linalg.norm(np.array([6, 8])))
 
+# %% to-many
+cafes = np.array([[0, 0], [2, 1], [5, 5]])
+me = np.array([1, 1])
+print(cafes - me)                            # разность с каждой строкой
+print(np.linalg.norm(cafes - me, axis=1))    # длина каждой строки — три расстояния
+
 # %% nearest [exercise]
 shops = np.array([
     [1.0, 2.0],
