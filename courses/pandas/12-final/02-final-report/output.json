@@ -1,0 +1,96 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "build": {
+      "lines": [
+        "(2448, 17) 3159140 1476130"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "months-view": {
+      "lines": [],
+      "result": [
+        "          net  profit  growth",
+        "month",
+        "1      297120  140940     NaN",
+        "2      244070  116750  -0.179",
+        "3      288570  135260   0.182",
+        "4      322960  147230   0.119",
+        "5      248930  115490  -0.229",
+        "6      250030  114500   0.004",
+        "7      171250   79520  -0.315",
+        "8      206820   96430   0.208",
+        "9      242450  110940   0.172",
+        "10     247020  113210   0.019",
+        "11     278680  129850   0.128",
+        "12     361240  176010   0.296"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>net</th>\n      <th>profit</th>\n      <th>growth</th>\n    </tr>\n    <tr>\n      <th>month</th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>1</th>\n      <td>297120</td>\n      <td>140940</td>\n      <td>NaN</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>244070</td>\n      <td>116750</td>\n      <td>-0.179</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>288570</td>\n      <td>135260</td>\n      <td>0.182</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>322960</td>\n      <td>147230</td>\n      <td>0.119</td>\n    </tr>\n    <tr>\n      <th>5</th>\n      <td>248930</td>\n      <td>115490</td>\n      <td>-0.229</td>\n    </tr>\n    <tr>\n      <th>6</th>\n      <td>250030</td>\n      <td>114500</td>\n      <td>0.004</td>\n    </tr>\n    <tr>\n      <th>7</th>\n      <td>171250</td>\n      <td>79520</td>\n      <td>-0.315</td>\n    </tr>\n    <tr>\n      <th>8</th>\n      <td>206820</td>\n      <td>96430</td>\n      <td>0.208</td>\n    </tr>\n    <tr>\n      <th>9</th>\n      <td>242450</td>\n      <td>110940</td>\n      <td>0.172</td>\n    </tr>\n    <tr>\n      <th>10</th>\n      <td>247020</td>\n      <td>113210</td>\n      <td>0.019</td>\n    </tr>\n    <tr>\n      <th>11</th>\n      <td>278680</td>\n      <td>129850</td>\n      <td>0.128</td>\n    </tr>\n    <tr>\n      <th>12</th>\n      <td>361240</td>\n      <td>176010</td>\n      <td>0.296</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "categories-view": {
+      "lines": [],
+      "result": [
+        "                net  profit  sold  returned  margin  return_rate",
+        "category",
+        "Кофе        1830330  781430  2138        89   0.427        0.042",
+        "Чай          581140  325660  1598        69   0.560        0.043",
+        "Посуда       374350  187680   280        10   0.501        0.036",
+        "Сладости     212440  106260  1025        38   0.500        0.037",
+        "Аксессуары   160880   75100   169         8   0.467        0.047"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>net</th>\n      <th>profit</th>\n      <th>sold</th>\n      <th>returned</th>\n      <th>margin</th>\n      <th>return_rate</th>\n    </tr>\n    <tr>\n      <th>category</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Кофе</th>\n      <td>1830330</td>\n      <td>781430</td>\n      <td>2138</td>\n      <td>89</td>\n      <td>0.427</td>\n      <td>0.042</td>\n    </tr>\n    <tr>\n      <th>Чай</th>\n      <td>581140</td>\n      <td>325660</td>\n      <td>1598</td>\n      <td>69</td>\n      <td>0.560</td>\n      <td>0.043</td>\n    </tr>\n    <tr>\n      <th>Посуда</th>\n      <td>374350</td>\n      <td>187680</td>\n      <td>280</td>\n      <td>10</td>\n      <td>0.501</td>\n      <td>0.036</td>\n    </tr>\n    <tr>\n      <th>Сладости</th>\n      <td>212440</td>\n      <td>106260</td>\n      <td>1025</td>\n      <td>38</td>\n      <td>0.500</td>\n      <td>0.037</td>\n    </tr>\n    <tr>\n      <th>Аксессуары</th>\n      <td>160880</td>\n      <td>75100</td>\n      <td>169</td>\n      <td>8</td>\n      <td>0.467</td>\n      <td>0.047</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "pivot-view": {
+      "lines": [],
+      "result": [
+        "city        Екатеринбург  Казань   Москва  Новосибирск  Санкт-Петербург  \\",
+        "category",
+        "Аксессуары         28370   30940    51300        11050            39220",
+        "Кофе              222050  247600   735480       172860           452340",
+        "Посуда             54500   48220   154550        39540            77540",
+        "Сладости           29480   25350    82350        18040            57220",
+        "Чай                75100   73390   221380        62060           149210",
+        "Всего             409500  425500  1245060       303550           775530",
+        "",
+        "city          Всего",
+        "category",
+        "Аксессуары   160880",
+        "Кофе        1830330",
+        "Посуда       374350",
+        "Сладости     212440",
+        "Чай          581140",
+        "Всего       3159140"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th>city</th>\n      <th>Екатеринбург</th>\n      <th>Казань</th>\n      <th>Москва</th>\n      <th>Новосибирск</th>\n      <th>Санкт-Петербург</th>\n      <th>Всего</th>\n    </tr>\n    <tr>\n      <th>category</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Аксессуары</th>\n      <td>28370</td>\n      <td>30940</td>\n      <td>51300</td>\n      <td>11050</td>\n      <td>39220</td>\n      <td>160880</td>\n    </tr>\n    <tr>\n      <th>Кофе</th>\n      <td>222050</td>\n      <td>247600</td>\n      <td>735480</td>\n      <td>172860</td>\n      <td>452340</td>\n      <td>1830330</td>\n    </tr>\n    <tr>\n      <th>Посуда</th>\n      <td>54500</td>\n      <td>48220</td>\n      <td>154550</td>\n      <td>39540</td>\n      <td>77540</td>\n      <td>374350</td>\n    </tr>\n    <tr>\n      <th>Сладости</th>\n      <td>29480</td>\n      <td>25350</td>\n      <td>82350</td>\n      <td>18040</td>\n      <td>57220</td>\n      <td>212440</td>\n    </tr>\n    <tr>\n      <th>Чай</th>\n      <td>75100</td>\n      <td>73390</td>\n      <td>221380</td>\n      <td>62060</td>\n      <td>149210</td>\n      <td>581140</td>\n    </tr>\n    <tr>\n      <th>Всего</th>\n      <td>409500</td>\n      <td>425500</td>\n      <td>1245060</td>\n      <td>303550</td>\n      <td>775530</td>\n      <td>3159140</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "category-chart": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": null,
+      "plots": 1
+    },
+    "summary": {
+      "lines": [
+        "Выручка: 3301420 ₽ · после возвратов: 3159140 ₽",
+        "Прибыль: 1476130 ₽ · маржа: 46.7 %",
+        "Заказов: 1576 · покупателей: 213",
+        "Лучший месяц: 12 · худший: 7",
+        "Самый высокий средний чек: Санкт-Петербург",
+        "                net  buyers  per_buyer",
+        "segment",
+        "новый       1109020      86    12896.0",
+        "оптовый      737000      25    29480.0",
+        "постоянный  1313120     102    12874.0"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}
