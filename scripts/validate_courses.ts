@@ -162,7 +162,8 @@ function checkBlocks(lesson: LessonSource, lessonUrls: Set<string>, r: Report): 
       if (!b.question) r.error(at, `вопрос ${b.id}: нет текста вопроса`);
     }
     if (b.type === 'component' && b.body && /<(Demo|Exercise|Quiz)\b/.test(b.body)) r.error(at, `строка ${b.line}: ячейки нельзя вкладывать в <${b.name}> — поставьте их рядом`);
-    if (b.type === 'demo' && b.gate !== null && b.gate !== 'off' && b.gate !== 'lesson') r.error(at, `<Demo id="${b.id}">: gate="${b.gate}" — допустимо gate="off" или gate="lesson"`);
+    if (b.type === 'demo' && b.gate !== null && b.gate !== 'off' && b.gate !== 'lesson' && !blocks.slice(0, blocks.indexOf(b)).some((x) => x.type === 'exercise' && x.id === b.gate))
+      r.error(at, `<Demo id="${b.id}">: gate="${b.gate}" — допустимо "off", "lesson" или id упражнения выше`);
     if (b.type === 'component' && b.name === 'After') {
       const index = blocks.indexOf(b);
       if (!b.body) r.error(at, `строка ${b.line}: <After> пишется с текстом внутри`);

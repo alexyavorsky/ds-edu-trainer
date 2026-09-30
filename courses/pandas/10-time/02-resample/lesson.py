@@ -23,9 +23,9 @@ order_count.resample("MS").sum().head(4)
 order_count.resample("M").sum()
 
 # %% stamp
-week = order_count.resample("W").sum().index[20]
-print(week)
-print(week.month, week.quarter)
+quarter = order_count.resample("QE").sum().index[1]
+print(quarter)
+print(quarter.month, quarter.quarter)
 
 # %% months [exercise]
 monthly = sales.resample("ME").sum()

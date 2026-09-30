@@ -73,7 +73,7 @@ def test_points():
 def test_total():
     "total_points — сумма баллов"
     assert total_points != 138910, "значения с пробелом («2 400») превратились в пропуски и потом в нули: сначала .str.replace(\" \", \"\"), потом pd.to_numeric"
-    assert total_points == 219360, f"total_points = {total_points!r}, а сумма баллов по всем строкам — 219360"
+    assert total_points == 219360, f"total_points = {total_points!r} не совпадает с суммой баллов всех строк: проверьте, что points посчитан для каждой строки"
 # ─── другое решение ───
 text = customers["bonus"].fillna("0").replace({"нет": "0"}).str.replace(" ", "")
 customers["points"] = text.astype("int64")

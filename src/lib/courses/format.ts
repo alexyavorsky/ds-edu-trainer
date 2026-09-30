@@ -146,7 +146,7 @@ export interface QuizOption {
 
 export type Block =
   | { type: 'text'; text: string; line: number }
-  | { type: 'demo'; id: string; title: string; gate: string | null; line: number } // gate: "off" — не скрывать, "lesson" — до решения всех упражнений
+  | { type: 'demo'; id: string; title: string; gate: string | null; line: number } // gate: "off" — не скрывать, "lesson" — до решения всех упражнений, id упражнения — до его решения
   | { type: 'exercise'; id: string; title: string; prompt: string; hints: string[]; line: number }
   | { type: 'quiz'; id: string; question: string; options: QuizOption[]; explain: string; line: number }
   | { type: 'component'; name: string; attrs: Record<string, string>; body: string | null; line: number };
@@ -265,21 +265,24 @@ export interface GateOwner {
   title: string;
 }
 
+/** Владелец скрытия «до решения всех упражнений урока» — data-gate="*". */
+export const LESSON_GATE: GateOwner = { id: '*', title: '' };
+
 /**
  * Упражнения, до решения которых скрыт сохранённый вывод демонстраций (docs/COURSES_PLAN.md, «Ячейки и
  * состояние»): демонстрация в разделе упражнения — после него и до ближайшего заголовка `#`/`##` или следующего
  * упражнения. Не скрываются демонстрации [raises] (показ ошибки, а не ответа) и помеченные gate="off".
- * gate="lesson" — итог урока: скрыт до решения всех упражнений (владелец LESSON_GATE).
+ * gate="lesson" — итог урока: скрыт до решения всех упражнений (владелец LESSON_GATE); gate="<id упражнения
+ * выше>" — скрыт до решения этого упражнения (график или таблица, повторяющие его ответ в другом разделе).
  * Возвращает id демонстрации → её упражнение.
  */
-/** Владелец скрытия «до решения всех упражнений урока» — data-gate="*". */
-export const LESSON_GATE: GateOwner = { id: '*', title: '' };
-
 export function demoGates(blocks: Block[], raises: (demoId: string) => boolean): Map<string, GateOwner> {
   const gates = new Map<string, GateOwner>();
   let owner: GateOwner | null = null;
+  const seen = new Map<string, GateOwner>();
   for (const b of blocks) {
-    if (b.type === 'exercise') owner = { id: b.id, title: b.title };
+    if (b.type === 'exercise') seen.set(b.id, (owner = { id: b.id, title: b.title }));
+    else if (b.type === 'demo' && b.gate && seen.has(b.gate)) gates.set(b.id, seen.get(b.gate)!);
     else if (b.type === 'text' && /^#{1,2}\s/m.test(b.text)) owner = null;
     else if (b.type === 'demo' && b.gate === 'lesson') gates.set(b.id, LESSON_GATE);
     else if (b.type === 'demo' && owner && b.gate !== 'off' && !raises(b.id)) gates.set(b.id, owner);

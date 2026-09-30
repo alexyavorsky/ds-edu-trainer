@@ -220,3 +220,15 @@ PR #4 `numpy-review` к моменту работы в main не слит — п
   `validate_browsers.ts chromium` по pandas — 51 из 51 ✓.
 - Изменённые места: `format.ts` (`LESSON_GATE`), `Demo.astro`, `After.astro`, `lesson.ts`, `[lesson].astro`,
   `validate_courses.ts`, `engine.ts`; lesson.mdx 14 проектов pandas; COURSES_PLAN.md, ARCHITECTURE.md.
+
+## По ревью В
+
+- В1: в ноутбуке пометка `<After>` — отдельным абзацем; для `id="*"` — «После решения всех упражнений урока»
+  (список «Выводов» в .ipynb больше не ломается, проверено в `dist/…/project-cities.ipynb`).
+- М1: числа в COURSES_PLAN: по разделу упражнения скрыто 19, `gate="off"` — 16 (после М3), итогов `gate="lesson"` — 12.
+- М2 set-values: «Старые версии pandas … меняли». М5 stats: пояснение про `dropna` — отдельным предложением.
+- М3: новое значение `gate="<id упражнения выше>"` — скрыть до решения указанного упражнения; `share-chart`
+  (→ `channels`) и `category-chart` (→ `categories`). Валидатор проверяет, что упражнение выше.
+- М4 resample `stamp`: метка квартала `"QE"` (30 июня: месяц 6, квартал 2) — `"QE"` уже в таблице выше.
+- М6 project-clean-2 `total`: сообщение без правильного числа.
+- Проверки: `validate_courses.ts pandas` ✓, check 0 ошибок, build ✓, chromium по pandas 51/51 ✓.
