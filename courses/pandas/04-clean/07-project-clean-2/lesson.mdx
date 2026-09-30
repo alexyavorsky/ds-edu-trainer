@@ -92,13 +92,15 @@ data: [customers_raw.csv, customers.csv]
 <Hint>`clean["city"].value_counts()`, `clean[clean["segment"] == "оптовый"]`, `clean["points"].mean()`.</Hint>
 </Exercise>
 
-<Demo id="summary" title="Итог" />
+<Demo id="summary" title="Итог" gate="lesson" />
 
 ## Выводы
 
+<After id="*">
 Из 257 строк выгрузки получилось 240 клиентов. Если бы мы посчитали города по сырым данным, получили бы
 22 «города» и завышенное число клиентов; если бы суммировали баллы без очистки — получили бы ошибку или
 потеряли треть баллов.
+</After>
 
 Порядок, который стоит запомнить:
 

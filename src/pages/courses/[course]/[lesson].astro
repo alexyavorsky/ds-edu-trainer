@@ -105,7 +105,7 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
         решённое ещё до отрисовки — MutationObserver срабатывает раньше первой отрисовки добавленных узлов, — и
         обрабатывает кнопки плашек. Дальше решение упражнений и отметку урока отслеживает lesson.ts.
       -->
-      <script is:inline define:vars={{ gateLesson: lesson.meta.id }}>
+      <script is:inline define:vars={{ gateLesson: lesson.meta.id, gateExercises: lesson.cells.filter((c) => c.kind === 'exercise').map((c) => c.id) }}>
         (() => {
           const root = document.documentElement;
           root.classList.add('gate-on');
@@ -116,7 +116,8 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
             all = store.done?.[gateLesson]?.v === true;
             for (const key of Object.keys(store.ex || {})) if (key.startsWith(gateLesson + '/')) solved.add(key.slice(gateLesson.length + 1));
           } catch {}
-          const open = (el) => (all || solved.has(el.dataset.gate)) && el.classList.add('is-unlocked');
+          const done = (id) => (id === '*' ? gateExercises.every((e) => solved.has(e)) : solved.has(id));
+          const open = (el) => (all || done(el.dataset.gate)) && el.classList.add('is-unlocked');
           const observer = new MutationObserver((records) => {
             for (const r of records)
               for (const n of r.addedNodes) {

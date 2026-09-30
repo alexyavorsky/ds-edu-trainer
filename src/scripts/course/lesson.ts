@@ -572,8 +572,9 @@ class Lesson {
   private renderGate(): void {
     const exercises = this.data.cells.filter((c) => c.kind === 'exercise').map((c) => c.id);
     const done = progress.isDone(this.id, exercises);
+    const solved = (id: string) => (id === '*' ? exercises.every((e) => progress.isSolved(this.id, e)) : progress.isSolved(this.id, id));
     document.querySelectorAll<HTMLElement>('[data-gate]').forEach((el) => {
-      el.classList.toggle('is-unlocked', done || progress.isSolved(this.id, el.dataset.gate!));
+      el.classList.toggle('is-unlocked', done || solved(el.dataset.gate!));
     });
   }
 

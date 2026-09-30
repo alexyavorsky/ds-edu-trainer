@@ -202,3 +202,21 @@ PR #4 `numpy-review` к моменту работы в main не слит — п
   new-columns (проверка), project-clean-2, project-plan, plot, resample.
 - Документы: `docs/COURSES_PLAN.md` («Формат хранения» — `After`, `gate="off"`; «Ячейки и состояние» —
   новое описание скрытия; «Интерфейс»), `docs/ARCHITECTURE.md`.
+
+## Решения оркестратора после повторного ревью
+
+- **`gate="lesson"` / `<After id="*">`** — скрытие до решения всех упражнений урока (или отметки «Урок пройден»;
+  `data-gate="*"`, встроенный скрипт получает список упражнений через `define:vars`, `lesson.ts` — так же).
+  Применено: итоговые демонстрации 12 проектов (`summary`, `report` в project-channels, `text-done` в части 1
+  проекта очистки, `result` в final-data — был `gate="off"`), «Выводы»/«Что получилось»/«Итог первой части»
+  с ответами — 14 проектов. Плашка: «Итог появится, когда решите все упражнения урока…» / «Выводы с ответами
+  появятся…». Валидатор: `gate` — `off` или `lesson`, `<After id="*">` без проверки упражнения.
+  Playwright (project-climate): без JS видно; пусто — скрыто; решено 5 из 6 — скрыто; все 6 — открыто и
+  встроенным скриптом (модуль заблокирован), и `lesson.ts`; «Урок пройден» открывает, «Весь вывод урока» тоже.
+- **`src/lib/python/engine.ts`** — пакет, не загрузившийся с первого раза, загружается ещё раз; ошибка
+  «пакет … не загрузился за две попытки: <текст Pyodide>» (раньше `errorCallback` глушился). Описано
+  в ARCHITECTURE.md («Python в браузере», «Пакеты»).
+- Проверки: `validate_courses.ts` (оба курса, 94 урока, 1530 прогонов) ✓; `npm run check` 0 ошибок; build ✓;
+  `validate_browsers.ts chromium` по pandas — 51 из 51 ✓.
+- Изменённые места: `format.ts` (`LESSON_GATE`), `Demo.astro`, `After.astro`, `lesson.ts`, `[lesson].astro`,
+  `validate_courses.ts`, `engine.ts`; lesson.mdx 14 проектов pandas; COURSES_PLAN.md, ARCHITECTURE.md.
