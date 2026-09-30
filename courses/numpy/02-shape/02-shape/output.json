@@ -1,0 +1,49 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "table": {
+      "lines": [],
+      "result": [
+        "array([[120, 135, 150, 170],",
+        "       [ 90, 100,  95, 130],",
+        "       [200, 180, 210, 250]])"
+      ],
+      "html": null,
+      "error": null
+    },
+    "shape": {
+      "lines": [
+        "(3, 4)",
+        "2 12 3",
+        "(5,)"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "ragged": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (2,) + inhomogeneous part."
+    },
+    "zeros-2d": {
+      "lines": [],
+      "result": [
+        "array([[0., 0., 0.],",
+        "       [0., 0., 0.]])"
+      ],
+      "html": null,
+      "error": null
+    },
+    "sum-2d": {
+      "lines": [
+        "1830",
+        "250"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}
