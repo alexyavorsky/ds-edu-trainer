@@ -1,0 +1,52 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "sort": {
+      "lines": [
+        "[ 45 150 210 320 610 890]",
+        "[890 610 320 210 150  45]",
+        "[320 150 890  45 610 210]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "sort-method": {
+      "lines": [
+        "None",
+        "[1 2 3]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "argsort": {
+      "lines": [
+        "[3 0 2 4 1]",
+        "[64 78 85 88 92]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "rank": {
+      "lines": [
+        "[1 4 2 0 3]",
+        "['Иван' 'Елена' 'Мария' 'Анна' 'Олег']"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "unique": {
+      "lines": [
+        "[2 3 4 5]",
+        "[2 3 4 5]",
+        "[1 2 5 4]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}
