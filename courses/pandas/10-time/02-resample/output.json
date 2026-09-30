@@ -1,0 +1,112 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "daily": {
+      "lines": [],
+      "result": [
+        "2025-01-01     9060",
+        "2025-01-02    10450",
+        "2025-01-03    18620",
+        "2025-01-04     4090",
+        "Freq: D, Name: revenue, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "month-end": {
+      "lines": [],
+      "result": [
+        "2025-01-31    318940",
+        "2025-02-28    250430",
+        "2025-03-31    297780",
+        "2025-04-30    339290",
+        "Freq: ME, Name: revenue, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "month-start": {
+      "lines": [],
+      "result": [
+        "2025-01-01    318940",
+        "2025-02-01    250430",
+        "2025-03-01    297780",
+        "2025-04-01    339290",
+        "Freq: MS, Name: revenue, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "old-m": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: Invalid frequency: M. Failed to parse with error message: ValueError(\"'M' is no longer supported for offsets. Please use 'ME' instead.\")"
+    },
+    "weekly": {
+      "lines": [
+        "53"
+      ],
+      "result": [
+        "2025-01-05    50830",
+        "2025-01-12    86010",
+        "2025-01-19    70870",
+        "Freq: W-SUN, Name: revenue, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "weekly-edges": {
+      "lines": [
+        "2025-01-05    5",
+        "2025-01-12    7",
+        "2026-01-04    3",
+        "Name: revenue, dtype: int64"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "table": {
+      "lines": [],
+      "result": [
+        "date",
+        "2025-01-31   -3.8",
+        "2025-02-28   -4.7",
+        "2025-03-31    1.6",
+        "Freq: ME, Name: temp_max, dtype: float64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "quarters": {
+      "lines": [],
+      "result": [
+        "2025-03-31    867150",
+        "2025-06-30    864320",
+        "2025-09-30    652000",
+        "2025-12-31    917950",
+        "Freq: QE-DEC, Name: revenue, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "empty-periods": {
+      "lines": [
+        "date",
+        "2025-07-01    5370",
+        "2025-07-02       0",
+        "2025-07-03    3110",
+        "Freq: D, Name: revenue, dtype: int64",
+        "date",
+        "2025-07-01    5370.0",
+        "2025-07-02       NaN",
+        "2025-07-03    3110.0",
+        "Freq: D, Name: revenue, dtype: float64"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}
