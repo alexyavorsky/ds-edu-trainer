@@ -1,0 +1,107 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "mask": {
+      "lines": [],
+      "result": [
+        "0        True",
+        "1       False",
+        "2       False",
+        "3       False",
+        "4       False",
+        "        ...",
+        "2443    False",
+        "2444    False",
+        "2445    False",
+        "2446    False",
+        "2447    False",
+        "Name: price, Length: 2448, dtype: bool"
+      ],
+      "html": null,
+      "error": null
+    },
+    "apply": {
+      "lines": [],
+      "result": [
+        "     order_id        date customer_id             city      channel  \\",
+        "0       10001  2025-01-01        C095           Москва  маркетплейс",
+        "7       10005  2025-01-02        C033           Казань  маркетплейс",
+        "218     10135  2025-01-28        C185  Санкт-Петербург   приложение",
+        "348     10217  2025-02-16        C195           Москва         сайт",
+        "661     10424  2025-04-03        C219     Екатеринбург   приложение",
+        "",
+        "       category           product  price  quantity",
+        "0    Аксессуары  Кофемолка ручная   3200         2",
+        "7    Аксессуары  Кофемолка ручная   3200         2",
+        "218  Аксессуары  Кофемолка ручная   3200         1",
+        "348  Аксессуары  Кофемолка ручная   3200         2",
+        "661  Аксессуары  Кофемолка ручная   3200         2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>7</th>\n      <td>10005</td>\n      <td>2025-01-02</td>\n      <td>C033</td>\n      <td>Казань</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>218</th>\n      <td>10135</td>\n      <td>2025-01-28</td>\n      <td>C185</td>\n      <td>Санкт-Петербург</td>\n      <td>приложение</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>348</th>\n      <td>10217</td>\n      <td>2025-02-16</td>\n      <td>C195</td>\n      <td>Москва</td>\n      <td>сайт</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>661</th>\n      <td>10424</td>\n      <td>2025-04-03</td>\n      <td>C219</td>\n      <td>Екатеринбург</td>\n      <td>приложение</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "named": {
+      "lines": [
+        "682",
+        "381.1143695014663"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "count": {
+      "lines": [
+        "168",
+        "0.06862745098039216"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "and": {
+      "lines": [],
+      "result": [
+        "      order_id        date customer_id         city      channel    category  \\",
+        "1143     10731  2025-06-11        C011  Новосибирск  маркетплейс  Аксессуары",
+        "1378     10893  2025-07-25        C121  Новосибирск   приложение  Аксессуары",
+        "",
+        "               product  price  quantity",
+        "1143  Кофемолка ручная   3200         1",
+        "1378  Кофемолка ручная   3200         2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>1143</th>\n      <td>10731</td>\n      <td>2025-06-11</td>\n      <td>C011</td>\n      <td>Новосибирск</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>1378</th>\n      <td>10893</td>\n      <td>2025-07-25</td>\n      <td>C121</td>\n      <td>Новосибирск</td>\n      <td>приложение</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "or-not": {
+      "lines": [
+        "1821",
+        "627"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "word-and": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all()."
+    },
+    "no-parens": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "TypeError: Cannot perform 'rand_' with a dtyped [int64] array and scalar of type [bool]"
+    },
+    "check-all": {
+      "lines": [
+        "True",
+        "True",
+        "False"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

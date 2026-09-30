@@ -231,9 +231,180 @@ def delivery(rng: np.random.Generator) -> None:
         write(name, ["order_id", "days", "rating"], rows)
 
 
+# ─── «Грязные» выгрузки (pandas, модуль «Очистка и типы» и итоговый проект) ──
+
+
+def read_rows(name: str) -> list[dict]:
+    with open(HERE / name, encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
+def dmy(iso: str, sep: str = ".") -> str:
+    y, m, d = iso.split("-")
+    return f"{d}{sep}{m}{sep}{y}"
+
+
+CITY_SHORT = {"Санкт-Петербург": ["СПб", "СПб", "С.-Петербург"], "Екатеринбург": ["Екб"]}
+
+
+def customers_raw(rng: np.random.Generator) -> None:
+    """Выгрузка клиентов из CRM «как есть»: пробелы, регистр, сокращения городов, даты в двух форматах,
+    числа текстом, пропуски и дубли. После очистки первые пять столбцов совпадают с customers.csv
+    (кроме нескольких пропущенных дат регистрации). Читает customers.csv — его пишет shop()."""
+
+    def dirty(c: dict, n: int) -> list:
+        cid, name, city, signup, segment = c["customer_id"], c["name"], c["city"], c["signup_date"], c["segment"]
+        u = rng.random(12)
+        if u[0] < 0.06:
+            cid = cid.lower()
+        elif u[0] < 0.12:
+            cid = cid + " "
+        if u[1] < 0.10:
+            name = f" {name} "
+        elif u[1] < 0.15:
+            name = name.upper()
+        elif u[1] < 0.19:
+            name = name.replace(" ", "  ")
+        if city in CITY_SHORT and u[2] < 0.35:
+            city = str(rng.choice(CITY_SHORT[city]))
+        elif u[2] < 0.47:
+            city = city.lower()
+        elif u[2] < 0.55:
+            city = f" {city}"
+        elif u[2] < 0.60:
+            city = city.upper()
+        if u[3] < 0.30:
+            signup = dmy(signup)
+        if u[4] < 0.10:
+            segment = segment.capitalize()
+        elif u[4] < 0.15:
+            segment = segment.upper()
+        elif u[4] < 0.20:
+            segment = segment + " "
+        email = f"client{n:03d}@lavka.example"
+        if u[5] < 0.15:
+            email = ""
+        elif u[5] < 0.22:
+            email = email.upper()
+        points = int(rng.choice([0, 0, 50, 120, 300, 450, 800, 1250, 1900, 2400, 3100]))
+        bonus = f"{points:,}".replace(",", " ") if u[6] < 0.5 else str(points)
+        if u[7] < 0.07:
+            bonus = "нет"
+        elif u[7] < 0.13:
+            bonus = ""
+        return [cid, name, city, signup, segment, email, bonus]
+
+    clean = read_rows("customers.csv")
+    rows = [dirty(c, i + 1) for i, c in enumerate(clean)]
+    for i in rng.choice(len(rows), size=5, replace=False):      # дату регистрации не записали
+        rows[i][3] = ""
+    exact = [list(rows[i]) for i in rng.choice(len(rows), size=9, replace=False)]        # строка выгружена дважды
+    again = []
+    for i in rng.choice(len(clean), size=8, replace=False):     # тот же клиент, но записан по-другому
+        row = dirty(clean[i], i + 1)
+        row[5], row[6] = rows[i][5].lower(), rows[i][6]
+        if rows[i][3] == "":
+            row[3] = ""
+        again.append(row)
+    for row in exact + again:
+        rows.insert(int(rng.integers(0, len(rows) + 1)), row)
+    write("customers_raw.csv", ["customer_id", "name", "city", "signup_date", "segment", "email", "bonus"], rows)
+
+
+def supplier_prices(rng: np.random.Generator) -> None:
+    """Прайс-лист поставщика на 2026 год: числа, прочитанные как текст, остатки с пропусками, неряшливые названия."""
+    rows = []
+    for i, (pid, name, category, price, cost) in enumerate(PRODUCTS):
+        new_cost = int(round(cost * (1.04 + 0.08 * rng.random()), -1))
+        new_price = int(round(price * (1.03 + 0.07 * rng.random()), -1))
+        u = rng.random(6)
+        shown = name
+        if u[0] < 0.2:
+            shown = f"  {name}"
+        elif u[0] < 0.4:
+            shown = name.upper()
+        elif u[0] < 0.55:
+            shown = f"{name.lower()} "
+        price_text = f"{new_price:,} ₽".replace(",", " ")
+        cost_text = str(new_cost)
+        if i in (4, 12):
+            cost_text = "нет данных"
+        elif i == 16:
+            cost_text = "—"
+        stock = int(rng.integers(0, 140))
+        stock_text = "" if i in (2, 9, 15) else str(stock)
+        updated = dmy((dt.date(2026, 1, 12) + dt.timedelta(days=int(rng.integers(0, 5)))).isoformat())
+        rows.append([pid, shown, category, price_text, cost_text, stock_text, updated])
+    write("supplier_prices.csv", ["product_id", "name", "category", "price", "cost", "stock", "updated"], rows)
+
+
+REASONS = ["не понравился вкус", "повреждена упаковка", "привезли не тот товар", "передумал", "брак"]
+REASON_P = [0.22, 0.30, 0.18, 0.22, 0.08]
+
+
+def returns_raw(rng: np.random.Generator) -> None:
+    """Журнал возвратов: даты в трёх форматах, причины с разным регистром, задвоенные записи. Читает orders.csv."""
+    lines = read_rows("orders.csv")
+    category = {p[0]: p[2] for p in PRODUCTS}
+    rows = []
+    picked = sorted(rng.choice(len(lines), size=150, replace=False))
+    for n, i in enumerate(picked):
+        line = lines[i]
+        date = dt.date.fromisoformat(line["date"]) + dt.timedelta(days=int(rng.integers(2, 21)))
+        iso = date.isoformat()
+        u = rng.random(4)
+        shown = iso if u[0] < 0.55 else dmy(iso) if u[0] < 0.90 else dmy(iso, "/")
+        reason = REASONS[rng.choice(len(REASONS), p=REASON_P)]
+        if reason == "не понравился вкус" and category[line["product_id"]] in ("Посуда", "Аксессуары"):
+            reason = "брак"
+        if u[1] < 0.12:
+            reason = reason.capitalize()
+        elif u[1] < 0.18:
+            reason = reason.upper()
+        elif u[1] < 0.26:
+            reason = f"{reason} "
+        if u[2] < 0.06:
+            reason = ""
+        qty = int(rng.integers(1, int(line["quantity"]) + 1))
+        rows.append([f"R{n + 1:03d}", line["order_id"], line["product_id"], shown, qty, reason])
+    exact = [list(rows[i]) for i in rng.choice(len(rows), size=7, replace=False)]        # запись сохранена дважды
+    twice = []
+    for k, i in enumerate(rng.choice(len(rows), size=6, replace=False)):                 # возврат оформили ещё раз
+        row = list(rows[i])
+        row[0] = f"R{len(rows) + k + 1:03d}"
+        twice.append(row)
+    for row in exact:
+        rows.insert(int(rng.integers(0, len(rows) + 1)), row)
+    rows.extend(twice)
+    write("returns_raw.csv", ["return_id", "order_id", "product_id", "return_date", "quantity", "reason"], rows)
+
+
+def plan(rng: np.random.Generator) -> None:
+    """План продаж по городам и месяцам. У Екатеринбурга план появился с марта; Сочи — город, куда магазин
+    собирался выйти осенью, но не вышел: плана без факта и факта без плана хватает для уроков об индексах."""
+    fact: dict[tuple[str, int], int] = {}
+    for row in read_rows("shop_orders.csv"):
+        key = (row["city"], int(row["date"][5:7]))
+        fact[key] = fact.get(key, 0) + int(row["price"]) * int(row["quantity"])
+    rows = []
+    for city in CITIES:
+        for month in range(1, 13):
+            if city == "Екатеринбург" and month < 3:
+                continue
+            target = fact[(city, month)] * (0.85 + 0.35 * rng.random())
+            rows.append([city, month, int(round(target, -3))])
+    for month in (10, 11, 12):
+        rows.append(["Сочи", month, 20000])
+    write("plan.csv", ["city", "month", "plan"], rows)
+
+
 if __name__ == "__main__":
     shop(np.random.default_rng(2025))
     weather(np.random.default_rng(7))
     grades(np.random.default_rng(42))
     stations(np.random.default_rng(28))
     delivery(np.random.default_rng(314))
+    customers_raw(np.random.default_rng(404))
+    supplier_prices(np.random.default_rng(2026))
+    returns_raw(np.random.default_rng(55))
+    plan(np.random.default_rng(12))

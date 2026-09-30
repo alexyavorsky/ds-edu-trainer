@@ -59,9 +59,19 @@ def dotted(node: ast.AST) -> str | None:
 
 
 def concepts(code: str) -> list[str]:
-    """np.x / pd.x — функции модулей (полным путём), .x — атрибуты и методы, x= — именованные аргументы, @ — матричное умножение."""
+    """np.x / pd.x — функции модулей (полным путём), .x — атрибуты и методы, x= — именованные аргументы, @ — матричное умножение.
+
+    Имена новых столбцов в assign(имя=…) и в именованной агрегации agg(имя=(столбец, функция)) — не понятия."""
     tree = ast.parse(code)
     inner = {id(n.value) for n in ast.walk(tree) if isinstance(n, ast.Attribute)}
+    # имена новых столбцов — не параметры: assign(revenue=…), agg(total=("price", "sum"))
+    column_names = set()
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute):
+            if n.func.attr == "assign":
+                column_names.update(id(k) for k in n.keywords)
+            elif n.func.attr in ("agg", "aggregate"):
+                column_names.update(id(k) for k in n.keywords if isinstance(k.value, ast.Tuple))
     found: set[str] = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.Attribute) and id(node) not in inner:
@@ -76,7 +86,7 @@ def concepts(code: str) -> list[str]:
             while isinstance(value, ast.Attribute):
                 found.add(f".{value.attr}")
                 value = value.value
-        elif isinstance(node, ast.keyword) and node.arg:
+        elif isinstance(node, ast.keyword) and node.arg and id(node) not in column_names:
             found.add(f"{node.arg}=")
         elif isinstance(node, (ast.BinOp, ast.AugAssign)) and isinstance(node.op, ast.MatMult):
             found.add("@")

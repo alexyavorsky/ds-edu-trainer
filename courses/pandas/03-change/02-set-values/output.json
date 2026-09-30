@@ -1,0 +1,134 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "cell": {
+      "lines": [],
+      "result": [
+        "product_id                P10",
+        "name          Шоколад горький",
+        "category             Сладости",
+        "price                     190",
+        "cost                       90",
+        "Name: 9, dtype: object"
+      ],
+      "html": null,
+      "error": null
+    },
+    "by-mask": {
+      "lines": [],
+      "result": [
+        "  product_id                name category  price  cost",
+        "5        P06    Чёрный чай 100 г      Чай    400   150",
+        "6        P07   Зелёный чай 100 г      Чай    400   170",
+        "7        P08          Улун 100 г      Чай    400   260",
+        "8        P09  Травяной сбор 50 г      Чай    400   100"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>5</th>\n      <td>P06</td>\n      <td>Чёрный чай 100 г</td>\n      <td>Чай</td>\n      <td>400</td>\n      <td>150</td>\n    </tr>\n    <tr>\n      <th>6</th>\n      <td>P07</td>\n      <td>Зелёный чай 100 г</td>\n      <td>Чай</td>\n      <td>400</td>\n      <td>170</td>\n    </tr>\n    <tr>\n      <th>7</th>\n      <td>P08</td>\n      <td>Улун 100 г</td>\n      <td>Чай</td>\n      <td>400</td>\n      <td>260</td>\n    </tr>\n    <tr>\n      <th>8</th>\n      <td>P09</td>\n      <td>Травяной сбор 50 г</td>\n      <td>Чай</td>\n      <td>400</td>\n      <td>100</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "by-mask-calc": {
+      "lines": [],
+      "result": [
+        "   product_id                name  category  price  cost",
+        "9         P10     Шоколад горький  Сладости    210    90",
+        "10        P11     Печенье овсяное  Сладости    170    70",
+        "11        P12  Миндаль в шоколаде  Сладости    340   170",
+        "12        P13               Зефир  Сладости    230   100"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>9</th>\n      <td>P10</td>\n      <td>Шоколад горький</td>\n      <td>Сладости</td>\n      <td>210</td>\n      <td>90</td>\n    </tr>\n    <tr>\n      <th>10</th>\n      <td>P11</td>\n      <td>Печенье овсяное</td>\n      <td>Сладости</td>\n      <td>170</td>\n      <td>70</td>\n    </tr>\n    <tr>\n      <th>11</th>\n      <td>P12</td>\n      <td>Миндаль в шоколаде</td>\n      <td>Сладости</td>\n      <td>340</td>\n      <td>170</td>\n    </tr>\n    <tr>\n      <th>12</th>\n      <td>P13</td>\n      <td>Зефир</td>\n      <td>Сладости</td>\n      <td>230</td>\n      <td>100</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "text": {
+      "lines": [],
+      "result": [
+        "category",
+        "Кофе          5",
+        "Чай           4",
+        "Сладости      4",
+        "Посуда        3",
+        "Премиум       2",
+        "Аксессуары    2",
+        "Name: count, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "chained": {
+      "lines": [
+        "ChainedAssignmentError: A value is being set on a copy of a DataFrame or Series through chained assignment.",
+        "Such chained assignment never works to update the original DataFrame or Series, because the intermediate object on which we are setting values always behaves as a copy (due to Copy-on-Write).",
+        "",
+        "Try using '.loc[row_indexer, col_indexer] = value' instead, to perform the assignment in a single step.",
+        "",
+        "See the documentation for a more detailed explanation: https://pandas.pydata.org/pandas-docs/stable/user_guide/copy_on_write.html#chained-assignment"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "chained-result": {
+      "lines": [],
+      "result": [
+        "  product_id                name category  price  cost",
+        "5        P06    Чёрный чай 100 г      Чай    350   150",
+        "6        P07   Зелёный чай 100 г      Чай    390   170",
+        "7        P08          Улун 100 г      Чай    540   260",
+        "8        P09  Травяной сбор 50 г      Чай    260   100"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>5</th>\n      <td>P06</td>\n      <td>Чёрный чай 100 г</td>\n      <td>Чай</td>\n      <td>350</td>\n      <td>150</td>\n    </tr>\n    <tr>\n      <th>6</th>\n      <td>P07</td>\n      <td>Зелёный чай 100 г</td>\n      <td>Чай</td>\n      <td>390</td>\n      <td>170</td>\n    </tr>\n    <tr>\n      <th>7</th>\n      <td>P08</td>\n      <td>Улун 100 г</td>\n      <td>Чай</td>\n      <td>540</td>\n      <td>260</td>\n    </tr>\n    <tr>\n      <th>8</th>\n      <td>P09</td>\n      <td>Травяной сбор 50 г</td>\n      <td>Чай</td>\n      <td>260</td>\n      <td>100</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "subset": {
+      "lines": [
+        "[0, 0, 0, 0]",
+        "[350, 390, 540, 260]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "column-copy": {
+      "lines": [
+        "1",
+        "1450"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "alias": {
+      "lines": [
+        "1"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "copy": {
+      "lines": [
+        "5000",
+        "1"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "float-error": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "TypeError: Invalid value '699.9' for dtype 'int64'"
+    },
+    "astype": {
+      "lines": [],
+      "result": [
+        "  product_id                 name category  price  cost",
+        "0        P01  Эспрессо-смесь 1 кг     Кофе    1.0   870",
+        "1        P02       Колумбия 250 г     Кофе  699.9   380",
+        "2        P03        Эфиопия 250 г     Кофе  790.0   430"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>P01</td>\n      <td>Эспрессо-смесь 1 кг</td>\n      <td>Кофе</td>\n      <td>1.0</td>\n      <td>870</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>P02</td>\n      <td>Колумбия 250 г</td>\n      <td>Кофе</td>\n      <td>699.9</td>\n      <td>380</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>P03</td>\n      <td>Эфиопия 250 г</td>\n      <td>Кофе</td>\n      <td>790.0</td>\n      <td>430</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "products": {
+      "lines": [],
+      "result": [
+        "  product_id                    name category  price  cost",
+        "0        P01     Эспрессо-смесь 1 кг     Кофе   1450   870",
+        "1        P02          Колумбия 250 г     Кофе    690   380",
+        "2        P03           Эфиопия 250 г     Кофе    790   430",
+        "3        P04           Бразилия 1 кг     Кофе   1290   780",
+        "4        P05  Кофе без кофеина 250 г     Кофе    720   410"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>P01</td>\n      <td>Эспрессо-смесь 1 кг</td>\n      <td>Кофе</td>\n      <td>1450</td>\n      <td>870</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>P02</td>\n      <td>Колумбия 250 г</td>\n      <td>Кофе</td>\n      <td>690</td>\n      <td>380</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>P03</td>\n      <td>Эфиопия 250 г</td>\n      <td>Кофе</td>\n      <td>790</td>\n      <td>430</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>P04</td>\n      <td>Бразилия 1 кг</td>\n      <td>Кофе</td>\n      <td>1290</td>\n      <td>780</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>P05</td>\n      <td>Кофе без кофеина 250 г</td>\n      <td>Кофе</td>\n      <td>720</td>\n      <td>410</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "add": {
+      "lines": [],
+      "result": [
+        "  product_id                    name category  price  cost  margin",
+        "0        P01     Эспрессо-смесь 1 кг     Кофе   1450   870     580",
+        "1        P02          Колумбия 250 г     Кофе    690   380     310",
+        "2        P03           Эфиопия 250 г     Кофе    790   430     360",
+        "3        P04           Бразилия 1 кг     Кофе   1290   780     510",
+        "4        P05  Кофе без кофеина 250 г     Кофе    720   410     310"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n      <th>margin</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>P01</td>\n      <td>Эспрессо-смесь 1 кг</td>\n      <td>Кофе</td>\n      <td>1450</td>\n      <td>870</td>\n      <td>580</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>P02</td>\n      <td>Колумбия 250 г</td>\n      <td>Кофе</td>\n      <td>690</td>\n      <td>380</td>\n      <td>310</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>P03</td>\n      <td>Эфиопия 250 г</td>\n      <td>Кофе</td>\n      <td>790</td>\n      <td>430</td>\n      <td>360</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>P04</td>\n      <td>Бразилия 1 кг</td>\n      <td>Кофе</td>\n      <td>1290</td>\n      <td>780</td>\n      <td>510</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>P05</td>\n      <td>Кофе без кофеина 250 г</td>\n      <td>Кофе</td>\n      <td>720</td>\n      <td>410</td>\n      <td>310</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "constant": {
+      "lines": [],
+      "result": [
+        "  product_id                 name category  price  cost  margin currency  \\",
+        "0        P01  Эспрессо-смесь 1 кг     Кофе   1450   870     580      RUB",
+        "1        P02       Колумбия 250 г     Кофе    690   380     310      RUB",
+        "2        P03        Эфиопия 250 г     Кофе    790   430     360      RUB",
+        "",
+        "   is_costly",
+        "0       True",
+        "1      False",
+        "2      False"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n      <th>margin</th>\n      <th>currency</th>\n      <th>is_costly</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>P01</td>\n      <td>Эспрессо-смесь 1 кг</td>\n      <td>Кофе</td>\n      <td>1450</td>\n      <td>870</td>\n      <td>580</td>\n      <td>RUB</td>\n      <td>True</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>P02</td>\n      <td>Колумбия 250 г</td>\n      <td>Кофе</td>\n      <td>690</td>\n      <td>380</td>\n      <td>310</td>\n      <td>RUB</td>\n      <td>False</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>P03</td>\n      <td>Эфиопия 250 г</td>\n      <td>Кофе</td>\n      <td>790</td>\n      <td>430</td>\n      <td>360</td>\n      <td>RUB</td>\n      <td>False</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "overwrite": {
+      "lines": [],
+      "result": [
+        "                  name  price  cost    margin",
+        "0  Эспрессо-смесь 1 кг   1450   870  0.400000",
+        "1       Колумбия 250 г    690   380  0.449275",
+        "2        Эфиопия 250 г    790   430  0.455696"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>name</th>\n      <th>price</th>\n      <th>cost</th>\n      <th>margin</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Эспрессо-смесь 1 кг</td>\n      <td>1450</td>\n      <td>870</td>\n      <td>0.400000</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Колумбия 250 г</td>\n      <td>690</td>\n      <td>380</td>\n      <td>0.449275</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Эфиопия 250 г</td>\n      <td>790</td>\n      <td>430</td>\n      <td>0.455696</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "round": {
+      "lines": [],
+      "result": [
+        "                  name  price  cost  margin",
+        "0  Эспрессо-смесь 1 кг   1450   870    0.40",
+        "1       Колумбия 250 г    690   380    0.45",
+        "2        Эфиопия 250 г    790   430    0.46"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>name</th>\n      <th>price</th>\n      <th>cost</th>\n      <th>margin</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Эспрессо-смесь 1 кг</td>\n      <td>1450</td>\n      <td>870</td>\n      <td>0.40</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Колумбия 250 г</td>\n      <td>690</td>\n      <td>380</td>\n      <td>0.45</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Эфиопия 250 г</td>\n      <td>790</td>\n      <td>430</td>\n      <td>0.46</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "assign": {
+      "lines": [],
+      "result": [
+        "                  name  price  price_vat",
+        "0  Эспрессо-смесь 1 кг   1450     1740.0",
+        "1       Колумбия 250 г    690      828.0",
+        "2        Эфиопия 250 г    790      948.0"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>name</th>\n      <th>price</th>\n      <th>price_vat</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Эспрессо-смесь 1 кг</td>\n      <td>1450</td>\n      <td>1740.0</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Колумбия 250 г</td>\n      <td>690</td>\n      <td>828.0</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Эфиопия 250 г</td>\n      <td>790</td>\n      <td>948.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "assign-kept": {
+      "lines": [
+        "False",
+        "True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "rename": {
+      "lines": [],
+      "result": [
+        "  product_id              product category  price  cost_rub  margin currency  \\",
+        "0        P01  Эспрессо-смесь 1 кг     Кофе   1450       870    0.40      RUB",
+        "1        P02       Колумбия 250 г     Кофе    690       380    0.45      RUB",
+        "",
+        "   is_costly  markup",
+        "0       True     1.7",
+        "1      False     1.8"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>product</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost_rub</th>\n      <th>margin</th>\n      <th>currency</th>\n      <th>is_costly</th>\n      <th>markup</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>P01</td>\n      <td>Эспрессо-смесь 1 кг</td>\n      <td>Кофе</td>\n      <td>1450</td>\n      <td>870</td>\n      <td>0.40</td>\n      <td>RUB</td>\n      <td>True</td>\n      <td>1.7</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>P02</td>\n      <td>Колумбия 250 г</td>\n      <td>Кофе</td>\n      <td>690</td>\n      <td>380</td>\n      <td>0.45</td>\n      <td>RUB</td>\n      <td>False</td>\n      <td>1.8</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "drop": {
+      "lines": [],
+      "result": [
+        "  product_id                 name category  price  cost  margin  markup",
+        "0        P01  Эспрессо-смесь 1 кг     Кофе   1450   870    0.40     1.7",
+        "1        P02       Колумбия 250 г     Кофе    690   380    0.45     1.8"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product_id</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n      <th>margin</th>\n      <th>markup</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>P01</td>\n      <td>Эспрессо-смесь 1 кг</td>\n      <td>Кофе</td>\n      <td>1450</td>\n      <td>870</td>\n      <td>0.40</td>\n      <td>1.7</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>P02</td>\n      <td>Колумбия 250 г</td>\n      <td>Кофе</td>\n      <td>690</td>\n      <td>380</td>\n      <td>0.45</td>\n      <td>1.8</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "drop-kept": {
+      "lines": [],
+      "result": [
+        "Index(['product_id', 'name', 'category', 'price', 'cost', 'margin', 'currency',",
+        "       'is_costly', 'markup'],",
+        "      dtype='str')"
+      ],
+      "html": null,
+      "error": null
+    }
+  }
+}

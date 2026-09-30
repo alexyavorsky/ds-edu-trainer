@@ -1,0 +1,43 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "load": {
+      "lines": [],
+      "result": [
+        "   order_id        date customer_id    city      channel    category  \\",
+        "0     10001  2025-01-01        C095  Москва  маркетплейс  Аксессуары",
+        "1     10001  2025-01-01        C095  Москва  маркетплейс         Чай",
+        "2     10002  2025-01-01        C059  Москва   приложение    Сладости",
+        "",
+        "              product  price  quantity",
+        "0    Кофемолка ручная   3200         2",
+        "1  Травяной сбор 50 г    260         1",
+        "2     Шоколад горький    180         1"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Чай</td>\n      <td>Травяной сбор 50 г</td>\n      <td>260</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>10002</td>\n      <td>2025-01-01</td>\n      <td>C059</td>\n      <td>Москва</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n      <td>Шоколад горький</td>\n      <td>180</td>\n      <td>1</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "dates": {
+      "lines": [
+        "2025-01-01 2025-12-31",
+        "True",
+        "329"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "summary": {
+      "lines": [
+        "крупных покупок в Казани: 5",
+        "доля чая зимой: 35.1 % · в остальное время: 24.6 %",
+        "средняя цена: сайт 677 ₽ · маркетплейс 728 ₽",
+        "покупок дороже 2000 ₽ в Москве: 26 из 66",
+        "рекорд: 10 шт. — Кофе без кофеина 250 г · Новосибирск"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

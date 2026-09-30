@@ -1,0 +1,93 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "several": {
+      "lines": [],
+      "result": [
+        "                 product  price",
+        "0       Кофемолка ручная   3200",
+        "1     Травяной сбор 50 г    260",
+        "2        Шоколад горький    180",
+        "3       Чёрный чай 100 г    350",
+        "4          Эфиопия 250 г    790",
+        "...                  ...    ...",
+        "2443       Эфиопия 250 г    790",
+        "2444     Печенье овсяное    150",
+        "2445     Печенье овсяное    150",
+        "2446    Фильтры бумажные    240",
+        "2447               Зефир    210",
+        "",
+        "[2448 rows x 2 columns]"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product</th>\n      <th>price</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Травяной сбор 50 г</td>\n      <td>260</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Шоколад горький</td>\n      <td>180</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>Чёрный чай 100 г</td>\n      <td>350</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>Эфиопия 250 г</td>\n      <td>790</td>\n    </tr>\n    <tr>\n      <th>...</th>\n      <td>...</td>\n      <td>...</td>\n    </tr>\n    <tr>\n      <th>2443</th>\n      <td>Эфиопия 250 г</td>\n      <td>790</td>\n    </tr>\n    <tr>\n      <th>2444</th>\n      <td>Печенье овсяное</td>\n      <td>150</td>\n    </tr>\n    <tr>\n      <th>2445</th>\n      <td>Печенье овсяное</td>\n      <td>150</td>\n    </tr>\n    <tr>\n      <th>2446</th>\n      <td>Фильтры бумажные</td>\n      <td>240</td>\n    </tr>\n    <tr>\n      <th>2447</th>\n      <td>Зефир</td>\n      <td>210</td>\n    </tr>\n  </tbody>\n</table>\n<p>2448 rows × 2 columns</p>\n</div>",
+      "error": null
+    },
+    "no-list": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "KeyError: ('product', 'price')"
+    },
+    "order": {
+      "lines": [],
+      "result": [
+        "     city customer_id        date",
+        "0  Москва        C095  2025-01-01",
+        "1  Москва        C095  2025-01-01",
+        "2  Москва        C059  2025-01-01"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>city</th>\n      <th>customer_id</th>\n      <th>date</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Москва</td>\n      <td>C095</td>\n      <td>2025-01-01</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Москва</td>\n      <td>C095</td>\n      <td>2025-01-01</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Москва</td>\n      <td>C059</td>\n      <td>2025-01-01</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "one-two": {
+      "lines": [
+        "<class 'pandas.Series'>",
+        "<class 'pandas.DataFrame'>"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "one-frame": {
+      "lines": [],
+      "result": [
+        "   price",
+        "0   3200",
+        "1    260",
+        "2    180"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>price</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>3200</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>260</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>180</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "frame-mean": {
+      "lines": [],
+      "result": [
+        "price       688.721405",
+        "quantity      2.128268",
+        "dtype: float64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "dot": {
+      "lines": [],
+      "result": [
+        "0    3200",
+        "1     260",
+        "2     180",
+        "Name: price, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "dot-trap": {
+      "lines": [
+        "6",
+        "[0.25, 0.35, 0.45]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

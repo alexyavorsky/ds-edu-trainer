@@ -1,0 +1,34 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "look": {
+      "lines": [],
+      "result": [
+        "      order_id        date customer_id         city      channel    category  \\",
+        "2444     11574  2025-12-31        C067       Москва         сайт    Сладости",
+        "2445     11575  2025-12-31        C057  Новосибирск  маркетплейс    Сладости",
+        "2446     11575  2025-12-31        C057  Новосибирск  маркетплейс  Аксессуары",
+        "2447     11576  2025-12-31        C158       Казань   приложение    Сладости",
+        "",
+        "               product  price  quantity",
+        "2444   Печенье овсяное    150         1",
+        "2445   Печенье овсяное    150         2",
+        "2446  Фильтры бумажные    240         1",
+        "2447             Зефир    210         2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>2444</th>\n      <td>11574</td>\n      <td>2025-12-31</td>\n      <td>C067</td>\n      <td>Москва</td>\n      <td>сайт</td>\n      <td>Сладости</td>\n      <td>Печенье овсяное</td>\n      <td>150</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>2445</th>\n      <td>11575</td>\n      <td>2025-12-31</td>\n      <td>C057</td>\n      <td>Новосибирск</td>\n      <td>маркетплейс</td>\n      <td>Сладости</td>\n      <td>Печенье овсяное</td>\n      <td>150</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>2446</th>\n      <td>11575</td>\n      <td>2025-12-31</td>\n      <td>C057</td>\n      <td>Новосибирск</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Фильтры бумажные</td>\n      <td>240</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>2447</th>\n      <td>11576</td>\n      <td>2025-12-31</td>\n      <td>C158</td>\n      <td>Казань</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n      <td>Зефир</td>\n      <td>210</td>\n      <td>2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "summary": {
+      "lines": [
+        "строк: 2448 · заказов: 1576 · покупателей: 213",
+        "выручка: 3301420 ₽ · средний чек: 2095 ₽",
+        "городов: 5 · доля Москвы: 38.7 %",
+        "главная категория: Кофе — 39.8 % строк"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

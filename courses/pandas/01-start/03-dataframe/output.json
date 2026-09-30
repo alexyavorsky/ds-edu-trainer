@@ -1,0 +1,95 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "dict": {
+      "lines": [],
+      "result": [
+        "      drink  price  volume",
+        "0  эспрессо    150    0.06",
+        "1  капучино    240    0.25",
+        "2     латте    260    0.35",
+        "3     какао    220    0.30"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>drink</th>\n      <th>price</th>\n      <th>volume</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>эспрессо</td>\n      <td>150</td>\n      <td>0.06</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>капучино</td>\n      <td>240</td>\n      <td>0.25</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>латте</td>\n      <td>260</td>\n      <td>0.35</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>какао</td>\n      <td>220</td>\n      <td>0.30</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "use": {
+      "lines": [
+        "(4, 3)",
+        "217.5"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "uneven": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: All arrays must be of the same length"
+    },
+    "dtypes": {
+      "lines": [],
+      "result": [
+        "drink         str",
+        "price       int64",
+        "volume    float64",
+        "dtype: object"
+      ],
+      "html": null,
+      "error": null
+    },
+    "records": {
+      "lines": [],
+      "result": [
+        "  day  guests   rain",
+        "0  пн      84  False",
+        "1  вт      91   True",
+        "2  ср      77   True"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>day</th>\n      <th>guests</th>\n      <th>rain</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>пн</td>\n      <td>84</td>\n      <td>False</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>вт</td>\n      <td>91</td>\n      <td>True</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>ср</td>\n      <td>77</td>\n      <td>True</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "labels": {
+      "lines": [],
+      "result": [
+        "   volume  extra",
+        "S    0.25      0",
+        "M    0.35     30",
+        "L    0.45     60"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>volume</th>\n      <th>extra</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>S</th>\n      <td>0.25</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>M</th>\n      <td>0.35</td>\n      <td>30</td>\n    </tr>\n    <tr>\n      <th>L</th>\n      <td>0.45</td>\n      <td>60</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "labels-index": {
+      "lines": [
+        "Index(['S', 'M', 'L'], dtype='str')",
+        "RangeIndex(start=0, stop=4, step=1)"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "series": {
+      "lines": [],
+      "result": [
+        "пн    120",
+        "вт     80",
+        "ср    200",
+        "чт    150",
+        "Name: tips, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "by-label": {
+      "lines": [
+        "200",
+        "550"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}
