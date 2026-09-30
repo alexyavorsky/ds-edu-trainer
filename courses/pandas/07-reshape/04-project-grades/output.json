@@ -1,0 +1,63 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "load": {
+      "lines": [
+        "(300, 5)"
+      ],
+      "result": [
+        "   student  group     subject  term  score",
+        "0  Анна А.  ИТ-21  Математика     1     68",
+        "1  Анна А.  ИТ-21  Математика     2     71",
+        "2  Анна А.  ИТ-21      Физика     1     49",
+        "3  Анна А.  ИТ-21      Физика     2     60"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>student</th>\n      <th>group</th>\n      <th>subject</th>\n      <th>term</th>\n      <th>score</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Анна А.</td>\n      <td>ИТ-21</td>\n      <td>Математика</td>\n      <td>1</td>\n      <td>68</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Анна А.</td>\n      <td>ИТ-21</td>\n      <td>Математика</td>\n      <td>2</td>\n      <td>71</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Анна А.</td>\n      <td>ИТ-21</td>\n      <td>Физика</td>\n      <td>1</td>\n      <td>49</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>Анна А.</td>\n      <td>ИТ-21</td>\n      <td>Физика</td>\n      <td>2</td>\n      <td>60</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "sheet-view": {
+      "lines": [],
+      "result": [
+        "subject     Английский  История  Математика  Программирование  Физика",
+        "student",
+        "Алексей Я.        97.5     76.5        85.0              98.5    92.0",
+        "Андрей Б.         56.0     65.0        51.0              83.0    68.5",
+        "Анна А.           78.0     80.5        69.5              66.5    54.5",
+        "Анна Л.           65.5     86.0        80.5              70.5    86.0",
+        "Дмитрий К.        63.0     76.0        66.0              76.0    65.0"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th>subject</th>\n      <th>Английский</th>\n      <th>История</th>\n      <th>Математика</th>\n      <th>Программирование</th>\n      <th>Физика</th>\n    </tr>\n    <tr>\n      <th>student</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Алексей Я.</th>\n      <td>97.5</td>\n      <td>76.5</td>\n      <td>85.0</td>\n      <td>98.5</td>\n      <td>92.0</td>\n    </tr>\n    <tr>\n      <th>Андрей Б.</th>\n      <td>56.0</td>\n      <td>65.0</td>\n      <td>51.0</td>\n      <td>83.0</td>\n      <td>68.5</td>\n    </tr>\n    <tr>\n      <th>Анна А.</th>\n      <td>78.0</td>\n      <td>80.5</td>\n      <td>69.5</td>\n      <td>66.5</td>\n      <td>54.5</td>\n    </tr>\n    <tr>\n      <th>Анна Л.</th>\n      <td>65.5</td>\n      <td>86.0</td>\n      <td>80.5</td>\n      <td>70.5</td>\n      <td>86.0</td>\n    </tr>\n    <tr>\n      <th>Дмитрий К.</th>\n      <td>63.0</td>\n      <td>76.0</td>\n      <td>66.0</td>\n      <td>76.0</td>\n      <td>65.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "groups-view": {
+      "lines": [],
+      "result": [
+        "subject  Английский  История  Математика  Программирование  Физика   Все",
+        "group",
+        "ИТ-21          67.2     71.8        63.2              65.0    64.9  66.4",
+        "ИТ-22          64.2     65.4        69.0              77.4    69.7  69.2",
+        "ИТ-23          67.2     70.6        71.8              67.0    69.0  69.1",
+        "Все            66.2     69.2        68.0              69.8    67.8  68.2"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th>subject</th>\n      <th>Английский</th>\n      <th>История</th>\n      <th>Математика</th>\n      <th>Программирование</th>\n      <th>Физика</th>\n      <th>Все</th>\n    </tr>\n    <tr>\n      <th>group</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>ИТ-21</th>\n      <td>67.2</td>\n      <td>71.8</td>\n      <td>63.2</td>\n      <td>65.0</td>\n      <td>64.9</td>\n      <td>66.4</td>\n    </tr>\n    <tr>\n      <th>ИТ-22</th>\n      <td>64.2</td>\n      <td>65.4</td>\n      <td>69.0</td>\n      <td>77.4</td>\n      <td>69.7</td>\n      <td>69.2</td>\n    </tr>\n    <tr>\n      <th>ИТ-23</th>\n      <td>67.2</td>\n      <td>70.6</td>\n      <td>71.8</td>\n      <td>67.0</td>\n      <td>69.0</td>\n      <td>69.1</td>\n    </tr>\n    <tr>\n      <th>Все</th>\n      <td>66.2</td>\n      <td>69.2</td>\n      <td>68.0</td>\n      <td>69.8</td>\n      <td>67.8</td>\n      <td>68.2</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "summary": {
+      "lines": [
+        "Лучшие студенты:",
+        "student",
+        "Алексей Я.    89.9",
+        "Наталья П.    81.0",
+        "Ольга А.      79.3",
+        "Name: score, dtype: float64",
+        "Лучшая группа по математике: ИТ-23",
+        "Сильнее всего выросли баллы: Физика · упали: ['История']",
+        "Доля незачётов в ИТ-21: 8 %",
+        "Годовых баллов от 90: 5"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

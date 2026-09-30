@@ -1,0 +1,100 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "counts": {
+      "lines": [],
+      "result": [
+        "channel          маркетплейс  приложение  сайт",
+        "city",
+        "Екатеринбург              64          99   149",
+        "Казань                    87          85   169",
+        "Москва                   239         260   449",
+        "Новосибирск               68          82   108",
+        "Санкт-Петербург          169         158   262"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th>channel</th>\n      <th>маркетплейс</th>\n      <th>приложение</th>\n      <th>сайт</th>\n    </tr>\n    <tr>\n      <th>city</th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Екатеринбург</th>\n      <td>64</td>\n      <td>99</td>\n      <td>149</td>\n    </tr>\n    <tr>\n      <th>Казань</th>\n      <td>87</td>\n      <td>85</td>\n      <td>169</td>\n    </tr>\n    <tr>\n      <th>Москва</th>\n      <td>239</td>\n      <td>260</td>\n      <td>449</td>\n    </tr>\n    <tr>\n      <th>Новосибирск</th>\n      <td>68</td>\n      <td>82</td>\n      <td>108</td>\n    </tr>\n    <tr>\n      <th>Санкт-Петербург</th>\n      <td>169</td>\n      <td>158</td>\n      <td>262</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "margins": {
+      "lines": [],
+      "result": [
+        "channel          маркетплейс  приложение  сайт  Всего",
+        "city",
+        "Екатеринбург              64          99   149    312",
+        "Казань                    87          85   169    341",
+        "Москва                   239         260   449    948",
+        "Новосибирск               68          82   108    258",
+        "Санкт-Петербург          169         158   262    589",
+        "Всего                    627         684  1137   2448"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th>channel</th>\n      <th>маркетплейс</th>\n      <th>приложение</th>\n      <th>сайт</th>\n      <th>Всего</th>\n    </tr>\n    <tr>\n      <th>city</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Екатеринбург</th>\n      <td>64</td>\n      <td>99</td>\n      <td>149</td>\n      <td>312</td>\n    </tr>\n    <tr>\n      <th>Казань</th>\n      <td>87</td>\n      <td>85</td>\n      <td>169</td>\n      <td>341</td>\n    </tr>\n    <tr>\n      <th>Москва</th>\n      <td>239</td>\n      <td>260</td>\n      <td>449</td>\n      <td>948</td>\n    </tr>\n    <tr>\n      <th>Новосибирск</th>\n      <td>68</td>\n      <td>82</td>\n      <td>108</td>\n      <td>258</td>\n    </tr>\n    <tr>\n      <th>Санкт-Петербург</th>\n      <td>169</td>\n      <td>158</td>\n      <td>262</td>\n      <td>589</td>\n    </tr>\n    <tr>\n      <th>Всего</th>\n      <td>627</td>\n      <td>684</td>\n      <td>1137</td>\n      <td>2448</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "by-row": {
+      "lines": [],
+      "result": [
+        "channel          маркетплейс  приложение   сайт",
+        "city",
+        "Екатеринбург           0.205       0.317  0.478",
+        "Казань                 0.255       0.249  0.496",
+        "Москва                 0.252       0.274  0.474",
+        "Новосибирск            0.264       0.318  0.419",
+        "Санкт-Петербург        0.287       0.268  0.445"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th>channel</th>\n      <th>маркетплейс</th>\n      <th>приложение</th>\n      <th>сайт</th>\n    </tr>\n    <tr>\n      <th>city</th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Екатеринбург</th>\n      <td>0.205</td>\n      <td>0.317</td>\n      <td>0.478</td>\n    </tr>\n    <tr>\n      <th>Казань</th>\n      <td>0.255</td>\n      <td>0.249</td>\n      <td>0.496</td>\n    </tr>\n    <tr>\n      <th>Москва</th>\n      <td>0.252</td>\n      <td>0.274</td>\n      <td>0.474</td>\n    </tr>\n    <tr>\n      <th>Новосибирск</th>\n      <td>0.264</td>\n      <td>0.318</td>\n      <td>0.419</td>\n    </tr>\n    <tr>\n      <th>Санкт-Петербург</th>\n      <td>0.287</td>\n      <td>0.268</td>\n      <td>0.445</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "by-column": {
+      "lines": [],
+      "result": [
+        "channel          маркетплейс  приложение   сайт",
+        "city",
+        "Екатеринбург           0.102       0.145  0.131",
+        "Казань                 0.139       0.124  0.149",
+        "Москва                 0.381       0.380  0.395",
+        "Новосибирск            0.108       0.120  0.095",
+        "Санкт-Петербург        0.270       0.231  0.230"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th>channel</th>\n      <th>маркетплейс</th>\n      <th>приложение</th>\n      <th>сайт</th>\n    </tr>\n    <tr>\n      <th>city</th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Екатеринбург</th>\n      <td>0.102</td>\n      <td>0.145</td>\n      <td>0.131</td>\n    </tr>\n    <tr>\n      <th>Казань</th>\n      <td>0.139</td>\n      <td>0.124</td>\n      <td>0.149</td>\n    </tr>\n    <tr>\n      <th>Москва</th>\n      <td>0.381</td>\n      <td>0.380</td>\n      <td>0.395</td>\n    </tr>\n    <tr>\n      <th>Новосибирск</th>\n      <td>0.108</td>\n      <td>0.120</td>\n      <td>0.095</td>\n    </tr>\n    <tr>\n      <th>Санкт-Петербург</th>\n      <td>0.270</td>\n      <td>0.231</td>\n      <td>0.230</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "by-all": {
+      "lines": [],
+      "result": [
+        "channel          маркетплейс  приложение   сайт",
+        "city",
+        "Екатеринбург           0.026       0.040  0.061",
+        "Казань                 0.036       0.035  0.069",
+        "Москва                 0.098       0.106  0.183",
+        "Новосибирск            0.028       0.033  0.044",
+        "Санкт-Петербург        0.069       0.065  0.107"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th>channel</th>\n      <th>маркетплейс</th>\n      <th>приложение</th>\n      <th>сайт</th>\n    </tr>\n    <tr>\n      <th>city</th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Екатеринбург</th>\n      <td>0.026</td>\n      <td>0.040</td>\n      <td>0.061</td>\n    </tr>\n    <tr>\n      <th>Казань</th>\n      <td>0.036</td>\n      <td>0.035</td>\n      <td>0.069</td>\n    </tr>\n    <tr>\n      <th>Москва</th>\n      <td>0.098</td>\n      <td>0.106</td>\n      <td>0.183</td>\n    </tr>\n    <tr>\n      <th>Новосибирск</th>\n      <td>0.028</td>\n      <td>0.033</td>\n      <td>0.044</td>\n    </tr>\n    <tr>\n      <th>Санкт-Петербург</th>\n      <td>0.069</td>\n      <td>0.065</td>\n      <td>0.107</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "delivery": {
+      "lines": [],
+      "result": [
+        "rating     1   2   3    4   5",
+        "speed",
+        "быстро     0   3  31   92  76",
+        "нормально  0  10  67  102  20",
+        "долго      7  33  47   17   0"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th>rating</th>\n      <th>1</th>\n      <th>2</th>\n      <th>3</th>\n      <th>4</th>\n      <th>5</th>\n    </tr>\n    <tr>\n      <th>speed</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>быстро</th>\n      <td>0</td>\n      <td>3</td>\n      <td>31</td>\n      <td>92</td>\n      <td>76</td>\n    </tr>\n    <tr>\n      <th>нормально</th>\n      <td>0</td>\n      <td>10</td>\n      <td>67</td>\n      <td>102</td>\n      <td>20</td>\n    </tr>\n    <tr>\n      <th>долго</th>\n      <td>7</td>\n      <td>33</td>\n      <td>47</td>\n      <td>17</td>\n      <td>0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "delivery-share": {
+      "lines": [],
+      "result": [
+        "rating        1     2     3     4     5",
+        "speed",
+        "быстро     0.00  0.01  0.15  0.46  0.38",
+        "нормально  0.00  0.05  0.34  0.51  0.10",
+        "долго      0.07  0.32  0.45  0.16  0.00"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th>rating</th>\n      <th>1</th>\n      <th>2</th>\n      <th>3</th>\n      <th>4</th>\n      <th>5</th>\n    </tr>\n    <tr>\n      <th>speed</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>быстро</th>\n      <td>0.00</td>\n      <td>0.01</td>\n      <td>0.15</td>\n      <td>0.46</td>\n      <td>0.38</td>\n    </tr>\n    <tr>\n      <th>нормально</th>\n      <td>0.00</td>\n      <td>0.05</td>\n      <td>0.34</td>\n      <td>0.51</td>\n      <td>0.10</td>\n    </tr>\n    <tr>\n      <th>долго</th>\n      <td>0.07</td>\n      <td>0.32</td>\n      <td>0.45</td>\n      <td>0.16</td>\n      <td>0.00</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    }
+  }
+}
