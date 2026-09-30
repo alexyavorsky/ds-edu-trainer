@@ -290,4 +290,9 @@ runtime/lesson_exec.py   сеанс урока: ячейки как в Jupyter, 
   в `data/` каждого сеанса.
 - Проверка — `node scripts/validate_courses.ts [--update] [--strict]` (Pyodide через `scripts/node-python.ts`
   и CPython через `scripts/course_cpython.py`), в CI — задание «Курсы»; в трёх браузерах уроки с эталонами
-  выполняет `scripts/validate_browsers.ts`.
+  выполняет `scripts/validate_browsers.ts`: не больше 5 минут на урок (`LESSON_TIMEOUT`, `--lesson-timeout`),
+  зависший урок останавливается с ошибкой «браузер, урок, последняя начатая ячейка, сколько прошло», остальные
+  проверяются дальше (COURSES_PLAN.md, «Проверка»).
+- Сохранённый вывод демонстраций ниже нерешённого упражнения скрыт за плашкой (`data-gated` в `<Demo>`,
+  класс `gate-on` на `<html>` ставит встроенный скрипт страницы урока, открывает `lesson.ts` по отметкам решения);
+  без JS вывод виден — COURSES_PLAN.md, «Ячейки и состояние».
