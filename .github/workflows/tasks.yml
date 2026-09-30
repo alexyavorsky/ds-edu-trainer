@@ -22,6 +22,10 @@ on:
         type: choice
         options: [full, changed]
         default: full
+      base:
+        description: "changed: с какой веткой или коммитом сравнивать (по умолчанию main)"
+        type: string
+        default: main
 
 # Новый push в ветку отменяет её незаконченный прогон. В main каждый прогон — в своей группе: прогон слияния
 # не отменяется следующим слиянием и не ждёт его (у каждого коммита main — свой полный результат).
@@ -61,9 +65,10 @@ jobs:
         id: plan
         env:
           FULL: ${{ github.event_name == 'schedule' || github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.scope == 'full') }}
+          BASE: ${{ (github.event_name == 'workflow_dispatch' && inputs.base) && format('origin/{0}', inputs.base) || 'origin/main' }}
         run: |
           if [ "$FULL" = true ]; then node scripts/ci_changes.ts --full
-          else node scripts/ci_changes.ts --base origin/main; fi
+          else node scripts/ci_changes.ts --base "$BASE"; fi
 
   validate:
     name: Валидация задач (Python 3.12)
