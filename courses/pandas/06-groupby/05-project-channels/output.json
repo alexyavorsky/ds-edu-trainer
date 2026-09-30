@@ -1,0 +1,45 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "load": {
+      "lines": [],
+      "result": [
+        "   order_id        date customer_id    city      channel    category  \\",
+        "0     10001  2025-01-01        C095  Москва  маркетплейс  Аксессуары",
+        "1     10001  2025-01-01        C095  Москва  маркетплейс         Чай",
+        "2     10002  2025-01-01        C059  Москва   приложение    Сладости",
+        "",
+        "              product  price  quantity  revenue",
+        "0    Кофемолка ручная   3200         2     6400",
+        "1  Травяной сбор 50 г    260         1      260",
+        "2     Шоколад горький    180         1      180"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>city</th>\n      <th>channel</th>\n      <th>category</th>\n      <th>product</th>\n      <th>price</th>\n      <th>quantity</th>\n      <th>revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>3200</td>\n      <td>2</td>\n      <td>6400</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>Чай</td>\n      <td>Травяной сбор 50 г</td>\n      <td>260</td>\n      <td>1</td>\n      <td>260</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>10002</td>\n      <td>2025-01-01</td>\n      <td>C059</td>\n      <td>Москва</td>\n      <td>приложение</td>\n      <td>Сладости</td>\n      <td>Шоколад горький</td>\n      <td>180</td>\n      <td>1</td>\n      <td>180</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "metrics-view": {
+      "lines": [],
+      "result": [
+        "               total  orders  buyers  share     check  orders_per_buyer",
+        "channel",
+        "маркетплейс   876070     407     152  0.265  2152.506             2.678",
+        "приложение    902430     454     159  0.273  1987.731             2.855",
+        "сайт         1522920     715     193  0.461  2129.958             3.705"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>total</th>\n      <th>orders</th>\n      <th>buyers</th>\n      <th>share</th>\n      <th>check</th>\n      <th>orders_per_buyer</th>\n    </tr>\n    <tr>\n      <th>channel</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>маркетплейс</th>\n      <td>876070</td>\n      <td>407</td>\n      <td>152</td>\n      <td>0.265</td>\n      <td>2152.506</td>\n      <td>2.678</td>\n    </tr>\n    <tr>\n      <th>приложение</th>\n      <td>902430</td>\n      <td>454</td>\n      <td>159</td>\n      <td>0.273</td>\n      <td>1987.731</td>\n      <td>2.855</td>\n    </tr>\n    <tr>\n      <th>сайт</th>\n      <td>1522920</td>\n      <td>715</td>\n      <td>193</td>\n      <td>0.461</td>\n      <td>2129.958</td>\n      <td>3.705</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "report": {
+      "lines": [],
+      "result": [
+        "               total  share  orders    check  orders_per_buyer  median_check",
+        "channel",
+        "сайт         1522920   0.46     715  2129.96              3.70        1610.0",
+        "приложение    902430   0.27     454  1987.73              2.86        1450.0",
+        "маркетплейс   876070   0.27     407  2152.51              2.68        1620.0"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>total</th>\n      <th>share</th>\n      <th>orders</th>\n      <th>check</th>\n      <th>orders_per_buyer</th>\n      <th>median_check</th>\n    </tr>\n    <tr>\n      <th>channel</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>сайт</th>\n      <td>1522920</td>\n      <td>0.46</td>\n      <td>715</td>\n      <td>2129.96</td>\n      <td>3.70</td>\n      <td>1610.0</td>\n    </tr>\n    <tr>\n      <th>приложение</th>\n      <td>902430</td>\n      <td>0.27</td>\n      <td>454</td>\n      <td>1987.73</td>\n      <td>2.86</td>\n      <td>1450.0</td>\n    </tr>\n    <tr>\n      <th>маркетплейс</th>\n      <td>876070</td>\n      <td>0.27</td>\n      <td>407</td>\n      <td>2152.51</td>\n      <td>2.68</td>\n      <td>1620.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    }
+  }
+}

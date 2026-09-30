@@ -1,0 +1,131 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "series": {
+      "lines": [],
+      "result": [
+        "city",
+        "Екатеринбург        423350",
+        "Казань              440150",
+        "Москва             1310110",
+        "Новосибирск         324090",
+        "Санкт-Петербург     803720",
+        "Name: revenue, dtype: int64"
+      ],
+      "html": null,
+      "error": null
+    },
+    "reset": {
+      "lines": [],
+      "result": [
+        "              city  revenue",
+        "0     Екатеринбург   423350",
+        "1           Казань   440150",
+        "2           Москва  1310110",
+        "3      Новосибирск   324090",
+        "4  Санкт-Петербург   803720"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>city</th>\n      <th>revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Екатеринбург</td>\n      <td>423350</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Казань</td>\n      <td>440150</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Москва</td>\n      <td>1310110</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>Новосибирск</td>\n      <td>324090</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>Санкт-Петербург</td>\n      <td>803720</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "as-index": {
+      "lines": [],
+      "result": [
+        "              city  revenue",
+        "0     Екатеринбург   423350",
+        "1           Казань   440150",
+        "2           Москва  1310110",
+        "3      Новосибирск   324090",
+        "4  Санкт-Петербург   803720"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>city</th>\n      <th>revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Екатеринбург</td>\n      <td>423350</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Казань</td>\n      <td>440150</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Москва</td>\n      <td>1310110</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>Новосибирск</td>\n      <td>324090</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>Санкт-Петербург</td>\n      <td>803720</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "size-name": {
+      "lines": [],
+      "result": [
+        "              city  lines",
+        "0     Екатеринбург    312",
+        "1           Казань    341",
+        "2           Москва    948",
+        "3      Новосибирск    258",
+        "4  Санкт-Петербург    589"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>city</th>\n      <th>lines</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Екатеринбург</td>\n      <td>312</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Казань</td>\n      <td>341</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Москва</td>\n      <td>948</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>Новосибирск</td>\n      <td>258</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>Санкт-Петербург</td>\n      <td>589</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "pairs": {
+      "lines": [],
+      "result": [
+        "           city      channel  revenue",
+        "0  Екатеринбург  маркетплейс    83080",
+        "1  Екатеринбург   приложение   150240",
+        "2  Екатеринбург         сайт   190030",
+        "3        Казань  маркетплейс   113670"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>city</th>\n      <th>channel</th>\n      <th>revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Екатеринбург</td>\n      <td>маркетплейс</td>\n      <td>83080</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Екатеринбург</td>\n      <td>приложение</td>\n      <td>150240</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Екатеринбург</td>\n      <td>сайт</td>\n      <td>190030</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>Казань</td>\n      <td>маркетплейс</td>\n      <td>113670</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "pairs-filter": {
+      "lines": [],
+      "result": [
+        "               city      channel  revenue",
+        "6            Москва  маркетплейс   343390",
+        "7            Москва   приложение   334240",
+        "8            Москва         сайт   632480",
+        "14  Санкт-Петербург         сайт   339660"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>city</th>\n      <th>channel</th>\n      <th>revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>6</th>\n      <td>Москва</td>\n      <td>маркетплейс</td>\n      <td>343390</td>\n    </tr>\n    <tr>\n      <th>7</th>\n      <td>Москва</td>\n      <td>приложение</td>\n      <td>334240</td>\n    </tr>\n    <tr>\n      <th>8</th>\n      <td>Москва</td>\n      <td>сайт</td>\n      <td>632480</td>\n    </tr>\n    <tr>\n      <th>14</th>\n      <td>Санкт-Петербург</td>\n      <td>сайт</td>\n      <td>339660</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "products": {
+      "lines": [],
+      "result": [
+        "  category                 product  revenue",
+        "7     Кофе           Эфиопия 250 г   426600",
+        "3     Кофе           Бразилия 1 кг   375390",
+        "6     Кофе     Эспрессо-смесь 1 кг   372650",
+        "4     Кофе          Колумбия 250 г   372600",
+        "5     Кофе  Кофе без кофеина 250 г   367200"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>category</th>\n      <th>product</th>\n      <th>revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>7</th>\n      <td>Кофе</td>\n      <td>Эфиопия 250 г</td>\n      <td>426600</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>Кофе</td>\n      <td>Бразилия 1 кг</td>\n      <td>375390</td>\n    </tr>\n    <tr>\n      <th>6</th>\n      <td>Кофе</td>\n      <td>Эспрессо-смесь 1 кг</td>\n      <td>372650</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>Кофе</td>\n      <td>Колумбия 250 г</td>\n      <td>372600</td>\n    </tr>\n    <tr>\n      <th>5</th>\n      <td>Кофе</td>\n      <td>Кофе без кофеина 250 г</td>\n      <td>367200</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "top-each": {
+      "lines": [],
+      "result": [
+        "      category             product  revenue",
+        "7         Кофе       Эфиопия 250 г   426600",
+        "3         Кофе       Бразилия 1 кг   375390",
+        "18         Чай          Улун 100 г   194940",
+        "16         Чай   Зелёный чай 100 г   167700",
+        "9       Посуда        Турка медная   139200",
+        "10      Посуда         Френч-пресс   111510",
+        "0   Аксессуары    Кофемолка ручная   102400",
+        "13    Сладости  Миндаль в шоколаде    82880",
+        "12    Сладости               Зефир    53760",
+        "1   Аксессуары         Термокружка    48300"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>category</th>\n      <th>product</th>\n      <th>revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>7</th>\n      <td>Кофе</td>\n      <td>Эфиопия 250 г</td>\n      <td>426600</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>Кофе</td>\n      <td>Бразилия 1 кг</td>\n      <td>375390</td>\n    </tr>\n    <tr>\n      <th>18</th>\n      <td>Чай</td>\n      <td>Улун 100 г</td>\n      <td>194940</td>\n    </tr>\n    <tr>\n      <th>16</th>\n      <td>Чай</td>\n      <td>Зелёный чай 100 г</td>\n      <td>167700</td>\n    </tr>\n    <tr>\n      <th>9</th>\n      <td>Посуда</td>\n      <td>Турка медная</td>\n      <td>139200</td>\n    </tr>\n    <tr>\n      <th>10</th>\n      <td>Посуда</td>\n      <td>Френч-пресс</td>\n      <td>111510</td>\n    </tr>\n    <tr>\n      <th>0</th>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>102400</td>\n    </tr>\n    <tr>\n      <th>13</th>\n      <td>Сладости</td>\n      <td>Миндаль в шоколаде</td>\n      <td>82880</td>\n    </tr>\n    <tr>\n      <th>12</th>\n      <td>Сладости</td>\n      <td>Зефир</td>\n      <td>53760</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Аксессуары</td>\n      <td>Термокружка</td>\n      <td>48300</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "top-each-sorted": {
+      "lines": [],
+      "result": [
+        "      category             product  revenue",
+        "0   Аксессуары    Кофемолка ручная   102400",
+        "1   Аксессуары         Термокружка    48300",
+        "7         Кофе       Эфиопия 250 г   426600",
+        "3         Кофе       Бразилия 1 кг   375390",
+        "9       Посуда        Турка медная   139200",
+        "10      Посуда         Френч-пресс   111510",
+        "13    Сладости  Миндаль в шоколаде    82880",
+        "12    Сладости               Зефир    53760",
+        "18         Чай          Улун 100 г   194940",
+        "16         Чай   Зелёный чай 100 г   167700"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>category</th>\n      <th>product</th>\n      <th>revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Аксессуары</td>\n      <td>Кофемолка ручная</td>\n      <td>102400</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Аксессуары</td>\n      <td>Термокружка</td>\n      <td>48300</td>\n    </tr>\n    <tr>\n      <th>7</th>\n      <td>Кофе</td>\n      <td>Эфиопия 250 г</td>\n      <td>426600</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>Кофе</td>\n      <td>Бразилия 1 кг</td>\n      <td>375390</td>\n    </tr>\n    <tr>\n      <th>9</th>\n      <td>Посуда</td>\n      <td>Турка медная</td>\n      <td>139200</td>\n    </tr>\n    <tr>\n      <th>10</th>\n      <td>Посуда</td>\n      <td>Френч-пресс</td>\n      <td>111510</td>\n    </tr>\n    <tr>\n      <th>13</th>\n      <td>Сладости</td>\n      <td>Миндаль в шоколаде</td>\n      <td>82880</td>\n    </tr>\n    <tr>\n      <th>12</th>\n      <td>Сладости</td>\n      <td>Зефир</td>\n      <td>53760</td>\n    </tr>\n    <tr>\n      <th>18</th>\n      <td>Чай</td>\n      <td>Улун 100 г</td>\n      <td>194940</td>\n    </tr>\n    <tr>\n      <th>16</th>\n      <td>Чай</td>\n      <td>Зелёный чай 100 г</td>\n      <td>167700</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    }
+  }
+}
