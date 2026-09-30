@@ -75,3 +75,11 @@
 - `courses/numpy/05-axes/03-statistics/lesson.mdx` — заметка «n или n − 1» после демо `std`.
 - `courses/numpy/06-broadcasting/04-project-prices/lesson.mdx` — последний абзац.
 - `courses/numpy/07-random/04-project-dice/lesson.mdx` — последний абзац.
+
+## Третий заход — по повторному ревью (`numpy-review-review.md`)
+
+- 9.3 `np-distances`, `nearest`: новая первая подсказка — ссылка на демо с кафе; прежняя стала второй.
+- 5.3 `np-statistics`, заметка «n или n − 1»: добавлено «то же число, что в pandas, — `std(ddof=1)`»; длинная строка перенесена.
+- 3.5 `np-project-pixels`, `rotate`: мягкая первая подсказка (два шага: транспонирование и отражение) перед готовым кодом.
+- 1.4 `np-aggregates`: длинная строка после демо `sum-mean` перенесена.
+- Проверка: `node scripts/validate_courses.ts np-aggregates np-statistics np-distances np-project-pixels --python …/.venv/bin/python` — ✓ (правки только в тексте, вывод не менялся).
