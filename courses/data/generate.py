@@ -171,7 +171,40 @@ def grades(rng: np.random.Generator) -> None:
     write("scores.csv", ["student_id", *["math", "physics", "programming", "history", "english"]], wide)
 
 
+# ─── Метеостанции (NumPy, модуль 8) ─────────────────────────────────────────
+
+STATIONS = {
+    # файл: поправка к температуре, поправка к влажности, какие дни датчик температуры молчал подряд
+    "station_center.csv": (1.6, -6, []),
+    "station_airport.csv": (0.0, 0, [11, 12, 13]),
+    "station_forest.csv": (-1.4, 5, []),
+}
+
+
+def stations(rng: np.random.Generator) -> None:
+    """Три станции за февраль 2025 года (28 дней): числа с пропусками — пустыми полями."""
+    base = -6.0 + np.cumsum(rng.normal(0, 1.6, 28)) * 0.8 + np.linspace(0, 4, 28)
+    humid = 82 + rng.normal(0, 4, 28)
+    temps_missing = np.zeros((3, 28), dtype=bool)
+    for s, (name, (dt_, dh, outage)) in enumerate(STATIONS.items()):
+        rows = []
+        for d in range(28):
+            temp = round(float(base[d] + dt_ + rng.normal(0, 0.6)), 1)
+            hum = int(np.clip(round(humid[d] + dh + rng.normal(0, 3)), 40, 100))
+            wind = round(float(np.clip(rng.gamma(2.5, 1.2) + (1.5 if s == 1 else 0), 0.3, 15)), 1)
+            row = [d + 1, temp, hum, wind]
+            gap_temp = d + 1 in outage or (rng.random() < 0.06 and not temps_missing[:, d].any())
+            if gap_temp:
+                row[1] = ""
+                temps_missing[s, d] = True
+            elif rng.random() < 0.05:
+                row[rng.integers(2, 4)] = ""
+            rows.append(row)
+        write(name, ["day", "temp", "humidity", "wind"], rows)
+
+
 if __name__ == "__main__":
     shop(np.random.default_rng(2025))
     weather(np.random.default_rng(7))
     grades(np.random.default_rng(42))
+    stations(np.random.default_rng(28))

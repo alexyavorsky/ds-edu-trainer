@@ -1,0 +1,81 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "concat": {
+      "lines": [
+        "[ 1  2  3 10 20]",
+        "[10 20  1  2  3 10 20]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "concat-2d": {
+      "lines": [
+        "[[1 2]",
+        " [3 4]",
+        " [5 6]",
+        " [7 8]]",
+        "[[1 2 5 6]",
+        " [3 4 7 8]]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "stack": {
+      "lines": [
+        "(84,)",
+        "(3, 28)",
+        "[[-5.3 -5.3 -5.7 -5.7]",
+        " [-6.4 -6.5 -6.3 -8.1]",
+        " [-6.7 -8.7 -9.2 -9.1]]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "vh": {
+      "lines": [
+        "[[1 2 3]",
+        " [4 5 6]]",
+        "[1 2 3 4 5 6]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "mismatch": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: all the input array dimensions except for the concatenation axis must match exactly, but along dimension 1, the array at index 0 has size 3 and the array at index 1 has size 2"
+    },
+    "add-col": {
+      "lines": [
+        "[[70 80  5]",
+        " [65 90  0]",
+        " [88 72  3]]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "split": {
+      "lines": [
+        "[1 2 3 4 5 6 7]",
+        "[ 8  9 10 11 12 13 14]",
+        "[array([1, 2, 3]), array([ 4,  5,  6,  7,  8,  9, 10]), array([11, 12, 13, 14])]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "uneven": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: array split does not result in an equal division"
+    }
+  }
+}

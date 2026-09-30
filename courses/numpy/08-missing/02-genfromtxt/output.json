@@ -1,0 +1,72 @@
+{
+  "generated": "Pyodide 314.0.7 · NumPy 2.4.6",
+  "cells": {
+    "peek": {
+      "lines": [
+        "9,-7.8,81,3.2",
+        "10,-7.6,79,4.4",
+        "11,,82,3.0",
+        "12,,79,2.4",
+        "13,,82,5.6",
+        "14,-6.9,75,2.7"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "loadtxt-fails": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: could not convert string '' to float64 at row 10, column 2."
+    },
+    "load": {
+      "lines": [
+        "(28, 4)",
+        "[[ 9.  -7.8 81.   3.2]",
+        " [10.  -7.6 79.   4.4]",
+        " [11.   nan 82.   3. ]",
+        " [12.   nan 79.   2.4]",
+        " [13.   nan 82.   5.6]",
+        " [14.  -6.9 75.   2.7]]",
+        "5 дней без температуры"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "no-header": {
+      "lines": [
+        "(29, 4)",
+        "[[ nan  nan  nan  nan]",
+        " [ 1.  -5.3 82.   1.9]",
+        " [ 2.  -5.3 84.   1.9]]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "filling": {
+      "lines": [
+        "[[10.  -7.6 79.   4.4]",
+        " [11.   0.  82.   3. ]",
+        " [12.   0.  79.   2.4]",
+        " [13.   0.  82.   5.6]",
+        " [14.  -6.9 75.   2.7]]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "nan-to-num": {
+      "lines": [
+        "[2. 0. 5.]",
+        "[ 2. -1.  5.]",
+        "[ 2. nan  5.]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

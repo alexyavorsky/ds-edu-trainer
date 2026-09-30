@@ -1,0 +1,7 @@
+title = "Пропуски и сборка данных"
+summary = "Настоящие данные бывают неполными и приходят по частям: NaN и функции, которые его пропускают, чтение файлов с пустыми полями, склеивание и разрезание массивов."
+outcomes = [
+  "находить и считать пропуски: <code>np.nan</code>, <code>np.isnan</code>, и считать итоги без них — <code>np.nanmean</code>, <code>np.nansum</code>",
+  "загружать файлы с пустыми полями: <code>np.genfromtxt</code>, <code>filling_values=</code>, <code>np.nan_to_num</code>",
+  "собирать массив из частей и делить на части: <code>np.concatenate</code>, <code>np.stack</code>, <code>np.vstack</code>, <code>np.hstack</code>, <code>np.split</code>",
+]
