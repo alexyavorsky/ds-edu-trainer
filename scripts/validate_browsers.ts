@@ -5,6 +5,11 @@
  *   node scripts/validate_browsers.ts                      # все три браузера
  *   node scripts/validate_browsers.ts webkit firefox       # выбранные
  *   node scripts/validate_browsers.ts --only ga-tile-ways,ga-typo-distance   # выбранные задачи и уроки (по id)
+ *   node scripts/validate_browsers.ts webkit --shard 2/3   # часть 2 из 3 (как в CI): каждая n-я задача и урок
+ *   node scripts/validate_browsers.ts chromium --pages 2   # две страницы браузера параллельно
+ *   node scripts/validate_browsers.ts --timings t.json     # время каждой задачи и урока — в файл
+ *
+ * Пробы глубины выполняет только часть 1 (--no-probes — без них). --only можно задать и переменной CHECK_ONLY.
  *
  * Зачем, если есть scripts/validate_pyodide.ts: стек WebAssembly в браузерах разный, и рекурсия, которая идёт
  * через C (functools.cache / lru_cache, sum(генератор), map), в Safari выдерживает всего ~60 уровней, а в
@@ -15,7 +20,7 @@
  *   остальное — для отчёта: где именно в этом браузере кончается стек.
  * Нужны браузеры Playwright: npx playwright install chromium firefox webkit (в CI — с --with-deps).
  */
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { extname, join } from 'node:path';
@@ -135,6 +140,7 @@ interface CheckResult {
   tasks: { id: string; variant: string; status: string }[];
   lessons: { id: string; cell: string; status: string }[];
   restarts?: string[]; // воркер Python запустился не с первого раза (browser-check.html: startPython)
+  timings?: { probes: number; items: { kind: 'task' | 'lesson'; id: string; seconds: number }[] };
   userAgent: string;
   error?: string;
 }
@@ -143,23 +149,67 @@ function annotate(title: string, message: string): void {
   if (process.env.GITHUB_ACTIONS === 'true') console.log(`::error title=${title}::${message.replaceAll('\n', '%0A')}`);
 }
 
+/** Значение опции: --name значение или --name=значение. */
+function option(argv: string[], name: string): string | null {
+  const eq = argv.find((a) => a.startsWith(`${name}=`));
+  if (eq) return eq.slice(name.length + 1);
+  const i = argv.indexOf(name);
+  return i >= 0 ? (argv[i + 1] ?? '') : null;
+}
+
+/** Результаты нескольких страниц одного браузера — в один: пробы — с первой страницы, остальное — вместе. */
+function merge(parts: CheckResult[]): CheckResult {
+  const [first] = parts;
+  return {
+    probes: first.probes,
+    tasks: parts.flatMap((p) => p.tasks),
+    lessons: parts.flatMap((p) => p.lessons),
+    restarts: parts.flatMap((p) => p.restarts ?? []),
+    timings: { probes: first.timings?.probes ?? 0, items: parts.flatMap((p) => p.timings?.items ?? []) },
+    userAgent: first.userAgent,
+    error: parts.map((p) => p.error).filter(Boolean).join('; ') || undefined,
+  };
+}
+
 async function main(argv: string[]): Promise<number> {
-  const onlyArg = argv.includes('--only') ? argv[argv.indexOf('--only') + 1] : '';
-  const names = argv.filter((a, i) => !a.startsWith('--') && argv[i - 1] !== '--only');
+  const valued = ['--only', '--shard', '--pages', '--timings'];
+  const onlyArg = option(argv, '--only') ?? process.env.CHECK_ONLY ?? '';
+  const [shard, shards] = (option(argv, '--shard') ?? '1/1').split('/').map(Number);
+  const pages = Number(option(argv, '--pages') ?? 1);
+  const timingsPath = option(argv, '--timings');
+  const withProbes = shard === 1 && !argv.includes('--no-probes');
+  if (!(shards >= 1 && shard >= 1 && shard <= shards && pages >= 1)) throw new Error('--shard k/n: 1 ≤ k ≤ n; --pages — не меньше 1');
+  const names = argv.filter((a, i) => !a.startsWith('--') && !valued.includes(argv[i - 1]));
   const chosen = names.length ? names : Object.keys(engines);
   const { url, close } = await serve();
   let failed = false;
+  const timings: Record<string, unknown> = {};
+  if (shards > 1 || pages > 1 || onlyArg) console.log(`Часть ${shard} из ${shards}, страниц в браузере: ${pages}${onlyArg ? ` · выбрано: ${onlyArg}` : ''}`);
   try {
     for (const name of chosen) {
       const browser = await engines[name].launch();
-      const page = await (await browser.newContext()).newPage();
       const started = performance.now();
-      await page.goto(`${url}/__check/page.html${onlyArg ? `?only=${onlyArg}` : ''}`);
-      await page.waitForFunction(() => (window as unknown as { __result?: unknown }).__result, null, { timeout: 30 * 60_000 });
-      const result = (await page.evaluate(() => (window as unknown as { __result: unknown }).__result)) as CheckResult;
+      // Часть CI × страница: общий номер (shard − 1) · pages + p из shards · pages; пробы — только у первой
+      const parts = await Promise.all(
+        Array.from({ length: pages }, async (_, p) => {
+          const page = await (await browser.newContext()).newPage();
+          const query = new URLSearchParams({ shard: `${(shard - 1) * pages + p}/${shards * pages}`, probes: withProbes && p === 0 ? '1' : '0' });
+          if (onlyArg) query.set('only', onlyArg);
+          await page.goto(`${url}/__check/page.html?${query}`);
+          await page.waitForFunction(() => (window as unknown as { __result?: unknown }).__result, null, { timeout: 30 * 60_000 });
+          return (await page.evaluate(() => (window as unknown as { __result: unknown }).__result)) as CheckResult;
+        }),
+      );
       await browser.close();
+      const result = merge(parts);
       const seconds = ((performance.now() - started) / 1000).toFixed(0);
       console.log(`\n${name} — ${result.userAgent} (${seconds} с)`);
+      const items = result.timings?.items ?? [];
+      const sum = (kind: string) => items.filter((t) => t.kind === kind).reduce((a, t) => a + t.seconds, 0).toFixed(0);
+      console.log(`  Время: пробы ${(result.timings?.probes ?? 0).toFixed(0)} с · задачи ${sum('task')} с · уроки ${sum('lesson')} с (сумма по страницам)`);
+      const slowest = [...items].sort((a, b) => b.seconds - a.seconds).slice(0, 5);
+      if (slowest.length) console.log(`  Дольше всего: ${slowest.map((t) => `${t.id} ${t.seconds.toFixed(0)} с`).join(', ')}`);
+      timings[name] = { seconds: Number(seconds), probes: result.timings?.probes ?? 0, items };
       if (result.error) {
         console.log(`  ✗ ${result.error}`);
         annotate(name, result.error);
@@ -179,15 +229,18 @@ async function main(argv: string[]): Promise<number> {
         console.log(`  · ${line}`);
         summary.push(line);
       }
-      if (process.env.GITHUB_ACTIONS === 'true') console.log(`::notice title=${name}::${[result.userAgent, ...summary].join('%0A')}`);
+      if (process.env.GITHUB_ACTIONS === 'true' && summary.length) console.log(`::notice title=${name}::${[result.userAgent, ...summary].join('%0A')}`);
       const problems: string[] = [];
-      if (result.probes.plain?.['990'] !== 'ok') problems.push('обычная рекурсия на 990 уровней не работает');
-      if (result.probes.plain?.['5000'] !== 'RecursionError') problems.push('рекурсия на 5000 уровней должна давать RecursionError, а не ронять Python');
-      if (result.probes.cache?.[String(MEMO_DEPTH)] !== 'ok') problems.push(`рекурсия через @cache не выдерживает ${MEMO_DEPTH} уровней — уменьшите MEMO_DEPTH и тесты`);
+      if (withProbes) {
+        if (result.probes.plain?.['990'] !== 'ok') problems.push('обычная рекурсия на 990 уровней не работает');
+        if (result.probes.plain?.['5000'] !== 'RecursionError') problems.push('рекурсия на 5000 уровней должна давать RecursionError, а не ронять Python');
+        if (result.probes.cache?.[String(MEMO_DEPTH)] !== 'ok') problems.push(`рекурсия через @cache не выдерживает ${MEMO_DEPTH} уровней — уменьшите MEMO_DEPTH и тесты`);
+      }
       for (const t of result.tasks) if (t.status !== 'passed') problems.push(`${t.id} ${t.variant}: ${t.status}`);
       for (const l of result.lessons) if (l.status !== 'passed') problems.push(`урок ${l.id}, ячейка ${l.cell}: ${l.status}`);
-      const passed = result.tasks.filter((t) => t.status === 'passed').length;
-      console.log(`  Задачи: прошли ${passed} из ${result.tasks.length}`);
+      const taskIds = [...new Set(result.tasks.map((t) => t.id))];
+      const goodTasks = taskIds.filter((id) => result.tasks.every((t) => t.id !== id || t.status === 'passed'));
+      console.log(`  Задачи: прошли ${goodTasks.length} из ${taskIds.length} (вариантов ${result.tasks.length})`);
       const lessonIds = [...new Set(result.lessons.map((l) => l.id))];
       const goodLessons = lessonIds.filter((id) => result.lessons.every((l) => l.id !== id || l.status === 'passed'));
       console.log(`  Уроки курсов: прошли ${goodLessons.length} из ${lessonIds.length} (ячеек ${result.lessons.length})`);
@@ -200,6 +253,7 @@ async function main(argv: string[]): Promise<number> {
   } finally {
     close();
   }
+  if (timingsPath) writeFileSync(timingsPath, `${JSON.stringify({ shard: `${shard}/${shards}`, pages, only: onlyArg || null, browsers: timings }, null, 2)}\n`);
   console.log(failed ? '\n✗ Есть ошибки' : '\n✓ Всё в порядке');
   return failed ? 1 : 0;
 }

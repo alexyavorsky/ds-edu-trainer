@@ -15,6 +15,15 @@
   const allLessons = await lessons.json();
   const { timeoutFactor, defaultTestTimeout, probes } = await config.json();
   const only = params.get('only')?.split(',');
+  // Часть проверки (validate_browsers.ts --shard/--pages): shard=k/n — элементы с номером i % n === k по общему
+  // списку «задачи, затем уроки»; probes=0 — без проб глубины (их выполняет одна часть на браузер)
+  const [shardIndex, shardCount] = (params.get('shard') ?? '0/1').split('/').map(Number);
+  const withProbes = params.get('probes') !== '0';
+  const selectedTasks = allTasks.filter((t) => !only || only.includes(t.id));
+  const selectedLessons = allLessons.filter((l) => !only || only.includes(l.id));
+  const mine = (i) => i % shardCount === shardIndex;
+  const myTasks = selectedTasks.filter((_, i) => mine(i));
+  const myLessons = selectedLessons.filter((_, i) => mine(selectedTasks.length + i));
 
   /** Один воркер; при таймауте или падении завершается, как на сайте. */
   class Python {
@@ -64,7 +73,9 @@
     }
   }
 
-  const result = { probes: {}, tasks: [], lessons: [], restarts: [], userAgent: navigator.userAgent };
+  // timings: секунды на пробы и на каждую задачу и урок — для отчёта и подбора числа частей в CI
+  const result = { probes: {}, tasks: [], lessons: [], restarts: [], timings: { probes: 0, items: [] }, userAgent: navigator.userAgent };
+  const clock = () => performance.now() / 1000;
 
   /**
    * Новый воркер с загруженным Python. WebKit после сотни-другой воркеров в одной странице изредка не может
@@ -88,7 +99,8 @@
   }
   try {
     // Пробы: до какой глубины каждый вид рекурсии работает, а где Python падает целиком (стек WebAssembly)
-    for (const [name, { depths, code }] of Object.entries(probes)) {
+    const probesStarted = clock();
+    for (const [name, { depths, code }] of Object.entries(withProbes ? probes : {})) {
       result.probes[name] = {};
       for (const depth of depths) {
         const py = await startPython(`проба ${name}`);
@@ -100,8 +112,10 @@
       }
       log(`${name}: ${JSON.stringify(result.probes[name])}`);
     }
+    result.timings.probes = clock() - probesStarted;
     // Задачи: у каждой свой воркер — как на сайте, где у страницы задачи свой
-    for (const task of allTasks.filter((t) => !only || only.includes(t.id))) {
+    for (const task of myTasks) {
+      const taskStarted = clock();
       const py = await startPython(`задача ${task.id}`);
       for (const [variant, code] of task.variants) {
         const end = await py.run({ kind: 'task', packages: task.packages, code, footer: task.footer });
@@ -117,10 +131,12 @@
         if (end.type !== 'done') break;
       }
       py.stop();
+      result.timings.items.push({ kind: 'task', id: task.id, seconds: clock() - taskStarted });
     }
     // Уроки курсов: все ячейки с эталонами по порядку в одном сеансе, как их выполняет страница урока
     const same = (a, b) => JSON.stringify([a.lines, a.result, a.error]) === JSON.stringify([b.lines, b.result, b.error]);
-    for (const lesson of allLessons.filter((l) => !only || only.includes(l.id))) {
+    for (const lesson of myLessons) {
+      const lessonStarted = clock();
       const py = await startPython(`урок ${lesson.id}`);
       for (const step of lesson.steps) {
         const { expected, raises, ...rest } = step;
@@ -142,6 +158,7 @@
         if (end.type !== 'done') break;
       }
       py.stop();
+      result.timings.items.push({ kind: 'lesson', id: lesson.id, seconds: clock() - lessonStarted });
       log(`урок ${lesson.id}: выполнен`);
     }
   } catch (error) {
