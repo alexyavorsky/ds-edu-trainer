@@ -83,6 +83,11 @@ print(np.isnan(filled).sum(), "пропусков")
 print(np.round(temps.mean(axis=1), 2))
 print(np.round(filled.mean(axis=1), 2))
 
+# %% cube-weeks
+by_week = filled.reshape(3, 4, 7)
+print(by_week.shape)
+print(by_week[0])       # центр: 4 строки-недели по 7 дней
+
 # %% weekly [exercise]
 weekly = filled.reshape(3, 4, 7).mean(axis=2)
 coldest_week = weekly.mean(axis=0).argmin() + 1

@@ -89,7 +89,7 @@ pts = rng.random((100000, 2))
 pi_est = ((pts[:, 0] ** 2 + pts[:, 1] ** 2) <= 1).mean()
 
 # %% birthday-idea
-group = np.sort(np.random.default_rng(4).integers(1, 366, size=23))
+group = np.sort(np.random.default_rng(6).integers(1, 366, size=23))
 print(group)
 print(group[1:] == group[:-1])
 print((group[1:] == group[:-1]).any())

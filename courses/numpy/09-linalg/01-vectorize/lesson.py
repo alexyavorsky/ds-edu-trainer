@@ -57,7 +57,7 @@ mae = (forecast - actual).mean()
 # %% log10
 population = np.array([1200, 45000, 610000, 1100000, 12600000])
 print(np.log10(population))
-print(np.round(np.log10(population)))
+print(np.log10(population).astype(int) + 1)     # число цифр
 print(np.log(np.array([1, 10, 100])))     # натуральный логарифм
 
 # %% sigmoid
@@ -118,13 +118,8 @@ for p in prices:
 print(np.array(result))
 print(np.where(prices > 100, prices * 0.9, prices))
 
-# %% bonus [exercise]
+# %% bonus-loop
 scores = np.array([35, 50, 62, 71, 88, 95, 49, 100])
-bonus = np.minimum(np.maximum(scores - 50, 0) * 2, 60)
-# ─── заготовка ───
-scores = np.array([35, 50, 62, 71, 88, 95, 49, 100])
-
-# Перепишите без цикла:
 result = []
 for s in scores:
     if s >= 50:
@@ -134,7 +129,11 @@ for s in scores:
     if b > 60:
         b = 60
     result.append(b)
+print(np.array(result))
 
+# %% bonus [exercise]
+bonus = np.minimum(np.maximum(scores - 50, 0) * 2, 60)
+# ─── заготовка ───
 bonus = ...
 # ─── проверка ───
 def test_bonus():
@@ -145,8 +144,6 @@ def test_bonus():
     assert bonus.max() <= 60, "в bonus есть больше 60: бонус ограничен сверху — np.minimum(…, 60)"
     assert bonus.tolist() == [0, 0, 24, 42, 60, 60, 0, 60], f"bonus = {bonus.tolist()}, а цикл даёт [0, 0, 24, 42, 60, 60, 0, 60]"
 # ─── другое решение ───
-scores = np.array([35, 50, 62, 71, 88, 95, 49, 100])
 bonus = np.clip((scores - 50) * 2, 0, 60)
 # ─── ошибка ───
-scores = np.array([35, 50, 62, 71, 88, 95, 49, 100])
 bonus = np.maximum(scores - 50, 0) * 2

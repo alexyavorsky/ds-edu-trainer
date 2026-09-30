@@ -76,7 +76,7 @@ waits = rng.uniform(0, 10, size=500)
 long_share = (waits < 7).mean()
 
 # %% histogram
-counts_demo, edges_demo = np.histogram(heights, bins=[140, 150, 160, 170, 180, 190, 210])
+counts_demo, edges_demo = np.histogram(heights, bins=[140, 150, 160, 170, 180, 190, 200, 210])
 print(counts_demo)
 print(edges_demo)
 print(counts_demo.sum())

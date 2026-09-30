@@ -76,16 +76,19 @@ dists = np.linalg.norm(shops - home)
 nearest = 0
 
 # %% pairwise
-towns = np.array([[0, 0], [3, 4], [6, 0], [7, 5], [2, 9]])
-diff = towns[:, np.newaxis, :] - towns[np.newaxis, :, :]
+pts = np.array([[0, 0], [3, 4], [6, 0]])
+diff = pts[:, np.newaxis, :] - pts[np.newaxis, :, :]
 print(diff.shape)
+print(diff[1, 0])          # pts[1] - pts[0]
 table = np.linalg.norm(diff, axis=2)
-print(np.round(table, 2))
+print(table)
 
 # %% farthest [exercise]
+towns = np.array([[0, 0], [3, 4], [6, 0], [7, 5], [2, 9]])
 dist = np.linalg.norm(towns[:, np.newaxis, :] - towns[np.newaxis, :, :], axis=2)
 max_dist = dist.max()
 # ─── заготовка ───
+towns = np.array([[0, 0], [3, 4], [6, 0], [7, 5], [2, 9]])
 dist = ...
 max_dist = ...
 # ─── проверка ───
@@ -102,15 +105,17 @@ def test_max():
     assert np.shape(max_dist) == (), "max_dist — массив, а нужно одно число: max без axis"
     assert abs(max_dist - 9.848858) < 1e-5, f"max_dist = {max_dist}, а дальше всего друг от друга города 2 и 4 — ≈ 9.85"
 # ─── другое решение ───
+towns = np.array([[0, 0], [3, 4], [6, 0], [7, 5], [2, 9]])
 diff_all = towns[:, np.newaxis] - towns
 dist = np.sqrt((diff_all ** 2).sum(axis=2))
 max_dist = np.max(dist)
 # ─── ошибка ───
+towns = np.array([[0, 0], [3, 4], [6, 0], [7, 5], [2, 9]])
 dist = np.linalg.norm(towns[:, np.newaxis, :] - towns[np.newaxis, :, :], axis=2)
 max_dist = dist.max(axis=0)
 
 # %% neighbor
-demo = np.round(table, 2)
+demo = table.copy()
 np.fill_diagonal(demo, np.inf)
 print(demo)
 print(demo.argmin(axis=1))

@@ -22,11 +22,11 @@
     },
     "birthday-idea": {
       "lines": [
-        "[ 23  30  64  81 104 124 138 166 187 199 213 222 229 247 266 293 319 322",
-        " 330 344 345 355 357]",
-        "[False False False False False False False False False False False False",
+        "[ 19  45  69 121 126 135 137 156 163 165 165 189 197 226 231 241 246 247",
+        " 249 276 324 346 361]",
+        "[False False False False False False False False False  True False False",
         " False False False False False False False False False False]",
-        "False"
+        "True"
       ],
       "result": null,
       "html": null,

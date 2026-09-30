@@ -119,8 +119,8 @@ first = ...
 def test_first():
     "first — одно имя из speakers"
     assert not isinstance(first, np.ndarray) or first.ndim == 0, "first — массив; без size метод choice вернёт одно имя"
-    assert first in ["Анна", "Иван", "Мария", "Олег"], f"first = {first!r} — это не имя из списка speakers"
-    assert first == "Мария", f"first = {first!r}: с seed 5 первой выпадает Мария — создайте генератор с seed 5"
+    assert first in ["Анна", "Иван", "Мария", "Олег"], f"first = {first} — это не имя из списка speakers"
+    assert first == "Мария", f"first = {first}: с seed 5 первой выпадает Мария — создайте генератор с seed 5"
 # ─── другое решение ───
 speakers = ["Анна", "Иван", "Мария", "Олег"]
 rng = np.random.default_rng(5)

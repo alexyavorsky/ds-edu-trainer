@@ -4,7 +4,7 @@
 # %% fair [exercise]
 import numpy as np
 
-rng = np.random.default_rng(2025)
+rng = np.random.default_rng(7)
 rolls = rng.integers(1, 7, size=60000)
 faces = np.bincount(rolls)[1:]
 worst_gap = (faces - 10000).max()
@@ -19,23 +19,23 @@ def test_faces():
     assert isinstance(faces, np.ndarray), f"faces — это {type(faces).__name__}, а нужен массив из np.bincount"
     assert len(faces) == 6, f"в faces {len(faces)} чисел, а граней 6: уберите нулевую — [1:]"
     assert faces.sum() == 60000, f"сумма faces — {faces.sum()}, а бросков 60 000"
-    assert faces.tolist() == [10008, 10005, 10251, 9927, 9930, 9879], "броски не те: генератор с seed 2025, 60 000 бросков"
+    assert faces.tolist() == [9899, 9981, 9959, 9876, 10153, 10132], "броски не те: генератор с seed 7, 60 000 бросков"
 
 
 def test_gap():
     "worst_gap — наибольшее отклонение вверх от 10 000"
-    assert worst_gap != 10251, "10251 — само число выпадений; отклонение — faces - 10000"
-    assert worst_gap == 251, f"worst_gap = {worst_gap}, а наибольшее отклонение вверх — 251"
+    assert worst_gap != 10153, "10153 — само число выпадений; отклонение — faces - 10000"
+    assert worst_gap == 153, f"worst_gap = {worst_gap}, а наибольшее отклонение вверх — 153"
 # ─── другое решение ───
 import numpy as np
 
-rolls = np.random.default_rng(2025).integers(1, 7, 60000)
+rolls = np.random.default_rng(7).integers(1, 7, 60000)
 faces = np.bincount(rolls, minlength=7)[1:]
 worst_gap = faces.max() - 10000
 # ─── ошибка ───
 import numpy as np
 
-rolls = np.random.default_rng(2025).integers(1, 7, 60000)
+rolls = np.random.default_rng(7).integers(1, 7, 60000)
 faces = np.bincount(rolls)[1:]
 worst_gap = faces.max()
 
@@ -69,10 +69,15 @@ common_sum = np.bincount(sums3).max()
 
 # %% cube
 face = np.arange(1, 7)
-all_sums = face[:, np.newaxis, np.newaxis] + face[np.newaxis, :, np.newaxis] + face
+first = face[:, np.newaxis, np.newaxis]     # (6, 1, 1): грани первого кубика — по оси 0
+second = face[np.newaxis, :, np.newaxis]    # (1, 6, 1): второго — по оси 1
+third = face                                # (6,) — это как (1, 1, 6): третьего — по оси 2
+print(first.shape, second.shape, third.shape)
+all_sums = first + second + third
 print(all_sums.shape, all_sums.size)
-print(all_sums[0])      # первый кубик — 1: суммы для всех пар второго и третьего
-print(np.bincount(all_sums.ravel())[3:])
+print(all_sums[0])          # таблица 6 × 6: на первом кубике 1, строки — второй кубик, столбцы — третий
+print(all_sums[2, 3, 4])    # 3 + 4 + 5
+print(np.bincount(all_sums.ravel())[3:])    # сколько исходов дают сумму 3, 4, …, 18
 
 # %% exact [exercise]
 p10 = (all_sums == 10).mean()

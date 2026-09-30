@@ -29,7 +29,7 @@ def test_shape():
 def test_values():
     "у каждого товара своя скидка"
     assert isinstance(discounted, np.ndarray) and discounted.shape == (3, 4), "сначала исправьте то, о чём говорит проверка выше"
-    assert np.allclose(discounted, [[108, 80, 36, 285], [117, 85, 40, 275.5], [99, 90, 32, 294.5]]), f"discounted = {discounted.tolist()}"
+    assert np.allclose(discounted, [[108, 80, 36, 285], [117, 85, 40, 275.5], [99, 90, 32, 294.5]]), f"discounted = {discounted.tolist()}: сравните с prices * discount — у каждого столбца (товара) своя скидка"
 # ─── другое решение ───
 discount = np.array([0.9, 1.0, 0.8, 0.95])
 discounted = discount * prices

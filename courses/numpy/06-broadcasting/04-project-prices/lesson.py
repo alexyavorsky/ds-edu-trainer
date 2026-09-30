@@ -129,5 +129,5 @@ savings = (full - price)[2]
 # %% summary
 print("количество:", amounts)
 for name, row in zip(goods, price_list):
-    print(f"{name:>20}: {row}")
+    print(f"{name:>20}: {row}")     # :>20 — выровнять название по правому краю на 20 символов
 print("экономия на 10 штуках всего ассортимента:", round(savings.sum()), "₽")
