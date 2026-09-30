@@ -100,6 +100,12 @@ flat_tmin = tmin_weeks.T.ravel()
 print(weeks.T.shape)
 print(weeks.T[0][:5])   # первые пять сред года
 
+# %% t-vs-reshape
+small = np.arange(6).reshape(2, 3)
+print(small)
+print(small.T)
+print(small.reshape(3, 2))
+
 # %% days-rows [exercise]
 by_day = tmin_weeks.T
 thursdays = by_day[1]
@@ -111,6 +117,9 @@ def test_by_day():
     "by_day — 7 строк по 52 недели"
     assert isinstance(by_day, np.ndarray), f"by_day — это {type(by_day).__name__}, а нужен массив: tmin_weeks.T"
     assert by_day.shape == (7, 52), f"форма by_day — {by_day.shape}, а нужно (7, 52): поверните tmin_weeks через .T"
+    assert by_day[0].tolist() == tmin[0:364:7].tolist(), (
+        "форма верная, но строка 0 — не все среды: reshape перекладывает числа подряд, а не поворачивает таблицу — нужен .T"
+    )
 
 
 def test_thursdays():

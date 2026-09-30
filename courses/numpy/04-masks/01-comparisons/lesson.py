@@ -8,11 +8,11 @@ weather = np.loadtxt("data/moscow_2025.csv", delimiter=",", skiprows=1)
 tmin = weather[:, 1]
 tmax = weather[:, 2]
 precip = weather[:, 3]
-print(tmax[:8])
+print(tmax[55:63])    # конец февраля — начало марта
 
 # %% mask
 warm = tmax > 0
-print(warm[:8])
+print(warm[55:63])
 print(warm.shape, warm.dtype)
 
 # %% two-arrays

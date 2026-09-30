@@ -51,7 +51,7 @@ print(first_store.cumsum())
 print(first_store.sum())
 
 # %% cumsum-axis
-monthly.cumsum(axis=1)
+print(monthly.cumsum(axis=1))
 
 # %% ytd [exercise]
 ytd = monthly.cumsum(axis=1)

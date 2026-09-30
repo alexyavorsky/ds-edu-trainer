@@ -6,8 +6,14 @@ import numpy as np
 
 
 def show(picture):
-    for row in picture:
-        print("".join("█" if value else "·" for value in row))
+    for row in picture:          # цикл for по таблице перебирает её строки
+        line = ""
+        for value in row:        # а по строке — её элементы
+            if value:
+                line += "█"      # 1 — закрашенная точка
+            else:
+                line += "·"      # 0 — пустая
+        print(line)
 
 
 show(np.zeros((3, 8), dtype=int))

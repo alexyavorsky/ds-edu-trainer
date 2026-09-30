@@ -13,7 +13,7 @@ print(weather.shape)
 weather
 
 # %% load-shape [quiz]
-print(weather.shape)
+print(weather.size)
 
 # %% no-skip [raises=ValueError]
 np.loadtxt("data/moscow_2025.csv", delimiter=",")
@@ -83,6 +83,7 @@ tmin = np.loadtxt("data/moscow_2025.csv", delimiter=",", skiprows=1, usecols=1)
 np.savetxt("data/tmin.txt", tmin, fmt="%.1f")
 # ─── заготовка ───
 tmin = ...
+# сохраните tmin в файл data/tmin.txt
 # ─── проверка ───
 def test_tmin():
     "tmin — столбец минимальных температур"

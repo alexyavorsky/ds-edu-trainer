@@ -71,6 +71,7 @@ q2[:] = q2 * 1.1
 # ─── заготовка ───
 plan = np.array([100.0, 110.0, 120.0, 150.0, 160.0, 170.0, 130.0, 120.0, 140.0, 150.0, 160.0, 200.0])
 q2 = ...
+# увеличьте q2 на 10 % так, чтобы изменился plan
 # ─── проверка ───
 def test_plan():
     "в plan второй квартал увеличен на 10 %"
@@ -107,6 +108,7 @@ scores[3:] = 0
 # ─── заготовка ───
 scores = np.array([12, 15, 9, 20, 17, 11])
 backup = ...
+# обнулите scores начиная с индекса 3
 # ─── проверка ───
 def test_scores():
     "в scores обнулено всё начиная с индекса 3"
@@ -116,7 +118,7 @@ def test_scores():
 def test_backup():
     "backup — прежние значения"
     assert isinstance(backup, np.ndarray), f"backup — это {type(backup).__name__}, а нужна копия массива: scores.copy()"
-    assert backup.tolist() != [12, 15, 9, 0, 0, 0], "backup тоже обнулился: это не копия, а тот же массив — используйте scores.copy() до изменения"
+    assert backup.tolist() != [12, 15, 9, 0, 0, 0], "backup тоже обнулился: backup = scores и backup = scores[:] — не копии, а окна на тот же массив; копия — scores.copy() до изменения"
     assert backup.tolist() == [12, 15, 9, 20, 17, 11], f"backup = {backup.tolist()}, а должен хранить исходные значения"
 # ─── другое решение ───
 scores = np.array([12, 15, 9, 20, 17, 11])

@@ -9,10 +9,10 @@ print(np.round(scores.mean(axis=0), 1))
 print(np.round(scores.std(axis=0), 1))
 
 # %% z-one
-math = scores[:, 0]
-z_math = (math - math.mean()) / math.std()
+math_scores = scores[:, 0]
+z_math = (math_scores - math_scores.mean()) / math_scores.std()
 print(np.round(z_math[:5], 2))
-print(round(z_math.mean(), 6) == 0, round(z_math.std(), 6))
+print(round(z_math.mean(), 6) == 0, round(z_math.std(), 6))   # round — чтобы крошечная погрешность не мешала сравнению
 
 # %% z-physics [exercise]
 phys = scores[:, 1]

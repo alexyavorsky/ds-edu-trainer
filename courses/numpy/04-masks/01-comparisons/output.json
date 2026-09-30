@@ -3,7 +3,7 @@
   "cells": {
     "load": {
       "lines": [
-        "[-3.2 -3.2 -3.7 -7.2 -7.2 -7.8 -8.  -4.2]"
+        "[-4.5 -3.4 -0.9  0.5  4.6  4.2  4.3  2.4]"
       ],
       "result": null,
       "html": null,
@@ -11,7 +11,7 @@
     },
     "mask": {
       "lines": [
-        "[False False False False False False False False]",
+        "[False False False  True  True  True  True  True]",
         "(365,) bool"
       ],
       "result": null,

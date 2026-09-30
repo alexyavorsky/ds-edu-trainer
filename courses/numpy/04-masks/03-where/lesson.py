@@ -46,7 +46,7 @@ print(np.where(nums > 0, "да", "нет"))
 weather = np.loadtxt("data/moscow_2025.csv", delimiter=",", skiprows=1)
 tmax = weather[:, 2]
 signs = np.where(tmax > 0, "плюс", "минус")
-signs[:5]
+signs[55:63]    # конец февраля — начало марта
 
 # %% bonus [exercise]
 sales = np.array([120000, 95000, 150000, 80000, 110000])

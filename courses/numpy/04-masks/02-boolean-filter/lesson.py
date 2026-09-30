@@ -75,7 +75,7 @@ print(tmax[precip > 10])          # максимумы в дни с сильны
 # %% combine
 thaw = (tmin < 0) & (tmax > 0)
 print(thaw.sum())
-print(((tmax > 25) | (tmin < -12)).sum())
+print(((precip > 10) | (tmax > 25)).sum())
 print((~thaw).sum())
 
 # %% thaw [exercise]

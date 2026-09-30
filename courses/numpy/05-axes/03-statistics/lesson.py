@@ -33,8 +33,8 @@ subject_median = scores.mean(axis=0)
 subject_median = np.median(scores, axis=1)
 
 # %% std
-math = scores[:, 0]
-print(math.mean(), math.std())
+math_scores = scores[:, 0]
+print(math_scores.mean(), math_scores.std())
 print(np.round(scores.std(axis=0), 1))
 
 # %% spread [exercise]
@@ -61,8 +61,8 @@ subject_std = scores.std(axis=0)
 most_spread = subject_std.argmin()
 
 # %% percentile
-print(np.percentile(math, 50), np.median(math))
-print(np.percentile(math, 90))
+print(np.percentile(math_scores, 50), np.median(math_scores))
+print(np.percentile(math_scores, 90))
 print(np.percentile(scores, 90))    # по всей таблице
 
 # %% top10 [exercise]
