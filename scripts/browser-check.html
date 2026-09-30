@@ -9,9 +9,10 @@
 <script type="module">
   const log = (s) => (document.getElementById('log').textContent += s + '\n');
   const params = new URLSearchParams(location.search);
-  const [worker, tasks, config] = await Promise.all(['/__check/worker', '/__check/tasks.json', '/__check/config.json'].map((u) => fetch(u)));
+  const [worker, tasks, config, lessons] = await Promise.all(['/__check/worker', '/__check/tasks.json', '/__check/config.json', '/__check/lessons.json'].map((u) => fetch(u)));
   const workerUrl = `/_astro/${await worker.text()}`;
   const allTasks = await tasks.json();
+  const allLessons = await lessons.json();
   const { timeoutFactor, defaultTestTimeout, probes } = await config.json();
   const only = params.get('only')?.split(',');
 
@@ -63,7 +64,7 @@
     }
   }
 
-  const result = { probes: {}, tasks: [], userAgent: navigator.userAgent };
+  const result = { probes: {}, tasks: [], lessons: [], userAgent: navigator.userAgent };
   try {
     // Пробы: до какой глубины каждый вид рекурсии работает, а где Python падает целиком (стек WebAssembly)
     for (const [name, { depths, code }] of Object.entries(probes)) {
@@ -97,6 +98,33 @@
         if (end.type !== 'done') break;
       }
       py.stop();
+    }
+    // Уроки курсов: все ячейки с эталонами по порядку в одном сеансе, как их выполняет страница урока
+    const same = (a, b) => JSON.stringify([a.lines, a.result, a.error]) === JSON.stringify([b.lines, b.result, b.error]);
+    for (const lesson of allLessons.filter((l) => !only || only.includes(l.id))) {
+      const py = new Python();
+      await py.ready;
+      for (const step of lesson.steps) {
+        const { expected, raises, ...rest } = step;
+        const end = await py.run({ kind: 'lesson', lesson: lesson.id, session: 'browser', files: lesson.files, packages: lesson.packages, ...rest });
+        let status = 'passed';
+        if (end.type !== 'done') status = `${end.type}${end.message ? `: ${end.message}` : ''}`;
+        else if (step.op === 'check') {
+          const bad = (end.data.results ?? []).filter((r) => r.status !== 'passed');
+          if (end.data.phase !== 'tests') status = `${end.data.phase}: ${end.data.error?.text ?? end.data.results?.[0]?.title}`;
+          else if (bad.length) status = bad.map((r) => `«${r.title}»: ${r.message}`).join('; ');
+        } else {
+          const got = { lines: end.data.lines, result: end.data.result, error: end.data.error?.text ?? null };
+          if (end.data.error && !(raises && end.data.error.mro.includes(raises))) status = end.data.error.text;
+          else if (raises && !end.data.error) status = `ожидалась ошибка ${raises}`;
+          else if (expected && !same(got, expected)) status = `вывод отличается от сохранённого: ${JSON.stringify(got).slice(0, 300)}`;
+        }
+        result.lessons.push({ id: lesson.id, cell: step.cell, status });
+        if (status !== 'passed') log(`✗ ${lesson.id} ${step.cell}: ${status}`);
+        if (end.type !== 'done') break;
+      }
+      py.stop();
+      log(`урок ${lesson.id}: выполнен`);
     }
   } catch (error) {
     result.error = String(error);

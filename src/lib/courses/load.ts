@@ -21,6 +21,7 @@ export interface CourseMeta {
   audience: string; // для кого курс
   prerequisites: string[]; // что нужно знать
   reference: string; // тема справочника
+  requires: string[]; // курсы, которые нужно пройти раньше: их понятия считаются известными (у pandas — нет)
 }
 
 export interface ModuleMeta {
@@ -132,7 +133,7 @@ export function loadCourses(): CourseSource[] {
           .filter((l) => existsSync(join(COURSES_DIR, slug, m, l, 'lesson.mdx')))
           .map((l) => loadLesson(slug, m, l)),
       }));
-    courses.push({ slug, meta: { ...meta, order: meta.order ?? 100 }, modules });
+    courses.push({ slug, meta: { ...meta, order: meta.order ?? 100, requires: meta.requires ?? [] }, modules });
   }
   return courses.sort((a, b) => a.meta.order - b.meta.order);
 }

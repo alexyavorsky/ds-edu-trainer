@@ -120,10 +120,7 @@ def run_notebook(notebook: dict) -> dict:
             try:
                 with contextlib.redirect_stdout(buffer), contextlib.redirect_stderr(buffer):
                     exec(compile(source, f"ячейка {cell['id']}", "exec"), namespace)
-            except Exception as e:  # noqa: BLE001 — ошибка ячейки и есть результат проверки
-                if "raises-exception" in cell["metadata"].get("tags", []):  # ошибка задумана: Jupyter идёт дальше
-                    outputs.append({"cell": cell["id"], "stdout": buffer.getvalue(), "raised": type(e).__name__})
-                    continue
+            except Exception:  # noqa: BLE001 — ошибка ячейки и есть результат проверки
                 return {"outputs": outputs, "error": {"cell": cell["id"], "traceback": traceback.format_exc(limit=3)}}
             outputs.append({"cell": cell["id"], "stdout": buffer.getvalue()})
     return {"outputs": outputs, "error": None}

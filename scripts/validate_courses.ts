@@ -197,8 +197,16 @@ function checkConcepts(courses: CourseSource[], python: string, r: Report): Map<
   }
   const found = cpython(python, { mode: 'concepts', snippets }) as Record<string, string[] | { error: string }>;
   const review = new Map<string, string[]>(); // урок → понятия прошлых уроков в его упражнениях (повторение)
+  const introducedBy = (course: CourseSource) => new Map(courseLessons(course).flatMap((l) => l.meta.introduces.map((c) => [c, l.meta.id] as [string, string])));
   for (const course of courses) {
-    const known = new Map<string, string>(); // понятие → урок, где введено
+    // понятие → урок, где введено. Курс самостоятельный, если requires пуст: понятия других курсов (np.* в курсе
+    // pandas) нужно ввести в нём самом, там, где они понадобились
+    const known = new Map<string, string>();
+    for (const dep of course.meta.requires) {
+      const other = courses.find((c) => c.slug === dep);
+      if (!other) r.error(course.slug, `course.toml: requires — нет курса ${dep}`);
+      else for (const [c, id] of introducedBy(other)) known.set(c, id);
+    }
     for (const lesson of courseLessons(course)) {
       const at = lesson.meta.id;
       const introduced = new Set(lesson.meta.introduces);
@@ -442,6 +450,11 @@ async function main(argv: string[]): Promise<number> {
     const notebook = buildNotebook(course, lesson, { root, siteUrl: null, solutions: true });
     const nb = cpython(python, { mode: 'notebook', notebook }) as { outputs: { cell: string; stdout: string }[]; error: { cell: string; traceback: string } | null };
     if (nb.error) r.error(at, `ноутбук: ячейка ${nb.error.cell} падает\n${nb.error.traceback}`);
+    for (const cell of lesson.cells) {
+      const raises = cell.kind === 'demo' ? cell.flags.raises : undefined;
+      const out = nb.outputs.find((o) => o.cell === cell.id);
+      if (raises && out && !out.stdout.includes(`${raises}: `)) r.error(at, `ноутбук: ячейка ${cell.id} должна напечатать перехваченную ошибку ${raises}`);
+    }
     for (const out of nb.outputs.filter((o) => o.cell.endsWith('-check'))) {
       if (!/Прошло (\d+) из \1 — всё верно!/.test(out.stdout)) r.error(at, `ноутбук: проверка ${out.cell} с эталоном не проходит:\n${out.stdout.trim()}`);
     }

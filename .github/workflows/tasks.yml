@@ -128,7 +128,7 @@ jobs:
       - name: Браузеры Playwright
         run: npx playwright install chromium firefox webkit
       - run: npm run build
-      - name: Все эталоны в трёх браузерах; глубина рекурсии не меньше бюджета тестов
+      - name: Все эталоны задач и уроки курсов в трёх браузерах; глубина рекурсии не меньше бюджета тестов
         run: node scripts/validate_browsers.ts
 
   site:

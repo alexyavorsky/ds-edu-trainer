@@ -289,4 +289,5 @@ runtime/lesson_exec.py   сеанс урока: ячейки как в Jupyter, 
 - Файлы данных урока воркер берёт один раз (`fetch` с `/courses/data/…`, в Node.js — с диска) и копирует
   в `data/` каждого сеанса.
 - Проверка — `node scripts/validate_courses.ts [--update] [--strict]` (Pyodide через `scripts/node-python.ts`
-  и CPython через `scripts/course_cpython.py`), в CI — задание «Курсы».
+  и CPython через `scripts/course_cpython.py`), в CI — задание «Курсы»; в трёх браузерах уроки с эталонами
+  выполняет `scripts/validate_browsers.ts`.

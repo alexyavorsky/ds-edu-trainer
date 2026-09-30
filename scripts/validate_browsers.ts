@@ -4,7 +4,7 @@
  *
  *   node scripts/validate_browsers.ts                      # все три браузера
  *   node scripts/validate_browsers.ts webkit firefox       # выбранные
- *   node scripts/validate_browsers.ts --only ga-tile-ways,ga-typo-distance
+ *   node scripts/validate_browsers.ts --only ga-tile-ways,ga-typo-distance   # выбранные задачи и уроки (по id)
  *
  * Зачем, если есть scripts/validate_pyodide.ts: стек WebAssembly в браузерах разный, и рекурсия, которая идёт
  * через C (functools.cache / lru_cache, sum(генератор), map), в Safari выдерживает всего ~60 уровней, а в
@@ -22,6 +22,7 @@ import { extname, join } from 'node:path';
 import { chromium, firefox, webkit, type BrowserType } from 'playwright';
 import { parse as parseToml } from 'smol-toml';
 import { bundleFooter } from '../src/lib/bundle.ts';
+import { courseLessons, lessonFiles, lessonPackages, loadCourses } from '../src/lib/courses/load.ts';
 import { PYTHON_CONFIG } from '../src/lib/python/config.ts';
 
 /** Глубина рекурсии с запоминанием, которую тесты задач могут требовать (Safari падает на ~70). */
@@ -74,6 +75,26 @@ function loadTasks() {
   return tasks;
 }
 
+/**
+ * Уроки курсов: прогон с эталонами, как в scripts/validate_courses.ts, — все ячейки по порядку в одном сеансе.
+ * Страница сверяет вывод демонстраций с сохранённым (output.json снят в Pyodide) и требует, чтобы проверки
+ * упражнений проходили.
+ */
+function loadLessons() {
+  return loadCourses().flatMap((course) =>
+    courseLessons(course).map((lesson) => ({
+      id: lesson.meta.id,
+      packages: lessonPackages(course.meta, lesson.meta),
+      files: lessonFiles(lesson.meta),
+      steps: lesson.cells.map((c) =>
+        c.kind === 'exercise'
+          ? { op: 'check', cell: c.id, code: c.solution, tests: c.tests, targets: c.targets }
+          : { op: c.kind === 'quiz' ? 'quiz' : 'cell', cell: c.id, code: c.code, raises: c.flags.raises ?? null, expected: lesson.output?.cells[c.id] ?? null },
+      ),
+    })),
+  );
+}
+
 function serve(): Promise<{ url: string; close: () => void }> {
   const worker = readdirSync(join(dist, '_astro')).find((n) => /^worker-.*\.js$/.test(n));
   if (!worker) throw new Error('в dist/ нет воркера — сначала npm run build');
@@ -81,6 +102,7 @@ function serve(): Promise<{ url: string; close: () => void }> {
     '/__check/page.html': ['text/html; charset=utf-8', read(join(root, 'scripts', 'browser-check.html'))],
     '/__check/worker': ['text/plain', worker],
     '/__check/tasks.json': ['application/json', JSON.stringify(loadTasks())],
+    '/__check/lessons.json': ['application/json', JSON.stringify(loadLessons())],
     '/__check/config.json': [
       'application/json',
       JSON.stringify({ timeoutFactor: PYTHON_CONFIG.timeoutFactor, defaultTestTimeout: PYTHON_CONFIG.defaultTestTimeout, probes: PROBES }),
@@ -111,6 +133,7 @@ function serve(): Promise<{ url: string; close: () => void }> {
 interface CheckResult {
   probes: Record<string, Record<string, string>>;
   tasks: { id: string; variant: string; status: string }[];
+  lessons: { id: string; cell: string; status: string }[];
   userAgent: string;
   error?: string;
 }
@@ -157,8 +180,12 @@ async function main(argv: string[]): Promise<number> {
       if (result.probes.plain?.['5000'] !== 'RecursionError') problems.push('рекурсия на 5000 уровней должна давать RecursionError, а не ронять Python');
       if (result.probes.cache?.[String(MEMO_DEPTH)] !== 'ok') problems.push(`рекурсия через @cache не выдерживает ${MEMO_DEPTH} уровней — уменьшите MEMO_DEPTH и тесты`);
       for (const t of result.tasks) if (t.status !== 'passed') problems.push(`${t.id} ${t.variant}: ${t.status}`);
+      for (const l of result.lessons) if (l.status !== 'passed') problems.push(`урок ${l.id}, ячейка ${l.cell}: ${l.status}`);
       const passed = result.tasks.filter((t) => t.status === 'passed').length;
       console.log(`  Задачи: прошли ${passed} из ${result.tasks.length}`);
+      const lessonIds = [...new Set(result.lessons.map((l) => l.id))];
+      const goodLessons = lessonIds.filter((id) => result.lessons.every((l) => l.id !== id || l.status === 'passed'));
+      console.log(`  Уроки курсов: прошли ${goodLessons.length} из ${lessonIds.length} (ячеек ${result.lessons.length})`);
       for (const p of problems) {
         console.log(`  ✗ ${p}`);
         annotate(name, p);

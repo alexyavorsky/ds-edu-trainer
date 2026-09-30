@@ -140,10 +140,19 @@ export function buildNotebook(course: CourseSource, lesson: LessonSource, o: Not
     else if (block.type === 'demo') {
       const cell = cellOf(block.id);
       const raises = cell.flags.raises;
-      // ячейка с намеренной ошибкой: тег raises-exception — «Выполнить всё» в Jupyter не останавливается на ней
-      const head = [block.title && `# ${block.title}`, raises && `# Эта ячейка специально завершается ошибкой ${raises}`].filter(Boolean).join('\n');
-      const source = `${head ? `${head}\n` : ''}${cell.kind === 'demo' ? cell.code : ''}`;
-      cells.push(code(block.id, source, raises ? { tags: ['raises-exception'] } : {}));
+      const body = cell.kind === 'demo' ? cell.code : '';
+      // намеренная ошибка перехвачена и напечатана: «Выполнить всё» (Run all) нигде на ней не останавливается
+      const source = raises
+        ? [
+            ...(block.title ? [`# ${block.title}`] : []),
+            `# Эта ячейка показывает ошибку ${raises}: она перехвачена, чтобы «Выполнить всё» не останавливалось.`,
+            'try:',
+            ...body.split('\n').map((l) => (l ? `    ${l}` : '')),
+            'except Exception as error:',
+            '    print(f"{type(error).__name__}: {error}")',
+          ].join('\n')
+        : `${block.title ? `# ${block.title}\n` : ''}${body}`;
+      cells.push(code(block.id, source));
     } else if (block.type === 'exercise') {
       const cell = cellOf(block.id) as ExerciseCell;
       exercise++;
