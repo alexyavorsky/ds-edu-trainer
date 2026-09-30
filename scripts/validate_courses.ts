@@ -5,7 +5,7 @@
  *   node scripts/validate_courses.ts                  # все курсы
  *   node scripts/validate_courses.ts numpy np-first-array   # курс или урок
  *   node scripts/validate_courses.ts --update         # записать сохранённый вывод (output.json) из Pyodide
- *   node scripts/validate_courses.ts --strict         # программа полная: модуль кончается мини-проектом и т.д.
+ *   node scripts/validate_courses.ts --strict         # строгие проверки для всех курсов (у complete = true — всегда)
  *   node scripts/validate_courses.ts --python путь    # CPython с пакетами requirements-dev.txt (по умолчанию .venv)
  *
  * Каждый урок выполняется целиком, как ноутбук, в одном сеансе (runtime/lesson_exec.py):
@@ -109,7 +109,7 @@ function checkStructure(courses: CourseSource[], strict: boolean, r: Report): vo
       if (!module.meta.title || !module.meta.summary) r.error(where, 'module.toml: нужны title и summary');
       if (!module.meta.outcomes?.length) r.error(where, 'module.toml: пустой outcomes («что умеет после модуля»)');
       const last = module.lessons[module.lessons.length - 1];
-      if (strict && last && last.meta.kind !== 'project') r.error(where, `модуль должен заканчиваться мини-проектом (kind: project), а последний урок — ${last.meta.id}`);
+      if ((strict || c.complete) && last && last.meta.kind !== 'project') r.error(where, `модуль должен заканчиваться мини-проектом (kind: project), а последний урок — ${last.meta.id}`);
       if (!module.lessons.length) r.warn(where, 'в модуле нет уроков');
       for (const lesson of module.lessons) {
         const at = lesson.meta.id || `${where}/${lesson.slug}`;

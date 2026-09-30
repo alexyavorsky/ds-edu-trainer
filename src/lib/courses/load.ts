@@ -22,6 +22,7 @@ export interface CourseMeta {
   prerequisites: string[]; // что нужно знать
   reference: string; // тема справочника
   requires: string[]; // курсы, которые нужно пройти раньше: их понятия считаются известными (у pandas — нет)
+  complete?: boolean; // программа написана целиком: строгие проверки структуры (validate_courses --strict) — всегда
 }
 
 export interface ModuleMeta {
