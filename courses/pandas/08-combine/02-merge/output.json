@@ -1,0 +1,118 @@
+{
+  "generated": "Pyodide 314.0.7 · pandas 3.0.2",
+  "cells": {
+    "tables": {
+      "lines": [
+        "   order_id        date customer_id product_id  quantity      channel",
+        "0     10001  2025-01-01        C095        P18         2  маркетплейс",
+        "1     10001  2025-01-01        C095        P09         1  маркетплейс",
+        "2     10002  2025-01-01        C059        P10         1   приложение",
+        "  product_id                 name category  price  cost",
+        "0        P01  Эспрессо-смесь 1 кг     Кофе   1450   870",
+        "1        P02       Колумбия 250 г     Кофе    690   380",
+        "2        P03        Эфиопия 250 г     Кофе    790   430"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "toy": {
+      "lines": [],
+      "result": [
+        "   id   name  city",
+        "0   2  Борис  Тула",
+        "1   3   Вика  Сочи"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>id</th>\n      <th>name</th>\n      <th>city</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>2</td>\n      <td>Борис</td>\n      <td>Тула</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>3</td>\n      <td>Вика</td>\n      <td>Сочи</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "toy-left": {
+      "lines": [],
+      "result": [
+        "   id   name  city",
+        "0   1    Аня   NaN",
+        "1   2  Борис  Тула",
+        "2   3   Вика  Сочи"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>id</th>\n      <th>name</th>\n      <th>city</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>1</td>\n      <td>Аня</td>\n      <td>NaN</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>2</td>\n      <td>Борис</td>\n      <td>Тула</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>3</td>\n      <td>Вика</td>\n      <td>Сочи</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "toy-outer": {
+      "lines": [],
+      "result": [
+        "   id   name  city",
+        "0   1    Аня   NaN",
+        "1   2  Борис  Тула",
+        "2   3   Вика  Сочи",
+        "3   4    NaN  Омск"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>id</th>\n      <th>name</th>\n      <th>city</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>1</td>\n      <td>Аня</td>\n      <td>NaN</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>2</td>\n      <td>Борис</td>\n      <td>Тула</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>3</td>\n      <td>Вика</td>\n      <td>Сочи</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>4</td>\n      <td>NaN</td>\n      <td>Омск</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "real": {
+      "lines": [
+        "2448 2448"
+      ],
+      "result": [
+        "   order_id        date customer_id product_id  quantity      channel  \\",
+        "0     10001  2025-01-01        C095        P18         2  маркетплейс",
+        "1     10001  2025-01-01        C095        P09         1  маркетплейс",
+        "2     10002  2025-01-01        C059        P10         1   приложение",
+        "",
+        "                 name    category  price  cost",
+        "0    Кофемолка ручная  Аксессуары   3200  1900",
+        "1  Травяной сбор 50 г         Чай    260   100",
+        "2     Шоколад горький    Сладости    180    90"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>product_id</th>\n      <th>quantity</th>\n      <th>channel</th>\n      <th>name</th>\n      <th>category</th>\n      <th>price</th>\n      <th>cost</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>P18</td>\n      <td>2</td>\n      <td>маркетплейс</td>\n      <td>Кофемолка ручная</td>\n      <td>Аксессуары</td>\n      <td>3200</td>\n      <td>1900</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>P09</td>\n      <td>1</td>\n      <td>маркетплейс</td>\n      <td>Травяной сбор 50 г</td>\n      <td>Чай</td>\n      <td>260</td>\n      <td>100</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>10002</td>\n      <td>2025-01-01</td>\n      <td>C059</td>\n      <td>P10</td>\n      <td>1</td>\n      <td>приложение</td>\n      <td>Шоколад горький</td>\n      <td>Сладости</td>\n      <td>180</td>\n      <td>90</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "customers": {
+      "lines": [
+        "240 213"
+      ],
+      "result": [
+        "  customer_id  orders",
+        "0        C001       6",
+        "1        C002       6",
+        "2        C005       8"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>customer_id</th>\n      <th>orders</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>C001</td>\n      <td>6</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>C002</td>\n      <td>6</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>C005</td>\n      <td>8</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "inner-loss": {
+      "lines": [
+        "213",
+        "240"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "left-nan": {
+      "lines": [],
+      "result": [
+        "  customer_id       name          city signup_date     segment  orders",
+        "0        C001  Сергей Ю.  Екатеринбург  2025-06-12  постоянный     6.0",
+        "1        C002  Сергей В.  Екатеринбург  2025-01-14       новый     6.0",
+        "2        C003  Максим С.  Екатеринбург  2025-05-19       новый     NaN",
+        "3        C004  Андрей Д.        Москва  2023-09-15       новый     NaN"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>customer_id</th>\n      <th>name</th>\n      <th>city</th>\n      <th>signup_date</th>\n      <th>segment</th>\n      <th>orders</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>C001</td>\n      <td>Сергей Ю.</td>\n      <td>Екатеринбург</td>\n      <td>2025-06-12</td>\n      <td>постоянный</td>\n      <td>6.0</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>C002</td>\n      <td>Сергей В.</td>\n      <td>Екатеринбург</td>\n      <td>2025-01-14</td>\n      <td>новый</td>\n      <td>6.0</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>C003</td>\n      <td>Максим С.</td>\n      <td>Екатеринбург</td>\n      <td>2025-05-19</td>\n      <td>новый</td>\n      <td>NaN</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>C004</td>\n      <td>Андрей Д.</td>\n      <td>Москва</td>\n      <td>2023-09-15</td>\n      <td>новый</td>\n      <td>NaN</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "narrow": {
+      "lines": [
+        "(2448, 13)"
+      ],
+      "result": [
+        "   order_id                name  revenue     segment",
+        "0     10001    Кофемолка ручная     6400       новый",
+        "1     10001  Травяной сбор 50 г      260       новый",
+        "2     10002     Шоколад горький      180  постоянный"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>name</th>\n      <th>revenue</th>\n      <th>segment</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>Кофемолка ручная</td>\n      <td>6400</td>\n      <td>новый</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>Травяной сбор 50 г</td>\n      <td>260</td>\n      <td>новый</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>10002</td>\n      <td>Шоколад горький</td>\n      <td>180</td>\n      <td>постоянный</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    }
+  }
+}
