@@ -40,12 +40,13 @@
     "ignore": {
       "lines": [],
       "result": [
-        "      order_id  days  rating",
-        "1573     11574   3.0     4.0",
-        "1574     11575   6.0     3.0",
-        "1575     11576   5.0     NaN"
+        "   x",
+        "0  1",
+        "1  2",
+        "2  3",
+        "3  4"
       ],
-      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>days</th>\n      <th>rating</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>1573</th>\n      <td>11574</td>\n      <td>3.0</td>\n      <td>4.0</td>\n    </tr>\n    <tr>\n      <th>1574</th>\n      <td>11575</td>\n      <td>6.0</td>\n      <td>3.0</td>\n    </tr>\n    <tr>\n      <th>1575</th>\n      <td>11576</td>\n      <td>5.0</td>\n      <td>NaN</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>x</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>3</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>4</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
       "error": null
     },
     "source": {
@@ -93,16 +94,15 @@
     },
     "side-trap": {
       "lines": [
-        "  manager",
-        "1    Олег",
-        "0    Анна"
+        "   city  cups",
+        "0  Омск   120"
       ],
       "result": [
-        "   city  cups manager",
-        "0  Омск   120    Анна",
-        "1  Тула    95    Олег"
+        "   city   cups manager",
+        "0  Омск  120.0     NaN",
+        "1   NaN    NaN    Олег"
       ],
-      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>city</th>\n      <th>cups</th>\n      <th>manager</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Омск</td>\n      <td>120</td>\n      <td>Анна</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Тула</td>\n      <td>95</td>\n      <td>Олег</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>city</th>\n      <th>cups</th>\n      <th>manager</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Омск</td>\n      <td>120.0</td>\n      <td>NaN</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>NaN</td>\n      <td>NaN</td>\n      <td>Олег</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
       "error": null
     }
   }

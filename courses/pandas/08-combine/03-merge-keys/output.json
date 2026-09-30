@@ -62,31 +62,41 @@
     "wrong-look": {
       "lines": [],
       "result": [
-        "   order_id        date customer_id product_id  quantity      channel  \\",
-        "0     10001  2025-01-01        C095        P18         2  маркетплейс",
-        "1     10001  2025-01-01        C095        P09         1  маркетплейс",
-        "",
-        "   quantity_returned",
-        "0                2.0",
-        "1                2.0"
+        "   order_id product_id  quantity  quantity_returned",
+        "0     10001        P18         2                2.0",
+        "1     10001        P09         1                2.0"
       ],
-      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>product_id</th>\n      <th>quantity</th>\n      <th>channel</th>\n      <th>quantity_returned</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>P18</td>\n      <td>2</td>\n      <td>маркетплейс</td>\n      <td>2.0</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>P09</td>\n      <td>1</td>\n      <td>маркетплейс</td>\n      <td>2.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>product_id</th>\n      <th>quantity</th>\n      <th>quantity_returned</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>P18</td>\n      <td>2</td>\n      <td>2.0</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>P09</td>\n      <td>1</td>\n      <td>2.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
       "error": null
     },
-    "two-keys": {
+    "wrong-dup": {
       "lines": [
-        "2448"
+        "    order_id product_id  quantity",
+        "12     10119        P07         1",
+        "15     10119        P05         1"
       ],
       "result": [
-        "   order_id        date customer_id product_id  quantity      channel  \\",
-        "0     10001  2025-01-01        C095        P18         2  маркетплейс",
-        "1     10001  2025-01-01        C095        P09         1  маркетплейс",
-        "",
-        "   quantity_returned",
-        "0                2.0",
-        "1                NaN"
+        "     order_id product_id  quantity  quantity_returned",
+        "190     10119        P07         3                1.0",
+        "191     10119        P07         3                1.0",
+        "192     10119        P05         1                1.0",
+        "193     10119        P05         1                1.0"
       ],
-      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>date</th>\n      <th>customer_id</th>\n      <th>product_id</th>\n      <th>quantity</th>\n      <th>channel</th>\n      <th>quantity_returned</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>P18</td>\n      <td>2</td>\n      <td>маркетплейс</td>\n      <td>2.0</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>2025-01-01</td>\n      <td>C095</td>\n      <td>P09</td>\n      <td>1</td>\n      <td>маркетплейс</td>\n      <td>NaN</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>product_id</th>\n      <th>quantity</th>\n      <th>quantity_returned</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>190</th>\n      <td>10119</td>\n      <td>P07</td>\n      <td>3</td>\n      <td>1.0</td>\n    </tr>\n    <tr>\n      <th>191</th>\n      <td>10119</td>\n      <td>P07</td>\n      <td>3</td>\n      <td>1.0</td>\n    </tr>\n    <tr>\n      <th>192</th>\n      <td>10119</td>\n      <td>P05</td>\n      <td>1</td>\n      <td>1.0</td>\n    </tr>\n    <tr>\n      <th>193</th>\n      <td>10119</td>\n      <td>P05</td>\n      <td>1</td>\n      <td>1.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
+    "fixed-look": {
+      "lines": [
+        "2448 214"
+      ],
+      "result": [
+        "     order_id product_id  quantity  quantity_returned",
+        "0       10001        P18         2                  2",
+        "1       10001        P09         1                  0",
+        "190     10119        P07         3                  1",
+        "191     10119        P05         1                  1"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>order_id</th>\n      <th>product_id</th>\n      <th>quantity</th>\n      <th>quantity_returned</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>10001</td>\n      <td>P18</td>\n      <td>2</td>\n      <td>2</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>10001</td>\n      <td>P09</td>\n      <td>1</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>190</th>\n      <td>10119</td>\n      <td>P07</td>\n      <td>3</td>\n      <td>1</td>\n    </tr>\n    <tr>\n      <th>191</th>\n      <td>10119</td>\n      <td>P05</td>\n      <td>1</td>\n      <td>1</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
       "error": null
     },
     "validate-ok": {

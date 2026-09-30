@@ -41,7 +41,9 @@ fact_m = orders.groupby(["month", "city"])["revenue"].sum()
 plan_m = plan_table.set_index(["month", "city"])["plan"]
 
 # %% frame
-pd.DataFrame({"plan": plan_m, "fact": fact_m}).head(4)
+left = pd.Series([1, 2], index=["x", "y"])
+right = pd.Series([30, 40], index=["y", "z"])
+pd.DataFrame({"left": left, "right": right})
 
 # %% table [exercise]
 pf = pd.DataFrame({"plan": plan_m, "fact": fact_m})
@@ -153,7 +155,7 @@ months_ok = (by_month["done"] > 1).sum()
 worst_month = by_month["done"].idxmax()
 
 # %% cities [exercise]
-flat["ok"] = flat["done"] >= 1
+flat["ok"] = flat["fact"] >= flat["plan"]
 by_city = flat.groupby("city").agg(plan=("plan", "sum"), fact=("fact", "sum"), months_ok=("ok", "sum"))
 by_city["gap"] = by_city["fact"] - by_city["plan"]
 steadiest = by_city["months_ok"].idxmax()
@@ -165,8 +167,9 @@ steadiest = ...
 # ─── проверка ───
 def test_ok():
     "ok — план месяца выполнен"
-    assert "ok" in flat.columns and flat["ok"].dtype == bool, "в flat нужен столбец-маска ok: flat[\"done\"] >= 1"
-    assert flat["ok"].sum() == 23, "маска не та: выполненных пар (done не меньше 1) должно быть 23"
+    assert "ok" in flat.columns and flat["ok"].dtype == bool, "в flat нужен столбец-маска ok: flat[\"fact\"] >= flat[\"plan\"]"
+    assert flat["ok"].sum() != 23, "сравнивать нужно сами суммы, а не округлённую долю done: 0.9997 округляется до 1.0, хотя план не выполнен"
+    assert flat["ok"].sum() == 22, "маска не та: пар, где факт не меньше плана, должно быть 22"
 
 
 def test_by_city():
@@ -177,14 +180,19 @@ def test_by_city():
     assert by_city.loc["Сочи", "gap"] == -60000 and by_city.loc["Екатеринбург", "gap"] == 25350, "gap — факт минус план: Сочи — −60000, Екатеринбург — 25350"
     assert steadiest == "Москва", f"steadiest = {steadiest!r}, а чаще всех план выполняла Москва: by_city[\"months_ok\"].idxmax()"
 # ─── другое решение ───
-flat["ok"] = ~(flat["done"] < 1) & flat["done"].notna()
+flat["ok"] = ~(flat["fact"] < flat["plan"]) & flat["plan"].notna()
 g = flat.groupby("city")
 by_city = pd.DataFrame({"plan": g["plan"].sum(), "fact": g["fact"].sum(), "months_ok": g["ok"].sum()})
 by_city["gap"] = by_city["fact"] - by_city["plan"]
 steadiest = by_city.sort_values("months_ok").index[-1]
 # ─── ошибка ───
-flat["ok"] = flat["done"] >= 1
+flat["ok"] = flat["fact"] >= flat["plan"]
 by_city = flat.groupby("city").agg(plan=("plan", "sum"), fact=("fact", "sum"), months_ok=("ok", "count"))
+by_city["gap"] = by_city["fact"] - by_city["plan"]
+steadiest = by_city["months_ok"].idxmax()
+# ─── ошибка ───
+flat["ok"] = flat["done"] >= 1
+by_city = flat.groupby("city").agg(plan=("plan", "sum"), fact=("fact", "sum"), months_ok=("ok", "sum"))
 by_city["gap"] = by_city["fact"] - by_city["plan"]
 steadiest = by_city["months_ok"].idxmax()
 

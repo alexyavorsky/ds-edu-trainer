@@ -131,8 +131,8 @@
     },
     "dup-one": {
       "lines": [
-        "DataFrame",
-        "Series"
+        "<class 'pandas.DataFrame'>",
+        "<class 'pandas.Series'>"
       ],
       "result": null,
       "html": null,

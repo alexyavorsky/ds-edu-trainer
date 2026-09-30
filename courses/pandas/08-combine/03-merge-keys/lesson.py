@@ -77,17 +77,16 @@ print(len(orders), len(wrong))
 print(wrong["quantity_returned"].sum(), returns["quantity"].sum())
 
 # %% wrong-look
-wrong[wrong["order_id"] == 10001]
+wrong.loc[wrong["order_id"] == 10001, ["order_id", "product_id", "quantity", "quantity_returned"]]
+
+# %% wrong-dup
+print(returns[returns["order_id"] == 10119])
+wrong.loc[wrong["order_id"] == 10119, ["order_id", "product_id", "quantity", "quantity_returned"]]
 
 # %% dup-quiz [quiz]
 a = pd.DataFrame({"k": ["x", "x"], "a": [1, 2]})
 b = pd.DataFrame({"k": ["x", "x"], "b": [3, 4]})
 print(len(a.merge(b, on="k")))
-
-# %% two-keys
-right = orders.merge(returns, on=["order_id", "product_id"], how="left", suffixes=("", "_returned"))
-print(len(right))
-right[right["order_id"] == 10001]
 
 # %% returned [exercise]
 lines = orders.merge(returns, on=["order_id", "product_id"], how="left", suffixes=("", "_returned"))
@@ -125,6 +124,10 @@ return_rate = lines["quantity_returned"].sum() / lines["quantity"].sum()
 lines = orders.merge(returns, on=["order_id", "product_id"], suffixes=("", "_returned"))
 lines["quantity_returned"] = lines["quantity_returned"].fillna(0).astype("int64")
 return_rate = lines["quantity_returned"].sum() / lines["quantity"].sum()
+
+# %% fixed-look
+print(len(lines), lines["quantity_returned"].sum())
+lines.loc[lines["order_id"].isin([10001, 10119]), ["order_id", "product_id", "quantity", "quantity_returned"]]
 
 # %% validate-ok
 checked = orders.merge(products, on="product_id", validate="many_to_one")

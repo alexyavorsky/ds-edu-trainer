@@ -16,14 +16,12 @@
     "frame": {
       "lines": [],
       "result": [
-        "                       plan     fact",
-        "city         month",
-        "Екатеринбург 1          NaN  21070.0",
-        "             2          NaN  32470.0",
-        "             3      46000.0  44490.0",
-        "             4      52000.0  49790.0"
+        "   left  right",
+        "x   1.0    NaN",
+        "y   2.0   30.0",
+        "z   NaN   40.0"
       ],
-      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th></th>\n      <th>plan</th>\n      <th>fact</th>\n    </tr>\n    <tr>\n      <th>city</th>\n      <th>month</th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th rowspan=\"4\" valign=\"top\">Екатеринбург</th>\n      <th>1</th>\n      <td>NaN</td>\n      <td>21070.0</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>NaN</td>\n      <td>32470.0</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>46000.0</td>\n      <td>44490.0</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>52000.0</td>\n      <td>49790.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>left</th>\n      <th>right</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>x</th>\n      <td>1.0</td>\n      <td>NaN</td>\n    </tr>\n    <tr>\n      <th>y</th>\n      <td>2.0</td>\n      <td>30.0</td>\n    </tr>\n    <tr>\n      <th>z</th>\n      <td>NaN</td>\n      <td>40.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
       "error": null
     },
     "flat-view": {
@@ -46,11 +44,11 @@
         "Сочи               60000.0        0.0          0 -60000.0",
         "Санкт-Петербург   841000.0   803720.0          5 -37280.0",
         "Казань            451000.0   440150.0          4 -10850.0",
-        "Новосибирск       329000.0   324090.0          5  -4910.0",
+        "Новосибирск       329000.0   324090.0          4  -4910.0",
         "Москва           1313000.0  1310110.0          7  -2890.0",
         "Екатеринбург      398000.0   423350.0          2  25350.0"
       ],
-      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>plan</th>\n      <th>fact</th>\n      <th>months_ok</th>\n      <th>gap</th>\n    </tr>\n    <tr>\n      <th>city</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Сочи</th>\n      <td>60000.0</td>\n      <td>0.0</td>\n      <td>0</td>\n      <td>-60000.0</td>\n    </tr>\n    <tr>\n      <th>Санкт-Петербург</th>\n      <td>841000.0</td>\n      <td>803720.0</td>\n      <td>5</td>\n      <td>-37280.0</td>\n    </tr>\n    <tr>\n      <th>Казань</th>\n      <td>451000.0</td>\n      <td>440150.0</td>\n      <td>4</td>\n      <td>-10850.0</td>\n    </tr>\n    <tr>\n      <th>Новосибирск</th>\n      <td>329000.0</td>\n      <td>324090.0</td>\n      <td>5</td>\n      <td>-4910.0</td>\n    </tr>\n    <tr>\n      <th>Москва</th>\n      <td>1313000.0</td>\n      <td>1310110.0</td>\n      <td>7</td>\n      <td>-2890.0</td>\n    </tr>\n    <tr>\n      <th>Екатеринбург</th>\n      <td>398000.0</td>\n      <td>423350.0</td>\n      <td>2</td>\n      <td>25350.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>plan</th>\n      <th>fact</th>\n      <th>months_ok</th>\n      <th>gap</th>\n    </tr>\n    <tr>\n      <th>city</th>\n      <th></th>\n      <th></th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Сочи</th>\n      <td>60000.0</td>\n      <td>0.0</td>\n      <td>0</td>\n      <td>-60000.0</td>\n    </tr>\n    <tr>\n      <th>Санкт-Петербург</th>\n      <td>841000.0</td>\n      <td>803720.0</td>\n      <td>5</td>\n      <td>-37280.0</td>\n    </tr>\n    <tr>\n      <th>Казань</th>\n      <td>451000.0</td>\n      <td>440150.0</td>\n      <td>4</td>\n      <td>-10850.0</td>\n    </tr>\n    <tr>\n      <th>Новосибирск</th>\n      <td>329000.0</td>\n      <td>324090.0</td>\n      <td>4</td>\n      <td>-4910.0</td>\n    </tr>\n    <tr>\n      <th>Москва</th>\n      <td>1313000.0</td>\n      <td>1310110.0</td>\n      <td>7</td>\n      <td>-2890.0</td>\n    </tr>\n    <tr>\n      <th>Екатеринбург</th>\n      <td>398000.0</td>\n      <td>423350.0</td>\n      <td>2</td>\n      <td>25350.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
       "error": null
     },
     "heat-view": {

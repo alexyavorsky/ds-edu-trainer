@@ -18,12 +18,11 @@ both.tail(3)
 both.loc[5]
 
 # %% ignore
-delivery = pd.concat([h1, h2], ignore_index=True)
-delivery.tail(3)
-
-# %% index-quiz [quiz]
 a = pd.DataFrame({"x": [1, 2]})
 b = pd.DataFrame({"x": [3, 4]})
+pd.concat([a, b], ignore_index=True)
+
+# %% index-quiz [quiz]
 print(pd.concat([a, b]).index.tolist())
 
 # %% year [exercise]
@@ -145,6 +144,6 @@ right = pd.DataFrame({"manager": ["Анна", "Олег"]})
 pd.concat([left, right], axis=1)
 
 # %% side-trap
-shuffled = right.sort_values("manager", ascending=False)
-print(shuffled)
-pd.concat([left, shuffled], axis=1)
+big = left[left["cups"] > 100]
+print(big)
+pd.concat([big, right.tail(1)], axis=1)

@@ -24,9 +24,9 @@ left.merge(right, on="id", how="outer")
 print(len(left.merge(right, on="id", how="right")))
 
 # %% real
-full = orders.merge(products, on="product_id")
-print(len(orders), len(full))
-full.head(3)
+named = orders.merge(products[["product_id", "name"]], on="product_id")
+print(len(orders), len(named))
+named.head(3)
 
 # %% priced [exercise]
 priced = orders.merge(products, on="product_id")
@@ -100,7 +100,7 @@ total_profit = priced["profit"].sum()
 
 # %% customers
 customers = pd.read_csv("data/customers.csv")
-order_counts = orders.groupby("customer_id", as_index=False).agg(orders=("order_id", "nunique"))
+order_counts = orders.groupby("customer_id", as_index=False).agg(n_orders=("order_id", "nunique"))
 print(len(customers), len(order_counts))
 order_counts.head(3)
 
@@ -113,37 +113,37 @@ activity = customers.merge(order_counts, on="customer_id", how="left")
 activity.head(4)
 
 # %% sleepers [exercise]
-activity["orders"] = activity["orders"].fillna(0).astype("int64")
-sleepers = activity[activity["orders"] == 0]
+activity["n_orders"] = activity["n_orders"].fillna(0).astype("int64")
+sleepers = activity[activity["n_orders"] == 0]
 n_sleepers = len(sleepers)
 # ─── заготовка ───
-# замените пропуски в activity["orders"] нулями и сделайте столбец целым
+# замените пропуски в activity["n_orders"] нулями и сделайте столбец целым
 sleepers = ...
 n_sleepers = ...
 # ─── проверка ───
 def test_orders():
-    "orders — число заказов целым числом, без пропусков"
-    assert activity["orders"].isna().sum() == 0, "в activity[\"orders\"] остались пропуски: клиент без пары в таблице заказов — это ноль заказов, fillna(0). Результат запишите обратно в столбец"
-    assert str(activity["orders"].dtype) in ("int64", "int32"), f"тип столбца orders — {activity['orders'].dtype}, а нужен целый: astype(\"int64\")"
-    assert activity["orders"].sum() == 1576 and len(activity) == 240, "в activity должны быть все 240 клиентов, а сумма заказов — 1576"
+    "n_orders — число заказов целым числом, без пропусков"
+    assert activity["n_orders"].isna().sum() == 0, "в activity[\"n_orders\"] остались пропуски: клиент без пары в таблице заказов — это ноль заказов, fillna(0). Результат запишите обратно в столбец"
+    assert str(activity["n_orders"].dtype) in ("int64", "int32"), f"тип столбца n_orders — {activity['n_orders'].dtype}, а нужен целый: astype(\"int64\")"
+    assert activity["n_orders"].sum() == 1576 and len(activity) == 240, "в activity должны быть все 240 клиентов, а сумма заказов — 1576"
 
 
 def test_sleepers():
     "sleepers — клиенты без заказов"
     assert isinstance(sleepers, pd.DataFrame), f"sleepers — это {type(sleepers).__name__}, а нужна таблица: activity[маска]"
     assert len(sleepers) == 27 and n_sleepers == 27, f"в sleepers {len(sleepers)} строк, n_sleepers = {n_sleepers!r}, а клиентов без заказов 27"
-    assert (sleepers["orders"] == 0).all(), "в sleepers должны быть только клиенты с нулём заказов"
+    assert (sleepers["n_orders"] == 0).all(), "в sleepers должны быть только клиенты с нулём заказов"
 # ─── другое решение ───
-activity["orders"] = activity["orders"].fillna(0).astype("int64")
+activity["n_orders"] = activity["n_orders"].fillna(0).astype("int64")
 sleepers = customers[~customers["customer_id"].isin(orders["customer_id"])]
 sleepers = activity[activity["customer_id"].isin(sleepers["customer_id"])]
-n_sleepers = (activity["orders"] == 0).sum()
+n_sleepers = (activity["n_orders"] == 0).sum()
 # ─── ошибка ───
-sleepers = activity[activity["orders"] == 0]
+sleepers = activity[activity["n_orders"] == 0]
 n_sleepers = len(sleepers)
 # ─── ошибка ───
-activity["orders"] = activity["orders"].fillna(0).astype("int64")
-sleepers = activity[activity["orders"] > 0]
+activity["n_orders"] = activity["n_orders"].fillna(0).astype("int64")
+sleepers = activity[activity["n_orders"] > 0]
 n_sleepers = len(sleepers)
 
 # %% narrow

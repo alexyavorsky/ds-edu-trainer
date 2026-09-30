@@ -70,10 +70,11 @@ print(plan)
 fact - plan
 
 # %% reindex
-fact.reindex(["Москва", "Сочи", "Казань"])
+print(fact.reindex(["Москва", "Сочи", "Казань"]))
+print(fact.reindex(["Москва", "Сочи", "Казань"], fill_value=0))
 
 # %% reindex-fill
-fact.reindex(plan.index, fill_value=0)
+plan.reindex(fact.index)
 
 # %% gap [exercise]
 fact_full = fact.reindex(plan.index, fill_value=0)

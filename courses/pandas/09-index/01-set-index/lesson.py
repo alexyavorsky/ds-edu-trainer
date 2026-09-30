@@ -30,40 +30,46 @@ print(list(catalog.index[:4]))
 print("P05" in catalog.index, "P99" in catalog.index)
 
 # %% lookup [exercise]
-catalog = products.set_index("product_id")
-p12_name = catalog.loc["P12", "name"]
-picked = catalog.loc[["P03", "P11", "P18"], ["name", "price"]]
+customers = pd.read_csv("data/customers.csv")
+clients = customers.set_index("customer_id")
+c012_city = clients.loc["C012", "city"]
+picked = clients.loc[["C005", "C100", "C200"], ["name", "segment"]]
 # ─── заготовка ───
-catalog = ...
-p12_name = ...
+customers = pd.read_csv("data/customers.csv")
+clients = ...
+c012_city = ...
 picked = ...
 # ─── проверка ───
-def test_catalog():
-    "catalog — справочник с product_id в индексе"
-    assert isinstance(catalog, pd.DataFrame), f"catalog — это {type(catalog).__name__}, а нужна таблица: products.set_index(\"product_id\")"
-    assert catalog.index.name == "product_id", "в индексе catalog должны быть коды товаров: products.set_index(\"product_id\")"
-    assert list(catalog.columns) == ["name", "category", "price", "cost"], f"столбцы сейчас {list(catalog.columns)}: product_id должен уйти из столбцов в индекс"
+def test_clients():
+    "clients — справочник клиентов с customer_id в индексе"
+    assert isinstance(clients, pd.DataFrame), f"clients — это {type(clients).__name__}, а нужна таблица: customers.set_index(\"customer_id\")"
+    assert clients.index.name == "customer_id", "в индексе clients должны быть коды клиентов: customers.set_index(\"customer_id\")"
+    assert list(clients.columns) == ["name", "city", "signup_date", "segment"], f"столбцы сейчас {list(clients.columns)}: customer_id должен уйти из столбцов в индекс"
+    assert "customer_id" in customers.columns, "таблицу customers менять не нужно: результат set_index сохраните в clients"
 
 
 def test_lookup():
-    "p12_name — название товара P12, picked — три товара, два столбца"
-    assert isinstance(p12_name, str), f"p12_name — это {type(p12_name).__name__}, а нужно одно значение — название: catalog.loc[\"P12\", \"name\"]"
-    assert p12_name == "Миндаль в шоколаде", f"p12_name = {p12_name!r}, а товар P12 — «Миндаль в шоколаде»: catalog.loc[\"P12\", \"name\"]"
-    assert isinstance(picked, pd.DataFrame), f"picked — это {type(picked).__name__}, а нужна таблица: catalog.loc[список меток, список столбцов]"
-    assert list(picked.index) == ["P03", "P11", "P18"], f"метки строк сейчас {list(picked.index)}, а нужны P03, P11, P18 — в этом порядке"
-    assert list(picked.columns) == ["name", "price"], f"столбцы сейчас {list(picked.columns)}, а нужны name и price"
+    "c012_city — город клиента C012, picked — три клиента, два столбца"
+    assert isinstance(c012_city, str), f"c012_city — это {type(c012_city).__name__}, а нужно одно значение — название города: clients.loc[\"C012\", \"city\"]"
+    assert c012_city == "Москва", f"c012_city = {c012_city!r}, а клиент C012 живёт в Москве: clients.loc[\"C012\", \"city\"]"
+    assert isinstance(picked, pd.DataFrame), f"picked — это {type(picked).__name__}, а нужна таблица: clients.loc[список меток, список столбцов]"
+    assert list(picked.index) == ["C005", "C100", "C200"], f"метки строк сейчас {list(picked.index)}, а нужны C005, C100, C200 — в этом порядке"
+    assert list(picked.columns) == ["name", "segment"], f"столбцы сейчас {list(picked.columns)}, а нужны name и segment"
 # ─── другое решение ───
-catalog = pd.read_csv("data/products.csv", index_col="product_id")
-p12_name = catalog["name"]["P12"]
-picked = catalog[["name", "price"]].loc[["P03", "P11", "P18"]]
+customers = pd.read_csv("data/customers.csv")
+clients = pd.read_csv("data/customers.csv", index_col="customer_id")
+c012_city = clients["city"]["C012"]
+picked = clients[["name", "segment"]].loc[["C005", "C100", "C200"]]
 # ─── ошибка ───
-catalog = products
-p12_name = "Миндаль в шоколаде"
-picked = products[products["product_id"].isin(["P03", "P11", "P18"])][["name", "price"]]
+customers = pd.read_csv("data/customers.csv")
+clients = customers
+c012_city = "Москва"
+picked = customers[customers["customer_id"].isin(["C005", "C100", "C200"])][["name", "segment"]]
 # ─── ошибка ───
-catalog = products.set_index("product_id")
-p12_name = catalog.loc["P12"]
-picked = catalog.loc[["P03", "P11", "P18"], ["name", "price"]]
+customers = pd.read_csv("data/customers.csv")
+clients = customers.set_index("customer_id")
+c012_city = clients.loc["C012"]
+picked = clients.loc[["C005", "C100", "C200"], ["name", "segment"]]
 
 # %% missing-label [raises=KeyError]
 catalog.loc["P99"]
@@ -75,12 +81,12 @@ catalog.reset_index().head(2)
 pd.read_csv("data/products.csv", index_col="product_id").head(2)
 
 # %% by-name
-by_name = products.set_index("name")
-by_name.loc["Зефир", "price"]
+named = products.set_index("name")
+named.loc["Зефир", "price"]
 
 # %% sorted-slice
-by_name = by_name.sort_index()
-by_name.loc["Т":"Ф", "price"]
+named = named.sort_index()
+named.loc["Т":"Ф", "price"]
 
 # %% alphabet [exercise]
 by_name = products.set_index("name").sort_index()
@@ -121,8 +127,8 @@ print(orders.index.is_unique)
 orders.loc[10001]
 
 # %% dup-one
-print(type(orders.loc[10001]).__name__)
-print(type(orders.loc[11576]).__name__)
+print(type(orders.loc[10001]))
+print(type(orders.loc[11576]))
 
 # %% order [exercise]
 order_10140 = orders.loc[10140]

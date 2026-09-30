@@ -74,14 +74,19 @@
       "error": null
     },
     "reindex": {
-      "lines": [],
-      "result": [
+      "lines": [
         "city",
         "Москва    1310110.0",
         "Сочи            NaN",
         "Казань     440150.0",
-        "Name: revenue, dtype: float64"
+        "Name: revenue, dtype: float64",
+        "city",
+        "Москва    1310110",
+        "Сочи            0",
+        "Казань     440150",
+        "Name: revenue, dtype: int64"
       ],
+      "result": null,
       "html": null,
       "error": null
     },
@@ -89,13 +94,12 @@
       "lines": [],
       "result": [
         "city",
-        "Екатеринбург        423350",
-        "Казань              440150",
-        "Москва             1310110",
-        "Новосибирск         324090",
-        "Санкт-Петербург     803720",
-        "Сочи                     0",
-        "Name: revenue, dtype: int64"
+        "Екатеринбург        398000",
+        "Казань              451000",
+        "Москва             1313000",
+        "Новосибирск         329000",
+        "Санкт-Петербург     841000",
+        "Name: plan, dtype: int64"
       ],
       "html": null,
       "error": null
