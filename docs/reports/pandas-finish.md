@@ -101,3 +101,104 @@ Firefox/WebKit локально не запускались (известно). 
   `pd-project-clean/{signup,points,dedupe,report}` → `pd-project-clean-2/…` одноразовой миграцией в `progress.ts`
   (и в Supabase) — не делал, нужно решение.
 - В README таблица «Проверки» не упоминает лимит урока — описано в COURSES_PLAN.md и ARCHITECTURE.md.
+
+## По повторному ревью
+
+Отчёты: `pandas-finish-review-a.md` (А) и `pandas-finish-review-b.md` (Б). Решения оркестратора — в брифе.
+
+### Скрытие ответа — точечнее (Б: В1, В3, М1–М4)
+
+- **Диапазон.** Скрыт сохранённый вывод демонстраций в разделе упражнения: после него до ближайшего заголовка
+  `#`/`##` или следующего упражнения (`demoGates` в `src/lib/courses/format.ts`, на сборке). Не скрываются
+  `[raises]` (показ ошибки) и `<Demo … gate="off" />`. Пометка `gate="off"` поставлена у 19 демонстраций pandas,
+  где в разделе упражнения идёт новый материал (например, `no-parens`, `columns` в first-table, `weekday`
+  в dates, `min-periods` в rolling). Итог: скрыт вывод 21 демонстрации pandas из 428 (было ~280) —
+  «витрины» результата: `*-view` в проектах, `coerce-rows`, `fixed-look`, `doubles-view` и т. п.
+- **Открытие** — решено «своё» упражнение или урок отмечен пройденным (в том числе вручную, М2; снятие отметки
+  снова скрывает). Открытая выполнением ячейка остаётся открытой до перезагрузки — записано в COURSES_PLAN (М4).
+- **Плашка называет упражнение** (М1): «Вывод появится, когда решите упражнение «Типы дней», — иначе он
+  подскажет ответ. Ячейку можно и выполнить.» Общий компонент `GatePlaque.astro`.
+- **Без модуля урока** (В3): встроенный скрипт страницы (`define:vars` с id урока) ставит `gate-on`, читает
+  `edu:course:v1` и через `MutationObserver` ставит `is-unlocked` решённому ещё до отрисовки (М3 — без
+  мелькания), и сам обрабатывает кнопки плашек (делегирование `click`). `lesson.ts` только пересчитывает при
+  решении и отметке урока (`renderGate`).
+- **Текст с ответом** (А1–А3, Б: В2) — новый компонент `<After id="упражнение">…</After>` (`After.astro`,
+  `TEXT_COMPONENTS` в format.ts; в ноутбуке — текст с пометкой «После решения упражнения выше»; валидатор
+  требует упражнение выше и текст внутри; `gate` у Demo — только `"off"`).
+
+### Ответы в тексте под упражнениями (весь курс pandas)
+
+Поиск скриптом: абзацы и блоки после `</Exercise>` до заголовка — с цифрами и числительными; затем по месту.
+- В `<After>` (26 мест): dates `weekend`, `combine`; duplicates `clean`; stats `typical`, `spread`; shares
+  `ratings`, `buyers`; cut `speed`; project-climate `prep`, `compare`, `kinds`, `rain`; groupby `category`;
+  agg `channels`; transform `anomaly`; project-channels `metrics`, `mix`; crosstab `happy`; project-grades
+  `groups`; merge `priced`, `segments`; merge-keys `returned`; rolling `smooth`; weather-sales `corr-day`
+  (два абзаца), `monthly`; plot `temps`.
+- Переписано без чисел: project-clean `ids` (А2), project-clean-2 `signup` (А1), project-cities — новый абзац
+  на других масках, вторая подсказка короче, «Типичная ошибка» в общем виде `маска_А[маска_Б]` (А3),
+  project-plan — заметка о январе без «19 %».
+- Оставлено: числа, которые не ответ (индекс `RangeIndex`, заказ 11575, 9030/8700 в заметке о `nlargest`,
+  порог 50, пример 50 + 0 в «Типичной ошибке» alignment, 31 пропуск в Mistake проекта — это контрольное число).
+- Итоговые демонстрации «Итог»/«Сводка» и «Выводы» в конце проектов не скрыты: это отдельный раздел
+  после всех упражнений (по брифу числа можно переносить в «Выводы»). Если нужно — `gate="lesson"`
+  (до решения всех упражнений) добавляется в `demoGates` парой строк; не делал.
+
+### Правки по отчётам
+
+- А4 `new-columns/tidy`: проверка по фиксированному набору столбцов (нет нужных / лишние), новая «ошибка» —
+  удалён лишний `markup`.
+- А5 project-clean-2: пять пар различаются только записью даты (`2023-07-21` и `21.07.2023`).
+- А6 `dedupe`: `len(clean) != 245` с объяснением; `drop_duplicates()` до отбора `columns` добавлен в «ошибки».
+- А7–А8 project-clean-2: «Подготовка» печатает число полных повторов сырой выгрузки, `bonus-before` — число
+  пустых полей; текст ссылается на них; «решения упражнений первой части».
+- А9 columns: `mean` падает, `sum` склеивает текст. А10 dates: пояснение к `0 days`. А11 stats: зачем `dropna`.
+  А12 set-values: «в старых версиях pandas».
+- В4 plot: заметка — `Series.plot` дорисовывает, `DataFrame.plot` начинает новый график; сообщение проверки
+  `cities` без «дважды»; М7 — «первая строка заготовки добавляет `month`».
+- В5 project-plan: октябрь, ноябрь и декабрь с планом Сочи; без Сочи худший — сентябрь (88 %). М9: условие
+  `months` предупреждает про округлённую долю, проверка ловит `months_ok == 6` (сравнение `done >= 1`) с
+  объяснением 0.9997, эта ошибка добавлена в «ошибки».
+- В6 project-report: подъём в апреле, пик на сглаженном графике позже — скользящее среднее ставит значение
+  в конец окна; М11 — «Эспрессо-смесь» и «Колумбия» вровень.
+- М5 resample: ряд заказов назван `orders` (`rename`), `daily` печатает и `sales`; М6 `stamp` — метка 21-й
+  недели (25 мая: месяц 5, квартал 2), с ответами `months` не совпадает.
+- М10 merge: «(зачем брать только нужные — ниже…)». М12 weather-sales: укрупнение убирает шум и оставляет
+  сезон.
+
+### Сбой «numpy не загрузился» (Б: М8)
+
+Не воспроизвёлся: 3 полных прогона `validate_courses.ts pandas` подряд и 5 прогонов восьми уроков модулей 1–2
+с холодным кэшем (колёса удалены из `node_modules/pyodide` перед каждым) — все зелёные. Версия: в Node.js
+Pyodide скачивает колёса в `node_modules/pyodide` при первом запросе, а валидатор держит до 4 воркеров сразу;
+два воркера могут одновременно писать и читать одно колесо, а `engine.ts` глушит `errorCallback`, поэтому
+причина не видна. Нужно от платформы (`src/lib/python/engine.ts`, вне этого потока): при
+`!loadedPackages[name]` повторить `loadPackage` один раз и добавить в сообщение текст из `errorCallback`.
+
+### NumPy
+
+PR #4 `numpy-review` к моменту работы в main не слит — по брифу NumPy не трогал. Новое правило скрытия уже
+действует и в курсе NumPy (17 демонстраций), но пометки `gate="off"` и поиск ответов в тексте для NumPy
+не делались.
+
+### Проверки (повторно)
+
+| Команда | Итог |
+| --- | --- |
+| `validate_courses.ts pandas` (CPython .venv) ×3 | ✓ 51 урок, 877 прогонов, все три раза |
+| `validate_courses.ts numpy` | ✓ |
+| `npm run check` / `npm run build` | 0 ошибок / сборка готова |
+| `validate_browsers.ts chromium --only <51 id pandas>` | ✓ 51 из 51 (ячеек 679) |
+| Playwright, `project-climate` | без JS всё видно; с JS скрыты `kinds-view` и 4 `<After>`, плашка с названием; решение в другой вкладке открывает своё; «Урок пройден» открывает всё, снятие — закрывает; модуль урока заблокирован — решённые из localStorage открыты, в кадрах до загрузки закрытых нет, обе кнопки работают; живой запуск показывает вывод; 375 px без горизонтальной прокрутки |
+
+### Изменённые места (повторное ревью)
+
+- Платформа: `src/lib/courses/format.ts` (`demoGates`, `gate` у Demo, `After`), `src/lib/courses/site.ts`
+  (`gateOf`, `exerciseBlock`), `src/lib/courses/notebook.ts` (`After`), `src/components/course/{Demo,After,
+  GatePlaque}.astro`, `index.ts`, `src/scripts/course/lesson.ts` (`renderGate`), `src/pages/courses/[course]/
+  [lesson].astro` (встроенный скрипт), `src/styles/course.css`, `scripts/validate_courses.ts` (проверки `After`
+  и `gate`).
+- Курс: `gate="off"` — first-table, series, columns, loc-iloc, filtering, set-values, types, dates, agg, rolling,
+  project-report, final-data, final-report; `<After>` и переписанный текст — см. выше; lesson.py и output.json —
+  new-columns (проверка), project-clean-2, project-plan, plot, resample.
+- Документы: `docs/COURSES_PLAN.md` («Формат хранения» — `After`, `gate="off"`; «Ячейки и состояние» —
+  новое описание скрытия; «Интерфейс»), `docs/ARCHITECTURE.md`.
