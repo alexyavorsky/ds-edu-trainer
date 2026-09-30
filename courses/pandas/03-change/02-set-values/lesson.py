@@ -20,34 +20,34 @@ products[is_sweet]
 
 # %% fix [exercise]
 fixed = pd.read_csv("data/products.csv")
-fixed.loc[12, "price"] = 230
-fixed.loc[12, "cost"] = 110
+fixed.loc[12, "price"] = 250
+fixed.loc[12, "cost"] = 120
 # ─── заготовка ───
 fixed = pd.read_csv("data/products.csv")
 # исправьте цену и себестоимость в строке с меткой 12
 # ─── проверка ───
 def test_fixed():
-    "в строке 12 цена 230 и себестоимость 110"
+    "в строке 12 цена 250 и себестоимость 120"
     assert isinstance(fixed, pd.DataFrame) and fixed.shape == (20, 5), "fixed должна остаться таблицей товаров: 20 строк, 5 столбцов"
-    assert fixed.loc[12, "price"] != 210 or fixed.loc[12, "cost"] != 100, "строка 12 не изменилась: fixed.loc[12, \"price\"] = 230"
-    assert fixed.loc[12, "price"] == 230, f"цена в строке 12 — {fixed.loc[12, 'price']}, а нужна 230"
-    assert fixed.loc[12, "cost"] == 110, f"себестоимость в строке 12 — {fixed.loc[12, 'cost']}, а нужна 110"
+    assert fixed.loc[12, "price"] != 210 or fixed.loc[12, "cost"] != 100, "строка 12 не изменилась: fixed.loc[12, \"price\"] = 250"
+    assert fixed.loc[12, "price"] == 250, f"цена в строке 12 — {fixed.loc[12, 'price']}, а нужна 250"
+    assert fixed.loc[12, "cost"] == 120, f"себестоимость в строке 12 — {fixed.loc[12, 'cost']}, а нужна 120"
 
 
 def test_rest():
     "остальные строки не изменились"
-    assert fixed["price"].sum() == 18160 + 20, "изменились цены в других строках: менять нужно только строку с меткой 12"
-    assert fixed["cost"].sum() == 9670 + 10, "изменилась себестоимость в других строках: менять нужно только строку с меткой 12"
+    assert fixed["price"].sum() == 18160 + 40, "изменились цены в других строках: менять нужно только строку с меткой 12"
+    assert fixed["cost"].sum() == 9670 + 20, "изменилась себестоимость в других строках: менять нужно только строку с меткой 12"
 # ─── другое решение ───
 fixed = pd.read_csv("data/products.csv")
-fixed.loc[12, ["price", "cost"]] = [230, 110]
+fixed.loc[12, ["price", "cost"]] = [250, 120]
 # ─── ошибка ───
 fixed = pd.read_csv("data/products.csv")
-fixed.loc[12, "price"] = 230
+fixed.loc[12, "price"] = 250
 # ─── ошибка ───
 fixed = pd.read_csv("data/products.csv")
-fixed["price"] = 230
-fixed["cost"] = 110
+fixed["price"] = 250
+fixed["cost"] = 120
 
 # %% text
 products.loc[products["price"] > 2000, "category"] = "Премиум"
@@ -65,7 +65,7 @@ sale = pd.read_csv("data/products.csv")
 sale.loc[sale["category"] == "Чай", "price"] = sale.loc[sale["category"] == "Чай", "price"] + 30
 # ─── заготовка ───
 sale = pd.read_csv("data/products.csv")
-# поднимите цену всех чаёв на 30 ₽
+# поднимите цену всего чая на 30 ₽
 # ─── проверка ───
 def test_tea():
     "чай подорожал на 30 ₽"

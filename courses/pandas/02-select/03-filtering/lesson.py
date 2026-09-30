@@ -95,10 +95,10 @@ print(site_or_app.sum())
 print((~site_or_app).sum())
 
 # %% word-and [raises=ValueError]
-orders[(orders["city"] == "Казань") and (orders["quantity"] >= 5)]
+orders[(orders["channel"] == "сайт") and (orders["price"] > 3000)]
 
 # %% no-parens [raises=TypeError]
-orders[orders["city"] == "Казань" & orders["quantity"] >= 5]
+orders[orders["channel"] == "сайт" & orders["price"] > 3000]
 
 # %% kazan [exercise]
 kazan_big = orders[(orders["city"] == "Казань") & (orders["quantity"] >= 5)]
@@ -163,6 +163,6 @@ special = orders[(orders["price"] >= 2000) | (orders["quantity"] >= 8)]
 ordinary = orders[~(orders["price"] >= 2000) | (orders["quantity"] >= 8)]
 
 # %% check-all
-print((kazan_big["city"] == "Казань").all())
+print((tea["category"] == "Чай").all())
 print((orders["price"] >= 150).all())
 print((orders["quantity"] >= 2).all())

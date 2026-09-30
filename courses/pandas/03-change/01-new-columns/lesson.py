@@ -84,10 +84,10 @@ print("price_vat" in products.columns)
 print("price_vat" in with_vat.columns)
 
 # %% rename
-products.rename(columns={"name": "product", "cost": "cost_rub"}).head(2)
+products.rename(columns={"category": "group", "cost": "cost_rub"}).head(2)
 
 # %% drop
-products.drop(columns=["currency", "is_costly"]).head(2)
+products.drop(columns=["margin", "cost"]).head(2)
 
 # %% drop-kept
 products.columns
@@ -108,7 +108,7 @@ def test_catalog():
     assert "currency" not in catalog.columns and "is_costly" not in catalog.columns, "в catalog остались столбцы currency или is_costly: drop(columns=[...])"
     assert "name" not in catalog.columns, "в catalog остался столбец name: rename(columns={\"name\": \"product\"})"
     assert "product" in catalog.columns, "в catalog нет столбца product: rename(columns={\"name\": \"product\"})"
-    assert list(catalog.columns) == ["product_id", "product", "category", "price", "cost", "margin", "markup"], f"столбцы сейчас {list(catalog.columns)}"
+    assert catalog.shape[1] == products.shape[1] - 2, f"в catalog {catalog.shape[1]} столбцов, а должно быть на два меньше, чем в products: удалить нужно только currency и is_costly"
     assert len(catalog) == 20, f"в catalog {len(catalog)} строк, а товаров 20"
 
 

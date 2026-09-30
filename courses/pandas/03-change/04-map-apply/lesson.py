@@ -17,42 +17,42 @@ print(products["shelf"].notna().all())
 
 # %% discount [exercise]
 goods = pd.read_csv("data/products.csv")
-rates = {"Кофе": 0.05, "Чай": 0.1, "Сладости": 0.15, "Посуда": 0.2, "Аксессуары": 0.2}
+rates = {"Кофе": 0.04, "Чай": 0.06, "Сладости": 0.12, "Посуда": 0.18, "Аксессуары": 0.18}
 goods["discount"] = goods["category"].map(rates)
 goods["sale_price"] = (goods["price"] * (1 - goods["discount"])).round()
 # ─── заготовка ───
 goods = pd.read_csv("data/products.csv")
-rates = {"Кофе": 0.05, "Чай": 0.1, "Сладости": 0.15, "Посуда": 0.2, "Аксессуары": 0.2}
+rates = {"Кофе": 0.04, "Чай": 0.06, "Сладости": 0.12, "Посуда": 0.18, "Аксессуары": 0.18}
 # добавьте в goods столбцы discount и sale_price
 # ─── проверка ───
 def test_discount():
     "discount — скидка категории"
     assert "discount" in goods.columns, "в goods нет столбца discount: goods[\"discount\"] = goods[\"category\"].map(rates)"
     assert goods["discount"].notna().all(), "в discount есть пропуски: словарь должен содержать все пять категорий"
-    assert goods["discount"].tolist()[:6] == [0.05, 0.05, 0.05, 0.05, 0.05, 0.1], "скидки не те: применять словарь нужно к столбцу category"
-    assert abs(goods["discount"].sum() - 2.65) < 1e-9, "скидки не те: goods[\"category\"].map(rates)"
+    assert goods["discount"].tolist()[:6] == [0.04, 0.04, 0.04, 0.04, 0.04, 0.06], "скидки не те: применять словарь нужно к столбцу category"
+    assert abs(goods["discount"].sum() - 2.18) < 1e-9, "скидки не те: goods[\"category\"].map(rates)"
 
 
 def test_price():
     "sale_price — цена со скидкой, округлённая до рублей"
     assert "sale_price" in goods.columns, "в goods нет столбца sale_price"
-    assert abs(goods.loc[0, "sale_price"] - 72.5) > 1e-6, "в sale_price — размер скидки, а нужна цена со скидкой: цена × (1 − скидка)"
-    assert abs(goods.loc[0, "sale_price"] - 1377.5) > 1e-6, "значения не округлены: добавьте .round()"
-    assert goods.loc[0, "sale_price"] == 1378, f"sale_price в первой строке — {goods.loc[0, 'sale_price']}, а должна быть 1378 (1450 × 0.95)"
-    assert goods["sale_price"].sum() == 15467, "не все цены верны: цена × (1 − скидка), округлённая до рублей"
+    assert abs(goods.loc[0, "sale_price"] - 58) > 1e-6, "в sale_price — размер скидки, а нужна цена со скидкой: цена × (1 − скидка)"
+    assert abs(goods.loc[1, "sale_price"] - 662.4) > 1e-6, "значения не округлены: добавьте .round()"
+    assert goods.loc[0, "sale_price"] == 1392, f"sale_price в первой строке — {goods.loc[0, 'sale_price']}, а должна быть 1392 (1450 × 0.96)"
+    assert goods["sale_price"].sum() == 15819, "не все цены верны: цена × (1 − скидка), округлённая до рублей"
 # ─── другое решение ───
 goods = pd.read_csv("data/products.csv")
-rates = {"Кофе": 0.05, "Чай": 0.1, "Сладости": 0.15, "Посуда": 0.2, "Аксессуары": 0.2}
+rates = {"Кофе": 0.04, "Чай": 0.06, "Сладости": 0.12, "Посуда": 0.18, "Аксессуары": 0.18}
 goods = goods.assign(discount=goods["category"].map(rates))
 goods["sale_price"] = (goods["price"] - goods["price"] * goods["discount"]).round()
 # ─── ошибка ───
 goods = pd.read_csv("data/products.csv")
-rates = {"Кофе": 0.05, "Чай": 0.1, "Сладости": 0.15, "Посуда": 0.2, "Аксессуары": 0.2}
+rates = {"Кофе": 0.04, "Чай": 0.06, "Сладости": 0.12, "Посуда": 0.18, "Аксессуары": 0.18}
 goods["discount"] = goods["category"].map(rates)
 goods["sale_price"] = (goods["price"] * goods["discount"]).round()
 # ─── ошибка ───
 goods = pd.read_csv("data/products.csv")
-rates = {"Кофе": 0.05, "Чай": 0.1, "Сладости": 0.15, "Посуда": 0.2, "Аксессуары": 0.2}
+rates = {"Кофе": 0.04, "Чай": 0.06, "Сладости": 0.12, "Посуда": 0.18, "Аксессуары": 0.18}
 goods["discount"] = goods["category"].map(rates)
 goods["sale_price"] = goods["price"] * (1 - goods["discount"])
 
@@ -144,7 +144,11 @@ products["level"] = products["price"].apply(level)
 products[["name", "price", "level"]].head(6)
 
 # %% apply-slow
-slow = products["price"].apply(lambda price: price * 1.1)
+def plus_ten_percent(price):
+    return price * 1.1
+
+
+slow = products["price"].apply(plus_ten_percent)
 fast = products["price"] * 1.1
 print((slow == fast).all())
 

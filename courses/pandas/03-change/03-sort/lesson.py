@@ -88,13 +88,14 @@ t = pd.DataFrame({"x": [3, 1, 2]})
 t.sort_values("x")
 print(t["x"].tolist())
 
-# %% top [exercise]
+# %% orders
 orders = pd.read_csv("data/shop_orders.csv")
 orders["revenue"] = orders["price"] * orders["quantity"]
+orders[["product", "quantity", "revenue"]].head(3)
+
+# %% top [exercise]
 top5 = orders.nlargest(5, "revenue")[["date", "product", "quantity", "revenue"]]
 # ─── заготовка ───
-orders = pd.read_csv("data/shop_orders.csv")
-orders["revenue"] = orders["price"] * orders["quantity"]
 top5 = ...
 # ─── проверка ───
 def test_top():
@@ -105,20 +106,14 @@ def test_top():
     assert top5["revenue"].tolist() != [150, 150, 150, 150, 150], "это пять самых маленьких значений: нужен nlargest, а не nsmallest"
     assert top5["revenue"].tolist() == [9030, 9030, 9030, 8700, 8700], f"выручка в top5 сейчас {top5['revenue'].tolist()}, а пять наибольших — 9030, 9030, 9030, 8700, 8700"
 # ─── другое решение ───
-orders = pd.read_csv("data/shop_orders.csv")
-orders["revenue"] = orders["price"] * orders["quantity"]
 top5 = orders.sort_values("revenue", ascending=False).head(5)[["date", "product", "quantity", "revenue"]]
 # ─── ошибка ───
-orders = pd.read_csv("data/shop_orders.csv")
-orders["revenue"] = orders["price"] * orders["quantity"]
 top5 = orders.nsmallest(5, "revenue")[["date", "product", "quantity", "revenue"]]
 # ─── ошибка ───
-orders = pd.read_csv("data/shop_orders.csv")
-orders["revenue"] = orders["price"] * orders["quantity"]
 top5 = orders.nlargest(5, "price")[["date", "product", "quantity", "revenue"]]
 
 # %% series-sort
-counts = orders["quantity"].value_counts()
+counts = orders["price"].value_counts()
 counts.head(4)
 
 # %% sort-index

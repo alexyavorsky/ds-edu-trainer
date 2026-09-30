@@ -436,7 +436,7 @@ class ExerciseView extends CellView {
     }
     const d = end.data as LessonDone;
     this.setCount(this.lesson.nextCount());
-    const output = d.lines.length || d.result || d.html || d.error;
+    const output = d.lines.length || d.result || d.html || d.error || d.plots.length;
     if (output) {
       this.live.replaceChildren(...this.renderOutput(d, 'Вывод вашего кода', (line) => this.view && this.editor?.goToLine(this.view, line)));
       this.live.hidden = false;

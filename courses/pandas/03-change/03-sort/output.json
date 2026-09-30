@@ -89,14 +89,25 @@
       "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>name</th>\n      <th>price</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>10</th>\n      <td>Печенье овсяное</td>\n      <td>150</td>\n    </tr>\n    <tr>\n      <th>9</th>\n      <td>Шоколад горький</td>\n      <td>180</td>\n    </tr>\n    <tr>\n      <th>12</th>\n      <td>Зефир</td>\n      <td>210</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
       "error": null
     },
+    "orders": {
+      "lines": [],
+      "result": [
+        "              product  quantity  revenue",
+        "0    Кофемолка ручная         2     6400",
+        "1  Травяной сбор 50 г         1      260",
+        "2     Шоколад горький         1      180"
+      ],
+      "html": "<div>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>product</th>\n      <th>quantity</th>\n      <th>revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>Кофемолка ручная</td>\n      <td>2</td>\n      <td>6400</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>Травяной сбор 50 г</td>\n      <td>1</td>\n      <td>260</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>Шоколад горький</td>\n      <td>1</td>\n      <td>180</td>\n    </tr>\n  </tbody>\n</table>\n</div>",
+      "error": null
+    },
     "series-sort": {
       "lines": [],
       "result": [
-        "quantity",
-        "1    994",
-        "2    788",
-        "3    354",
-        "4    144",
+        "price",
+        "690    218",
+        "720    213",
+        "790    210",
+        "260    176",
         "Name: count, dtype: int64"
       ],
       "html": null,
@@ -105,11 +116,11 @@
     "sort-index": {
       "lines": [],
       "result": [
-        "quantity",
-        "1    994",
-        "2    788",
-        "3    354",
-        "4    144",
+        "price",
+        "150    138",
+        "180    120",
+        "210    124",
+        "240     50",
         "Name: count, dtype: int64"
       ],
       "html": null,

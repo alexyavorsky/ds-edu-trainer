@@ -46,7 +46,7 @@ east = orders[orders["city"].isin(["Казань", "Екатеринбург", "
 n_capitals = len(east)
 
 # %% between
-middle = orders[orders["price"].between(300, 400)]
+middle = orders[orders["price"].between(320, 390)]
 print(len(middle))
 print(sorted(middle["price"].unique().tolist()))
 
