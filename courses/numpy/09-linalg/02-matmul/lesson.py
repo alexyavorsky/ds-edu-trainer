@@ -103,23 +103,35 @@ finals = scores * weights
 best = finals.argmax()
 
 # %% two-cols
+price_weight = np.array([
+    [180, 250],    # цена, ₽; вес, г
+    [250, 300],
+    [90, 100],
+    [60, 50],
+])
+print(orders.shape, price_weight.shape)
+print(orders @ price_weight)
+
+# %% shape-quiz [quiz]
+print((np.ones((5, 3)) @ np.ones((3, 2))).shape)
+
+# %% profit [exercise]
 price_cost = np.array([
     [180, 70],     # цена, себестоимость
     [250, 110],
     [90, 30],
     [60, 15],
 ])
-print(orders.shape, price_cost.shape)
-print(orders @ price_cost)
-
-# %% shape-quiz [quiz]
-print((np.ones((5, 3)) @ np.ones((3, 2))).shape)
-
-# %% profit [exercise]
 rc = orders @ price_cost
 profit = rc[:, 0] - rc[:, 1]
 total_profit = profit.sum()
 # ─── заготовка ───
+price_cost = np.array([
+    [180, 70],     # цена, себестоимость
+    [250, 110],
+    [90, 30],
+    [60, 15],
+])
 rc = ...
 profit = ...
 total_profit = ...
@@ -136,10 +148,22 @@ def test_profit():
     assert profit.tolist() == [495, 385, 350, 840, 485], f"profit = {profit.tolist()}, а прибыль заказов — [495, 385, 350, 840, 485]"
     assert total_profit == 2555, f"total_profit = {total_profit}, а общая прибыль — 2555"
 # ─── другое решение ───
+price_cost = np.array([
+    [180, 70],     # цена, себестоимость
+    [250, 110],
+    [90, 30],
+    [60, 15],
+])
 rc = np.dot(orders, price_cost)
 profit = orders @ (price_cost[:, 0] - price_cost[:, 1])
 total_profit = np.sum(profit)
 # ─── ошибка ───
+price_cost = np.array([
+    [180, 70],     # цена, себестоимость
+    [250, 110],
+    [90, 30],
+    [60, 15],
+])
 rc = orders @ price_cost
 profit = rc[:, 1] - rc[:, 0]
 total_profit = profit.sum()
