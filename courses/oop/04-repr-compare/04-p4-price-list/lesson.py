@@ -138,6 +138,11 @@ def test_copied():
     for name in ["__init__", "__repr__", "__eq__", "__hash__"]:
         assert name in Product.__dict__ and Product.__dict__[name] is not None, f"в классе нет {name} — скопируйте класс из шага 1 целиком"
     step1 = "в скопированном классе ошибка из шага 1"
+    try:
+        repr(Product("Латте", 220))
+        hash(Product("Латте", 220))
+    except TypeError:
+        assert False, f"__repr__ или __hash__ не дописан — {step1}"
     assert repr(Product("Латте", 220)) == "Product('Латте', 220)", f"repr товара {Product('Латте', 220)!r} — {step1}"
     assert Product("Латте", 220) == Product("Латте", 220) and Product("Латте", 220) != Product("Латте", 240), f"равенство работает неверно — {step1}"
     assert len({Product("Латте", 220), Product("Латте", 220), Product("Чай", 120)}) == 2, f"set не убирает одинаковые товары — {step1}"

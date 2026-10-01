@@ -31,7 +31,7 @@ reference: []
 
 <Demo id="subclasses" title="Подкласс без метода и с методом" />
 
-<Mistake title="TypeError при создании подкласса">
+<Mistake title="TypeError при создании экземпляра подкласса">
 Ошибка вида `Can't instantiate abstract class … without an implementation for abstract method 'cost'` (так она
 звучит в Python 3.12 и новее; в 3.10–3.11 — `… with abstract method cost`) при создании экземпляра значит: в подклассе нет одного из абстрактных методов — его имя есть в
 конце сообщения. Частая причина — опечатка в имени метода: `def cots(self, km)` не реализует `cost`.

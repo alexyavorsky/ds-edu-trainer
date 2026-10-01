@@ -1,0 +1,42 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "own": {
+      "lines": [
+        "чек открыт",
+        "RegisterClosedError — касса закрыта в 23:00"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "hierarchy": {
+      "lines": [
+        "CourierLateError → курьер опаздывает",
+        "AddressError → нет такого дома",
+        "True True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "attrs": {
+      "lines": [
+        "оплата 640 ₽ отклонена: нет связи с банком",
+        "640 нет связи с банком"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "chain": {
+      "lines": [
+        "цена не разобрана: двести ₽",
+        "причина: ValueError — invalid literal for int() with base 10: 'двести '"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}
