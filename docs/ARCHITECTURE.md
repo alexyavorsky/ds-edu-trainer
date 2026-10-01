@@ -112,7 +112,8 @@ Markdown-выделение `**…**`/`*…*` там убирается. «Пр�
 и самопроверок раннера для `scripts/run_bundles.py` (стандартная библиотека, Python 3.10+).
 
 CI (`.github/workflows/tasks.yml`): валидатор на 3.12 → экспорт → матрица Windows/macOS/Linux × Python 3.10–3.14
-запускает все файлы; отдельно — сверка сборок сайта, `astro check` и `astro build`.
+(на ветке — ubuntu 3.10 и 3.14, windows 3.12) запускает все файлы; отдельно — сверка сборок сайта, `astro check` и
+`astro build`. Уровни и фильтры — раздел «CI» в конце.
 
 ## Приёмы в тестах
 
@@ -258,6 +259,7 @@ src/scripts/python/  editor.ts (CodeMirror 6, отдельный чанк), task
 Проверка в настоящих браузерах — `node scripts/validate_browsers.ts [chromium|firefox|webkit…]` (нужна сборка
 `dist/` и браузеры Playwright): все эталоны и альтернативы в каждом браузере и пробы глубины рекурсии; в CI — на macOS:
 там стек WebKit как у Safari (на Linux он в 5–7 раз больше, и бюджет глубины там не проверить).
+Выборочно и по частям: `--only id,…`, `--shard k/n`, `--pages N`, `--no-probes`, `--timings файл` (раздел «CI»).
 
 Проверка — `node scripts/validate_pyodide.ts [--tasks|--reference] [id…] [--update] [--report файл]` (CI, Linux):
 эталоны и альтернативы проходят, заготовки — нет; тесты дольше половины лимита браузера — в отчёт. Примеры
@@ -291,3 +293,37 @@ runtime/lesson_exec.py   сеанс урока: ячейки как в Jupyter, 
 - Проверка — `node scripts/validate_courses.ts [--update] [--strict]` (Pyodide через `scripts/node-python.ts`
   и CPython через `scripts/course_cpython.py`), в CI — задание «Курсы»; в трёх браузерах уроки с эталонами
   выполняет `scripts/validate_browsers.ts`.
+
+## CI
+
+`.github/workflows/tasks.yml`, правила путей — `scripts/ci_changes.ts` (единственное место). Первое задание
+«План прогона» решает, что запускать; остальные ждут его и пропускаются, если их разделы не затронуты; итог —
+задание `ci-ok` (зелёное, если каждое нужное задание прошло или пропущено) — его и делать обязательной проверкой.
+
+| Событие | Что проверяется | Python (файлы задач) | Браузеры (macOS) |
+| --- | --- | --- | --- |
+| push в main, ночной прогон (01:23 UTC), Run workflow с `scope = full` | всё | 3 ОС × 3.10–3.14 | Chromium, Firefox, WebKit × 3 части |
+| push в другую ветку, Run workflow с `scope = changed` | разделы из `git diff` с merge-base main; в курсах, Pyodide и браузерах — только изменённые id | ubuntu 3.10 и 3.14, windows 3.12 | Chromium и WebKit: до 12 id — одна часть, иначе 3 |
+
+- **Разделы** (`AREAS`): `tasks` (`challenges/`), `reference`, `courses`, `site`. Файл внутри задачи, статьи, урока —
+  только этот id; файл уровня книги, темы, курса, модуля или общая часть раздела (`shared`: раннер, валидатор,
+  `courses/data/`) — весь раздел. Удалённый элемент — весь раздел.
+- **Общие части** (`GLOBAL`: `package*.json`, `requirements-dev.txt`, `.github/workflows/`, `src/lib/python/`,
+  `runtime/pyodide_driver.py`, `scripts/node-python.ts`, сам `ci_changes.ts`) и любой путь, не описанный ни в
+  разделах, ни в `IGNORED` (`docs/`, `.claude/`, `README.md`), — все задания и все id; матрицы остаются уровня ветки.
+- **Задания** (`JOBS`) → разделы: валидатор и файлы задач — `tasks` (всегда целиком: ~1 мин, проверки главы);
+  справочник — `reference`; Pyodide — `tasks` + `reference` (id); курсы — `courses` (id; структура и порядок понятий —
+  всегда по всем курсам); браузеры — `tasks` + `courses` (id); сайт — всё, кроме `docs/`.
+- **Браузеры.** `validate_browsers.ts --shard k/n` — каждый n-й элемент списка «задачи, затем уроки»; внутри
+  задания две вкладки параллельно (`--pages 2`, у раннера macOS 3 ядра); пробы глубины — отдельной вкладкой в
+  части 1 и только когда проверяется всё (они проверяют воркер и браузер, а не содержимое). Упавшая вкладка
+  (WebKit изредка теряет процесс страницы) — один повтор для оставшихся id. `--timings` → артефакт
+  `browser-timings-*`: время каждой задачи и урока, по нему подбирается число частей (`BROWSER_SHARDS`).
+- **Кэши:** pip (`requirements-dev.txt`), npm (`package-lock.json`), браузеры Playwright (`~/Library/Caches/ms-playwright`,
+  ключ — ОС, архитектура, версия playwright, браузер), пакеты Pyodide для Node.js (`.pyodide-cache`).
+- **concurrency:** новый push в ветку отменяет её незаконченный прогон; в main каждый прогон в своей группе —
+  прогоны слияний не отменяются.
+- `pull_request` не запускает workflow: push-прогон ветки виден в PR, второй прогон удвоил бы минуты macOS.
+  PR из форков CI не проверяет.
+- Лимит GitHub: не больше 5 одновременных заданий macOS на аккаунт — на них же стоят все ветки. Полный прогон —
+  9 заданий браузеров + 5 файлов задач на macOS.
