@@ -1,11 +1,11 @@
 /** Файлы данных курсов (courses/data/*.csv) — отдаются статикой; Python в браузере берёт их отсюда. */
 import type { APIRoute } from 'astro';
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { DATA_DIR } from '../../../lib/courses/load';
 
 export function getStaticPaths() {
-  return readdirSync(DATA_DIR)
+  return (existsSync(DATA_DIR) ? readdirSync(DATA_DIR) : [])
     .filter((name) => name.endsWith('.csv'))
     .map((file) => ({ params: { file } }));
 }

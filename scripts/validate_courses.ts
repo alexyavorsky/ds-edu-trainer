@@ -434,6 +434,13 @@ async function main(argv: string[]): Promise<number> {
   for (const name of needed) {
     if (versions[name] !== pins[name]) r.error('окружение', `CPython: ${name} ${versions[name] ?? 'не установлен'}, а в requirements-dev.txt ${pins[name]} — поставьте зафиксированные версии`);
   }
+  // курс без пакета (ООП): вывод — тексты ошибок Python; CPython должен быть той же версии, что в Pyodide
+  const lockInfo = (JSON.parse(read(join(root, 'node_modules', 'pyodide', 'pyodide-lock.json'))) as { info?: { python?: string } }).info;
+  const browserPython = lockInfo?.python?.split('.').slice(0, 2).join('.');
+  const checksPython = all.some((c) => !c.meta.package && (!selected.length || selected.includes(c.slug) || courseLessons(c).some((l) => selected.includes(l.meta.id))));
+  if (checksPython && browserPython && !versions.python?.startsWith(`${browserPython}.`)) {
+    r.error('окружение', `курс без пакета проверяется на CPython ${browserPython} (как в браузере), а запущен ${versions.python} — укажите --python с ${browserPython}`);
+  }
   const review = checkConcepts(all, python, r);
 
   const chosen = all.flatMap((course) =>

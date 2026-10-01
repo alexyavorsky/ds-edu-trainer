@@ -36,7 +36,8 @@ const titles = new Map((await getCollection('reference')).map((a) => [a.id, a.da
 const refs = (ids: string[]) => ids.map((id) => ({ id, title: titles.get(id) })); // без title — статья ещё не написана
 const requires = refs(article.data.requires);
 const related = refs(article.data.related);
-const prefix = (id: string) => (id.startsWith(`${topic.id}/`) ? '' : `${id.split('/')[0] === 'numpy' ? 'NumPy' : 'pandas'}: `);
+const topicTitles = new Map((await getTopics()).map((t) => [t.id, t.data.title]));
+const prefix = (id: string) => (id.startsWith(`${topic.id}/`) ? '' : `${topicTitles.get(id.split('/')[0]) ?? id.split('/')[0]}: `);
 const onPage = headings.filter((h) => h.depth === 2);
 
 // «Задачи по теме»: задачи из practice статьи и задачи, которые ссылаются на неё через refs

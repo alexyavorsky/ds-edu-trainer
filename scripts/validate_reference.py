@@ -565,6 +565,16 @@ def pinned_versions() -> dict[str, str]:
     return pins
 
 
+def pyodide_python() -> str | None:
+    """Версия Python в Pyodide («3.14.2») — из pyodide-lock.json npm-пакета; None, если пакет не установлен."""
+    lock = ROOT / "node_modules" / "pyodide" / "pyodide-lock.json"
+    with contextlib.suppress(OSError, ValueError, KeyError):
+        import json
+
+        return json.loads(lock.read_text(encoding="utf-8"))["info"]["python"]
+    return None
+
+
 def check_versions(topics: dict[str, dict], errors: list[str]) -> bool:
     import importlib.metadata as md
 
@@ -579,6 +589,14 @@ def check_versions(topics: dict[str, dict], errors: list[str]) -> bool:
             continue
         if installed != pin:
             errors.append(f"установлен {name} {installed}, а вывод примеров снят с {pin} (requirements-dev.txt)")
+            ok = False
+    # тема без пакета (ООП, алгоритмы): вывод — тексты ошибок Python, они меняются от версии к версии; сохранённый
+    # вывод снимается той же версией Python, что в Pyodide (node_modules/pyodide/pyodide-lock.json)
+    browser = pyodide_python()
+    here = f"{sys.version_info.major}.{sys.version_info.minor}"
+    for topic, meta in topics.items():
+        if "package" not in meta and browser and not browser.startswith(f"{here}."):
+            errors.append(f"{topic}: тема без пакета проверяется на Python {browser.rsplit('.', 1)[0]} (как в браузере), а запущен {here} — создайте .venv на нём")
             ok = False
     for topic, meta in topics.items():
         package = str(meta.get("package", "")).lower()

@@ -13,7 +13,8 @@
     "check": "astro check",
     "validate": "python3 scripts/validate.py",
     "check:bundles": "node scripts/check-bundles.ts",
-    "validate:courses": "node scripts/validate_courses.ts"
+    "validate:courses": "node scripts/validate_courses.ts",
+    "check:platform": "node scripts/validate_platform.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.2",
