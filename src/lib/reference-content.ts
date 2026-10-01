@@ -34,3 +34,8 @@ export async function getToc(topic: Topic): Promise<TocSection[]> {
 export function readingOrder(toc: TocSection[]): Article[] {
   return toc.flatMap((s) => s.entries.flatMap((e) => (e.article ? [e.article] : [])));
 }
+
+/** Подпись версии темы: «2.5.3» у темы с пакетом. */
+export function topicVersion(topic: Topic): string {
+  return topic.data.version;
+}

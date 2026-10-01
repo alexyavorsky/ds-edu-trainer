@@ -1,5 +1,7 @@
 ---
+import BetaBadge from '../../components/BetaBadge.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { groupByDirection } from '../../lib/directions';
 import { courseLessons, lessonExerciseIds } from '../../lib/courses/load';
 import { getCourses } from '../../lib/courses/site';
 import { lessonsLabel, modulesLabel } from '../../lib/labels';
@@ -12,9 +14,10 @@ const courses = getCourses().map((course) => {
     progress: lessons.map((l) => `${l.meta.id}:${lessonExerciseIds(l).join(',')}`).join(';'),
   };
 });
+const groups = groupByDirection(courses, (c) => c.course.meta.direction);
 ---
 
-<BaseLayout title="Курсы" description="Интерактивные курсы NumPy и pandas с нуля: объяснение, код и упражнения прямо в браузере.">
+<BaseLayout title="Курсы" description="Интерактивные курсы с нуля: объяснение, код и упражнения прямо в браузере.">
   <section class="hero">
     <p class="eyebrow">Курсы</p>
     <h1>Учиться с нуля</h1>
@@ -29,25 +32,32 @@ const courses = getCourses().map((course) => {
     </p>
   </section>
 
-  <div class="grid">
-    {
-      courses.map(({ course, lessons, progress }) => (
-        <a href={`/courses/${course.slug}`} class="course card">
-          <h2>{course.meta.title}</h2>
-          <p class="desc">{course.meta.summary}</p>
-          <p class="stats">
-            {modulesLabel(course.modules.length)} · {lessonsLabel(lessons.length)}
-          </p>
-          <div class="progress" data-course-progress data-lessons={progress}>
-            <div class="track" aria-hidden="true"><div class="bar" data-progress-bar></div></div>
-            <span class="label">
-              <span data-progress-count>0</span> из {lessons.length}
-            </span>
-          </div>
-        </a>
-      ))
-    }
-  </div>
+  {
+    groups.map((group, i) => (
+      <section class:list={[i > 0 && 'block']}>
+        <h2 class="section-title">{group.title}</h2>
+        <div class="grid">
+          {group.items.map(({ course, lessons, progress }) => (
+            <a href={`/courses/${course.slug}`} class="course card">
+              <h3>
+                {course.meta.title} {course.meta.beta && <BetaBadge />}
+              </h3>
+              <p class="desc">{course.meta.summary}</p>
+              <p class="stats">
+                {modulesLabel(course.modules.length)} · {lessonsLabel(lessons.length)}
+              </p>
+              <div class="progress" data-course-progress data-lessons={progress}>
+                <div class="track" aria-hidden="true"><div class="bar" data-progress-bar></div></div>
+                <span class="label">
+                  <span data-progress-count>0</span> из {lessons.length}
+                </span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))
+  }
 </BaseLayout>
 
 <style>
@@ -95,8 +105,14 @@ const courses = getCourses().map((course) => {
   .course:hover {
     border-color: var(--border-strong);
   }
-  .course h2 {
+  .course h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 22px;
+  }
+  .block {
+    margin-top: 36px;
   }
   .desc {
     margin: 0;

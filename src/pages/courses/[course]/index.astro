@@ -1,4 +1,5 @@
 ---
+import BetaBadge from '../../../components/BetaBadge.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { courseLessons, lessonUrl } from '../../../lib/courses/load';
@@ -21,6 +22,7 @@ const first = lessons[0];
   <section class="hero">
     <p class="eyebrow">Курс с нуля</p>
     <h1>{course.meta.title}</h1>
+    {course.meta.beta && <BetaBadge note />}
     <p class="lead">{course.meta.summary}</p>
     <div class="facts">
       <span>{modulesLabel(course.modules.length)}</span>

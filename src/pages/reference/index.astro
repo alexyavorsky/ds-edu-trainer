@@ -1,8 +1,10 @@
 ---
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import ReferenceSearch from '../../components/reference/ReferenceSearch.astro';
+import BetaBadge from '../../components/BetaBadge.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getToc, getTopics } from '../../lib/reference-content';
+import { groupByDirection } from '../../lib/directions';
+import { getToc, getTopics, topicVersion } from '../../lib/reference-content';
 import { LEVEL_LABEL, type Level } from '../../lib/reference';
 
 const topics = await Promise.all(
@@ -13,9 +15,10 @@ const topics = await Promise.all(
     return { topic, total: entries.length, written: written.length, levels: (['basic', 'medium', 'advanced'] as Level[]).map((l) => [l, byLevel(l)] as const) };
   }),
 );
+const groups = groupByDirection(topics, (t) => t.topic.data.direction);
 ---
 
-<BaseLayout title="Справочник" description="Шпаргалки по NumPy и pandas: синтаксис, примеры с настоящим выводом, подводные камни.">
+<BaseLayout title="Справочник" description="Шпаргалки: синтаксис, примеры с настоящим выводом, подводные камни.">
   <Breadcrumbs items={[{ label: 'Главная', href: '/' }, { label: 'Справочник' }]} />
   <header class="head">
     <h1>Справочник</h1>
@@ -26,25 +29,32 @@ const topics = await Promise.all(
     <div class="search"><ReferenceSearch /></div>
   </header>
 
-  <ul class="topics">
-    {
-      topics.map(({ topic, total, written, levels }) => (
-        <li>
-          <a class="topic card" href={`/reference/${topic.id}`}>
-            <span class="topic-head">
-              <span class="title">{topic.data.title}</span>
-              <span class="version">{topic.data.version}</span>
-            </span>
-            <span class="muted summary">{topic.data.summary}</span>
-            <span class="stats">
-              {written < total ? `${written} из ${total} статей` : `${total} статей`}
-              {levels.filter(([, n]) => n > 0).map(([l, n]) => <span>· {LEVEL_LABEL[l]}: {n}</span>)}
-            </span>
-          </a>
-        </li>
-      ))
-    }
-  </ul>
+  {
+    groups.map((group, i) => (
+      <section class:list={[i > 0 && 'block']}>
+        <h2 class="section-title">{group.title}</h2>
+        <ul class="topics">
+          {group.items.map(({ topic, total, written, levels }) => (
+            <li>
+              <a class="topic card" href={`/reference/${topic.id}`}>
+                <span class="topic-head">
+                  <span class="title">
+                    {topic.data.title} {topic.data.beta && <BetaBadge />}
+                  </span>
+                  <span class="version">{topicVersion(topic)}</span>
+                </span>
+                <span class="muted summary">{topic.data.summary}</span>
+                <span class="stats">
+                  {written < total ? `${written} из ${total} статей` : `${total} статей`}
+                  {levels.filter(([, n]) => n > 0).map(([l, n]) => <span>· {LEVEL_LABEL[l]}: {n}</span>)}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
 </BaseLayout>
 
 <style>
@@ -86,6 +96,9 @@ const topics = await Promise.all(
   .topic:hover {
     border-color: var(--border-strong);
   }
+  .block {
+    margin-top: 32px;
+  }
   .topic-head {
     display: flex;
     align-items: baseline;
@@ -93,6 +106,9 @@ const topics = await Promise.all(
     gap: 12px;
   }
   .title {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     font-size: 20px;
     font-weight: 600;
     letter-spacing: -0.02em;

@@ -1,4 +1,5 @@
 ---
+import BetaBadge from '../../components/BetaBadge.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import ChallengeList from '../../components/ChallengeList.astro';
 import ChapterCard from '../../components/ChapterCard.astro';
@@ -27,6 +28,7 @@ const referenceTopic = book.data.reference ? await getEntry('topics', book.data.
   <header class="head">
     <div>
       <h1>{book.data.title}</h1>
+      {book.data.beta && <BetaBadge note />}
       <p class="muted">
         {book.data.author}
         {book.data.edition && ` · ${book.data.edition}`}

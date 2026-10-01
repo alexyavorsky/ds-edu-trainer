@@ -7,6 +7,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parse as parseToml } from 'smol-toml';
 import { parse as parseYaml } from 'yaml';
+import type { Direction } from '../directions.ts';
 import type { Exercise } from '../english/check.ts';
 import { parseExercises } from '../english/exercises.ts';
 import { parseLessonMdx, parseLessonPy, splitFrontmatter, type Block, type CodeCell, type OutputFile } from './format.ts';
@@ -20,7 +21,6 @@ export interface CourseMeta {
   code: string; // префикс id уроков: np, pd, en
   order: number;
   runtime: 'python' | 'none'; // none — курс без Python (английский): упражнения из exercises.toml, Pyodide не грузится
-  beta: boolean;
   package: string; // numpy · pandas — версия в Pyodide и в requirements-dev.txt (у runtime = "none" — пусто)
   summary: string;
   audience: string; // для кого курс
@@ -28,6 +28,8 @@ export interface CourseMeta {
   reference: string; // тема справочника
   requires: string[]; // курсы, которые нужно пройти раньше: их понятия считаются известными (у pandas — нет)
   complete?: boolean; // программа написана целиком: строгие проверки структуры (validate_courses --strict) — всегда
+  direction: Direction; // направление: группа в /courses и в меню шапки (src/lib/directions.ts)
+  beta?: boolean; // пометка «бета»: раздел новый, возможны неточности
 }
 
 export interface ModuleMeta {

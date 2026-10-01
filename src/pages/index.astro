@@ -1,7 +1,9 @@
 ---
 import Icon from '../components/Icon.astro';
 import ProgressBar from '../components/ProgressBar.astro';
+import BetaBadge from '../components/BetaBadge.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { groupByDirection } from '../lib/directions';
 import { getBooks, getChallenges, getChapters } from '../lib/content';
 import { tasksLabel } from '../lib/labels';
 
@@ -12,8 +14,7 @@ const all = await Promise.all(
     challenges: await getChallenges(book.id),
   })),
 );
-const books = all.filter((b) => b.book.data.kind === 'book');
-const topics = all.filter((b) => b.book.data.kind === 'topic');
+const groups = groupByDirection(all, (b) => b.book.data.direction);
 ---
 
 <BaseLayout>
@@ -26,68 +27,80 @@ const topics = all.filter((b) => b.book.data.kind === 'topic');
     </p>
   </section>
 
-  <section>
-    <h2 class="section-title">Книги</h2>
-    <div class="grid">
-      {
-        books.map(({ book, chapters, challenges }) => (
-          <a href={`/${book.id}`} class="book card">
-            <span class="cover" aria-hidden="true">
-              <Icon name="book" size={20} />
-            </span>
-            <div class="info">
-              <h3>{book.data.title}</h3>
-              <p class="muted">
-                {book.data.author}
-                {book.data.edition && ` · ${book.data.edition}`}
-              </p>
-              {book.data.description && <p class="desc">{book.data.description}</p>}
-              <p class="stats">
-                {chapters.length} глав · {tasksLabel(challenges.length)}
-              </p>
-              <ProgressBar ids={challenges.map((c) => c.data.taskId)} />
-            </div>
-          </a>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="block">
-    <h2 class="section-title">Темы</h2>
-    <div class="grid">
-      {
-        topics.map(({ book, chapters, challenges }) => (
-          <a href={`/${book.id}`} class:list={['book card', !challenges.length && 'soon-card']}>
-            <span class="cover" aria-hidden="true">
-              <Icon name="terminal" size={20} />
-            </span>
-            <div class="info">
-              <h3>
-                {book.data.title} {!challenges.length && <span class="pill">скоро</span>}
-              </h3>
-              {book.data.description && <p class="desc">{book.data.description}</p>}
-              {challenges.length > 0 ? (
-                <>
+  {
+    groups.map((group, i) => (
+      <section class:list={[i > 0 && 'block']}>
+        <h2 class="section-title">{group.title}</h2>
+        <div class="grid">
+          {group.items.map(({ book, chapters, challenges }) =>
+            book.data.kind === 'book' ? (
+              <a href={`/${book.id}`} class="book card">
+                <span class="cover" aria-hidden="true">
+                  <Icon name="book" size={20} />
+                </span>
+                <div class="info">
+                  <h3>
+                    {book.data.title} {book.data.beta && <BetaBadge />}
+                  </h3>
+                  <p class="muted">
+                    {book.data.author}
+                    {book.data.edition && ` · ${book.data.edition}`}
+                  </p>
+                  {book.data.description && <p class="desc">{book.data.description}</p>}
                   <p class="stats">
-                    {chapters.length} разделов · {tasksLabel(challenges.length)}
+                    {chapters.length} глав · {tasksLabel(challenges.length)}
                   </p>
                   <ProgressBar ids={challenges.map((c) => c.data.taskId)} />
-                </>
-              ) : (
-                <p class="stats">Задач пока нет — есть справочник</p>
-              )}
-            </div>
-          </a>
-        ))
-      }
+                </div>
+              </a>
+            ) : (
+              <a href={`/${book.id}`} class:list={['book card', !challenges.length && 'soon-card']}>
+                <span class="cover" aria-hidden="true">
+                  <Icon name="terminal" size={20} />
+                </span>
+                <div class="info">
+                  <h3>
+                    {book.data.title} {!challenges.length && <span class="pill">скоро</span>} {book.data.beta && <BetaBadge />}
+                  </h3>
+                  {book.data.description && <p class="desc">{book.data.description}</p>}
+                  {challenges.length > 0 ? (
+                    <>
+                      <p class="stats">
+                        {chapters.length} разделов · {tasksLabel(challenges.length)}
+                      </p>
+                      <ProgressBar ids={challenges.map((c) => c.data.taskId)} />
+                    </>
+                  ) : (
+                    <p class="stats">Задач пока нет — есть справочник</p>
+                  )}
+                </div>
+              </a>
+            ),
+          )}
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="block">
+    <h2 class="section-title">Повторить теорию</h2>
+    <div class="grid">
       <a href="/reference" class="book card">
         <span class="cover" aria-hidden="true">
           <Icon name="search" size={20} />
         </span>
         <div class="info">
           <h3>Справочник</h3>
-          <p class="desc">NumPy и pandas: синтаксис, примеры с настоящим выводом и подводные камни — без задач, чтобы быстро освежить память.</p>
+          <p class="desc">Синтаксис, примеры с настоящим выводом и подводные камни — без задач, чтобы быстро освежить память.</p>
+        </div>
+      </a>
+      <a href="/courses" class="book card">
+        <span class="cover" aria-hidden="true">
+          <Icon name="play" size={20} />
+        </span>
+        <div class="info">
+          <h3>Курсы</h3>
+          <p class="desc">Учиться с нуля по шагам: объяснение, код и упражнения с проверкой прямо в браузере.</p>
         </div>
       </a>
     </div>

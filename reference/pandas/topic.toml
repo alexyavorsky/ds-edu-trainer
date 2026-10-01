@@ -4,6 +4,7 @@ package = "pandas"
 version = "3.0.6"
 docs = "https://pandas.pydata.org/pandas-docs/version/3.0/"
 order = 2
+direction = "data"
 
 [[sections]]
 title = "Основы"

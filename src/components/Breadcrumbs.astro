@@ -1,8 +1,11 @@
 ---
+import BetaBadge from './BetaBadge.astro';
+
 interface Props {
   items: { label: string; href?: string }[];
+  beta?: boolean; // раздел с пометкой «бета»: значок в конце строки навигации
 }
-const { items } = Astro.props;
+const { items, beta = false } = Astro.props;
 ---
 
 <nav class="crumbs" aria-label="Навигация">
@@ -14,6 +17,7 @@ const { items } = Astro.props;
       </>
     ))
   }
+  {beta && <BetaBadge />}
 </nav>
 
 <style>

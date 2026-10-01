@@ -1,6 +1,7 @@
 title = "NumPy"
 code = "np"
 order = 1
+direction = "data"
 package = "numpy"
 reference = "numpy"
 requires = []

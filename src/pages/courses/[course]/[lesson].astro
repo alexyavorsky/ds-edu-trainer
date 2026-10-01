@@ -69,6 +69,7 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
           { label: course.meta.title, href: `/courses/${course.slug}` },
           { label: `Модуль ${module.number}. ${module.meta.title}` },
         ]}
+        beta={course.meta.beta}
       />
       <header class="head">
         <div class="meta">

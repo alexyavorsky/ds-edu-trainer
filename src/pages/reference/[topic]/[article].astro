@@ -78,6 +78,7 @@ const runData = getExamples(article.id).size
           { label: topic.data.title, href: `/reference/${topic.id}` },
           ...(section ? [{ label: section.title }] : []),
         ]}
+        beta={topic.data.beta}
       />
       <header class="head">
         <div class="meta">
