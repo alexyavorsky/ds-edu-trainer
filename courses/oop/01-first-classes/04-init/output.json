@@ -1,0 +1,53 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "init": {
+      "lines": [
+        "Латте 220",
+        "Чай 120"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "steps": {
+      "lines": [
+        "до вызова Cup",
+        "__init__: заполняю экземпляр, volume = 400",
+        "после вызова Cup: 400"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "missing": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "TypeError: Product.__init__() missing 1 required positional argument: 'price'"
+    },
+    "no-self": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "AttributeError: 'Bun' object has no attribute 'name'"
+    },
+    "defaults": {
+      "lines": [
+        "250",
+        "400"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "computed": {
+      "lines": [
+        "200 0"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

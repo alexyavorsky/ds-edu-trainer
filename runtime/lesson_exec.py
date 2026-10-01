@@ -173,6 +173,11 @@ class LessonSession:
         if cell.error is not None:
             return {"cell": cell, "phase": "run", "results": []}
         for name in targets:
+            if "." in name:  # «Класс.метод»: класс объявлен, метод дописан
+                message = unfinished_method(code, self.namespace, *name.split(".", 1))
+                if message is None:
+                    continue
+                return {"cell": cell, "phase": "missing", "results": [{"title": message, "status": "not_written", "message": "", "error_type": None, "line": None}]}
             value = self.namespace.get(name, _MISSING)
             if value is _MISSING:
                 message = f"переменная {name} не создана — в решении должна быть строка «{name} = …»"
@@ -200,6 +205,26 @@ class LessonSession:
 
 
 _MISSING = object()
+
+
+def unfinished_method(code: str, namespace: dict, cls: str, method: str) -> str | None:
+    """Класс из заготовки не объявлен или его метод всё ещё состоит из `...` — понятное сообщение вместо проваленных тестов."""
+    if not isinstance(namespace.get(cls), type):
+        return f"класс {cls} не объявлен — в решении должна быть строка «class {cls}…»"
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return None
+    for node in tree.body:
+        if isinstance(node, ast.ClassDef) and node.name == cls:
+            for item in node.body:  # у свойства два метода с одним именем: геттер и сеттер — проверяются оба
+                if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and item.name == method:
+                    if any((d.id if isinstance(d, ast.Name) else getattr(d, "attr", "")) == "abstractmethod" for d in item.decorator_list):
+                        return None  # ученик сделал метод абстрактным: `...` — его законное тело
+                    body = item.body[1:] if item.body and isinstance(item.body[0], ast.Expr) and isinstance(item.body[0].value, ast.Constant) and isinstance(item.body[0].value.value, str) else item.body
+                    if all(isinstance(b, ast.Expr) and isinstance(b.value, ast.Constant) and b.value.value is Ellipsis for b in body):
+                        return f"метод {cls}.{method} пока состоит из ... — допишите его"
+    return None
 _NUMPY_REPR = re.compile(r"np\.(?:u?int|float)\d+\(([^()]*)\)|np\.str_\(('[^']*'|\"[^\"]*\")\)|np\.(True|False)_")
 
 

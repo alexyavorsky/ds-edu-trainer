@@ -1,0 +1,43 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "inherit": {
+      "lines": [
+        "Овсяное печенье — 90 ₽",
+        "Snack('Овсяное печенье', 90)"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "override": {
+      "lines": [
+        "Улун — 180 ₽, заваривать 4 мин",
+        "Улун — 180 ₽"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "isinstance": {
+      "lines": [
+        "True True",
+        "False",
+        "True False",
+        "True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "wrong-order": {
+      "lines": [
+        "Чай → общая полка",
+        "Круассан → общая полка"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

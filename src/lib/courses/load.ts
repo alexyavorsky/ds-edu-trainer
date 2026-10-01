@@ -16,11 +16,13 @@ export interface CourseMeta {
   title: string;
   code: string; // префикс id уроков: np, pd
   order: number;
-  package: string; // numpy · pandas — версия в Pyodide и в requirements-dev.txt
+  package?: string; // numpy · pandas — версия в Pyodide и в requirements-dev.txt; у курса на чистом Python (ООП) — нет
+  python?: string; // курс без пакета: минимальная версия Python («3.10») — проверяет ячейка «Подготовка урока» ноутбука
+  concepts?: 'python'; // понятия по порядку для курса о самом Python: классы, магические методы, декораторы (validate_courses)
   summary: string;
   audience: string; // для кого курс
   prerequisites: string[]; // что нужно знать
-  reference: string; // тема справочника
+  reference?: string; // тема справочника (у курса ООП её пока нет)
   requires: string[]; // курсы, которые нужно пройти раньше: их понятия считаются известными (у pandas — нет)
   complete?: boolean; // программа написана целиком: строгие проверки структуры (validate_courses --strict) — всегда
 }
@@ -155,7 +157,7 @@ export function lessonFiles(meta: LessonMeta): { name: string; url: string }[] {
   return meta.data.map((name) => ({ name, url: `/courses/data/${name}` }));
 }
 
-/** Пакеты урока в браузере: пакет курса (pandas тянет numpy) и дополнительные. */
+/** Пакеты урока в браузере: пакет курса (pandas тянет numpy) и дополнительные; курс без пакета их не грузит. */
 export function lessonPackages(course: CourseMeta, meta: LessonMeta): string[] {
-  return [...new Set(['numpy', course.package, ...meta.packages])];
+  return [...new Set([...(course.package ? ['numpy', course.package] : []), ...meta.packages])];
 }

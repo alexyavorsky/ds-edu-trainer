@@ -1,0 +1,32 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "from-line": {
+      "lines": [
+        "Product('Латте', 220)",
+        "[Product('Чай', 120), Product('Раф', 260)]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "cls": {
+      "lines": [
+        "SeasonalProduct('Глинтвейн', 300)",
+        "SeasonalProduct"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "static": {
+      "lines": [
+        "220",
+        "240"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "look": {
+      "lines": [
+        "Product('Чай', 120)",
+        "Product('Эспрессо', 150)",
+        "Product('Какао', 190)",
+        "Product('Капучино', 220)",
+        "Product('Латте', 220)",
+        "Product('Латте', 240)",
+        "Product('Раф', 260)"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "summary": {
+      "lines": [
+        "позиций в двух прайсах: 10, повторов: 3",
+        "сводный прайс: [Product('Чай', 120), Product('Эспрессо', 150), Product('Какао', 190), Product('Капучино', 220), Product('Латте', 220), Product('Латте', 240), Product('Раф', 260)]",
+        "изменилась цена: Латте, цены в прайсах [220, 240]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

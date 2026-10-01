@@ -1,0 +1,7 @@
+title = "dataclasses и исключения"
+summary = "Классы данных без лишнего кода: @dataclass, проверки в __post_init__, неизменяемые объекты — и своя иерархия исключений для ошибок программы."
+outcomes = [
+  "описывать данные dataclass'ами: аннотации полей, значения по умолчанию, <code>field(default_factory=list)</code>",
+  "настраивать dataclass: <code>__post_init__</code>, <code>frozen=True</code>, <code>order=True</code>, <code>replace</code>",
+  "строить свою иерархию исключений с атрибутами и перехватывать её: <code>raise … from</code>",
+]

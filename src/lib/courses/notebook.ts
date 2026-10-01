@@ -41,7 +41,8 @@ function runnerSource(root: string): string {
 }
 
 function setupCell(course: CourseSource, lesson: LessonSource, root: string): string {
-  const packages = [...new Set(['numpy', course.meta.package])];
+  const packages = course.meta.package ? [...new Set(['numpy', course.meta.package])] : [];
+  const python = course.meta.python ?? '3.10';
   const data = lesson.meta.data.map((name) => {
     const packed = deflateSync(readFileSync(join(DATA_DIR, name)), { level: 9 }).toString('base64');
     return `    ${JSON.stringify(name)}: """\n${packed.match(/.{1,100}/g)!.join('\n')}\n""",`;
@@ -51,14 +52,23 @@ function setupCell(course: CourseSource, lesson: LessonSource, root: string): st
     '# Проверяет версии пакетов, записывает файлы данных в папку data/ и определяет _check — проверку упражнений.',
     'import base64, os, zlib',
     '',
-    `for _name, _min in ${JSON.stringify(Object.fromEntries(packages.map((p) => [p, MIN_VERSIONS[p] ?? '0'])))}.items():`,
-    '    try:',
-    '        _have = __import__(_name).__version__',
-    '    except ImportError:',
-    '        print(f"Нет пакета {_name}: выполните %pip install {_name} и перезапустите ядро")',
-    '        continue',
-    '    if tuple(int(x) for x in _have.split(".")[:2]) < tuple(int(x) for x in _min.split(".")):',
-    '        print(f"Урок написан для {_name} {_min} и новее, у вас {_have}: выполните %pip install -U {_name} и перезапустите ядро")',
+    ...(packages.length
+      ? [
+          `for _name, _min in ${JSON.stringify(Object.fromEntries(packages.map((p) => [p, MIN_VERSIONS[p] ?? '0'])))}.items():`,
+          '    try:',
+          '        _have = __import__(_name).__version__',
+          '    except ImportError:',
+          '        print(f"Нет пакета {_name}: выполните %pip install {_name} и перезапустите ядро")',
+          '        continue',
+          '    if tuple(int(x) for x in _have.split(".")[:2]) < tuple(int(x) for x in _min.split(".")):',
+          '        print(f"Урок написан для {_name} {_min} и новее, у вас {_have}: выполните %pip install -U {_name} и перезапустите ядро")',
+        ]
+      : [
+          'import sys',
+          '',
+          `if sys.version_info < (${python.split('.').join(', ')}):`,
+          `    print(f"Урок написан для Python ${python} и новее, у вас {sys.version.split()[0]} — часть кода может не работать")`,
+        ]),
     '',
     ...(data.length
       ? [
@@ -80,6 +90,11 @@ function setupCell(course: CourseSource, lesson: LessonSource, root: string): st
     'def _check(*tests, names=()):',
     '    """Запускает проверки упражнения и печатает ✓ / ✗ и итог — как на сайте."""',
     '    for name in names:',
+    '        if "." in name:  # «Класс.метод» из заготовки: класс должен быть объявлен',
+    '            if not isinstance(globals().get(name.split(".")[0]), type):',
+    '                print(f"✗ класс {name.split(\'.\')[0]} не объявлен — выполните ячейку упражнения")',
+    '                return',
+    '            continue',
     '        if name not in globals():',
     '            print(f"✗ переменная {name} не создана — выполните ячейку упражнения")',
     '            return',

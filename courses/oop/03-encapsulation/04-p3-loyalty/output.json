@@ -1,0 +1,25 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "guard": {
+      "lines": [
+        "не вышло: property 'points' of 'LoyaltyCard' object has no setter",
+        "220"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "summary": {
+      "lines": [
+        "Анна: 6400 ₽, 320 баллов, уровень серебряный",
+        "Борис: 22000 ₽, 1100 баллов, уровень золотой",
+        "Вера: 750 ₽, 37 баллов, уровень базовый",
+        "Глеб: 20500 ₽, 1025 баллов, уровень золотой"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

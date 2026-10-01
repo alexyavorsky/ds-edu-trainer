@@ -1,0 +1,53 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "method": {
+      "lines": [
+        "Латте, 300 мл",
+        "Чай, 400 мл"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "same-call": {
+      "lines": [
+        "Латте, 300 мл",
+        "Латте, 300 мл"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "state": {
+      "lines": [
+        "3 False",
+        "0 True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "no-self": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "TypeError: Cookie.label() takes 0 positional arguments but 1 was given"
+    },
+    "no-parens": {
+      "lines": [
+        "method",
+        "Латте, 300 мл"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "no-parens-error": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "TypeError: unsupported operand type(s) for +: 'method' and 'str'"
+    }
+  }
+}

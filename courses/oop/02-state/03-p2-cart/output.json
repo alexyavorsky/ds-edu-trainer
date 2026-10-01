@@ -1,0 +1,23 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "product": {
+      "lines": [
+        "Латте 220"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "summary": {
+      "lines": [
+        "Анна: Латте, Круассан — 390 ₽",
+        "Борис: Латте, Раф — 510 ₽",
+        "латте в обеих корзинах — один объект: True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

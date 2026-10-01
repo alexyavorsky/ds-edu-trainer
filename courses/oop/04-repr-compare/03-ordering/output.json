@@ -1,0 +1,45 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "no-order": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "TypeError: '<' not supported between instances of 'Product' and 'Product'"
+    },
+    "lt": {
+      "lines": [
+        "[PricedProduct('Чай', 120), PricedProduct('Латте', 220), PricedProduct('Раф', 260)]",
+        "PricedProduct('Чай', 120) PricedProduct('Раф', 260)",
+        "True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "no-le": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "TypeError: '<=' not supported between instances of 'PricedProduct' and 'PricedProduct'"
+    },
+    "total-ordering": {
+      "lines": [
+        "True True False True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "key": {
+      "lines": [
+        "[Product('Чай', 120), Product('Латте', 220), Product('Раф', 260)]",
+        "[Product('Чай', 120), Product('Латте', 220), Product('Раф', 260)]",
+        "Product('Латте', 220)"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

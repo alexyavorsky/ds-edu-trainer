@@ -1,0 +1,28 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "add": {
+      "lines": [
+        "Weight(350) Weight(250) Weight(100)",
+        "Weight(400)"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "mutating": {
+      "lines": [
+        "BadWeight(350) BadWeight(350) True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "sum-error": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "TypeError: unsupported operand type(s) for +: 'int' and 'Weight'"
+    }
+  }
+}

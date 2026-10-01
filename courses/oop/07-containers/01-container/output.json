@@ -1,0 +1,32 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "len": {
+      "lines": [
+        "2 0",
+        "заказ №17: 2 поз.",
+        "заказ №18 пуст"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "getitem": {
+      "lines": [
+        "Борис",
+        "нет смены: 'вс'"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "contains": {
+      "lines": [
+        "True False"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

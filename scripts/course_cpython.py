@@ -2,7 +2,9 @@
 """CPython-часть проверки курсов: её запускает scripts/validate_courses.ts, задание — JSON на stdin, ответ — JSON в stdout.
 
     {"mode": "versions"}                          → версии Python, NumPy, pandas
-    {"mode": "concepts", "snippets": {id: код}}   → понятия в коде: {id: ["np.array", ".shape", "axis=", …]}
+    {"mode": "concepts", "snippets": {id: код}, "python": [[урок, …], …]}
+                                                  → понятия в коде: {id: ["np.array", ".shape", "axis=", …]};
+        уроки из "python" (курс о самом Python, по курсам и по порядку) — понятия ООП, см. python_concepts
     {"mode": "run", "runs": [{"files": [...], "steps": [...]}]}
         каждый прогон — новый сеанс урока (runtime/lesson_exec.py, как в браузере); шаг —
         {"op": "cell" | "quiz" | "check", "cell": id, "code": …, "tests": …, "targets": [...]} → результат шага
@@ -20,6 +22,7 @@ import contextlib
 import io
 import json
 import os
+import re
 import sys
 import tempfile
 import traceback
@@ -93,6 +96,121 @@ def concepts(code: str) -> list[str]:
     return sorted(found)
 
 
+# ─── Понятия курса о самом Python (ООП) ─────────────────────────────────────
+
+# встроенные функции, которые курс объясняет (остальные — Python-минимум, известны с начала)
+PYTHON_CALLS = {"type", "isinstance", "issubclass", "hasattr", "getattr", "setattr", "super", "repr", "hash", "iter", "next", "vars", "callable"}
+MANGLED = re.compile(r"_[A-Za-z]\w*__\w+")
+
+
+def declared_names(code: str) -> set[str]:
+    """Имена, которые урок объявляет сам: атрибуты (self.x = …, атрибуты и поля класса), методы, параметры функций."""
+    names: set[str] = set()
+    for node in ast.walk(ast.parse(code)):
+        if isinstance(node, ast.ClassDef):
+            names.add(node.name)
+            for item in node.body:
+                if isinstance(item, ast.Assign):
+                    names.update(t.id for t in item.targets if isinstance(t, ast.Name))
+                elif isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
+                    names.add(item.target.id)
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            names.add(node.name)
+            a = node.args
+            names.update(x.arg for x in [*a.posonlyargs, *a.args, *a.kwonlyargs])
+        elif isinstance(node, (ast.Assign, ast.AugAssign, ast.AnnAssign)):
+            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+            for t in targets:
+                for sub in ast.walk(t):
+                    if isinstance(sub, ast.Attribute):
+                        names.add(sub.attr)
+    return names
+
+
+def python_concepts(code: str, declared: set[str], local: set[str] | None = None) -> list[str]:
+    """Понятия ООП: конструкции (class, class(Base), магические методы, декораторы, super(), raise, yield, is),
+    импорты «модуль.имя», встроенные функции из PYTHON_CALLS, .x — только чужие атрибуты (не объявленные уроком),
+    x= — только у чужих вызовов (параметры, объявленные в этом же уроке, — local). Магические атрибуты
+    (.__dict__, .__name__) — тоже понятия."""
+    local = declared if local is None else local
+    tree = ast.parse(code)
+    found: set[str] = set()
+    # @price.setter — понятие «@setter», а не атрибут .setter
+    in_decorators = {id(d.func if isinstance(d, ast.Call) else d) for n in ast.walk(tree) if isinstance(n, (ast.ClassDef, ast.FunctionDef)) for d in n.decorator_list}
+    for node in ast.walk(tree):
+        if id(node) in in_decorators and isinstance(node, ast.Attribute):
+            continue
+        if isinstance(node, ast.ClassDef):
+            found.add("class(Base)" if node.bases else "class")
+            for dec in node.decorator_list:
+                found.add(decorator_name(dec))
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            if node.name.startswith("__") and node.name.endswith("__"):
+                found.add(node.name)
+            for dec in node.decorator_list:
+                found.add(decorator_name(dec))
+        elif isinstance(node, ast.Raise):
+            found.add("raise from" if node.cause is not None else "raise")
+        elif isinstance(node, (ast.Yield, ast.YieldFrom)):
+            found.add("yield")
+        elif isinstance(node, ast.Compare) and any(isinstance(op, (ast.Is, ast.IsNot)) for op in node.ops):
+            found.add("is")
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            found.update(f"{node.module}.{a.name}" for a in node.names)
+        elif isinstance(node, ast.Import):
+            found.update(f"import {a.name}" for a in node.names)
+        elif isinstance(node, ast.Name) and node.id == "NotImplemented":
+            found.add("NotImplemented")
+        elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in PYTHON_CALLS:
+            found.add(f"{node.func.id}()" if node.func.id == "super" else node.func.id)
+        elif isinstance(node, ast.Attribute):
+            attr = node.attr
+            if attr.startswith("__") and attr.endswith("__"):
+                if attr not in declared:
+                    found.add(f".{attr}")
+            elif attr not in declared and not MANGLED.fullmatch(attr):
+                found.add(f".{attr}")
+        elif isinstance(node, ast.keyword) and node.arg and node.arg not in local:
+            found.add(f"{node.arg}=")
+    found.discard("")
+    return sorted(found)
+
+
+def decorator_name(dec: ast.AST) -> str:
+    """@property → «@property», @price.setter → «@setter»; импортированные (@dataclass) — понятие своего импорта."""
+    target = dec.func if isinstance(dec, ast.Call) else dec
+    if isinstance(target, ast.Attribute):
+        return f"@{target.attr}"
+    return f"@{target.id}" if isinstance(target, ast.Name) and target.id in {"property", "classmethod", "staticmethod"} else ""
+
+
+def concepts_task(snippets: dict[str, str], python_courses: list[list[str]]) -> dict:
+    result: dict = {}
+    python_lessons = {lesson for course in python_courses for lesson in course}
+    for key, code in snippets.items():
+        if key.split("#")[0] in python_lessons:
+            continue
+        try:
+            result[key] = concepts(code)
+        except SyntaxError as e:
+            result[key] = {"error": f"SyntaxError: {e.msg} (строка {e.lineno})"}
+    for course in python_courses:
+        declared: set[str] = set()
+        for lesson in course:
+            own = {k: v for k, v in snippets.items() if k.split("#")[0] == lesson}
+            local: set[str] = set()  # параметры своих классов и функций — только этого урока: order= у dataclass — понятие
+            for code in own.values():
+                with contextlib.suppress(SyntaxError):
+                    local |= declared_names(code)
+            declared |= local
+            for key, code in own.items():
+                try:
+                    result[key] = python_concepts(code, declared, local)
+                except SyntaxError as e:
+                    result[key] = {"error": f"SyntaxError: {e.msg} (строка {e.lineno})"}
+    return result
+
+
 # ─── Прогоны урока ──────────────────────────────────────────────────────────
 
 
@@ -150,12 +268,7 @@ def main() -> None:
     if mode == "versions":
         result = versions()
     elif mode == "concepts":
-        result = {}
-        for key, code in task["snippets"].items():
-            try:
-                result[key] = concepts(code)
-            except SyntaxError as e:
-                result[key] = {"error": f"SyntaxError: {e.msg} (строка {e.lineno})"}
+        result = concepts_task(task["snippets"], task.get("python", []))
     elif mode == "run":
         result = run_lessons(task["runs"])
     elif mode == "notebook":

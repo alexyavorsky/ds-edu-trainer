@@ -1,0 +1,39 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "abc": {
+      "lines": [
+        "Delivery True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "no-instance": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "TypeError: Can't instantiate abstract class Delivery without an implementation for abstract method 'cost'"
+    },
+    "subclasses": {
+      "lines": [
+        "самовывоз: 0 ₽",
+        "TypeError: Can't instantiate abstract class BrokenCourier without an implementation for abstract method 'cost'"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "template": {
+      "lines": [
+        "Остатки",
+        "-------",
+        "зёрна — 12 шт.",
+        "молоко — 4 шт."
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}
