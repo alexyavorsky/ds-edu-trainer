@@ -1,0 +1,42 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "delivery": {
+      "lines": [
+        "самовывоз: 3 км — 0 ₽, 10 км — 0 ₽",
+        "курьер: 3 км — 240 ₽, 10 км — 450 ₽",
+        "служба доставки: 3 км — 290 ₽, 10 км — 290 ₽"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "duck": {
+      "lines": [
+        "Латте                      220 ₽",
+        "Сертификат на 1000 ₽      1000 ₽"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "channels": {
+      "lines": [
+        "смс на +7 900 111-22-33: заказ №17 принят",
+        "письмо на anna@example.com: заказ №17 принят"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "hasattr": {
+      "lines": [
+        "SmsChannel True",
+        "Product False"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

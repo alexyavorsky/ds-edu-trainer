@@ -1,0 +1,39 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "init": {
+      "lines": [
+        "Круассан 140 70",
+        "Круассан — 140 ₽"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "forgot": {
+      "lines": [
+        "8"
+      ],
+      "result": null,
+      "html": null,
+      "error": "AttributeError: 'Cake' object has no attribute 'name'"
+    },
+    "extend": {
+      "lines": [
+        "Круассан — 140 ₽, 70 г"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "mro": {
+      "lines": [
+        "['Pastry', 'Product', 'object']",
+        "['WholesaleProduct', 'Product', 'object']"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}
