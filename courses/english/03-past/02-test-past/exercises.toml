@@ -71,6 +71,12 @@ ref = ["english/past-simple"]
   explain = "*What* → *did* → подлежащее → глагол в начальной форме."
 
   [[exercise.item]]
+  words = ["at", "they", "the", "station", "met"]
+  answer = ["They met at the station."]
+  ref = "english/past-simple"
+  explain = "Подлежащее → глагол → место: *They met at the station.*"
+
+  [[exercise.item]]
   words = ["didn't", "he", "the", "email", "read"]
   answer = ["He didn't read the email."]
   ref = "english/past-simple"

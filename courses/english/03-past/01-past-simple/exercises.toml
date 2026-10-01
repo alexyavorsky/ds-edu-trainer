@@ -126,18 +126,18 @@ ref = ["english/past-simple"]
   [[exercise.item]]
   source = "She left early."
   answer = ["She did not leave early."]
-  explain = "*Left* → *did not leave*."
+  explain = "Вторая форма *left* уходит: *did not* + начальная форма *leave*."
 
   [[exercise.item]]
   source = "We saw the castle."
   start = "We"
   answer = ["We did not see the castle."]
-  explain = "*Saw* → *did not see*."
+  explain = "Вторая форма *saw* уходит: *did not* + начальная форма *see*."
 
   [[exercise.item]]
   source = "He wrote to his parents."
   answer = ["He did not write to his parents."]
-  explain = "*Wrote* → *did not write*."
+  explain = "Вторая форма *wrote* уходит: *did not* + начальная форма *write*."
 
 [[exercise]]
 id = "spot-it"
