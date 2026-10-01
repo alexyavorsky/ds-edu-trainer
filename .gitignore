@@ -17,3 +17,7 @@ bundles/
 
 # кэш пакетов Pyodide для scripts/validate_pyodide.ts
 .pyodide-cache/
+
+# ключи Supabase для локальной сборки (README, «Аккаунты и Supabase»)
+.env
+.env.*

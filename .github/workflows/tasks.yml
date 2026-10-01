@@ -147,4 +147,6 @@ jobs:
       - name: Сборка файла на сайте совпадает с проверенной (байт в байт)
         run: npm run check:bundles
       - run: npm run check
+      - name: Supabase — политики RLS и слияние записей (миграция в PGlite)
+        run: npm run test:supabase
       - run: npm run build

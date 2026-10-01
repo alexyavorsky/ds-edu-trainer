@@ -1,11 +1,12 @@
 /**
- * Страница задачи: редактор, запуск тестов в браузере, сохранение кода в localStorage.
+ * Страница задачи: редактор, запуск тестов в браузере, сохранение кода в localStorage (scripts/code-store.ts).
  * Код выполняется только по нажатию «Запустить» (или Ctrl/Cmd+Enter) — никогда из ссылки или URL.
  */
 import { joinBundle } from '../../lib/bundle';
 import { python, type RunEnd } from '../../lib/python/client';
 import { PYTHON_CONFIG } from '../../lib/python/config';
 import type { TaskDone, TestInfo, TestResult } from '../../lib/python/protocol';
+import { loadCode as loadSaved, saveCode as store, watchRemoteCode } from '../code-store';
 import { setSolved } from '../progress';
 import type * as EditorApi from './editor';
 
@@ -17,31 +18,6 @@ interface WorkbenchData {
   footer: string;
   packages: string[];
   filename: string;
-}
-
-interface Saved {
-  code: string;
-  starter: string; // хеш заготовки, от которой начат код
-}
-
-const storageKey = (id: string) => `edu:code:v1:${id}`;
-
-function loadSaved(id: string): Saved | null {
-  try {
-    const raw = localStorage.getItem(storageKey(id));
-    return raw ? (JSON.parse(raw) as Saved) : null;
-  } catch {
-    return null;
-  }
-}
-
-function store(id: string, saved: Saved | null): void {
-  try {
-    if (saved) localStorage.setItem(storageKey(id), JSON.stringify(saved));
-    else localStorage.removeItem(storageKey(id));
-  } catch {
-    /* приватный режим или переполненное хранилище — код просто не сохранится */
-  }
 }
 
 const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
@@ -71,6 +47,7 @@ export function initWorkbench(root: HTMLElement): void {
   // ─── Редактор и сохранение ────────────────────────────────────────────────
   const saved = loadSaved(data.taskId);
   let code = saved?.code ?? data.starter;
+  let opened = code; // код при открытии или последний пришедший с другого устройства
   let editor: typeof EditorApi | null = null;
   let view: EditorApi.EditorView | null = null;
   let saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -87,6 +64,13 @@ export function initWorkbench(root: HTMLElement): void {
 
   const changed = q('[data-starter-changed]');
   if (saved && saved.starter !== data.starterHash && saved.code !== data.starter) changed.hidden = false;
+  // код с другого устройства (после входа) — подставляем, пока здесь ничего не правили
+  watchRemoteCode(data.taskId, () => code === opened, (remote) => {
+    clearTimeout(saveTimer);
+    opened = remote?.code ?? data.starter;
+    setEditorCode(opened);
+    changed.hidden = !(remote && remote.starter !== data.starterHash && remote.code !== data.starter);
+  });
   q('[data-keep-mine]').addEventListener('click', () => {
     store(data.taskId, { code, starter: data.starterHash });
     changed.hidden = true;

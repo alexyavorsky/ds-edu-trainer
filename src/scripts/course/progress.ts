@@ -1,21 +1,24 @@
 /**
- * Прогресс курсов в localStorage этого браузера (позже — синхронизация, docs/COURSES_PLAN.md):
+ * Прогресс курсов в localStorage этого браузера (после входа — ещё и в Supabase, см. scripts/sync/):
  *   edu:course:v1 = { ex: {«урок/упражнение»: {t, hash}}, done: {урок: {v, t}}, last: {курс: {lesson, t}} }
- *   edu:code:v1:«урок/упражнение» = { code, starter, t } — код упражнения (как у задач)
+ *   edu:code:v1:«урок/упражнение» = { code, starter, t } — код упражнения (scripts/code-store.ts, как у задач)
  * t — время изменения (мс): по нему синхронизация выбирает более свежую версию.
  * Урок пройден, если его отметили вручную или решены все упражнения (явная отметка важнее).
  */
+import * as codeStore from '../code-store';
+import { noteChange } from '../sync/pending';
+
 export const STORE_KEY = 'edu:course:v1';
 const KEY = STORE_KEY;
 export const COURSE_EVENT = 'edu:course-change';
 
-interface Store {
+export interface Store {
   ex: Record<string, { t: number; hash: string }>;
   done: Record<string, { v: boolean; t: number }>;
   last: Record<string, { lesson: string; t: number }>;
 }
 
-function read(): Store {
+export function read(): Store {
   try {
     const raw = localStorage.getItem(KEY);
     const data = raw ? (JSON.parse(raw) as Partial<Store>) : {};
@@ -25,9 +28,7 @@ function read(): Store {
   }
 }
 
-function update(change: (store: Store) => void): void {
-  const store = read();
-  change(store);
+export function write(store: Store): void {
   try {
     localStorage.setItem(KEY, JSON.stringify(store));
   } catch {
@@ -42,8 +43,15 @@ export function isSolved(lesson: string, exercise: string): boolean {
   return exerciseKey(lesson, exercise) in read().ex;
 }
 
+function update(part: 'ex' | 'done' | 'last', id: string, entry: Store[typeof part][string]): void {
+  const store = read();
+  (store[part] as Record<string, unknown>)[id] = entry;
+  write(store);
+  noteChange(`course.${part}`, id, entry.t);
+}
+
 export function setSolved(lesson: string, exercise: string, hash: string): void {
-  update((s) => (s.ex[exerciseKey(lesson, exercise)] = { t: Date.now(), hash }));
+  update('ex', exerciseKey(lesson, exercise), { t: Date.now(), hash });
 }
 
 /** Пройден ли урок: явная отметка, иначе — решены все упражнения. */
@@ -54,11 +62,11 @@ export function isDone(lesson: string, exercises: string[], store = read()): boo
 }
 
 export function setDone(lesson: string, done: boolean): void {
-  update((s) => (s.done[lesson] = { v: done, t: Date.now() }));
+  update('done', lesson, { v: done, t: Date.now() });
 }
 
 export function setLast(course: string, lesson: string): void {
-  update((s) => (s.last[course] = { lesson, t: Date.now() }));
+  update('last', course, { lesson, t: Date.now() });
 }
 
 export function getLast(course: string): string | null {
@@ -67,30 +75,12 @@ export function getLast(course: string): string | null {
 
 // ─── Код упражнений ─────────────────────────────────────────────────────────
 
-export interface SavedCode {
-  code: string;
-  starter: string; // хеш заготовки, от которой начат код
-  t: number;
-}
+export type { SavedCode } from '../code-store';
 
-const codeKey = (lesson: string, exercise: string) => `edu:code:v1:${exerciseKey(lesson, exercise)}`;
+export const loadCode = (lesson: string, exercise: string) => codeStore.loadCode(exerciseKey(lesson, exercise));
 
-export function loadCode(lesson: string, exercise: string): SavedCode | null {
-  try {
-    const raw = localStorage.getItem(codeKey(lesson, exercise));
-    return raw ? (JSON.parse(raw) as SavedCode) : null;
-  } catch {
-    return null;
-  }
-}
-
-export function saveCode(lesson: string, exercise: string, saved: Omit<SavedCode, 't'> | null): void {
-  try {
-    if (saved) localStorage.setItem(codeKey(lesson, exercise), JSON.stringify({ ...saved, t: Date.now() }));
-    else localStorage.removeItem(codeKey(lesson, exercise));
-  } catch {
-    /* код просто не сохранится */
-  }
+export function saveCode(lesson: string, exercise: string, saved: { code: string; starter: string } | null): void {
+  codeStore.saveCode(exerciseKey(lesson, exercise), saved);
 }
 
 // ─── Отметки на страницах ───────────────────────────────────────────────────

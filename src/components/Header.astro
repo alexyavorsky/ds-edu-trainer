@@ -1,4 +1,6 @@
 ---
+import { ACCOUNTS_ENABLED } from '../scripts/sync/config';
+import Account from './Account.astro';
 import BugReportLink from './BugReportLink.astro';
 
 interface Props {
@@ -29,6 +31,7 @@ const inCourses = path.startsWith('/courses');
     </nav>
     <div class="header-actions">
       <BugReportLink taskId={taskId} articleId={articleId} lessonId={lessonId} compact />
+      {ACCOUNTS_ENABLED && <Account />}
     </div>
   </div>
 </header>
@@ -93,6 +96,9 @@ const inCourses = path.startsWith('/courses');
     color: var(--text);
   }
   .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     margin-left: auto;
   }
   @media (max-width: 560px) {

@@ -572,65 +572,17 @@ CI: задание «Курсы» (ubuntu, Python 3.12 с `requirements-dev.txt`
 
 Сохранённый вывод в ноутбук не кладётся — его даёт выполнение (в Jupyter будут 64-битные `int64`).
 
-## Синхронизация через Supabase (этап 4, отдельная ветка и PR)
+## Синхронизация через Supabase (этап 4, ветка `supabase`)
 
-Принцип: всё работает без входа; localStorage — основное хранилище, вход добавляет только синхронизацию.
-
-- **Ключи:** `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_ANON_KEY` в Vercel. Без них сайт такой же, как сейчас:
-  кнопки входа нет, клиент Supabase не грузится. Service role key не нужен ни сайту, ни сборке и в репозиторий
-  не попадает.
-- **Вход:** основной — GitHub OAuth. Magic link по email — вариант, если настроен свой SMTP (встроенная отправка
-  писем Supabase ограничена несколькими письмами в час); в README — как включить.
-- **Загрузка:** `@supabase/supabase-js` — отдельным чанком, только если ключи заданы и человек нажал «Войти»
-  или в браузере уже есть сессия.
-
-Схема (`supabase/migrations/*.sql`):
-
-```sql
-create table public.progress (          -- «Решено» задач, пройденные уроки, решённые упражнения
-  user_id    uuid not null default auth.uid() references auth.users on delete cascade,
-  item       text not null check (item ~ '^(task|lesson|exercise):[a-z0-9/-]+$'),   -- task:ga-find-term
-  done       boolean not null,
-  updated_at timestamptz not null,
-  primary key (user_id, item)
-);
-create table public.code (              -- код задач и упражнений
-  user_id      uuid not null default auth.uid() references auth.users on delete cascade,
-  item         text not null check (item ~ '^(task|exercise):[a-z0-9/-]+$'),
-  code         text not null check (octet_length(code) <= 65536),
-  starter_hash text not null,
-  updated_at   timestamptz not null,
-  primary key (user_id, item)
-);
-alter table public.progress enable row level security;
-alter table public.code enable row level security;
-create policy own_progress on public.progress for all to authenticated
-  using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
-create policy own_code on public.code for all to authenticated
-  using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
-```
-
-- **Проверка политик:** SQL-тесты pgTAP в `supabase/tests/` (`supabase test db`): два пользователя через
-  `request.jwt.claims`; каждый видит и меняет только свои строки, аноним — ничего; плюс скрипт с двумя
-  настоящими тестовыми пользователями против проекта.
-- **Слияние.** Отметки: объединение — отмечено хоть где-то → отмечено; снятие отметки — явное действие со
-  временем, побеждает, только если оно новее отметки. Код: изменён только с одной стороны с прошлой
-  синхронизации — берётся он; изменён с обеих — текущим становится более свежий, второй сохраняется как
-  «другая версия» с плашкой в редакторе («версия с другого устройства от …: показать / взять / удалить») —
-  без тихой потери. Первый вход — то же слияние всего локального с облаком.
-- **Офлайн:** изменения помечаются как неотправленные и уходят при появлении сети (`online`) и при открытии
-  страницы.
-- **«Выйти»** — локальные данные остаются. **«Удалить мои данные»** — удаляет строки в Supabase (RLS пускает
-  только к своим), локальные остаются.
-- **Спящий проект.** Бесплатный проект Supabase засыпает после недели без активности: запросы падают или
-  не отвечают. Сайт работает как без входа, у кнопки аккаунта — «Синхронизация недоступна, всё сохраняется
-  в этом браузере», повтор позже.
+Сделано иначе, чем планировалось: вход по логину и паролю без почты (не GitHub OAuth и не magic link), одна
+таблица `user_data` со слиянием записей на сервере вместо таблиц `progress` и `code`, без «другой версии» кода
+(побеждает более свежая). Устройство, настройка проекта и сброс пароля — README, «Аккаунты и Supabase».
 
 ## Вес
 
 - Код курсов (скрипт урока, стили ячеек) грузится только на страницах уроков. Редактор, воркер и Python — только
   там, где есть что запускать (уроки, задачи, статьи справочника), и не на страницах-списках. Клиент Supabase
-  (этап 4) — только когда настроен и используется.
+  (этап 4) — только когда настроен и человек вошёл или открыл окно входа.
 - Страница урока (сборка, gzip): HTML 11–13 КБ (с сохранёнными таблицами), скрипт урока 6,5 КБ, редактор
   CodeMirror 125 КБ (общий с задачами), воркер 15 КБ.
 - Python и пакеты — с jsDelivr, в фоне, когда браузер простаивает. Холодная загрузка (пустой кэш, Chromium,

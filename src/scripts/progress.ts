@@ -1,29 +1,49 @@
 /**
- * Статус «Решено» хранится только в localStorage этого браузера.
+ * Статус «Решено» хранится в localStorage этого браузера (после входа — ещё и в Supabase, см. sync/).
  * Любой элемент с data-progress / data-solved-marker обновляется автоматически.
+ *
+ *   edu:solved:v2 = {задача: {v: решено ли, t: время изменения, мс}}
+ * t нужен синхронизации: снятая отметка побеждает, только если она новее. Старый формат
+ * edu:solved:v1 (массив id) читается, пока v2 нет, — его отметки получают t = 0.
  */
-const KEY = 'edu:solved:v1';
+import { noteChange } from './sync/pending';
+
+export const SOLVED_KEY = 'edu:solved:v2';
+const OLD_KEY = 'edu:solved:v1';
 export const SOLVED_EVENT = 'edu:solved-change';
 
-export function getSolved(): Set<string> {
+export type SolvedMarks = Record<string, { v: boolean; t: number }>;
+
+export function readSolvedMarks(): SolvedMarks {
   try {
-    const raw = localStorage.getItem(KEY);
-    return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+    const raw = localStorage.getItem(SOLVED_KEY);
+    if (raw) return JSON.parse(raw) as SolvedMarks;
+    const old = localStorage.getItem(OLD_KEY);
+    return old ? Object.fromEntries((JSON.parse(old) as string[]).map((id) => [id, { v: true, t: 0 }])) : {};
   } catch {
-    return new Set();
+    return {};
   }
 }
 
-export function setSolved(id: string, solved: boolean): void {
-  const all = getSolved();
-  if (solved) all.add(id);
-  else all.delete(id);
+export function writeSolvedMarks(marks: SolvedMarks): void {
   try {
-    localStorage.setItem(KEY, JSON.stringify([...all]));
+    localStorage.setItem(SOLVED_KEY, JSON.stringify(marks));
   } catch {
     /* приватный режим или отключённое хранилище — статус просто не сохранится */
   }
   document.dispatchEvent(new CustomEvent(SOLVED_EVENT));
+}
+
+export function getSolved(): Set<string> {
+  return new Set(Object.entries(readSolvedMarks()).filter(([, m]) => m.v).map(([id]) => id));
+}
+
+export function setSolved(id: string, solved: boolean): void {
+  const marks = readSolvedMarks();
+  if ((marks[id]?.v ?? false) === solved) return;
+  marks[id] = { v: solved, t: Date.now() };
+  writeSolvedMarks(marks);
+  noteChange('solved', id, marks[id].t);
 }
 
 export function renderProgress(): void {
@@ -48,5 +68,5 @@ export function renderProgress(): void {
 renderProgress();
 document.addEventListener(SOLVED_EVENT, renderProgress);
 window.addEventListener('storage', (e) => {
-  if (e.key === KEY) renderProgress();
+  if (e.key === SOLVED_KEY) document.dispatchEvent(new CustomEvent(SOLVED_EVENT));
 });

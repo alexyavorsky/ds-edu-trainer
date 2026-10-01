@@ -9,7 +9,7 @@
  * - Перед запуском ячейки невыполненные ячейки выше выполняются сами, по порядку. Упражнение выше, где
  *   ученик что-то написал, проверяется; не решённое (или пропущенное) заменяется эталонным решением —
  *   следующие ячейки не ломаются, а код ученика остаётся в редакторе.
- * - Код упражнений сохраняется в localStorage, изменённый код демонстраций — нет.
+ * - Код упражнений сохраняется в localStorage (после входа — и в Supabase), изменённый код демонстраций — нет.
  * - Ответ упражнения — сохранённый вывод демонстраций его раздела и текст <After> — скрыт плашкой, пока
  *   упражнение не решено (data-gate). Начальное состояние и кнопки плашек — встроенный скрипт страницы;
  *   здесь — открытие при решении и отметке «Урок пройден» (renderGate). Живой вывод виден всегда, и выполненная
@@ -22,6 +22,7 @@ import type { LessonDone, LessonRun, TestInfo, TestResult } from '../../lib/pyth
 import type { DemoData, ExerciseData, LessonPageData } from '../../lib/courses/site';
 import { fillNotebook } from '../../lib/courses/notebook-fill';
 import type * as EditorApi from '../python/editor';
+import { watchRemoteCode } from '../code-store';
 import * as progress from './progress';
 
 
@@ -305,6 +306,16 @@ class ExerciseView extends CellView {
     });
     this.renderSolved();
     window.addEventListener('pagehide', () => this.save());
+    document.addEventListener(progress.COURSE_EVENT, () => this.renderSolved()); // отметки могли прийти с другого устройства
+
+    // код с другого устройства (после входа) — подставляем, пока здесь ничего не правили
+    let opened = this.code;
+    watchRemoteCode(progress.exerciseKey(lesson.id, data.id), () => this.code === opened, (remote) => {
+      clearTimeout(this.saveTimer);
+      opened = remote?.code ?? data.starter;
+      this.setCode(opened);
+      changed.hidden = !(remote && remote.starter !== data.starterHash && remote.code !== data.starter);
+    });
   }
 
   async mountEditor(api: typeof EditorApi): Promise<void> {
