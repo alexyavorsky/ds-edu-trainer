@@ -231,3 +231,6 @@ sent = notify([PushChannel("Анна")], "заказ готов")
 # %% hasattr
 for thing in [sms, Product("Чай", 120)]:
     print(type(thing).__name__, hasattr(thing, "send"))
+
+# %% hasattr-quiz [quiz]
+print(hasattr(GiftCertificate(1000), "price"))

@@ -78,7 +78,7 @@ class Drink:
     def __eq__(self, other):
         if not isinstance(other, Drink):
             return NotImplemented
-        return self.name == other.name and self.price == other.price
+        return self.name.lower() == other.name.lower() and self.price == other.price
 # ─── заготовка ───
 class Drink:
     def __init__(self, name, price):
@@ -94,6 +94,7 @@ def test_equal():
     a, b = Drink("Латте", 220), Drink("Латте", 220)
     assert (a == b) is True, "Drink(\"Латте\", 220) == Drink(\"Латте\", 220) должно быть True"
     assert a is not b, "проверка создаёт два разных объекта"
+    assert Drink("латте", 220) == Drink("Латте", 220), "«латте» и «Латте» по одной цене должны быть равны — сравнивайте названия без учёта регистра: lower()"
 
 
 def test_different():
@@ -121,7 +122,7 @@ class Drink:
 
     def __eq__(self, other):
         if isinstance(other, Drink):
-            return (self.name, self.price) == (other.name, other.price)
+            return (self.name.casefold(), self.price) == (other.name.casefold(), other.price)
         return NotImplemented
 # ─── ошибка ───
 class Drink:
@@ -132,7 +133,7 @@ class Drink:
     def __eq__(self, other):
         if not isinstance(other, Drink):
             return False
-        return self.name == other.name and self.price == other.price
+        return self.name.lower() == other.name.lower() and self.price == other.price
 # ─── ошибка ───
 class Drink:
     def __init__(self, name, price):
@@ -142,7 +143,17 @@ class Drink:
     def __eq__(self, other):
         if not isinstance(other, Drink):
             return NotImplemented
-        return self.name == other.name
+        return self.name.lower() == other.name.lower()
+# ─── ошибка ───
+class Drink:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+
+    def __eq__(self, other):
+        if not isinstance(other, Drink):
+            return NotImplemented
+        return self.name == other.name and self.price == other.price
 
 # %% unhashable [raises=TypeError]
 print(Product.__hash__)  # __eq__ есть — хеш отключён

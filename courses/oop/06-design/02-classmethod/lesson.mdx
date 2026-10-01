@@ -52,6 +52,13 @@ reference: []
 
 <Demo id="static" title="Проверка цены из строки" />
 
+<Mistake title="self в статическом методе">
+Python ничего не подставляет в статический метод: если оставить в нём `self` первым параметром, вызов
+`Customer.normalize_phone("+7…")` отдаст строку в `self`, а для `phone` аргумента не останется —
+`TypeError: … missing 1 required positional argument: 'phone'`. У статического метода параметры — только его
+собственные данные.
+</Mistake>
+
 <Exercise id="phone" title="Проверка телефона">
 Допишите в класс `Customer` статический метод `normalize_phone(phone)`: он оставляет в строке только цифры
 и возвращает их строкой, если цифр ровно 11, а иначе выбрасывает `ValueError`. Например,

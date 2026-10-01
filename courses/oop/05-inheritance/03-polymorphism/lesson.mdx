@@ -44,7 +44,8 @@ reference: []
 Напишите функцию `total(items)`: сумма атрибутов `price` всех объектов списка — товаров, сертификатов,
 услуг, чего угодно с атрибутом `price`.
 
-<Hint>Достаточно `sum(item.price for item in items)` — без проверок класса.</Hint>
+<Hint>Функции нужен только атрибут `price` — класс объекта проверять не нужно.</Hint>
+<Hint>`sum(item.price for item in items)`.</Hint>
 </Exercise>
 
 <Mistake title="лишняя проверка класса">
@@ -74,6 +75,16 @@ reference: []
 если у объекта есть атрибут или метод с таким именем:
 
 <Demo id="hasattr" title="Есть ли у объекта send" />
+
+<Quiz id="hasattr-quiz">
+Что вернёт `hasattr(GiftCertificate(1000), "price")` для сертификата из демонстрации о чеке?
+
+- [x] `True`
+- [ ] `False` — сертификат не наследует от `Product`
+- [ ] ошибку `AttributeError`
+
+<Explain>`hasattr` смотрит, есть ли у объекта атрибут, а не от какого он класса: у сертификата `price` записан в `__init__`. Поэтому `receipt` и `total` с ним и работают.</Explain>
+</Quiz>
 
 <Quiz id="poly-quiz">
 В кассу добавили класс `Taxi` с методом `cost(km)`. Что нужно изменить в функции `cheapest`?

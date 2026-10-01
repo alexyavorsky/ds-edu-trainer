@@ -52,8 +52,8 @@ print(cart.items, cart.subtotal)
 
 # %% order [exercise]
 class Order:
-    def __init__(self, customer, cart):
-        self.customer = customer
+    def __init__(self, customer_name, cart):
+        self.customer_name = customer_name
         self.cart = cart
 
     def add(self, product):
@@ -64,7 +64,7 @@ class Order:
         return self.cart.subtotal
 # ─── заготовка ───
 class Order:
-    def __init__(self, customer, cart):
+    def __init__(self, customer_name, cart):
         ...
 
     def add(self, product):
@@ -82,11 +82,11 @@ def _order():
 
 
 def test_parts():
-    "customer и cart"
+    "customer_name и cart"
     assert not issubclass(Order, Cart), "заказ не является корзиной — не наследуйте Order от Cart, храните корзину в атрибуте"
     basket = Cart()
     order = Order("Анна", basket)
-    assert getattr(order, "customer", None) == "Анна", "имя покупателя хранится в атрибуте customer"
+    assert getattr(order, "customer_name", None) == "Анна", "имя покупателя хранится в атрибуте customer_name"
     assert getattr(order, "cart", None) is basket, "в атрибуте cart должна быть переданная корзина — тот же объект"
 
 
@@ -100,8 +100,8 @@ def test_delegates():
     assert order.total == 340, f"total = {order.total!r}, а латте и чай стоят 340"
 # ─── другое решение ───
 class Order:
-    def __init__(self, customer, cart):
-        self.customer = customer
+    def __init__(self, customer_name, cart):
+        self.customer_name = customer_name
         self.cart = cart
 
     def add(self, product):
@@ -112,9 +112,9 @@ class Order:
         return sum(p.price for p in self.cart.items)
 # ─── ошибка ───
 class Order(Cart):
-    def __init__(self, customer, cart):
+    def __init__(self, customer_name, cart):
         super().__init__()
-        self.customer = customer
+        self.customer_name = customer_name
         self.cart = cart
 
     @property
@@ -122,8 +122,8 @@ class Order(Cart):
         return self.subtotal
 # ─── ошибка ───
 class Order:
-    def __init__(self, customer, cart):
-        self.customer = customer
+    def __init__(self, customer_name, cart):
+        self.customer_name = customer_name
         self.cart = cart
         self.items = []
 
@@ -200,6 +200,8 @@ def test_rejects():
         menu.add("кирпич")
     except TypeError:
         pass
+    except Exception as e:
+        assert False, f"menu.add(\"кирпич\") выбросил {type(e).__name__}, а нужен именно TypeError — значение неверного типа"
     else:
         assert False, "menu.add(\"кирпич\") не выбросил TypeError — проверьте isinstance(product, Product)"
     assert menu.names() == [], "после отказа меню должно остаться пустым"
@@ -290,6 +292,8 @@ class DeliveryOrder:
         return self.cart.subtotal + self.delivery.cost(km)
 
 
+cart = Cart()
+cart.add(Product("Латте", 220))
 order = DeliveryOrder(cart, Courier())
 by_courier = order.total(5)
 order.delivery = Pickup()
@@ -303,6 +307,8 @@ class DeliveryOrder:
         ...
 
 
+cart = Cart()
+cart.add(Product("Латте", 220))
 order = ...
 by_courier = ...
 by_pickup = ...
@@ -342,9 +348,11 @@ class DeliveryOrder:
         return self.cart.subtotal + delivery_cost
 
 
+cart = Cart()
+cart.add(Product("Латте", 220))
 order = DeliveryOrder(cart, Courier())
 by_courier = order.total(5)
-order = DeliveryOrder(cart, Pickup())
+order.delivery = Pickup()
 by_pickup = order.total(5)
 # ─── ошибка ───
 class DeliveryOrder:
@@ -356,6 +364,8 @@ class DeliveryOrder:
         return self.cart.subtotal + Courier().cost(km)
 
 
+cart = Cart()
+cart.add(Product("Латте", 220))
 order = DeliveryOrder(cart, Courier())
 by_courier = order.total(5)
 order.delivery = Pickup()

@@ -98,6 +98,7 @@ class Cash(PaymentMethod):
 def test_cash():
     "сдача и строка чека"
     cash = Cash(1000)
+    assert hasattr(cash, "title"), "у способа оплаты нет title — вызовите в __init__ super().__init__(название)"
     assert str(cash) == "наличные", f"название наличных — {str(cash)!r}, а нужно \"наличные\": super().__init__(\"наличные\")"
     assert getattr(cash, "given", None) == 1000, "сумма от покупателя хранится в атрибуте given"
     got = cash.pay(640)
@@ -132,6 +133,15 @@ class Cash(PaymentMethod):
 
     def pay(self, amount):
         return f"наличные {self.given} ₽, сдача {self.given - amount} ₽"
+# ─── ошибка ───
+class Cash(PaymentMethod):
+    def __init__(self, given):
+        self.given = given
+
+    def pay(self, amount):
+        if self.given < amount:
+            raise ValueError("недостаточно наличных")
+        return f"наличные {self.given} ₽, сдача {self.given - amount} ₽"
 
 # %% card [exercise]
 class Card(PaymentMethod):
@@ -159,12 +169,14 @@ def _card():
 
 def test_title():
     "название — последние 4 цифры"
+    assert hasattr(_card(), "title"), "у способа оплаты нет title — вызовите в __init__ super().__init__(название)"
     assert str(_card()) == "карта *9012", f"название карты — {str(_card())!r}, а нужно \"карта *9012\""
 
 
 def test_pay():
     "списание и строка чека"
     card = _card()
+    assert hasattr(card, "title"), "у способа оплаты нет title — вызовите в __init__ super().__init__(название)"
     got = card.pay(1250)
     assert got == "карта *9012: списано 1250 ₽", f"pay(1250) вернул {got!r}"
     assert card.balance == 750, f"после оплаты 1250 ₽ остаток {card.balance}, а нужно 750"
@@ -216,6 +228,17 @@ class Card(PaymentMethod):
             raise ValueError("недостаточно средств на карте")
         self.balance -= amount
         return f"{self.title}: списано {amount} ₽"
+# ─── ошибка ───
+class Card(PaymentMethod):
+    def __init__(self, number, balance):
+        self.number = number
+        self.balance = balance
+
+    def pay(self, amount):
+        if amount > self.balance:
+            raise ValueError("недостаточно средств на карте")
+        self.balance -= amount
+        return f"карта *{self.number[-4:]}: списано {amount} ₽"
 
 # %% points [exercise]
 class LoyaltyPoints(PaymentMethod):
@@ -239,6 +262,7 @@ class LoyaltyPoints(PaymentMethod):
 def test_pay():
     "списание баллов"
     points = LoyaltyPoints(500)
+    assert hasattr(points, "title"), "у способа оплаты нет title — вызовите в __init__ super().__init__(название)"
     assert str(points) == "баллы", f"название — {str(points)!r}, а нужно \"баллы\""
     got = points.pay(380)
     assert got == "баллы: списано 380, осталось 120", f"pay(380) вернул {got!r}"
@@ -276,6 +300,16 @@ class LoyaltyPoints(PaymentMethod):
         if amount > self.points:
             raise ValueError("недостаточно баллов")
         return f"баллы: списано {amount}, осталось {self.points - amount}"
+# ─── ошибка ───
+class LoyaltyPoints(PaymentMethod):
+    def __init__(self, points):
+        self.points = points
+
+    def pay(self, amount):
+        if amount > self.points:
+            raise ValueError("недостаточно баллов")
+        self.points -= amount
+        return f"баллы: списано {amount}, осталось {self.points}"
 
 # %% order [exercise]
 class Order:

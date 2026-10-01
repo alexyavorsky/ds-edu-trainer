@@ -134,9 +134,13 @@ class Product:
         ...
 # ─── проверка ───
 def test_copied():
-    "методы шага 1 на месте"
+    "методы шага 1 скопированы и работают"
     for name in ["__init__", "__repr__", "__eq__", "__hash__"]:
         assert name in Product.__dict__ and Product.__dict__[name] is not None, f"в классе нет {name} — скопируйте класс из шага 1 целиком"
+    step1 = "в скопированном классе ошибка из шага 1"
+    assert repr(Product("Латте", 220)) == "Product('Латте', 220)", f"repr товара {Product('Латте', 220)!r} — {step1}"
+    assert Product("Латте", 220) == Product("Латте", 220) and Product("Латте", 220) != Product("Латте", 240), f"равенство работает неверно — {step1}"
+    assert len({Product("Латте", 220), Product("Латте", 220), Product("Чай", 120)}) == 2, f"set не убирает одинаковые товары — {step1}"
 
 
 def test_lt():
@@ -149,7 +153,10 @@ def test_lt():
     assert tea < raf and not raf < tea, "чай за 120 ₽ должен быть меньше рафа за 260 ₽"
     assert Product("Капучино", 220) < Product("Латте", 220), "при равной цене меньше тот, чьё название раньше по алфавиту"
     assert not Product("Латте", 220) < Product("Латте", 220), "товар не меньше равного ему — сравнение строгое"
-    got = Product.__dict__["__lt__"](tea, 100)
+    try:
+        got = Product.__dict__["__lt__"](tea, 100)
+    except AttributeError:
+        assert False, "сравнение с числом падает — сначала проверьте тип: isinstance(other, Product)"
     assert got is NotImplemented, f"для чужого типа __lt__ вернул {got!r}, а нужно NotImplemented"
 # ─── другое решение ───
 class Product:

@@ -236,9 +236,16 @@ def test_static():
     assert isinstance(Customer.__dict__.get("normalize_phone"), staticmethod), "normalize_phone должен быть статическим — с @staticmethod"
 
 
+def _call(phone):
+    try:
+        return Customer.normalize_phone(phone)
+    except TypeError:
+        assert False, "normalize_phone не вызывается с одним аргументом — у статического метода нет self, уберите его из параметров"
+
+
 def test_digits():
     "оставляет 11 цифр"
-    got = Customer.normalize_phone("+7 (900) 111-22-33")
+    got = _call("+7 (900) 111-22-33")
     assert got is not None, "normalize_phone ничего не возвращает — нужен return"
     assert got == "79001112233", f"normalize_phone(\"+7 (900) 111-22-33\") = {got!r}, а нужно \"79001112233\""
 
@@ -247,7 +254,7 @@ def test_invalid():
     "не 11 цифр — ValueError"
     for bad in ["123-45", "+7 900 111-22-33-44"]:
         try:
-            Customer.normalize_phone(bad)
+            _call(bad)
         except ValueError:
             continue
         assert False, f"normalize_phone({bad!r}) не выбросил ValueError — в номере не 11 цифр"
@@ -285,3 +292,20 @@ class Customer:
     @staticmethod
     def normalize_phone(phone):
         return "".join(ch for ch in phone if ch.isdigit())
+# ─── ошибка ───
+class Customer:
+    def __init__(self, name, phone, points=0):
+        self.name = name
+        self.phone = phone
+        self.points = points
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(data["name"], data["phone"], data.get("points", 0))
+
+    @staticmethod
+    def normalize_phone(self, phone):
+        digits = "".join(ch for ch in phone if ch.isdigit())
+        if len(digits) != 11:
+            raise ValueError("в номере телефона должно быть 11 цифр")
+        return digits

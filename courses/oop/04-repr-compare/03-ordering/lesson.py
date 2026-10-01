@@ -235,7 +235,10 @@ def test_equal():
     assert "__eq__" in Booking.__dict__, "сначала объявите __eq__"
     assert Booking("Анна", "18:30") == Booking("Анна", "18:30"), "брони с одинаковыми именем и временем должны быть равны"
     assert Booking("Анна", "18:30") != Booking("Борис", "18:30"), "брони разных гостей на одно время не равны"
-    got = Booking.__dict__["__eq__"](Booking("Анна", "18:30"), "18:30")
+    try:
+        got = Booking.__dict__["__eq__"](Booking("Анна", "18:30"), "18:30")
+    except AttributeError:
+        assert False, "сравнение со строкой падает — сначала проверьте тип: isinstance(other, Booking)"
     assert got is NotImplemented, f"для чужого типа __eq__ вернул {got!r}, а нужно NotImplemented"
 
 

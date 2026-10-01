@@ -64,15 +64,16 @@ def test_uses_super():
     calls = []
     original = Product.__init__
 
-    def spy(self, *args):
-        calls.append(args)
-        original(self, *args)
+    def spy(self, *args, **kwargs):
+        calls.append(1)
+        original(self, *args, **kwargs)
     Product.__init__ = spy
     try:
-        Drink("Латте", 220, 300)
+        latte = Drink("Латте", 220, 300)
     finally:
         Product.__init__ = original
-    assert calls == [("Латте", 220)], "Product.__init__ не вызывался с (name, price) — используйте super().__init__(name, price), а не копируйте его строки"
+    assert calls == [1], "Product.__init__ не вызывался — используйте super().__init__(name, price), а не копируйте его строки"
+    assert (latte.name, latte.price) == ("Латте", 220), "в super().__init__ переданы не те значения — нужны name и price"
 
 
 def test_per_100ml():
@@ -84,7 +85,7 @@ def test_per_100ml():
 # ─── другое решение ───
 class Drink(Product):
     def __init__(self, name, price, volume=250):
-        super().__init__(name, price)  # объём по умолчанию — 250 мл
+        super().__init__(name=name, price=price)
         self.volume = volume
 
     def per_100ml(self):

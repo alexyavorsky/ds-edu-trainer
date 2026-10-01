@@ -18,7 +18,8 @@ reference: []
 ## `__lt__`: «меньше»
 
 `a < b` вызывает `a.__lt__(b)` (lt — от less than). Этого одного метода достаточно для `sorted`, `min`, `max`
-и метода списка `sort` — все они сравнивают элементы только через `<`:
+и метода списка `sort`: `sorted`, `sort` и `min` сравнивают через `<`, а `max` — через `>`, который Python
+сводит к `<` второго объекта (подробнее — сразу под демонстрацией):
 
 <Demo id="lt" title="Товары по цене" />
 
@@ -30,7 +31,7 @@ reference: []
 `NotImplemented`. После этого сохраните в `ordered` список напитков из `menu`, отсортированный по объёму,
 а в `biggest` — самый большой напиток.
 
-<Hint>В `__lt__`: проверка `isinstance(other, Drink)`, затем `return self.volume < other.volume`.</Hint>
+<Hint>`__lt__` устроен как `__eq__`: сначала тип `other`, потом сравнение нужного атрибута.</Hint>
 <Hint>`ordered = sorted(menu)`, `biggest = max(menu)` — они сами вызовут `__lt__`.</Hint>
 </Exercise>
 

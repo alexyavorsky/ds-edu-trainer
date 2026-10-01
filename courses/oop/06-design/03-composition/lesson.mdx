@@ -43,11 +43,12 @@ reference: []
 <Demo id="parts" title="Product и Cart" />
 
 <Exercise id="order" title="Заказ с корзиной">
-Объявите класс `Order`: `Order("Анна", cart)` хранит имя покупателя в `customer` и корзину в `cart`. Метод
+Объявите класс `Order`: `Order("Анна", cart)` хранит имя покупателя в `customer_name` (для простоты — строкой) и корзину в `cart`. Метод
 `add(product)` кладёт товар в корзину заказа, а свойство `total` возвращает сумму корзины (`subtotal`).
 Не копируйте код корзины — делегируйте ей.
 
-<Hint>`add` — `self.cart.add(product)`; `total` — свойство, которое возвращает `self.cart.subtotal`.</Hint>
+<Hint>Каждый метод заказа — одна строка: он вызывает то же у корзины `self.cart`.</Hint>
+<Hint>`total` — свойство, которое возвращает `self.cart.subtotal`.</Hint>
 </Exercise>
 
 ## Ловушка: `class Menu(list)`
@@ -83,10 +84,10 @@ reference: []
 Объявите класс `DeliveryOrder`: `DeliveryOrder(cart, delivery)` хранит корзину в `cart` и способ доставки
 в `delivery` — любой объект с методом `cost(km)` (например, `Courier()` или `Pickup()` из демонстрации).
 Метод `total(km)` возвращает сумму корзины плюс стоимость доставки. Затем создайте `order` — заказ
-с корзиной `cart` и курьером, сохраните в `by_courier` его `total(5)`, поменяйте доставку на самовывоз и
-сохраните `total(5)` в `by_pickup`.
+с корзиной `cart` из заготовки и курьером, сохраните в `by_courier` его `total(5)`, поменяйте у этого же заказа
+доставку на самовывоз и сохраните `total(5)` в `by_pickup`.
 
-<Hint>`total` — `self.cart.subtotal + self.delivery.cost(km)`.</Hint>
+<Hint>`total` складывает две вещи, которые знают вложенные объекты: сумму корзины и стоимость доставки.</Hint>
 <Hint>Поменять доставку — присвоить атрибуту: `order.delivery = Pickup()`.</Hint>
 </Exercise>
 

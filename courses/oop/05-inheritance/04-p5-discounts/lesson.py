@@ -167,6 +167,7 @@ def test_init():
     "value и название"
     d = FixedDiscount(150)
     assert issubclass(FixedDiscount, Discount), "FixedDiscount должен наследовать от Discount"
+    assert hasattr(d, "title"), "у скидки нет title — вызовите в __init__ super().__init__(название)"
     assert getattr(d, "value", None) == 150, "сумма хранится в атрибуте value"
     assert str(d) == "минус 150 ₽", f"str(FixedDiscount(150)) = {str(d)!r}, а нужно \"минус 150 ₽\""
 
@@ -195,6 +196,13 @@ class FixedDiscount(Discount):
 
     def amount(self, cart):
         return self.value
+# ─── ошибка ───
+class FixedDiscount(Discount):
+    def __init__(self, value):
+        self.value = value
+
+    def amount(self, cart):
+        return min(self.value, cart.subtotal)
 
 # %% buy-n [exercise]
 class BuyNGetOne(Discount):
@@ -224,6 +232,7 @@ def test_init():
     "name, n и название"
     d = BuyNGetOne("Латте", 3)
     assert issubclass(BuyNGetOne, Discount), "BuyNGetOne должен наследовать от Discount"
+    assert hasattr(d, "title"), "у скидки нет title — вызовите в __init__ super().__init__(название)"
     assert (getattr(d, "name", None), getattr(d, "n", None)) == ("Латте", 3), "название товара и n хранятся в атрибутах name и n"
     assert str(d) == "каждый 3-й Латте в подарок", f"str(BuyNGetOne(\"Латте\", 3)) = {str(d)!r}"
 
@@ -282,6 +291,17 @@ class BuyNGetOne(Discount):
         if not same:
             return 0
         return round(len(same) / self.n) * same[0].price
+# ─── ошибка ───
+class BuyNGetOne(Discount):
+    def __init__(self, name, n):
+        self.name = name
+        self.n = n
+
+    def amount(self, cart):
+        same = [p for p in cart.items if p.name == self.name]
+        if not same:
+            return 0
+        return len(same) // self.n * same[0].price
 
 # %% checkout [exercise]
 def to_pay(cart, discount):
