@@ -1,0 +1,303 @@
+---
+/**
+ * Аккаунт: кнопка в шапке и окно входа/регистрации по логину и паролю (scripts/sync/account.ts).
+ * Рендерится, только если заданы переменные Supabase (scripts/sync/config.ts) — иначе сайта не касается.
+ * Кнопка скрыта до запуска скрипта, чтобы без JavaScript не было неработающего «Войти».
+ */
+import { PASSWORD_MIN } from '../scripts/sync/config';
+import Icon from './Icon.astro';
+---
+
+<div class="account" data-account hidden>
+  <button type="button" class="btn btn-ghost account-btn" aria-haspopup="dialog">
+    <Icon name="user" />
+    <span class="account-label" data-account-label>Войти</span>
+    <span class="account-dot" aria-hidden="true"></span>
+  </button>
+</div>
+
+<dialog class="account-dialog" data-account-dialog aria-label="Аккаунт">
+  <button type="button" class="btn btn-ghost account-close" data-close aria-label="Закрыть"><Icon name="close" /></button>
+  <p class="account-message" data-message role="status" hidden></p>
+
+  <form data-view="auth" class="account-form" novalidate>
+    <h2 class="account-title" data-auth-title>Вход</h2>
+    <div class="account-tabs" role="tablist" aria-label="Вход или регистрация">
+      <button type="button" role="tab" data-mode="signin" aria-selected="true">Вход</button>
+      <button type="button" role="tab" data-mode="signup" aria-selected="false">Регистрация</button>
+    </div>
+    <p class="account-hint">
+      Аккаунт нужен, чтобы прогресс, отметки «Решено» и код сохранялись в облаке и были на других устройствах. Без входа
+      всё по-прежнему хранится в этом браузере.
+    </p>
+    <label class="field">
+      <span>Логин</span>
+      <input
+        name="login"
+        autocomplete="username"
+        autocapitalize="none"
+        spellcheck="false"
+        inputmode="text"
+        minlength="3"
+        maxlength="32"
+        required
+      />
+    </label>
+    <p class="field-note" data-signup-only hidden>3–32 символа: латинские буквы, цифры, «_» и «-».</p>
+    <label class="field">
+      <span>Пароль</span>
+      <input name="password" type="password" autocomplete="current-password" minlength={PASSWORD_MIN} required />
+    </label>
+    <label class="field" data-signup-only hidden>
+      <span>Пароль ещё раз</span>
+      <input name="password2" type="password" autocomplete="new-password" minlength={PASSWORD_MIN} />
+    </label>
+    <p class="field-note" data-signup-only hidden>
+      Не короче {PASSWORD_MIN} символов. Почта не нужна, поэтому восстановить пароль самому нельзя — сохраните его в
+      менеджере паролей. Если всё же забыли — напишите автору сайта.
+    </p>
+    <p class="account-error" data-error role="alert" hidden></p>
+    <button type="submit" class="btn btn-primary account-submit" data-submit>Войти</button>
+  </form>
+
+  <div data-view="account" class="account-form" hidden>
+    <h2 class="account-title"><Icon name="user" /><span data-account-login></span></h2>
+    <p class="account-status" data-sync-status></p>
+    <div class="account-actions">
+      <button type="button" class="btn" data-sync-now><Icon name="reset" />Синхронизировать</button>
+      <button type="button" class="btn" data-sign-out>Выйти</button>
+    </div>
+    <p class="field-note">После выхода прогресс и код остаются в этом браузере.</p>
+
+    <details class="account-more">
+      <summary>Сменить пароль</summary>
+      <form data-password-form class="account-form" novalidate>
+        <label class="field">
+          <span>Новый пароль</span>
+          <input name="new" type="password" autocomplete="new-password" minlength={PASSWORD_MIN} required />
+        </label>
+        <label class="field">
+          <span>Ещё раз</span>
+          <input name="new2" type="password" autocomplete="new-password" minlength={PASSWORD_MIN} required />
+        </label>
+        <p class="account-error" data-password-error role="alert" hidden></p>
+        <button type="submit" class="btn">Сменить пароль</button>
+      </form>
+    </details>
+
+    <details class="account-more">
+      <summary>Удалить аккаунт</summary>
+      <p class="field-note">
+        Аккаунт и всё, что сохранено в облаке, удалятся без возможности восстановления. В этом браузере прогресс и код
+        останутся.
+      </p>
+      <p class="account-error" data-delete-error role="alert" hidden></p>
+      <button type="button" class="btn account-danger" data-delete-account>Удалить аккаунт навсегда</button>
+    </details>
+  </div>
+</dialog>
+
+<style>
+  .account-btn {
+    position: relative;
+    max-width: 180px;
+  }
+  .account-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .account-dot {
+    display: none;
+    position: absolute;
+    top: 6px;
+    left: 20px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1.5px solid var(--bg);
+  }
+  .account[data-state='syncing'] .account-dot {
+    display: block;
+    background: var(--accent);
+  }
+  .account[data-state='offline'] .account-dot,
+  .account[data-state='error'] .account-dot,
+  .account[data-state='signed-out'] .account-dot {
+    display: block;
+    background: var(--medium);
+  }
+
+  .account-dialog {
+    width: min(400px, calc(100vw - 2 * var(--gutter)));
+    max-height: calc(100dvh - 32px);
+    padding: 24px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 24px 64px rgb(0 0 0 / 0.5);
+  }
+  .account-dialog::backdrop {
+    background: rgb(0 0 0 / 0.6);
+    backdrop-filter: blur(2px);
+  }
+  .account-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    padding: 0;
+    justify-content: center;
+  }
+  .account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .account-form[hidden] {
+    display: none;
+  }
+  .account-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 40px 0 0;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+  }
+  .account-title :global(svg) {
+    width: 18px;
+    height: 18px;
+    color: var(--muted);
+  }
+  .account-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+  }
+  .account-tabs button {
+    height: 30px;
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .account-tabs button[aria-selected='true'] {
+    background: var(--surface-3);
+    color: var(--text);
+  }
+  .account-hint,
+  .account-status,
+  .field-note {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .account-status {
+    color: var(--text-2);
+  }
+  .account-status.is-warn {
+    color: var(--medium);
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-2);
+  }
+  .field input {
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 16px; /* меньше 16px — iOS увеличивает страницу при фокусе */
+  }
+  .field input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .account-error {
+    margin: 0;
+    padding: 8px 10px;
+    border-radius: var(--radius-xs);
+    background: var(--hard-soft);
+    color: var(--hard);
+    font-size: 13px;
+  }
+  .account-message {
+    margin: 0 40px 16px 0;
+    padding: 8px 10px;
+    border-radius: var(--radius-xs);
+    background: var(--easy-soft);
+    color: var(--easy);
+    font-size: 13px;
+  }
+  .account-submit {
+    justify-content: center;
+    height: 40px;
+  }
+  .account-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .account-more {
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  .account-more summary {
+    color: var(--text-2);
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  .account-more[open] summary {
+    margin-bottom: 12px;
+  }
+  .account-more .field-note {
+    margin-bottom: 12px;
+  }
+  .account-danger {
+    color: var(--hard);
+  }
+  .account-danger:hover {
+    border-color: var(--hard);
+  }
+  [hidden] {
+    display: none !important;
+  }
+
+  @media (max-width: 560px) {
+    .account-label {
+      display: none;
+    }
+    .account-btn {
+      padding: 0 10px;
+    }
+    .account-dot {
+      left: 18px;
+    }
+    .account-dialog {
+      padding: 20px 16px;
+    }
+  }
+</style>
+
+<script>
+  import '../scripts/sync/account';
+</script>
