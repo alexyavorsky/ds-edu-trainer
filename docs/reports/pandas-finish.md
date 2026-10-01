@@ -255,3 +255,9 @@ PR #4 `numpy-review` к моменту работы в main не слит — п
   `07-random/04-project-dice`, `08-missing/02-genfromtxt`, `08-missing/03-join-split`, `08-missing/04-project-station`,
   `09-linalg/03-distances`, `09-linalg/05-project-knn`, `10-final/01-final-revenue`, `10-final/02-final-dynamics`);
   lesson.py и output.json не менялись.
+
+## По ревью D
+
+- final-dynamics: абзац о слабом лете под `quarters` — в `<After id="quarters">`; project-prices: «Выводы» с формулой
+  прайс-листа — в `<After id="*">` (теперь в NumPy «Выводы» скрыты в 10 проектах); final-revenue: перенос длинной
+  строки в Mistake. `validate_courses.ts` по трём урокам ✓, build ✓.
