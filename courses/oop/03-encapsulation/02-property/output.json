@@ -1,0 +1,27 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "property": {
+      "lines": [
+        "17 новый",
+        "True оплачен",
+        "False оплачен"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "read-only": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "AttributeError: property 'status' of 'Order' object has no setter"
+    },
+    "call-property": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "TypeError: 'int' object is not callable"
+    }
+  }
+}

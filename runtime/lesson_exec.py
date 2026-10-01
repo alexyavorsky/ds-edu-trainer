@@ -217,7 +217,7 @@ def unfinished_method(code: str, namespace: dict, cls: str, method: str) -> str 
         return None
     for node in tree.body:
         if isinstance(node, ast.ClassDef) and node.name == cls:
-            for item in node.body:
+            for item in node.body:  # у свойства два метода с одним именем: геттер и сеттер — проверяются оба
                 if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and item.name == method:
                     body = item.body[1:] if item.body and isinstance(item.body[0], ast.Expr) and isinstance(item.body[0].value, ast.Constant) and isinstance(item.body[0].value.value, str) else item.body
                     if all(isinstance(b, ast.Expr) and isinstance(b.value, ast.Constant) and b.value.value is Ellipsis for b in body):

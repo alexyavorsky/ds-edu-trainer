@@ -1,0 +1,38 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "setter": {
+      "lines": [
+        "сеттер получил 400",
+        "400",
+        "сеттер получил 10",
+        "слишком мало — объём не изменён",
+        "400"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "raise": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: объём 10 мл — меньше 50 мл не бывает"
+    },
+    "catch": {
+      "lines": [
+        "не получилось: объём 10 мл — меньше 50 мл не бывает",
+        "300"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "init-check": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: объём 20 мл — меньше 50 мл не бывает"
+    }
+  }
+}

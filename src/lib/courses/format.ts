@@ -97,7 +97,7 @@ export function starterTargets(starter: string): string[] {
     } else if (/^ {4}@/.test(line)) abstract ||= /^ {4}@abstractmethod\b/.test(line); // `...` абстрактного метода — не заготовка
     else method = null;
   }
-  return targets;
+  return [...new Set(targets)]; // у свойства геттер и сеттер — одно имя
 }
 
 export function parseLessonPy(text: string): Parsed<CodeCell[]> {

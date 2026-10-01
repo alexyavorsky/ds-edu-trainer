@@ -1,0 +1,38 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "gift-card": {
+      "lines": [
+        "True 300",
+        "False 300"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "underscore": {
+      "lines": [
+        "-500"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "mangling": {
+      "lines": [
+        "{'_Safe__code': '0000'}",
+        "True",
+        "0000"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "mangling-error": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "AttributeError: 'Safe' object has no attribute '__code'"
+    }
+  }
+}
