@@ -168,14 +168,17 @@ type Item = { kind: 'task' | 'lesson'; id: string; seconds: number; rows: { id: 
 
 /**
  * Одна вкладка браузера: выполняет ids (null — только пробы). Готовые задачи и уроки приходят сразу (__itemDone),
- * поэтому, если вкладка упала (WebKit в CI изредка теряет процесс страницы), оставшиеся выполняются на новой.
+ * поэтому, если вкладка упала (WebKit в CI изредка теряет процесс страницы: «Target page closed»), оставшиеся
+ * выполняются на новой — один повтор; в лог (и ::warning в CI) — на какой задаче или ячейке урока это случилось.
  */
-async function runTab(browser: Browser, url: string, name: string, ids: string[] | null, done: Item[]): Promise<Partial<CheckResult>> {
+async function runTab(getBrowser: () => Promise<Browser>, url: string, name: string, ids: string[] | null, done: Item[]): Promise<Partial<CheckResult>> {
   let left = ids;
+  let current = ids ? 'запуске' : 'пробах глубины'; // последняя начатая задача (вариант) или урок (ячейка)
   for (let attempt = 1; ; attempt++) {
-    const context = await browser.newContext();
+    const context = await (await getBrowser()).newContext();
     try {
       const page = await context.newPage();
+      await page.exposeFunction('__step', (where: string) => (current = where));
       await page.exposeFunction('__itemDone', (item: Item) => {
         done.push(item);
         if (left) left = left.filter((id) => id !== item.id);
@@ -185,7 +188,7 @@ async function runTab(browser: Browser, url: string, name: string, ids: string[]
       await page.waitForFunction(() => (window as unknown as { __result?: unknown }).__result, null, { timeout: 30 * 60_000 });
       return (await page.evaluate(() => (window as unknown as { __result: unknown }).__result)) as CheckResult;
     } catch (error) {
-      const message = `вкладка упала (${String(error).split('\n')[0]})`;
+      const message = `вкладка упала на ${current}, попытка ${attempt} (${String(error).split('\n')[0]})`;
       if (attempt === 2) return { error: message };
       if (left && !left.length) return {};
       warn(name, `${message} — повтор${left ? `, осталось задач и уроков: ${left.length}` : ''}`);
@@ -223,15 +226,23 @@ async function main(argv: string[]): Promise<number> {
   const timings: Record<string, unknown> = {};
   try {
     for (const name of chosen) {
-      const browser = await engines[name].launch();
+      // браузер целиком тоже может упасть: следующая попытка вкладки запускает новый (один на все вкладки)
+      let browser = engines[name].launch();
+      const getBrowser = async () => {
+        const current = await browser;
+        if (current.isConnected()) return current;
+        warn(name, 'браузер закрылся — запускаю заново');
+        browser = engines[name].launch();
+        return browser;
+      };
       const started = performance.now();
       const done: Item[] = [];
       // пробы глубины — отдельной вкладкой параллельно с задачами (в CI ~70 с)
       const parts = await Promise.all([
-        withProbes ? runTab(browser, url, name, null, done) : Promise.resolve({} as Partial<CheckResult>),
-        ...tabs.map((ids) => runTab(browser, url, name, ids, done)),
+        withProbes ? runTab(getBrowser, url, name, null, done) : Promise.resolve({} as Partial<CheckResult>),
+        ...tabs.map((ids) => runTab(getBrowser, url, name, ids, done)),
       ]);
-      await browser.close();
+      await (await browser).close().catch(() => {});
       const seconds = ((performance.now() - started) / 1000).toFixed(0);
       const userAgent = parts.find((p) => p.userAgent)?.userAgent ?? '';
       console.log(`\n${name} — ${userAgent} (${seconds} с)`);

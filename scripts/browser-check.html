@@ -116,6 +116,7 @@
       const taskStarted = clock();
       const py = await startPython(`задача ${task.id}`);
       for (const [variant, code] of task.variants) {
+        await window.__step?.(`задаче ${task.id}, вариант ${variant}`); // если вкладка упадёт, отчёт назовёт задачу и вариант
         const end = await py.run({ kind: 'task', packages: task.packages, code, footer: task.footer });
         let status = end.type;
         if (end.type === 'done') {
@@ -140,6 +141,7 @@
       const py = await startPython(`урок ${lesson.id}`);
       for (const step of lesson.steps) {
         const { expected, raises, ...rest } = step;
+        await window.__step?.(`уроке ${lesson.id}, ячейка ${step.cell}`); // если вкладка упадёт, отчёт назовёт урок и ячейку
         const end = await py.run({ kind: 'lesson', lesson: lesson.id, session: 'browser', files: lesson.files, packages: lesson.packages, ...rest });
         let status = 'passed';
         if (end.type !== 'done') status = `${end.type}${end.message ? `: ${end.message}` : ''}`;
