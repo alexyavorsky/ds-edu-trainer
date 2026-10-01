@@ -1,0 +1,54 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "menu": {
+      "lines": [
+        "эспрессо: 150 ₽",
+        "капучино: 220 ₽",
+        "чай: 120 ₽",
+        "раф: 260 ₽",
+        "какао: 190 ₽",
+        "позиций в меню: 5"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "comprehension": {
+      "lines": [
+        "[500, 600, 800]",
+        "[300, 400]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "functions": {
+      "lines": [
+        "300.0",
+        "75.0"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "counter": {
+      "lines": [
+        "4",
+        "0"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "try-except": {
+      "lines": [
+        "6",
+        "не число: три"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "declare": {
+      "lines": [
+        "Product",
+        "type"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "instances": {
+      "lines": [
+        "Product",
+        "True",
+        "False"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "attributes": {
+      "lines": [
+        "Латте 220",
+        "Чай 120",
+        "340"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "forgot": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "AttributeError: 'Drink' object has no attribute 'price'"
+    },
+    "typo": {
+      "lines": [
+        "120",
+        "130"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}
