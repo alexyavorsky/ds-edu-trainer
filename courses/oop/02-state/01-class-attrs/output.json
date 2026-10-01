@@ -1,0 +1,51 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "class-attr": {
+      "lines": [
+        "₽",
+        "₽ ₽",
+        "Латте — 220 ₽"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "lookup": {
+      "lines": [
+        "{'name': 'Латте', 'price': 220}",
+        "False",
+        "True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "shadow": {
+      "lines": [
+        "$ ₽ ₽",
+        "$ руб. руб."
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "counter-bug": {
+      "lines": [
+        "0 1 1"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "shared-list": {
+      "lines": [
+        "['Латте', 'Чай']",
+        "['Латте', 'Чай']"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "alias": {
+      "lines": [
+        "250"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "is": {
+      "lines": [
+        "True",
+        "False",
+        "False",
+        "True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "in-list": {
+      "lines": [
+        "160",
+        "True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "default-bug": {
+      "lines": [
+        "['Латте']",
+        "True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}
