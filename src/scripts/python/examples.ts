@@ -11,12 +11,13 @@ import type * as EditorApi from './editor';
 
 interface RunData {
   article: string;
-  topicPackage: string;
+  topicPackage: string | null; // null — тема на стандартной библиотеке (ООП, алгоритмы): numpy не грузится
+  prelude: { source: string; filename: string } | null; // свой prelude темы; null — общий reference/prelude.py
   setup: string;
   filename: string;
-  library: string; // «pandas»
-  browserVersion: string; // версия в Pyodide
-  referenceVersion: string; // версия, под которую написан справочник
+  library: string; // «pandas» или «Python»
+  browserVersion: string | null; // версия пакета в Pyodide
+  referenceVersion: string | null; // версия, под которую написан справочник
   matplotlibVersion: string;
 }
 
@@ -115,11 +116,12 @@ function initExample(figure: HTMLElement, data: RunData): void {
     const end = await python.run(
       {
         kind: 'example',
-        packages: examplePackages(data.topicPackage, `${data.setup}\n${source}`),
+        packages: examplePackages(data.topicPackage ?? undefined, `${data.setup}\n${source}`),
         setup: data.setup,
         code: source,
         filename: data.filename,
         cell,
+        ...(data.prelude ? { prelude: data.prelude } : {}),
       },
       {
         onStatus: (text) => (status.textContent = text || 'Выполняется…'),
@@ -158,7 +160,9 @@ function initExample(figure: HTMLElement, data: RunData): void {
       const note =
         figure.dataset.browserReason === 'график'
           ? `В браузере matplotlib ${data.matplotlibVersion} — график может немного отличаться от показанного.`
-          : `В браузере ${data.library} ${data.browserVersion} (32-битная сборка), справочник написан для ${data.referenceVersion} — вывод может отличаться от показанного.`;
+          : data.browserVersion
+            ? `В браузере ${data.library} ${data.browserVersion} (32-битная сборка), справочник написан для ${data.referenceVersion} — вывод может отличаться от показанного.`
+            : 'В браузере 32-битный Python — вывод может отличаться от показанного.';
       children.push(el('p', 'live-note', note));
     }
     if (browser === 'timing') children.push(el('p', 'live-note', 'Замер в браузере: цифры будут другими, чем в сохранённом выводе.'));

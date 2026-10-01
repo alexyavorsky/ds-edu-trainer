@@ -5,7 +5,7 @@ import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import ReferenceSearch from '../../../components/reference/ReferenceSearch.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { articleUrl, LEVEL_LABEL, LEVEL_TONE } from '../../../lib/reference';
-import { getToc, getTopics, type Topic } from '../../../lib/reference-content';
+import { getToc, getTopics, topicVersionLabel, type Topic } from '../../../lib/reference-content';
 
 export async function getStaticPaths() {
   return (await getTopics()).map((topic) => ({ params: { topic: topic.id }, props: { topic } }));
@@ -22,7 +22,12 @@ const toc = await getToc(topic);
     {topic.data.beta && <BetaBadge note />}
     <p class="muted">{topic.data.summary}</p>
     <p class="version">
-      Написано для {topic.data.title} {topic.data.version} · <a href={topic.data.docs} target="_blank" rel="noopener noreferrer">документация</a>
+      Написано для {topicVersionLabel(topic)}
+      {topic.data.docs && (
+        <>
+          · <a href={topic.data.docs} target="_blank" rel="noopener noreferrer">документация</a>
+        </>
+      )}
     </p>
     <div class="search"><ReferenceSearch placeholder={`Поиск: ${topic.data.title} и не только…`} /></div>
     <p class="legend">

@@ -169,10 +169,10 @@ export class Engine {
         return;
       }
       if (request.kind === 'task') {
-        this.driver!.run_task(JSON.stringify({ code: request.code, footer: request.footer }));
+        this.driver!.run_task(JSON.stringify({ code: request.code, footer: request.footer, data: request.data ?? null }));
         return;
       }
-      const payload = JSON.stringify({ setup: request.setup, code: request.code, filename: request.filename, cell: request.cell });
+      const payload = JSON.stringify({ setup: request.setup, code: request.code, filename: request.filename, cell: request.cell, prelude: request.prelude ?? null });
       // Пример мог использовать пакет, который не распознали заранее: ставим его и повторяем один раз.
       let missing: string | null = null;
       this.intercept = (message) => {

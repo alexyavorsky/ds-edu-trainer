@@ -31,6 +31,7 @@ export interface TaskRun extends RunBase {
   kind: 'task';
   code: string;
   footer: string; // то, что в копируемом файле идёт после кода решения: tests.py, _TESTS, раннер
+  data?: string; // data.py задачи: выполняется перед кодом решения в том же пространстве имён
 }
 
 export interface ExampleRun extends RunBase {
@@ -39,6 +40,7 @@ export interface ExampleRun extends RunBase {
   code: string;
   filename: string; // «reference/numpy/broadcasting.py»
   cell: string;
+  prelude?: { source: string; filename: string }; // свой prelude темы (reference/<тема>/prelude.py); нет — общий
 }
 
 /** Файл данных урока: пишется в data/ рабочей папки сеанса. */

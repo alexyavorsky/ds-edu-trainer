@@ -1,0 +1,87 @@
+---
+/** Список задач со ссылками, сложностью и отметкой «решено» (localStorage): «Задачи по теме» в статье справочника. */
+import Badge from './Badge.astro';
+import { challengeUrl, type Challenge } from '../lib/content';
+import { DIFFICULTY_LABEL } from '../lib/labels';
+
+interface Props {
+  title: string;
+  challenges: Challenge[];
+  bookTitles: Map<string, string>; // папка раздела → название («Грокаем алгоритмы»)
+}
+const { title, challenges, bookTitles } = Astro.props;
+---
+
+{
+  challenges.length > 0 && (
+    <section class="task-links">
+      <h2 class="section-title">{title}</h2>
+      <ul>
+        {challenges.map((c) => (
+          <li>
+            <a href={challengeUrl(c)} data-solved-marker={c.data.taskId}>
+              <span class="mark" aria-hidden="true" />
+              <span class="name">{c.data.title}</span>
+              <span class="book">{bookTitles.get(c.data.book)}</span>
+              <Badge tone={c.data.difficulty}>{DIFFICULTY_LABEL[c.data.difficulty]}</Badge>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+  }
+  a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    font-size: 14px;
+    min-width: 0;
+  }
+  a:hover {
+    border-color: var(--border-strong);
+  }
+  .mark {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-strong);
+  }
+  a:global(.is-solved) .mark {
+    border-color: var(--easy);
+    background: var(--easy);
+  }
+  .name {
+    flex: 1;
+    min-width: 0;
+    color: var(--text);
+  }
+  .book {
+    font-size: 12.5px;
+    color: var(--faint);
+    white-space: nowrap;
+  }
+  @media (max-width: 560px) {
+    .book {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import '../scripts/progress';
+</script>

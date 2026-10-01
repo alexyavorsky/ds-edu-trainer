@@ -35,7 +35,12 @@ export function readingOrder(toc: TocSection[]): Article[] {
   return toc.flatMap((s) => s.entries.flatMap((e) => (e.article ? [e.article] : [])));
 }
 
-/** Подпись версии темы: «2.5.3» у темы с пакетом. */
+/** Подпись версии темы: «2.5.3» у темы с пакетом, «Python 3.10+» у темы на стандартной библиотеке. */
 export function topicVersion(topic: Topic): string {
-  return topic.data.version;
+  return topic.data.package ? (topic.data.version ?? '') : `Python ${topic.data.python}+`;
+}
+
+/** «NumPy 2.5.3» или «Python 3.10+» — для шапки статьи и страницы темы. */
+export function topicVersionLabel(topic: Topic): string {
+  return topic.data.package ? `${topic.data.title} ${topic.data.version}` : `Python ${topic.data.python}+`;
 }

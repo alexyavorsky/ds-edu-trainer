@@ -1,7 +1,7 @@
 ---
 /** Оглавление темы: разделы и статьи с уровнями. На узком экране — выдвижная панель (см. страницу статьи). */
 import { articleUrl, LEVEL_LABEL } from '../../lib/reference';
-import type { Topic, TocSection } from '../../lib/reference-content';
+import { topicVersion, type Topic, type TocSection } from '../../lib/reference-content';
 
 interface Props {
   topic: Topic;
@@ -13,7 +13,7 @@ const { topic, toc, currentId } = Astro.props;
 
 <nav class="side-nav" aria-label={`Оглавление: ${topic.data.title}`}>
   <a class="side-topic" href={`/reference/${topic.id}`}>
-    {topic.data.title} <span>{topic.data.version}</span>
+    {topic.data.title} <span>{topicVersion(topic)}</span>
   </a>
   {
     toc.map((section, i) => (

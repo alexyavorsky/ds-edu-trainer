@@ -1,0 +1,11 @@
+# Образец темы справочника без пакета (как ООП и алгоритмы): python вместо package/version, свой prelude.
+title = "Образец: тема без пакета"
+summary = "Тестовая тема для проверки платформы: классы на стандартной библиотеке."
+python = "3.10"
+order = 1
+direction = "python"
+beta = true
+
+[[sections]]
+title = "Основы"
+articles = ["classes"]

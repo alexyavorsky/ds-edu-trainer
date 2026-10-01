@@ -27,7 +27,7 @@ import time
 HOME = os.getcwd()
 _post = None
 _config: dict = {}
-_examples = None  # ExampleRunner — создаётся при первом примере
+_examples: dict = {}  # файл prelude → ExampleRunner; создаётся при первом примере темы
 
 
 class InputNotSupported(RuntimeError):
@@ -129,7 +129,8 @@ def _is_memory_error(error_type: str | None, message: str) -> bool:
 
 
 def run_task(payload_json: str) -> None:
-    """payload: code — код из редактора, footer — всё, что в копируемом файле после него (тесты и раннер)."""
+    """payload: code — код из редактора, footer — всё, что в копируемом файле после него (тесты и раннер),
+    data — data.py задачи или None: в копируемом файле он стоит перед кодом, здесь выполняется перед ним."""
     payload = json.loads(payload_json)
     workdir = tempfile.mkdtemp(prefix="run-")
     path = os.path.join(workdir, "main.py")
@@ -156,6 +157,8 @@ def _run_task(payload: dict, path: str, sink: _Sink) -> dict:
         return {"phase": "syntax", "error": {"type": type(e).__name__, "message": e.msg, "line": e.lineno}}
     namespace: dict = {"__name__": "__main__", "__file__": path, "__builtins__": builtins}
     try:
+        if payload.get("data"):
+            exec(compile(payload["data"], "data.py", "exec"), namespace)
         exec(code, namespace)
     except BaseException as e:  # noqa: BLE001 — ошибка в коде решения вне функций
         message = f"{type(e).__name__}: {e}"
@@ -193,15 +196,18 @@ def _run_task(payload: dict, path: str, sink: _Sink) -> dict:
 
 
 def run_example(payload_json: str) -> None:
-    """payload: setup, code, filename («reference/numpy/broadcasting.py»), cell — id примера."""
-    global _examples
-    payload = json.loads(payload_json)
-    if _examples is None:
-        from reference_exec import ExampleRunner
+    """payload: setup, code, filename («reference/numpy/broadcasting.py»), cell — id примера;
+    prelude — свой prelude темы {source, filename} или None (общий reference/prelude.py)."""
+    from reference_exec import ExampleRunner
 
-        _examples = ExampleRunner(_config["prelude"], "reference/prelude.py", _config["maxChars"], _config["maxLines"])
+    payload = json.loads(payload_json)
+    own = payload.get("prelude")
+    source, prelude_file = (own["source"], own["filename"]) if own else (_config["prelude"], "reference/prelude.py")
+    runner = _examples.get(prelude_file)
+    if runner is None:
+        runner = _examples[prelude_file] = ExampleRunner(source, prelude_file, _config["maxChars"], _config["maxLines"])
     started = time.perf_counter()
-    result = _examples.run(payload["setup"], payload["code"], payload["filename"], payload["cell"])
+    result = runner.run(payload["setup"], payload["code"], payload["filename"], payload["cell"])
     elapsed = time.perf_counter() - started
     error = result.error
     missing = getattr(error, "name", None) if isinstance(error, ModuleNotFoundError) else None

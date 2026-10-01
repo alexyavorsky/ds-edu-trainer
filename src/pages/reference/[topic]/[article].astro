@@ -9,8 +9,10 @@ import ReferenceSearch from '../../../components/reference/ReferenceSearch.astro
 import ReferenceSidebar from '../../../components/reference/ReferenceSidebar.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { pyodideVersions } from '../../../lib/browser-runs';
-import { articleUrl, getExamples, LEVEL_LABEL, LEVEL_TONE } from '../../../lib/reference';
-import { getToc, getTopics, readingOrder, type Article, type Topic } from '../../../lib/reference-content';
+import TaskLinks from '../../../components/TaskLinks.astro';
+import { getBooks, sortChallenges } from '../../../lib/content';
+import { articleUrl, getExamples, LEVEL_LABEL, LEVEL_TONE, topicPrelude } from '../../../lib/reference';
+import { getToc, getTopics, readingOrder, topicVersionLabel, type Article, type Topic } from '../../../lib/reference-content';
 
 export async function getStaticPaths() {
   const topics = await getTopics();
@@ -37,16 +39,24 @@ const related = refs(article.data.related);
 const prefix = (id: string) => (id.startsWith(`${topic.id}/`) ? '' : `${id.split('/')[0] === 'numpy' ? 'NumPy' : 'pandas'}: `);
 const onPage = headings.filter((h) => h.depth === 2);
 
+// «Задачи по теме»: задачи из practice статьи и задачи, которые ссылаются на неё через refs
+const practiceIds = new Set(article.data.practice);
+const practice = sortChallenges(
+  await getCollection('challenges', (c) => practiceIds.has(c.data.taskId) || (c.data.refs ?? []).includes(article.id)),
+).sort((a, b) => Number(!practiceIds.has(a.data.taskId)) - Number(!practiceIds.has(b.data.taskId)));
+const bookTitles = new Map((await getBooks()).map((b) => [b.id, b.data.title]));
+
 // Запуск примеров в браузере: общие данные статьи и версия библиотеки в Pyodide (для пометки «вывод может отличаться»)
 const runData = getExamples(article.id).size
   ? JSON.stringify({
       article: article.id,
-      topicPackage: topic.data.package,
+      topicPackage: topic.data.package ?? null,
+      prelude: topicPrelude(topic.id),
       setup: getExamples(article.id).get('setup')?.code ?? '',
       filename: `reference/${article.id}.py`,
-      library: topic.data.title,
-      browserVersion: pyodideVersions()[topic.data.package],
-      referenceVersion: topic.data.version,
+      library: topic.data.package ? topic.data.title : 'Python',
+      browserVersion: topic.data.package ? pyodideVersions()[topic.data.package] : null,
+      referenceVersion: topic.data.version ?? null,
       matplotlibVersion: pyodideVersions().matplotlib,
     }).replace(/</g, '\\u003c')
   : null;
@@ -83,7 +93,7 @@ const runData = getExamples(article.id).size
       <header class="head">
         <div class="meta">
           <Badge tone={LEVEL_TONE[article.data.level]}>{LEVEL_LABEL[article.data.level]}</Badge>
-          <span class="version">{topic.data.title} {topic.data.version}</span>
+          <span class="version">{topicVersionLabel(topic)}</span>
         </div>
         <h1>{article.data.title}</h1>
         <p class="summary">{article.data.summary}</p>
@@ -130,10 +140,17 @@ const runData = getExamples(article.id).size
             </section>
           )
         }
-        <section class="docs">
-          <h2 class="section-title">Документация</h2>
-          <a href={article.data.docs} target="_blank" rel="noopener noreferrer">{article.data.docs.replace(/^https:\/\//, '')}</a>
-        </section>
+        <TaskLinks title="Задачи по теме" challenges={practice} bookTitles={bookTitles} />
+        {
+          article.data.docs && (
+            <section class="docs">
+              <h2 class="section-title">Документация</h2>
+              <a href={article.data.docs} target="_blank" rel="noopener noreferrer">
+                {article.data.docs.replace(/^https:\/\//, '')}
+              </a>
+            </section>
+          )
+        }
         <BugReportLink articleId={article.id} />
       </footer>
 

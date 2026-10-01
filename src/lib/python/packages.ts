@@ -12,9 +12,12 @@ const RULES: [string, RegExp][] = [
   ['openpyxl', /excel|xlsx/i],
 ];
 
-/** Пакеты для примера: пакет темы (numpy или pandas; pandas тянет numpy) и распознанные по коду. */
-export function examplePackages(topicPackage: string, code: string): string[] {
-  const packages = new Set(['numpy', topicPackage]);
+/**
+ * Пакеты для примера: пакет темы (numpy или pandas; pandas тянет numpy) и распознанные по коду.
+ * У темы без пакета (ООП, алгоритмы) — только распознанные: пример на стандартной библиотеке ничего не грузит.
+ */
+export function examplePackages(topicPackage: string | undefined, code: string): string[] {
+  const packages = new Set<string>(topicPackage ? ['numpy', topicPackage] : []);
   for (const [name, re] of RULES) if (re.test(code)) packages.add(name);
   return [...packages];
 }

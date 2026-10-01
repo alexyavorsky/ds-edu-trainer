@@ -19,7 +19,7 @@
  */
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { availableParallelism } from 'node:os';
-import { join, relative } from 'node:path';
+import { join, relative, resolve } from 'node:path';
 import { parse as parseToml } from 'smol-toml';
 import { bundleFooter } from '../src/lib/bundle.ts';
 import { parseExamples, type ExampleCell } from '../src/lib/examples.ts';
@@ -29,10 +29,12 @@ import type { ExampleDone, TaskDone, TestResult } from '../src/lib/python/protoc
 import { NodePython, pool, type RunEnd } from './node-python.ts';
 
 const root = join(import.meta.dirname, '..');
+// EDU_CONTENT_ROOT — другая папка с той же структурой (образцы платформы tests/platform), как в src/lib/paths.ts
+const content = process.env.EDU_CONTENT_ROOT ? resolve(root, process.env.EDU_CONTENT_ROOT) : root;
 const read = (path: string) => readFileSync(path, 'utf-8');
 const dirs = (path: string) =>
   existsSync(path) ? readdirSync(path).filter((n) => !/^[._]/.test(n) && statSync(join(path, n)).isDirectory()).sort() : [];
-const STATUS_PATH = join(root, 'reference', 'browser.json');
+const STATUS_PATH = join(content, 'reference', 'browser.json');
 const factor = PYTHON_CONFIG.timeoutFactor;
 
 // ─── Задачи ─────────────────────────────────────────────────────────────────
@@ -43,12 +45,13 @@ interface Task {
   type: string;
   packages: string[];
   footer: string;
+  data?: string; // data.py задачи
 }
 
 function loadTasks(): Task[] {
   const runner = read(join(root, 'runtime', 'runner.py'));
   const tasks: Task[] = [];
-  const base = join(root, 'challenges');
+  const base = join(content, 'challenges');
   for (const book of dirs(base)) {
     const bookMeta = parseToml(read(join(base, book, 'book.toml'))) as { packages?: string[] };
     for (const chapter of dirs(join(base, book))) {
@@ -56,7 +59,7 @@ function loadTasks(): Task[] {
         const dir = join(base, book, chapter, slug);
         const meta = parseToml(read(join(dir, 'meta.toml'))) as { id: string; type: string };
         if (meta.type === 'complexity') continue;
-        tasks.push({ id: meta.id, dir, type: meta.type, packages: bookMeta.packages ?? [], footer: bundleFooter(read(join(dir, 'tests.py')), runner) });
+        tasks.push({ id: meta.id, dir, type: meta.type, packages: bookMeta.packages ?? [], footer: bundleFooter(read(join(dir, 'tests.py')), runner), data: existsSync(join(dir, 'data.py')) ? read(join(dir, 'data.py')) : undefined });
       }
     }
   }
@@ -98,7 +101,7 @@ function taskJob(task: Task): () => (py: NodePython) => Promise<TaskReport> {
       for (const f of readdirSync(altDir).filter((n) => n.endsWith('.py')).sort()) variants.push([`alt_solutions/${f}`, read(join(altDir, f))]);
     }
     for (const [name, code] of variants) {
-      const end = await py.run({ kind: 'task', packages: task.packages, code, footer: task.footer });
+      const end = await py.run({ kind: 'task', packages: task.packages, code, footer: task.footer, data: task.data });
       if (!passedAll(end)) {
         report.errors.push(`${name} не проходит в Pyodide: ${describe(end)}`);
         continue;
@@ -111,7 +114,7 @@ function taskJob(task: Task): () => (py: NodePython) => Promise<TaskReport> {
       });
       if (name === 'solution') report.total = end.elapsed.reduce((a, b) => a + (b ?? 0), 0);
     }
-    const starter = await py.run({ kind: 'task', packages: task.packages, code: read(join(task.dir, 'starter.py')), footer: task.footer });
+    const starter = await py.run({ kind: 'task', packages: task.packages, code: read(join(task.dir, 'starter.py')), footer: task.footer, data: task.data });
     if (passedAll(starter)) report.errors.push('заготовка проходит все тесты в Pyodide');
     else if (starter.type === 'crash' || starter.type === 'load-error' || starter.type === 'package-error') {
       report.errors.push(`заготовка: ${describe(starter)}`);
@@ -138,16 +141,19 @@ interface ExampleReport {
 
 interface Article {
   id: string;
-  topicPackage: string;
+  topicPackage: string | undefined; // нет — тема на стандартной библиотеке
+  prelude: { source: string; filename: string } | undefined; // свой prelude темы (reference/<тема>/prelude.py)
   setup: string;
   cells: ExampleCell[];
 }
 
 function loadArticles(): Article[] {
   const articles: Article[] = [];
-  const base = join(root, 'reference');
+  const base = join(content, 'reference');
   for (const topic of dirs(base)) {
-    const meta = parseToml(read(join(base, topic, 'topic.toml'))) as { package: string; sections: { articles: string[] }[] };
+    const meta = parseToml(read(join(base, topic, 'topic.toml'))) as { package?: string; sections: { articles: string[] }[] };
+    const preludePath = join(base, topic, 'prelude.py');
+    const prelude = existsSync(preludePath) ? { source: read(preludePath), filename: `reference/${topic}/prelude.py` } : undefined;
     for (const slug of meta.sections.flatMap((s) => s.articles)) {
       const path = join(base, topic, `${slug}.py`);
       if (!existsSync(path)) continue;
@@ -155,6 +161,7 @@ function loadArticles(): Article[] {
       articles.push({
         id: `${topic}/${slug}`,
         topicPackage: meta.package,
+        prelude,
         setup: cells.get('setup')?.code ?? '',
         cells: [...cells.values()].filter((c) => c.id !== 'setup' && !('norun' in c.flags)),
       });
@@ -167,7 +174,7 @@ const NUMBER_RE = /\d+(?:[.,]\d+)?/g;
 const numberMask = (line: string) => line.replace(NUMBER_RE, '#').split(/\s+/).filter(Boolean).join(' ');
 
 function plotPaths(articleId: string, cellId: string): string[] {
-  const dir = join(root, 'public', 'reference', 'plots', articleId);
+  const dir = join(content, 'public', 'reference', 'plots', articleId);
   if (!existsSync(dir)) return [];
   const order = (name: string) => Number(name.slice(cellId.length + 1, -4) || 1);
   return readdirSync(dir)
@@ -181,7 +188,7 @@ function exampleJob(article: Article, cell: ExampleCell): () => (py: NodePython)
     const id = `${article.id}#${cell.id}`;
     const report: ExampleReport = { id, status: 'same', errors: [], diff: [], elapsed: 0 };
     const packages = examplePackages(article.topicPackage, `${article.setup}\n${cell.code}`);
-    const end = await py.run({ kind: 'example', packages, setup: article.setup, code: cell.code, filename: `reference/${article.id}.py`, cell: cell.id });
+    const end = await py.run({ kind: 'example', packages, setup: article.setup, code: cell.code, filename: `reference/${article.id}.py`, cell: cell.id, prelude: article.prelude });
     if (end.type === 'timeout') return { ...report, status: 'unavailable', reason: `выполняется дольше ${end.seconds} с` };
     if (end.type !== 'done') return { ...report, status: 'unavailable', reason: `Python остановился: ${end.message}` };
     const d = end.data as ExampleDone;

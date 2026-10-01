@@ -21,7 +21,8 @@
     # ─── вывод ───                  ← дальше вывод, каждая строка с префиксом «# »; пишет --update
 
 Пример выполняется как ячейка Jupyter: печатается stdout, затем repr последнего выражения (если не None).
-Перед каждым примером выполняются reference/prelude.py (импорты и настройки отображения) и setup статьи;
+Перед каждым примером выполняются reference/prelude.py (импорты и настройки отображения) — или свой prelude
+темы reference/<тема>/prelude.py, если он есть (у тем без пакета: ООП, алгоритмы), — и setup статьи;
 пространство имён и временная рабочая папка у каждого примера свои.
 
 Замеры времени. --update записывает вывод примера [timing] вместе с машиной и датой:
@@ -49,10 +50,12 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-REFERENCE = ROOT / "reference"
-PRELUDE = REFERENCE / "prelude.py"
+# EDU_CONTENT_ROOT — другая папка с той же структурой (образцы платформы tests/platform), как в src/lib/paths.ts
+CONTENT = (ROOT / os.environ["EDU_CONTENT_ROOT"]).resolve() if os.environ.get("EDU_CONTENT_ROOT") else ROOT
+REFERENCE = CONTENT / "reference"
+PRELUDE = ROOT / "reference" / "prelude.py"  # общий; у темы может быть свой reference/<тема>/prelude.py
 REQUIREMENTS = ROOT / "requirements-dev.txt"
-PLOTS = ROOT / "public" / "reference" / "plots"
+PLOTS = CONTENT / "public" / "reference" / "plots"
 DIRECTIONS = ("python", "data", "git", "english")  # как DIRECTIONS в src/lib/directions.ts
 
 sys.path.insert(0, str(ROOT / "runtime"))
@@ -65,9 +68,10 @@ CELL_RE = re.compile(r"^# %% ([a-z0-9]+(?:-[a-z0-9]+)*)(?: \[([^\]]*)\])?$")
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 LEVELS = ("basic", "medium", "advanced")
 KINDS = ("article", "overview")  # overview — свободная структура: частые ошибки, шпаргалка
-FRONTMATTER_REQUIRED = {"title", "level", "summary", "docs"}
-FRONTMATTER_OPTIONAL = {"requires", "related", "functions", "kind"}
-LIST_KEYS = {"requires", "related", "functions"}
+FRONTMATTER_REQUIRED = {"title", "level", "summary"}  # docs — обязателен у статей темы с пакетом
+FRONTMATTER_OPTIONAL = {"requires", "related", "functions", "kind", "docs", "practice"}
+LIST_KEYS = {"requires", "related", "functions", "practice"}
+ADDRESS_RE = re.compile(r"\bat 0x[0-9a-fA-F]{6,}")  # repr объекта без __repr__: адрес меняется от запуска к запуску
 # Разделы статьи в порядке следования: обязательные и необязательные.
 SECTIONS_REQUIRED = ("Коротко", "Примеры", "Подводные камни")
 SECTIONS_ORDER = ("Коротко", "Синтаксис", "Параметры", "Примеры", "Подводные камни")
@@ -170,8 +174,39 @@ def serialize_examples(ex: ExamplesFile) -> str:
 # Сам запуск примера — в runtime/reference_exec.py: тот же код выполняет примеры на сайте (Pyodide).
 
 
-def make_runner() -> ExampleRunner:
-    return ExampleRunner(PRELUDE.read_text(encoding="utf-8"), str(PRELUDE))
+TOPICS: dict[str, dict] = {}  # topic.toml по имени темы — заполняет main()
+
+
+def own_prelude(topic: str) -> Path | None:
+    """Свой prelude темы (reference/<тема>/prelude.py) — выполняется вместо общего reference/prelude.py."""
+    path = REFERENCE / topic / "prelude.py"
+    return path if path.exists() else None
+
+
+_runners: dict[Path, ExampleRunner] = {}
+
+
+def make_runner(topic: str) -> ExampleRunner:
+    path = own_prelude(topic) or PRELUDE
+    if path not in _runners:
+        _runners[path] = ExampleRunner(path.read_text(encoding="utf-8"), str(path.relative_to(ROOT)))
+    return _runners[path]
+
+
+_task_ids: set[str] | None = None
+
+
+def task_ids() -> set[str]:
+    """id всех задач (challenges/*/*/*/meta.toml) — для поля practice."""
+    global _task_ids
+    if _task_ids is None:
+        _task_ids = set()
+        for meta_path in (CONTENT / "challenges").glob("*/*/*/meta.toml"):
+            with contextlib.suppress(tomllib.TOMLDecodeError):
+                task_id = tomllib.loads(meta_path.read_text(encoding="utf-8")).get("id")
+                if isinstance(task_id, str):
+                    _task_ids.add(task_id)
+    return _task_ids
 
 
 def machine_label() -> str:
@@ -258,9 +293,15 @@ def load_topics() -> tuple[dict[str, dict], list[Article], list[str], list[str]]
             continue
         meta = tomllib.loads(topic_path.read_text(encoding="utf-8"))
         topics[topic_dir.name] = meta
-        for key in ("title", "summary", "package", "version", "docs", "direction", "sections"):
+        # тема с пакетом (NumPy, pandas): package, version, docs; без пакета (ООП, алгоритмы): python — минимальная версия
+        required = ("package", "version", "docs") if "package" in meta else ("python",)
+        for key in ("title", "summary", "direction", "sections", *required):
             if key not in meta:
                 errors.append(f"{topic_dir.name}/topic.toml: нет поля {key}")
+        if "package" not in meta and "version" in meta:
+            errors.append(f"{topic_dir.name}/topic.toml: version бывает только вместе с package")
+        if "python" in meta and not re.fullmatch(r"3\.\d+", str(meta["python"])):
+            errors.append(f"{topic_dir.name}/topic.toml: python — минимальная версия строкой, например \"3.10\"")
         if "direction" in meta and meta["direction"] not in DIRECTIONS:
             errors.append(f"{topic_dir.name}/topic.toml: direction — одно из {', '.join(DIRECTIONS)}")
         if not isinstance(meta.get("beta", False), bool):
@@ -284,7 +325,7 @@ def load_topics() -> tuple[dict[str, dict], list[Article], list[str], list[str]]
             if mdx.stem not in listed:
                 errors.append(f"{topic_dir.name}: файл {mdx.name} не указан в оглавлении topic.toml")
         for py in sorted(topic_dir.glob("*.py")):
-            if not py.with_suffix(".mdx").exists():
+            if py.name != "prelude.py" and not py.with_suffix(".mdx").exists():
                 errors.append(f"{topic_dir.name}: файл примеров {py.name} без статьи {py.stem}.mdx")
     return topics, articles, errors, planned
 
@@ -312,8 +353,13 @@ def check_article(article: Article, known: set[str], r: Report):
     kind = meta.get("kind", "article")
     if kind not in KINDS:
         r.errors.append(f"{where}: kind — одно из {', '.join(KINDS)}")
-    if not str(meta.get("docs", "")).startswith("https://"):
-        r.errors.append(f"{where}: docs — ссылка https:// на официальную документацию")
+    topic_meta = TOPICS.get(article.topic, {})
+    if "docs" in meta or "package" in topic_meta:
+        if not str(meta.get("docs", "")).startswith("https://"):
+            r.errors.append(f"{where}: docs — ссылка https:// на официальную документацию")
+    for task_id in meta.get("practice", []) if isinstance(meta.get("practice"), list) else []:
+        if task_id not in task_ids():
+            r.errors.append(f"{where}: practice — задачи {task_id} нет в challenges/")
     for key in ("requires", "related"):
         for ref in meta.get(key, []) if isinstance(meta.get(key), list) else []:
             if ref not in known:
@@ -386,7 +432,7 @@ def check_examples(article: Article, r: Report):
             r.errors.append(f"{where}:{cell.id}: пустой пример")
         if cell.id == "setup" and cell.flags:
             r.errors.append(f"{where}: у setup не бывает флагов")
-        if re.search(r"^\s*(import numpy|import pandas)", cell.code, re.M):
+        if not own_prelude(article.topic) and re.search(r"^\s*(import numpy|import pandas)", cell.code, re.M):
             r.errors.append(f"{where}:{cell.id}: numpy и pandas уже импортированы (np, pd) — уберите import")
 
 
@@ -447,6 +493,8 @@ def run_examples(article: Article, runner: ExampleRunner, update: bool, retime: 
         elif "warns" in cell.flags and not categories:
             r.errors.append(f"{where}: помечен [warns], но предупреждений нет")
 
+        if any(ADDRESS_RE.search(line) for line in lines):
+            r.errors.append(f"{where}: в выводе адрес объекта (at 0x…) — он меняется от запуска к запуску; добавьте классу __repr__")
         stored = cell.output or []
         if "timing" in cell.flags:
             # время зависит от машины: сравнивается только текст вокруг чисел
@@ -559,9 +607,9 @@ def main(argv: list[str]) -> int:
     selected = [a for a in argv if not a.startswith("--")]
 
     topics, articles, errors, planned = load_topics()
+    TOPICS.update(topics)
     known = {a.id for a in articles} | set(planned)  # ссылаться на запланированную статью можно
     runnable = check_versions(topics, errors)
-    runner = make_runner() if runnable else None
 
     reports: dict[str, Report] = {}
     for article in articles:
@@ -569,8 +617,8 @@ def main(argv: list[str]) -> int:
             continue
         r = reports.setdefault(article.id, Report())
         check_article(article, known, r)
-        if runner is not None:
-            run_examples(article, runner, update, retime, r)
+        if runnable:
+            run_examples(article, make_runner(article.topic), update, retime, r)
 
     if PLOTS.exists() and not selected:
         written = {a.id for a in articles}
