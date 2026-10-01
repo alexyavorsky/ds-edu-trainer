@@ -11,6 +11,17 @@
       "html": null,
       "error": null
     },
+    "to-many": {
+      "lines": [
+        "[[-1 -1]",
+        " [ 1  0]",
+        " [ 4  4]]",
+        "[1.41421356 1.         5.65685425]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
     "pairwise": {
       "lines": [
         "(3, 3, 2)",
