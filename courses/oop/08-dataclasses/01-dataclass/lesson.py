@@ -209,7 +209,7 @@ def test_dataclass():
     assert fields(Customer)[3].default_factory is not MISSING, "поле visits объявите через field(default_factory=list) — так у каждого покупателя будет свой список"
     # методы, которые написал декоратор, скомпилированы из «<string>» (__repr__ обёрнут — берём __wrapped__)
     own = [m for m in ["__init__", "__repr__", "__eq__"] if not getattr(getattr(Customer, m), "__wrapped__", getattr(Customer, m)).__code__.co_filename.startswith("<")]
-    assert not own, f"в классе остались свои {', '.join(own)} — удалите их: эти методы напишет декоратор"
+    assert not own, f"в классе остались написанные вручную методы: {', '.join(own)} — удалите их, их напишет декоратор"
 
 
 def test_defaults():

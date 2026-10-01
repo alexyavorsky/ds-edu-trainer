@@ -73,6 +73,8 @@ def test_for():
         if "list" in str(e):
             assert False, "__iter__ вернул список — список итерируемый, но не итератор: верните iter(self._items) или выдавайте товары через yield"
         assert False, f"меню не перебирается циклом: {e}. __iter__ должен выдавать товары через yield"
+    except AttributeError:
+        assert False, "цикл по меню выдал не товары, а весь список сразу — выдавайте товары по одному: yield p внутри цикла"
     assert names == ["Латте", "Чай", "Раф"], f"цикл по меню дал {names}"
 
 
@@ -83,7 +85,7 @@ def test_twice():
         first, second = list(menu), list(menu)
     except TypeError:
         assert False, "меню не перебирается циклом — сначала исправьте __iter__ (проверка выше)"
-    assert len(first) == 3, f"проход по меню дал {len(first)} элементов, а товаров 3 — выдавайте каждый товар через yield p, а не весь список"
+    assert len(first) == 3, f"проход по меню выдал {len(first)} шт., а товаров 3 — выдавайте каждый товар через yield p, а не весь список"
     assert len(second) == 3, "второй проход по меню пуст — __iter__ должен каждый раз начинать заново"
     assert first == second
 # ─── другое решение ───
