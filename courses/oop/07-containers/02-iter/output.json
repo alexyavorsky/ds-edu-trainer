@@ -1,0 +1,47 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "yield": {
+      "lines": [
+        "3",
+        "2",
+        "1",
+        "[5, 4, 3, 2, 1]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "iter": {
+      "lines": [
+        "Анна 08:00",
+        "Анна 09:00",
+        "Анна 10:00",
+        "['08:00', '09:00', '10:00'] 3"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "iter-next": {
+      "lines": [
+        "латте",
+        "чай",
+        "StopIteration — элементы кончились"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "one-pass": {
+      "lines": [
+        "['латте', 'чай']",
+        "[]",
+        "['латте', 'чай'] ['латте', 'чай']"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

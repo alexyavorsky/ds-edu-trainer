@@ -1,0 +1,7 @@
+title = "Контейнеры и операторы"
+summary = "Как сделать свой класс «как встроенный»: len, in, индексы, цикл for и арифметические операторы."
+outcomes = [
+  "научить свой объект работать с <code>len</code>, <code>in</code>, <code>bool</code> и квадратными скобками: <code>__len__</code>, <code>__contains__</code>, <code>__bool__</code>, <code>__getitem__</code>",
+  "пройти свой объект циклом <code>for</code>: <code>__iter__</code> и <code>yield</code>, отличить итерируемый объект от итератора",
+  "задать операторы <code>+</code> и <code>*</code> для своего класса: <code>__add__</code>, <code>__mul__</code>, <code>__radd__</code>",
+]
