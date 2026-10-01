@@ -1,0 +1,28 @@
+---
+/**
+ * Примеры с переводом: список Markdown внутри `<Examples>`, строка — «английский — русский».
+ * Изучаемая форма в английской части — **жирным**. Формат проверяет scripts/validate_english.ts.
+ */
+import '../../styles/english.css';
+
+const html = await Astro.slots.render('default');
+const items = [...html.matchAll(/<li>([\s\S]*?)<\/li>/g)].map((m) => {
+  const [en, ...ru] = m[1].trim().split(' — ');
+  return { en: en.trim(), ru: ru.join(' — ').trim() };
+});
+---
+
+{
+  items.length ? (
+    <ul class="en-examples">
+      {items.map((i) => (
+        <li>
+          <span class="en-example" lang="en" set:html={i.en} />
+          {i.ru && <span class="en-translation" set:html={i.ru} />}
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <Fragment set:html={html} />
+  )
+}

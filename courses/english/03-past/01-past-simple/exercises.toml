@@ -1,0 +1,191 @@
+# Образец формата 0.3 (docs/ENGLISH_PLAN.md): все шесть видов упражнений. Порядок — как <Practice> в lesson.mdx.
+
+[[exercise]]
+id = "choose-form"
+kind = "choice"
+title = "Какая форма?"
+task = "Выберите верный вариант."
+ref = ["english/past-simple"]
+
+  [[exercise.item]]
+  text = "We ___ to Kazan in 2019."
+  options = ["moved", "move", "have moved"]
+  answer = "moved"
+  explain = "Назван год в прошлом — нужен Past Simple: *moved*."
+  why = { "move" = "*In 2019* — прошлое, а *move* — настоящее время.", "have moved" = "Год назван, поэтому Present Perfect здесь не употребляется." }
+
+  [[exercise.item]]
+  text = "___ you see the match last night?"
+  options = ["Did", "Do", "Were"]
+  answer = "Did"
+  explain = "Вопрос в Past Simple: *Did* + подлежащее + начальная форма."
+  why = { "Do" = "*Last night* — прошлое: вопрос строится с *did*.", "Were" = "*Were* — прошедшее время глагола to be; со смысловым глаголом *see* нужен *did*." }
+
+  [[exercise.item]]
+  text = "She didn't ___ the answer."
+  options = ["know", "knew", "knows"]
+  answer = "know"
+  explain = "Отрицание: *didn't* + начальная форма."
+  why = { "knew" = "Прошедшее время уже показал *didn't* — второй раз его не показывают.", "knows" = "После *didn't* окончание -s не ставится." }
+
+  [[exercise.item]]
+  text = "I ___ him two days ago."
+  options = ["saw", "have seen", "see"]
+  answer = "saw"
+  explain = "*Ago* называет законченный момент в прошлом — нужен Past Simple."
+  why = { "have seen" = "С *ago* Present Perfect не употребляется: момент в прошлом назван.", "see" = "*Two days ago* — прошлое, а *see* — настоящее время." }
+
+  [[exercise.item]]
+  text = "They ___ at home yesterday evening."
+  options = ["were", "was", "did"]
+  answer = "were"
+  explain = "Глагол to be в прошедшем: *they were*."
+  why = { "was" = "*Was* — с I, he, she, it; с *they* — *were*.", "did" = "Здесь нет смыслового глагола — нужен сам глагол to be: *were*." }
+
+[[exercise]]
+id = "regular-ed"
+kind = "gap"
+title = "Окончание -ed"
+task = "Поставьте глагол в скобках в Past Simple."
+ref = ["english/past-simple"]
+
+  [[exercise.item]]
+  text = "I ___ (watch) a good film last night."
+  answer = ["watched"]
+  explain = "Правильный глагол: *watch* + -ed."
+
+  [[exercise.item]]
+  text = "She ___ (study) French at university."
+  answer = ["studied"]
+  explain = "Согласная + y → -ied: *study → studied*."
+  wrong = [{ answer = "studyed", why = "После согласной y перед -ed меняется на i." }]
+
+  [[exercise.item]]
+  text = "We ___ (stop) at a small café on the way."
+  answer = ["stopped"]
+  explain = "Одна гласная и одна согласная на конце ударного слога — согласная удваивается: *stop → stopped*."
+  wrong = [{ answer = "stoped", why = "В коротком ударном слоге последняя согласная перед -ed удваивается." }]
+
+  [[exercise.item]]
+  text = "___ you ___ (enjoy) the trip?"
+  gaps = [["Did"], ["enjoy"]]
+  explain = "В вопросе прошедшее время показывает *did*, а смысловой глагол остаётся в начальной форме."
+  wrong = [{ answer = ["Did", "enjoyed"], why = "Прошедшее время уже есть в *did* — второй раз его не показывают." }]
+
+  [[exercise.item]]
+  text = "He ___ (not / answer) my message."
+  answer = ["did not answer"]
+  explain = "Отрицание: *did not* (*didn't*) + начальная форма."
+  wrong = [{ answer = "did not answered", why = "После *did not* — начальная форма, без -ed." }]
+
+  [[exercise.item]]
+  text = "They ___ (travel) around Spain last summer."
+  answer = ["travelled", "traveled"]
+  explain = "В британском варианте l удваивается: *travelled*; в американском — *traveled*."
+
+[[exercise]]
+id = "make-sentences"
+kind = "order"
+title = "Порядок слов"
+task = "Составьте предложение из слов."
+ref = ["english/past-simple"]
+
+  [[exercise.item]]
+  words = ["go", "where", "you", "did", "last summer"]
+  answer = ["Where did you go last summer?", "Last summer, where did you go?"]
+  explain = "Вопросительное слово → *did* → подлежащее → глагол в начальной форме."
+
+  [[exercise.item]]
+  words = ["didn't", "the", "we", "bus", "catch"]
+  answer = ["We didn't catch the bus."]
+  explain = "Отрицание: подлежащее → *didn't* → глагол в начальной форме → остальное."
+
+  [[exercise.item]]
+  words = ["she", "when", "arrive", "did"]
+  answer = ["When did she arrive?"]
+  explain = "*When* → *did* → подлежащее → *arrive*."
+
+  [[exercise.item]]
+  words = ["yesterday", "phoned", "my", "me", "sister"]
+  answer = ["My sister phoned me yesterday.", "Yesterday my sister phoned me."]
+  explain = "Порядок утверждения: подлежащее → глагол → дополнение; *yesterday* — в конце или в начале."
+
+[[exercise]]
+id = "negatives"
+kind = "transform"
+title = "Отрицания"
+task = "Сделайте предложения отрицательными."
+ref = ["english/past-simple"]
+
+  [[exercise.item]]
+  source = "They bought a new car."
+  answer = ["They did not buy a new car."]
+  explain = "*Bought* → *did not buy*: прошедшее время переходит к *did*, глагол — в начальную форму."
+  wrong = [{ answer = "They did not bought a new car.", why = "После *did not* — начальная форма, а не вторая." }]
+
+  [[exercise.item]]
+  source = "She left early."
+  answer = ["She did not leave early."]
+  explain = "*Left* → *did not leave*."
+
+  [[exercise.item]]
+  source = "We saw the castle."
+  start = "We"
+  answer = ["We did not see the castle."]
+  explain = "*Saw* → *did not see*."
+
+  [[exercise.item]]
+  source = "He wrote to his parents."
+  answer = ["He did not write to his parents."]
+  explain = "*Wrote* → *did not write*."
+
+[[exercise]]
+id = "spot-it"
+kind = "find-error"
+title = "Найдите ошибку"
+task = "В каждом предложении одна ошибка. Нажмите на неверное слово и исправьте его."
+ref = ["english/past-simple"]
+
+  [[exercise.item]]
+  text = "Did she went to the party?"
+  error = "went"
+  fix = ["go"]
+  explain = "После *did* глагол стоит в начальной форме: *Did she go…?*"
+
+  [[exercise.item]]
+  text = "I didn't saw him at the station."
+  error = "saw"
+  fix = ["see"]
+  explain = "После *didn't* — начальная форма: *I didn't see*."
+
+  [[exercise.item]]
+  text = "We have visited Rome in 2018."
+  error = "have visited"
+  fix = ["visited"]
+  explain = "Год назван — нужен Past Simple: *We visited Rome in 2018*."
+
+  [[exercise.item]]
+  text = "My brother studyed medicine in Minsk."
+  error = "studyed"
+  fix = ["studied"]
+  explain = "Согласная + y → -ied: *studied*."
+
+  [[exercise.item]]
+  text = "Where you went yesterday?"
+  error = "you went"
+  fix = ["did you go"]
+  explain = "В вопросе нужен *did* перед подлежащим, а глагол — в начальной форме: *Where did you go?*"
+
+[[exercise]]
+id = "halves"
+kind = "match"
+title = "Половинки"
+task = "Соедините начало и конец предложения."
+ref = ["english/past-simple"]
+explain = "Каждое предложение — законченное событие или состояние в прошлом, поэтому везде Past Simple: *went*, *didn't come*, *lost*, *moved*."
+pairs = [
+  ["Last summer we went", "to the seaside for two weeks."],
+  ["She didn't come to the party", "because she was ill."],
+  ["I lost my keys yesterday,", "so I couldn't get into my house."],
+  ["Two years ago my parents", "moved to a smaller flat."],
+]

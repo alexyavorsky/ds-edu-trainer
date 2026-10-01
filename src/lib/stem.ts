@@ -1,8 +1,9 @@
 /**
- * Простой стемминг для русского поиска: у слова отрезается одно типичное окончание,
- * чтобы «окно», «окна» и «окнами» сводились к «окн», а «группировка» и «группировки» — к «группировк».
- * Применяется одинаково к индексу (при сборке) и к запросу (в браузере). Основа — не короче 3 букв,
- * поэтому 3-буквенные слова не меняются, а 4-буквенные теряют не больше одной буквы. Латиница не трогается.
+ * Простой стемминг для поиска: у слова отрезается одно типичное окончание, чтобы «окно», «окна» и «окнами»
+ * сводились к «окн», а «группировка» и «группировки» — к «группировк». Применяется одинаково к индексу
+ * (при сборке) и к запросу (в браузере). Основа — не короче 3 букв, поэтому 3-буквенные слова не меняются.
+ * Латинские слова (справочник грамматики английского) — своя, английская обработка: срезаются -s/-es/-ed/-ing,
+ * так «played», «playing» и «plays» находят «play»; русский стеммер к ним не применяется.
  */
 const ENDINGS = [
   // прилагательные и причастия
@@ -18,7 +19,22 @@ const ENDINGS = [
 const MIN_STEM = 3;
 const CYRILLIC = /^[а-яё]+$/;
 
+const LATIN = /^[a-z]+$/;
+
+/** Английские окончания: -ies → -y, -ing, -ed, -es (после s, x, z, ch, sh), -s (не -ss, -us, -is). */
+export function stemEnglish(word: string): string {
+  if (word.length <= MIN_STEM + 1 || !LATIN.test(word)) return word;
+  if (word.endsWith('ies') && word.length - 3 >= MIN_STEM) return `${word.slice(0, -3)}y`;
+  if (word.endsWith('ied') && word.length - 3 >= MIN_STEM) return `${word.slice(0, -3)}y`;
+  if (word.endsWith('ing') && word.length - 3 >= MIN_STEM) return word.slice(0, -3);
+  if (word.endsWith('ed') && word.length - 2 >= MIN_STEM) return word.slice(0, -2);
+  if (/(s|x|z|ch|sh)es$/.test(word) && word.length - 2 >= MIN_STEM) return word.slice(0, -2);
+  if (word.endsWith('s') && !/(ss|us|is)$/.test(word)) return word.slice(0, -1);
+  return word;
+}
+
 export function stem(word: string): string {
+  if (LATIN.test(word)) return stemEnglish(word);
   if (word.length <= MIN_STEM || !CYRILLIC.test(word)) return word;
   let w = word;
   if ((w.endsWith('ся') || w.endsWith('сь')) && w.length - 2 >= MIN_STEM) w = w.slice(0, -2);

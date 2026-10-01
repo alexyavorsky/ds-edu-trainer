@@ -11,9 +11,10 @@ export interface SearchDoc {
   u: string; // адрес
   t: string; // заголовок
   s: string; // «зачем это нужно»
-  p: string; // тема: NumPy / pandas
+  p: string; // тема: NumPy / pandas / Английская грамматика
   l: Level;
-  f: string; // функции через пробел
+  c?: string; // уровень CEFR (грамматика английского) — показывается вместо общего уровня
+  f: string; // функции через пробел; у грамматики — формы и слова из patterns
   h: string; // разделы, заголовки примеров и подводных камней — уникальные основы слов
   w: string; // остальной текст — уникальные основы слов
 }
@@ -59,7 +60,8 @@ export function buildSearchIndex(articles: Article[], topicTitle: (id: string) =
       s: a.data.summary,
       p: topicTitle(a.id.split('/')[0]),
       l: a.data.level,
-      f: a.data.functions.join(' '),
+      ...(a.data.cefr ? { c: a.data.cefr } : {}),
+      f: [...a.data.functions, ...a.data.patterns].join(' '),
       h,
       w: uniqueTerms([...text, a.data.summary], new Set([...h.split(' '), ...terms(a.data.title)])),
     };

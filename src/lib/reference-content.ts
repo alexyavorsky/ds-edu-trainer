@@ -37,5 +37,5 @@ export function readingOrder(toc: TocSection[]): Article[] {
 
 /** Подпись версии темы: «2.5.3» у темы с пакетом. */
 export function topicVersion(topic: Topic): string {
-  return topic.data.version;
+  return topic.data.version ?? '';
 }

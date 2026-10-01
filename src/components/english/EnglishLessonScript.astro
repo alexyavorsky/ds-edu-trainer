@@ -1,0 +1,11 @@
+---
+/** Скрипт урока английского: упражнения и вопросы. Ни Pyodide, ни редактора, ни воркера. */
+---
+
+<script>
+  import { initQuiz } from '../../scripts/course/quiz';
+  import { initPractice } from '../../scripts/english/practice';
+
+  initPractice();
+  document.querySelectorAll<HTMLElement>('[data-quiz]').forEach(initQuiz);
+</script>

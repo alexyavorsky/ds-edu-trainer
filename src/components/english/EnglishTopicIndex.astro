@@ -1,0 +1,241 @@
+---
+/**
+ * Оглавление справочника грамматики: вкладки «По темам» (разделы topic.toml) и «По уровням» (A1 → C1, внутри —
+ * в порядке оглавления), у статей — плашка CEFR. Адрес ?level=b1 оставляет в списке один уровень (только отбор).
+ * Без JavaScript видны оба списка подряд.
+ */
+import { CEFR_LEVELS, CEFR_TONE, type Cefr } from '../../lib/english/cefr';
+import { articleUrl } from '../../lib/reference';
+import type { TocSection } from '../../lib/reference-content';
+import Badge from '../Badge.astro';
+
+interface Props {
+  toc: TocSection[];
+}
+const { toc } = Astro.props;
+const written = toc.flatMap((s) => s.entries.flatMap((e) => (e.article ? [e.article] : [])));
+const levels = CEFR_LEVELS.map((level) => ({ level, articles: written.filter((a) => a.data.cefr === level) }));
+const total = toc.reduce((n, s) => n + s.entries.length, 0);
+---
+
+<div class="en-index" data-en-index>
+  <div class="tabs" role="tablist" aria-label="Как показать статьи" data-tabs hidden>
+    <button type="button" role="tab" id="tab-topics" aria-controls="by-topic" aria-selected="true" data-tab="by-topic">По темам</button>
+    <button type="button" role="tab" id="tab-levels" aria-controls="by-level" aria-selected="false" data-tab="by-level">По уровням</button>
+  </div>
+  <p class="filter" data-filter hidden>
+    Показан уровень <b data-filter-level></b> · <a href="?" data-filter-reset>все уровни</a>
+  </p>
+  <p class="count muted">Написано {written.length} из {total} статей.</p>
+
+  <div id="by-topic" role="tabpanel" aria-labelledby="tab-topics" data-panel>
+    <h2 class="panel-title">По темам</h2>
+    {
+      toc.map((section, i) => (
+        <section class="section">
+          <h3 class="section-title">
+            {i + 1}. {section.title}
+          </h3>
+          <ol class="entries">
+            {section.entries.map((e) =>
+              e.article ? (
+                <li data-level={e.article.data.cefr}>
+                  <a class="entry card" href={articleUrl(e.id)}>
+                    <span class="entry-main">
+                      <span class="title">{e.article.data.title}</span>
+                      <span class="muted">{e.article.data.summary}</span>
+                    </span>
+                    {e.article.data.cefr && <Badge tone={CEFR_TONE[e.article.data.cefr as Cefr]}>{e.article.data.cefr}</Badge>}
+                  </a>
+                </li>
+              ) : (
+                <li class="entry planned" data-level="">
+                  <span class="slug">{e.slug}</span>
+                  <span class="pill">скоро</span>
+                </li>
+              ),
+            )}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+
+  <div id="by-level" role="tabpanel" aria-labelledby="tab-levels" data-panel>
+    <h2 class="panel-title">По уровням</h2>
+    {
+      levels.map(({ level, articles }) => (
+        <section class="section" data-level-section={level}>
+          <h3 class="section-title">
+            {level} · {articles.length}
+          </h3>
+          {articles.length ? (
+            <ol class="entries">
+              {articles.map((a) => (
+                <li data-level={a.data.cefr}>
+                  <a class="entry card" href={articleUrl(a.id)}>
+                    <span class="entry-main">
+                      <span class="title">{a.data.title}</span>
+                      <span class="muted">{a.data.summary}</span>
+                    </span>
+                    <Badge tone={CEFR_TONE[level]}>{level}</Badge>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p class="muted empty">Статей этого уровня пока нет.</p>
+          )}
+        </section>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .tabs {
+    display: inline-flex;
+    gap: 4px;
+    margin-bottom: 14px;
+    padding: 3px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+  }
+  .tabs[hidden],
+  .filter[hidden],
+  [data-panel][hidden],
+  li[hidden],
+  section[hidden] {
+    display: none;
+  }
+  .tabs button {
+    height: 30px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  .tabs button[aria-selected='true'] {
+    background: var(--surface-3);
+    color: var(--text);
+  }
+  .filter,
+  .count {
+    margin: 0 0 18px;
+    font-size: 13.5px;
+  }
+  .filter a {
+    color: var(--accent-strong);
+  }
+  .panel-title {
+    margin: 0 0 12px;
+    font-size: 20px;
+  }
+  .en-index.is-tabs .panel-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .section {
+    margin-bottom: 30px;
+  }
+  .entries {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 13px 16px;
+    font-size: 13.5px;
+  }
+  a.entry:hover {
+    border-color: var(--border-strong);
+  }
+  .entry-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .planned {
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+  }
+  .slug {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--faint);
+    overflow-wrap: anywhere;
+  }
+  .pill {
+    flex: none;
+    font-size: 11.5px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    color: var(--muted);
+    background: var(--surface-2);
+  }
+  .empty {
+    margin: 0;
+    font-size: 13.5px;
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-en-index]');
+  if (root) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-panel]')];
+    const show = (id: string, focus = false) => {
+      tabs.forEach((t) => {
+        const on = t.dataset.tab === id;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        if (on && focus) t.focus();
+      });
+      panels.forEach((p) => (p.hidden = p.id !== id));
+    };
+    root.querySelector<HTMLElement>('[data-tabs]')!.hidden = false;
+    root.classList.add('is-tabs');
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => {
+        show(t.dataset.tab!);
+        history.replaceState(null, '', `${location.search}#${t.dataset.tab}`);
+      });
+      t.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        show(next.dataset.tab!, true);
+      });
+    });
+    // ?level=b1 — только отбор списка: остаются статьи этого уровня, вкладка «По уровням»
+    const level = new URLSearchParams(location.search).get('level')?.toUpperCase() ?? '';
+    if (/^(A1|A2|B1|B2|C1)$/.test(level)) {
+      root.querySelectorAll<HTMLElement>('li[data-level]').forEach((li) => (li.hidden = li.dataset.level !== level));
+      root.querySelectorAll<HTMLElement>('[data-level-section]').forEach((s) => (s.hidden = s.dataset.levelSection !== level));
+      root.querySelectorAll<HTMLElement>('#by-topic .section').forEach((s) => (s.hidden = !s.querySelector('li:not([hidden])')));
+      root.querySelector<HTMLElement>('[data-filter-level]')!.textContent = level;
+      root.querySelector<HTMLElement>('[data-filter]')!.hidden = false;
+      show('by-level');
+    } else {
+      show(location.hash === '#by-level' ? 'by-level' : 'by-topic');
+    }
+  }
+</script>

@@ -6,9 +6,13 @@ import BugReportLink from '../../../components/BugReportLink.astro';
 import PrevNext from '../../../components/PrevNext.astro';
 import { courseComponents } from '../../../components/course';
 import CourseSidebar from '../../../components/course/CourseSidebar.astro';
+import PythonLessonScript from '../../../components/course/PythonLessonScript.astro';
+import { englishLessonComponents } from '../../../components/english';
+import EnglishLessonScript from '../../../components/english/EnglishLessonScript.astro';
+import TestPanel from '../../../components/english/TestPanel.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { courseLessons, lessonUrl, type LessonSource } from '../../../lib/courses/load';
-import { findLesson, lessonPageData } from '../../../lib/courses/site';
+import { courseLessons, isPythonCourse, isTestKind, lessonExerciseIds, lessonUrl, type LessonSource } from '../../../lib/courses/load';
+import { englishPageData, findLesson, lessonPageData } from '../../../lib/courses/site';
 import { articleUrl } from '../../../lib/reference';
 import '../../../styles/course.css';
 
@@ -29,9 +33,15 @@ const pos = order.findIndex((l) => l.meta.id === lesson.meta.id);
 const link = (l?: LessonSource) => l && { href: lessonUrl(l), label: l.meta.title };
 const module = course.modules.find((m) => m.slug === lesson.module)!;
 const lastInModule = module.lessons[module.lessons.length - 1] === lesson;
-const exercises = lesson.cells.filter((c) => c.kind === 'exercise').length;
-const titles = new Map((await getCollection('reference')).map((a) => [a.id, a.data.title]));
-const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u003c');
+const python = isPythonCourse(course); // курс без Python (английский): ни Pyodide, ни .ipynb, ни строки ядра
+const exercises = lessonExerciseIds(lesson).length;
+const articles = await getCollection('reference');
+const titles = new Map(articles.map((a) => [a.id, a.data.title]));
+const json = (value: unknown) => JSON.stringify(value).replace(/</g, '\\u003c');
+const data = python ? json(lessonPageData(course, lesson)) : json(englishPageData(course, lesson, new Map(articles.map((a) => [a.id, a.data.cefr ?? '']))));
+const test = isTestKind(lesson.meta.kind);
+const items = lesson.exercises.reduce((n, e) => n + e.items.length, 0);
+const KIND_BADGE: Partial<Record<LessonSource['meta']['kind'], string>> = { review: 'повторение', test: 'контрольная', placement: 'входная проверка' };
 ---
 
 <BaseLayout title={`${lesson.meta.title} — курс ${course.meta.title}`} description={lesson.meta.summary} lessonId={lesson.meta.id} wide>
@@ -51,16 +61,16 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
           Программа
         </button>
-        {exercises > 0 && (
+        {python && exercises > 0 && (
           <button type="button" class="btn btn-ghost ipynb" data-ipynb-mine={`${lessonUrl(lesson)}.ipynb`} title="Урок как Jupyter-ноутбук с вашим кодом в упражнениях — продолжить в Jupyter или Google Colab">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
             <span data-label>Скачать с моим кодом</span>
           </button>
         )}
-        <a class="btn btn-ghost ipynb" href={`${lessonUrl(lesson)}.ipynb`} download={`${lesson.meta.id}.ipynb`} title="Урок как Jupyter-ноутбук с заготовками упражнений: текст, код, проверки и данные — для Jupyter и Google Colab">
+        {python && <a class="btn btn-ghost ipynb" href={`${lessonUrl(lesson)}.ipynb`} download={`${lesson.meta.id}.ipynb`} title="Урок как Jupyter-ноутбук с заготовками упражнений: текст, код, проверки и данные — для Jupyter и Google Colab">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
           Скачать чистый
-        </a>
+        </a>}
       </div>
 
       <Breadcrumbs
@@ -73,10 +83,11 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
       />
       <header class="head">
         <div class="meta">
-          {lesson.meta.kind === 'project' ? <Badge tone="medium">мини-проект</Badge> : <Badge>урок {module.lessons.indexOf(lesson) + 1} из {module.lessons.length}</Badge>}
+          {lesson.meta.kind === 'project' ? <Badge tone="medium">мини-проект</Badge> : KIND_BADGE[lesson.meta.kind] ? <Badge tone="medium">{KIND_BADGE[lesson.meta.kind]}</Badge> : <Badge>урок {module.lessons.indexOf(lesson) + 1} из {module.lessons.length}</Badge>}
+          {!python && module.meta.level && <Badge tone="accent">{module.meta.level}</Badge>}
           {lesson.meta.optional && <Badge>дополнительно</Badge>}
           <span class="minutes">≈ {lesson.meta.minutes} мин</span>
-          {exercises > 0 && (
+          {exercises > 0 && !test && (
             <span class="minutes">
               упражнения: <span data-lesson-solved>0</span> из {exercises}
             </span>
@@ -86,7 +97,7 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
         <p class="summary">{lesson.meta.summary}</p>
       </header>
 
-      <div class="kernel" data-kernel>
+      {python && <div class="kernel" data-kernel>
         <span class="dot" aria-hidden="true"></span>
         <span class="kernel-text" data-kernel-text aria-live="polite">Python запустится при первом выполнении</span>
         <button type="button" class="btn btn-ghost small" data-run-all title="Выполнить все ячейки урока по порядку">
@@ -98,11 +109,12 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
           <span class="kernel-label">Перезапустить</span>
         </button>
       </div>
-      <p class="kernel-notice" data-kernel-notice hidden></p>
+      <p class="kernel-notice" data-kernel-notice hidden></p>}
 
       <article class="prose lesson-prose">
-        <Content components={courseComponents} />
+        <Content components={python ? courseComponents : englishLessonComponents} />
       </article>
+      {!python && test && <TestPanel placement={lesson.meta.kind === 'placement'} items={items} />}
 
       {
         lesson.meta.reference.length > 0 && (
@@ -119,7 +131,7 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
         )
       }
       {
-        lastInModule && (
+        python && lastInModule && (
           <section class="more">
             <h2 class="section-title">Практика по модулю</h2>
             <p class="muted">
@@ -134,7 +146,7 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
         <label class="done-toggle">
           <input type="checkbox" data-lesson-done />
           <span>Урок пройден</span>
-          <span class="muted">— отмечается сам, когда решены все упражнения</span>
+          <span class="muted">— {test ? (lesson.meta.kind === 'placement' ? 'отмечается сам после «Завершить»' : 'отмечается сам при зачёте (80 %)') : 'отмечается сам, когда решены все упражнения'}</span>
         </label>
         <BugReportLink lessonId={lesson.meta.id} />
       </footer>
@@ -142,7 +154,8 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
       <PrevNext prev={link(order[pos - 1])} next={link(order[pos + 1])} />
     </div>
   </div>
-  <script type="application/json" id="lesson-data" set:html={data} />
+  <script type="application/json" id={python ? 'lesson-data' : 'english-data'} set:html={data} />
+  {python ? <PythonLessonScript /> : <EnglishLessonScript />}
 </BaseLayout>
 
 <style>
@@ -377,10 +390,8 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
 </style>
 
 <script>
-  import { initLesson } from '../../../scripts/course/lesson';
   import { watchCourseProgress } from '../../../scripts/course/progress';
 
-  initLesson();
   watchCourseProgress();
 
   const drawer = document.querySelector<HTMLElement>('[data-drawer]');

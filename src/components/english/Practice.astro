@@ -1,0 +1,286 @@
+---
+/**
+ * Упражнение по английскому: `<Practice id="…" />` в lesson.mdx, ключи — в exercises.toml урока
+ * (docs/ENGLISH_PLAN.md, 0.3). Страница собирается статически: каждый пункт — задание и под ним
+ * <details> «Ответ» с ответами и объяснением, так урок проходится и без JavaScript. Скрипт
+ * (src/scripts/english/practice.ts) включает поля ввода, проверку и прогресс: класс is-live у упражнения.
+ */
+import { displayAnswers, gapCount, type Exercise, type Item } from '../../lib/english/check';
+import { inlineMarkdown } from '../../lib/english/markdown';
+import { isTestKind } from '../../lib/courses/load';
+import { findLesson } from '../../lib/courses/site';
+import { matchOrder } from '../../lib/english/shuffle';
+import { TELEGRAM_USER } from '../../lib/labels';
+import Icon from '../Icon.astro';
+import '../../styles/english.css';
+
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+const { lesson } = findLesson(Astro.locals.lesson!);
+const ex = lesson.exercises.find((e) => e.id === id);
+if (!ex) throw new Error(`${lesson.meta.id}: <Practice id="${id}"> — нет такого упражнения в exercises.toml`);
+const number = lesson.exercises.indexOf(ex) + 1;
+const test = isTestKind(lesson.meta.kind);
+const md = inlineMarkdown;
+const KIND_LABEL: Record<Exercise['kind'], string> = {
+  gap: 'Впишите',
+  choice: 'Выберите',
+  order: 'Порядок слов',
+  transform: 'Перепишите',
+  'find-error': 'Найдите ошибку',
+  match: 'Соедините',
+};
+const itemId = (item: Item) => `${lesson.meta.id}/${ex.id}/${item.n}`;
+const parts = (text: string) => text.split(/_{3,}/);
+const tokens = (text: string) => text.split(/\s+/).filter(Boolean);
+const rights = ex.kind === 'match' ? matchOrder(ex) : [];
+const letter = (i: number) => String.fromCharCode(1040 + (i >= 9 ? i + 1 : i)); // А, Б, В… (без Й)
+const answers = (item: Item) => displayAnswers(ex, item);
+const bug = (subject: string) => ({
+  href: `https://t.me/${TELEGRAM_USER}?text=${encodeURIComponent(`Нашёл ошибку ${subject}: `)}`,
+  'data-bug-report': '',
+  'data-tg': TELEGRAM_USER,
+  'data-subject': subject,
+});
+---
+
+<section
+  class:list={['cell', 'practice', `practice-${ex.kind}`, test && 'is-test']}
+  data-practice={ex.id}
+  data-kind={ex.kind}
+  aria-label={`Упражнение ${number}${ex.title ? `: ${ex.title}` : ''}`}
+>
+  <header class="cell-head ex-head">
+    <span class="ex-label">Упражнение {number}</span>
+    <span class="cell-title">{ex.title ?? KIND_LABEL[ex.kind]}</span>
+    <span class="pr-count">
+      {!test && <span data-done-count>0</span>}
+      {!test && ' из '}
+      {ex.items.length}
+      {ex.kind === 'match' ? ' пар' : ' пунктов'}
+    </span>
+    {!test && <span class="solved-mark" data-solved-mark><Icon name="check" size={14} /> решено</span>}
+  </header>
+  <div class="pr-task">
+    <p set:html={md(ex.task)} />
+    <noscript><p class="pr-nojs">Проверка ответов работает с включённым JavaScript — без него ответы открываются под каждым пунктом.</p></noscript>
+  </div>
+  <p class="pr-notice" data-updated hidden>Упражнение обновилось — ваши ответы в нём сброшены, отметка «решено» осталась.</p>
+
+  {
+    ex.kind === 'match' ? (
+      <div class="pr-match">
+        <ol class="pr-rights" aria-label="Концы предложений">
+          {rights.map((r, i) => (
+            <li>
+              <span class="pr-letter">{letter(i)}</span> <span lang="en">{r}</span>
+            </li>
+          ))}
+        </ol>
+        <ol class="pr-items">
+          {ex.items.map((item) => (
+            <li class="pr-item" data-item={item.n} id={itemId(item)}>
+              <label class="pr-pair">
+                <span lang="en">{item.text}</span>
+                <span class="pr-blank" aria-hidden="true">→ ____</span>
+                <select class="pr-select" data-select aria-label={`Конец для «${item.text}»`}>
+                  <option value="">— выберите —</option>
+                  {rights.map((r, i) => (
+                    <option value={r}>
+                      {letter(i)}. {r}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p class="pr-mark" data-feedback aria-live="polite" />
+            </li>
+          ))}
+        </ol>
+        <div class="pr-actions" data-live-only>
+          {!test && (
+            <button type="button" class="btn btn-primary small" data-check>
+              Проверить
+            </button>
+          )}
+          {!test && (
+            <button type="button" class="btn btn-ghost small" data-show hidden>
+              Показать ответ
+            </button>
+          )}
+        </div>
+        <div class="pr-explain" data-match-explain hidden />
+        <details class="pr-key">
+          <summary>Ответ</summary>
+          <ol>
+            {ex.items.map((item) => (
+              <li lang="en">
+                {item.text} → {letter(rights.indexOf(item.answer[0]))}. {item.answer[0]}
+              </li>
+            ))}
+          </ol>
+          {ex.explain && <p set:html={md(ex.explain)} />}
+        </details>
+      </div>
+    ) : (
+      <ol class="pr-items">
+        {ex.items.map((item) => (
+          <li class="pr-item" data-item={item.n} id={itemId(item)}>
+            <div class="pr-q">
+              {ex.kind === 'gap' && (
+                <p class="pr-sentence" lang="en">
+                  {parts(item.text ?? '').map((part, i, all) => (
+                    <>
+                      {part}
+                      {i < all.length - 1 && (
+                        <>
+                          <span class="pr-blank" aria-hidden="true">____</span>
+                          <input
+                            class="pr-gap"
+                            data-gap={i}
+                            type="text"
+                            autocomplete="off"
+                            autocapitalize="off"
+                            spellcheck="false"
+                            aria-label={gapCount(item.text ?? '') > 1 ? `Пропуск ${i + 1}` : 'Пропуск'}
+                          />
+                        </>
+                      )}
+                    </>
+                  ))}
+                </p>
+              )}
+              {ex.kind === 'choice' && (
+                <>
+                  {item.text && (
+                    <p class="pr-sentence" lang="en">
+                      {parts(item.text).map((part, i, all) => (
+                        <>
+                          {part}
+                          {i < all.length - 1 && <span class="pr-blank pr-blank-choice" data-choice-slot>____</span>}
+                        </>
+                      ))}
+                    </p>
+                  )}
+                  <div class="pr-options" role="group" aria-label="Варианты ответа">
+                    {(item.options ?? []).map((o) => (
+                      <button type="button" class="pr-option" data-option={o} lang="en">
+                        {o}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+              {ex.kind === 'order' && (
+                <>
+                  <div class="pr-bank" role="group" aria-label="Слова">
+                    {(item.words ?? []).map((w, i) => (
+                      <button type="button" class="pr-chip" data-chip={i} lang="en">
+                        {w}
+                      </button>
+                    ))}
+                  </div>
+                  <div class="pr-line" data-line lang="en" aria-label="Ваше предложение" data-live-only>
+                    <span class="pr-placeholder">Нажимайте на слова по порядку</span>
+                  </div>
+                  <div class="pr-row" data-live-only>
+                    <button type="button" class="btn btn-ghost small" data-reset-line>
+                      Сбросить
+                    </button>
+                    <button type="button" class="btn btn-ghost small" data-type-toggle aria-expanded="false">
+                      Набрать самому
+                    </button>
+                  </div>
+                  <input class="pr-text" data-typed type="text" hidden autocomplete="off" spellcheck="false" lang="en" aria-label="Предложение целиком" />
+                </>
+              )}
+              {ex.kind === 'transform' && (
+                <>
+                  <p class="pr-source" lang="en">
+                    {item.source}
+                  </p>
+                  {(item.keyword || item.maxWords) && (
+                    <p class="pr-rule">
+                      {item.keyword && (
+                        <>
+                          Используйте слово <b lang="en">{item.keyword}</b> без изменений.{' '}
+                        </>
+                      )}
+                      {item.maxWords && <>Допишите не больше {item.maxWords} слов.</>}
+                    </p>
+                  )}
+                  {item.start && (
+                    <p class="pr-start" lang="en">
+                      {item.start} ____
+                    </p>
+                  )}
+                  <textarea class="pr-text" data-text rows="2" autocomplete="off" spellcheck="false" lang="en" aria-label="Ваш вариант" data-start={item.start}>{item.start ? `${item.start} ` : ''}</textarea>
+                </>
+              )}
+              {ex.kind === 'find-error' && (
+                <>
+                  <p class="pr-words" lang="en" data-words>
+                    {tokens(item.text ?? '').map((w, i) => (
+                      <>
+                        <button type="button" class="pr-word" data-word={i}>
+                          {w}
+                        </button>{' '}
+                      </>
+                    ))}
+                  </p>
+                  <div class="pr-fix" data-fix-box hidden>
+                    <label>
+                      <span class="pr-fix-label">Исправьте выделенное (можно стереть — лишнее слово):</span>
+                      <input class="pr-text" data-fix type="text" autocomplete="off" spellcheck="false" lang="en" />
+                    </label>
+                    <p class="pr-preview" data-preview lang="en" />
+                  </div>
+                  <div class="pr-row" data-live-only>
+                    <button type="button" class="btn btn-ghost small" data-whole-toggle aria-expanded="false">
+                      Исправить целиком
+                    </button>
+                    {ex.allowCorrect && (
+                      <button type="button" class="btn btn-ghost small" data-no-error aria-pressed="false">
+                        Ошибки нет
+                      </button>
+                    )}
+                  </div>
+                  <textarea class="pr-text" data-whole rows="2" hidden autocomplete="off" spellcheck="false" lang="en" aria-label="Предложение целиком">{item.text}</textarea>
+                </>
+              )}
+            </div>
+            {!test && (
+              <div class="pr-actions" data-live-only>
+                {ex.kind !== 'choice' && (
+                  <button type="button" class="btn btn-primary small" data-check>
+                    Проверить
+                  </button>
+                )}
+                <button type="button" class="btn btn-ghost small" data-show hidden>
+                  Показать ответ
+                </button>
+                <a class="pr-bug" {...bug(`в пункте ${itemId(item)}`)} target="_blank" rel="noopener noreferrer" title="Нашли ошибку в этом пункте?" aria-label={`Нашли ошибку в пункте ${item.n}?`}>
+                  <Icon name="flag" size={14} />
+                </a>
+              </div>
+            )}
+            <div class="pr-feedback" data-feedback aria-live="polite" />
+            <details class="pr-key">
+              <summary>Ответ</summary>
+              <p class="pr-answer" lang="en">
+                {answers(item)[0]}
+              </p>
+              {answers(item).length > 1 && (
+                <p class="pr-also">
+                  Также верно: <span lang="en">{answers(item).slice(1).join(' · ')}</span>
+                </p>
+              )}
+              <p set:html={md(item.explain)} />
+            </details>
+          </li>
+        ))}
+      </ol>
+    )
+  }
+</section>

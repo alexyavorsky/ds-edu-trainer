@@ -1,0 +1,103 @@
+# Образец контрольной (kind = "test"): у каждого пункта ref; проверка — только после «Завершить».
+
+[[exercise]]
+id = "forms"
+kind = "choice"
+task = "Выберите верный вариант."
+ref = ["english/past-simple"]
+options = ["went", "go", "goes"]
+
+  [[exercise.item]]
+  text = "Yesterday we ___ to the cinema."
+  answer = "went"
+  ref = "english/past-simple"
+  explain = "*Yesterday* — законченный момент в прошлом: Past Simple, *went*."
+  why = { "go" = "*Go* — настоящее время или начальная форма, а момент в прошлом.", "goes" = "*Goes* — настоящее время с he, she, it." }
+
+  [[exercise.item]]
+  text = "Did your brother ___ to university last year?"
+  answer = "go"
+  ref = "english/past-simple"
+  explain = "После *did* — начальная форма: *go*."
+  why = { "went" = "Прошедшее время уже показал *did*.", "goes" = "После *did* окончание -s не ставится." }
+
+  [[exercise.item]]
+  text = "She didn't ___ out last weekend."
+  answer = "go"
+  ref = "english/past-simple"
+  explain = "После *didn't* — начальная форма: *go*."
+  why = { "went" = "Прошедшее время уже показал *didn't*.", "goes" = "После *didn't* окончание -s не ставится." }
+
+[[exercise]]
+id = "gaps"
+kind = "gap"
+task = "Поставьте глагол в скобках в Past Simple."
+ref = ["english/past-simple"]
+
+  [[exercise.item]]
+  text = "My parents ___ (live) in Tula before I was born."
+  answer = ["lived"]
+  ref = "english/past-simple"
+  explain = "Глагол кончается на -e — добавляется только -d: *lived*."
+
+  [[exercise.item]]
+  text = "The children ___ (play) in the garden all afternoon."
+  answer = ["played"]
+  ref = "english/past-simple"
+  explain = "Гласная + y — просто -ed: *played*."
+
+  [[exercise.item]]
+  text = "I ___ (not / like) the soup."
+  answer = ["did not like"]
+  ref = "english/past-simple"
+  explain = "Отрицание: *did not* (*didn't*) + начальная форма."
+
+  [[exercise.item]]
+  text = "___ they ___ (finish) the project on time?"
+  gaps = [["Did"], ["finish"]]
+  ref = "english/past-simple"
+  explain = "Вопрос: *Did* + подлежащее + начальная форма."
+
+[[exercise]]
+id = "word-order"
+kind = "order"
+task = "Составьте предложение из слов."
+ref = ["english/past-simple"]
+
+  [[exercise.item]]
+  words = ["you", "what", "did", "buy"]
+  answer = ["What did you buy?"]
+  ref = "english/past-simple"
+  explain = "*What* → *did* → подлежащее → глагол в начальной форме."
+
+  [[exercise.item]]
+  words = ["didn't", "he", "the", "email", "read"]
+  answer = ["He didn't read the email."]
+  ref = "english/past-simple"
+  explain = "Подлежащее → *didn't* → глагол в начальной форме → дополнение."
+
+[[exercise]]
+id = "errors"
+kind = "find-error"
+task = "Найдите и исправьте ошибку. Если ошибки нет, нажмите «Ошибки нет»."
+ref = ["english/past-simple"]
+allow_correct = true
+
+  [[exercise.item]]
+  text = "We didn't went to the museum."
+  error = "went"
+  fix = ["go"]
+  ref = "english/past-simple"
+  explain = "После *didn't* — начальная форма: *We didn't go…*"
+
+  [[exercise.item]]
+  text = "She opened the window and looked outside."
+  ref = "english/past-simple"
+  explain = "Ошибки нет: два правильных глагола в Past Simple подряд — цепочка событий."
+
+  [[exercise.item]]
+  text = "He planed a trip to Norway."
+  error = "planed"
+  fix = ["planned"]
+  ref = "english/past-simple"
+  explain = "Одна гласная и одна согласная на конце ударного слога — согласная удваивается: *planned*."

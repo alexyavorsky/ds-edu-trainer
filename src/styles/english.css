@@ -1,0 +1,555 @@
+/* Английский: компоненты справочника грамматики (Examples, Formula, Fix, Level) и упражнения <Practice>. */
+
+/* ─── Примеры с переводом ─── */
+.en-examples {
+  list-style: none;
+  margin: 12px 0 18px;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.en-examples li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px 18px;
+  padding: 8px 12px;
+  border-left: 2px solid var(--border-strong);
+  background: var(--surface);
+}
+.en-examples li:nth-child(odd) {
+  background: var(--surface-2);
+}
+.en-example {
+  color: var(--text);
+}
+.en-example strong {
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+.en-translation {
+  color: var(--muted);
+  font-size: 0.94em;
+}
+@media (max-width: 640px) {
+  .en-examples li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ─── Формулы ─── */
+.en-formula {
+  margin: 12px 0 18px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  display: grid;
+  gap: 4px;
+}
+.en-formula-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+.en-formula code {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  background: none;
+  padding: 0;
+  overflow-wrap: anywhere;
+  color: var(--text);
+}
+.en-sign {
+  flex: none;
+  width: 18px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--muted);
+}
+.en-sym {
+  color: var(--accent-strong);
+}
+
+/* ─── Ошибка → правильно ─── */
+.en-fix {
+  margin: 12px 0 16px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.en-fix-line {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.en-fix-mark {
+  flex: none;
+  width: 16px;
+  font-weight: 700;
+}
+.en-fix-line.is-wrong {
+  color: var(--text-2);
+}
+.en-fix-line.is-wrong .en-fix-mark {
+  color: var(--hard);
+}
+.en-fix-line.is-right .en-fix-mark {
+  color: var(--easy);
+}
+.en-fix del {
+  color: var(--hard);
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+.en-fix ins {
+  color: var(--easy);
+  text-decoration: none;
+  font-weight: 600;
+}
+.en-fix-why {
+  margin-top: 6px;
+  padding-left: 26px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+.en-fix-why > :first-child {
+  margin-top: 0;
+}
+.en-fix-why > :last-child {
+  margin-bottom: 0;
+}
+
+/* ─── Плашка уровня ─── */
+.en-level {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  margin-left: 8px;
+  padding: 0 7px;
+  border-radius: 5px;
+  vertical-align: middle;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--medium);
+  background: var(--medium-soft);
+}
+
+/* ─── Упражнения ─── */
+.practice {
+  border-left: 3px solid var(--accent);
+}
+.practice.is-solved {
+  border-left-color: var(--easy);
+}
+.practice.is-solved .solved-mark {
+  display: inline-flex;
+}
+.practice.is-test {
+  border-left-color: var(--medium);
+}
+.pr-count {
+  margin-left: auto;
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.pr-task {
+  padding: 12px 16px 0;
+}
+.pr-task p {
+  margin: 0 0 6px;
+}
+.pr-nojs {
+  font-size: 13px;
+  color: var(--medium);
+}
+.pr-notice {
+  margin: 8px 16px 0;
+  padding: 8px 12px;
+  border-radius: var(--radius-xs);
+  background: var(--medium-soft);
+  color: var(--medium);
+  font-size: 13px;
+}
+.pr-notice[hidden] {
+  display: none;
+}
+.pr-items {
+  margin: 0;
+  padding: 6px 16px 14px 40px;
+  display: grid;
+  gap: 10px;
+}
+.pr-item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.pr-item:last-child {
+  border-bottom: 0;
+}
+.pr-item::marker {
+  color: var(--faint);
+}
+.pr-sentence,
+.pr-source,
+.pr-start,
+.pr-words {
+  margin: 0 0 8px;
+  font-size: 15.5px;
+  line-height: 2;
+  overflow-wrap: anywhere;
+}
+.pr-source {
+  color: var(--text-2);
+}
+.pr-rule {
+  margin: 0 0 8px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.pr-blank {
+  color: var(--faint);
+  letter-spacing: 0.05em;
+}
+.pr-gap {
+  min-width: 4ch;
+  max-width: 100%;
+  height: 30px;
+  margin: 0 2px;
+  padding: 0 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  line-height: 28px;
+}
+.pr-gap:focus,
+.pr-text:focus,
+.pr-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.pr-gap.is-ok {
+  border-color: var(--easy);
+}
+.pr-gap.is-bad {
+  border-color: var(--hard);
+}
+.pr-text {
+  display: block;
+  width: 100%;
+  margin: 0 0 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  resize: vertical;
+}
+.pr-text[hidden] {
+  display: none;
+}
+.pr-options,
+.pr-bank,
+.pr-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 8px;
+}
+.pr-line {
+  min-height: 40px;
+  padding: 4px 6px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-xs);
+  align-items: center;
+}
+.pr-placeholder {
+  font-size: 13px;
+  color: var(--faint);
+}
+.pr-placeholder[hidden] {
+  display: none;
+}
+.pr-option,
+.pr-chip,
+.pr-word {
+  min-height: 32px;
+  padding: 3px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+.pr-chip[hidden] {
+  display: none;
+}
+.pr-word {
+  min-height: 28px;
+  padding: 0 4px;
+  border-color: transparent;
+  background: none;
+}
+.pr-word:hover,
+.pr-option:hover,
+.pr-chip:hover {
+  border-color: var(--accent);
+}
+.pr-chip.is-picked {
+  background: var(--accent-soft);
+}
+.pr-option.is-selected,
+.pr-word.is-selected,
+[data-no-error].is-selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.pr-option.is-correct {
+  border-color: var(--easy);
+  background: var(--easy-soft);
+}
+.pr-option.is-wrong {
+  border-color: var(--hard);
+  background: var(--hard-soft);
+}
+.pr-fix {
+  margin: 0 0 8px;
+}
+.pr-fix[hidden] {
+  display: none;
+}
+.pr-fix-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.pr-preview {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-2);
+}
+.pr-preview:empty {
+  display: none;
+}
+.pr-row,
+.pr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+}
+.pr-row[hidden],
+.pr-bank[hidden],
+.pr-line[hidden],
+.pr-words[hidden],
+.pr-actions [hidden] {
+  display: none;
+}
+.pr-bug {
+  margin-left: auto;
+  display: inline-flex;
+  padding: 6px;
+  color: var(--faint);
+  border-radius: var(--radius-xs);
+}
+.pr-bug:hover {
+  color: var(--text-2);
+}
+.pr-feedback,
+.pr-explain {
+  font-size: 14px;
+  color: var(--text-2);
+}
+.pr-feedback:empty {
+  display: none;
+}
+.pr-feedback p,
+.pr-explain p {
+  margin: 4px 0;
+}
+.pr-explain {
+  margin: 0 16px 12px;
+}
+.pr-explain[hidden] {
+  display: none;
+}
+.pr-verdict {
+  font-weight: 600;
+  color: var(--text);
+}
+.pr-verdict.is-ok {
+  color: var(--easy);
+}
+.pr-verdict.is-wrong {
+  color: var(--hard);
+}
+.pr-verdict.is-almost {
+  color: var(--medium);
+}
+.pr-also,
+.pr-soft,
+.pr-hint,
+.pr-review {
+  color: var(--muted);
+}
+.pr-key {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+.pr-key summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+.pr-key p {
+  margin: 4px 0;
+}
+.pr-answer {
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* match */
+.pr-match .pr-items {
+  padding-top: 0;
+}
+.pr-rights {
+  list-style: none;
+  margin: 10px 16px 6px;
+  padding: 10px 12px;
+  border-radius: var(--radius-xs);
+  background: var(--surface-2);
+  display: grid;
+  gap: 4px;
+}
+.pr-letter {
+  display: inline-block;
+  width: 1.4em;
+  font-weight: 600;
+  color: var(--accent-strong);
+}
+.pr-pair {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+.pr-select {
+  max-width: 100%;
+  min-height: 32px;
+  padding: 3px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+.pr-match > .pr-actions,
+.pr-match > .pr-key {
+  margin: 0 16px 12px;
+}
+.pr-mark {
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+.pr-mark:empty {
+  display: none;
+}
+.pr-item.is-ok .pr-select {
+  border-color: var(--easy);
+}
+.pr-item.is-wrong .pr-select {
+  border-color: var(--hard);
+}
+
+/* Без JavaScript: пропуски «____», ответы в <details>; со скриптом — поля и кнопки. */
+.practice:not(.is-live) .pr-gap,
+.practice:not(.is-live) .pr-select,
+.practice:not(.is-live) .pr-text,
+.practice:not(.is-live) [data-live-only] {
+  display: none;
+}
+.practice.is-live .pr-blank:not(.pr-blank-choice),
+.practice.is-live .pr-start {
+  display: none;
+}
+.practice.is-live:not(.is-test) .pr-key,
+.practice.is-test.is-live:not(.is-graded) .pr-key {
+  display: none;
+}
+.practice.is-graded .pr-key {
+  display: none;
+}
+
+/* Итог контрольной */
+.pr-test {
+  margin: 24px 0 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--medium);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.pr-test[hidden] {
+  display: none;
+}
+.pr-test-rule {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+.pr-test-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  font-size: 13.5px;
+}
+.pr-test-row [hidden] {
+  display: none;
+}
+.pr-test-result {
+  margin-top: 12px;
+  font-size: 14.5px;
+}
+.pr-test-result[hidden] {
+  display: none;
+}
+.pr-test-result a {
+  color: var(--accent-strong);
+}
+.pr-score {
+  font-size: 17px;
+  font-weight: 600;
+}
+.pr-score.is-ok {
+  color: var(--easy);
+}
+.pr-score.is-wrong {
+  color: var(--hard);
+}
+
+@media (max-width: 560px) {
+  .pr-items {
+    padding-left: 30px;
+    padding-right: 12px;
+  }
+  .pr-task {
+    padding: 10px 12px 0;
+  }
+}

@@ -1,0 +1,24 @@
+---
+/** Конец контрольной или входной проверки: «Завершить», балл, лучший результат, «Пройти заново». */
+interface Props {
+  placement?: boolean;
+  items: number;
+}
+const { placement = false, items } = Astro.props;
+---
+
+<section class="pr-test" data-test-panel hidden aria-label={placement ? 'Итог входной проверки' : 'Итог контрольной'}>
+  <p class="pr-test-rule">
+    {
+      placement
+        ? `${items} пунктов. Ответьте на всё, что знаете, — пропуск считается ошибкой. «Завершить» покажет, с какого модуля начать.`
+        : `${items} пунктов, без проверки по ходу. «Завершить» покажет балл и разбор каждого пункта; зачёт — 80 %, пересдавать можно сколько угодно.`
+    }
+  </p>
+  <div class="pr-test-row">
+    <button type="button" class="btn btn-primary" data-finish>Завершить</button>
+    <button type="button" class="btn" data-again hidden>Пройти заново</button>
+    <span class="muted" data-best></span>
+  </div>
+  <div class="pr-test-result" data-result tabindex="-1" aria-live="polite" hidden></div>
+</section>

@@ -2,6 +2,7 @@
 import Badge from '../../../components/Badge.astro';
 import BetaBadge from '../../../components/BetaBadge.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import EnglishTopicIndex from '../../../components/english/EnglishTopicIndex.astro';
 import ReferenceSearch from '../../../components/reference/ReferenceSearch.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { articleUrl, LEVEL_LABEL, LEVEL_TONE } from '../../../lib/reference';
@@ -13,6 +14,7 @@ export async function getStaticPaths() {
 
 const { topic } = Astro.props as { topic: Topic };
 const toc = await getToc(topic);
+const english = topic.data.direction === 'english'; // грамматика: вкладки «По темам» / «По уровням», уровни CEFR
 ---
 
 <BaseLayout title={`${topic.data.title} — справочник`} description={topic.data.summary}>
@@ -21,17 +23,22 @@ const toc = await getToc(topic);
     <h1>{topic.data.title}</h1>
     {topic.data.beta && <BetaBadge note />}
     <p class="muted">{topic.data.summary}</p>
-    <p class="version">
-      Написано для {topic.data.title} {topic.data.version} · <a href={topic.data.docs} target="_blank" rel="noopener noreferrer">документация</a>
-    </p>
+    {
+      topic.data.version && (
+        <p class="version">
+          Написано для {topic.data.title} {topic.data.version} · <a href={topic.data.docs} target="_blank" rel="noopener noreferrer">документация</a>
+        </p>
+      )
+    }
     <div class="search"><ReferenceSearch placeholder={`Поиск: ${topic.data.title} и не только…`} /></div>
-    <p class="legend">
+    {!english && <p class="legend">
       <span class="dot lvl-basic"></span> базовый <span class="dot lvl-medium"></span> средний <span class="dot lvl-advanced"></span> продвинутый
-    </p>
+    </p>}
   </header>
 
+  {english && <EnglishTopicIndex toc={toc} />}
   {
-    toc.map((section, i) => (
+    !english && toc.map((section, i) => (
       <section class="section">
         <h2 class="section-title">
           {i + 1}. {section.title}

@@ -1,0 +1,48 @@
+---
+/**
+ * Формулы: строки внутри `<Formula>`, в начале строки — `+`, `−`, `?` (утверждение, отрицание, вопрос) или ничего.
+ * Markdown превращает строки с «+ » в список, поэтому текст восстанавливается из HTML: пункт списка — «+».
+ * Обозначения (S, V, V-s, V-ing, V2, V3, to V) — из глоссария, выделяются цветом.
+ */
+import '../../styles/english.css';
+
+const SIGNS: Record<string, string> = { '+': 'утверждение', '−': 'отрицание', '?': 'вопрос' };
+const html = await Astro.slots.render('default');
+const text = html
+  .replace(/<li>/g, '\n+ ')
+  .replace(/<br\s*\/?>/g, '\n')
+  .replace(/<[^>]+>/g, '')
+  .replace(/&#x27;|&#39;/g, "'")
+  .replace(/&quot;/g, '"')
+  .replace(/&lt;/g, '<')
+  .replace(/&gt;/g, '>')
+  .replace(/&amp;/g, '&')
+  .replace(/[’‘]/g, "'");
+const lines = text
+  .split('\n')
+  .map((l) => l.trim())
+  .filter(Boolean)
+  .map((l) => {
+    const m = /^([+−?])\s+(.*)$/.exec(l);
+    return m ? { sign: m[1], body: m[2] } : { sign: '', body: l };
+  });
+const escape = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+const mark = (s: string) =>
+  escape(s).replace(/(^|[\s(/])(to V|V-ing|V-s|V2|V3|V|S)(?=$|[\s)/.?,…])/g, '$1<span class="en-sym">$2</span>');
+const signed = lines.some((l) => l.sign);
+---
+
+<div class:list={['en-formula', signed && 'is-signed']} role="list">
+  {
+    lines.map((l) => (
+      <div class="en-formula-row" role="listitem">
+        {signed && (
+          <span class="en-sign" title={SIGNS[l.sign]} aria-label={SIGNS[l.sign] ?? ''}>
+            {l.sign}
+          </span>
+        )}
+        <code lang="en" set:html={mark(l.body)} />
+      </div>
+    ))
+  }
+</div>

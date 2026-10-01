@@ -142,6 +142,7 @@ const { autofocus = false, placeholder = 'Поиск по справочнику
     s: string;
     p: string;
     l: 'basic' | 'medium' | 'advanced';
+    c?: string;
     f: string;
     h: string;
     w: string;
@@ -232,7 +233,7 @@ const { autofocus = false, placeholder = 'Поиск по справочнику
             .map(
               ({ d }) =>
                 `<a href="${d.u}" role="option"><span class="r-title">${highlight(d.t, query)}</span>` +
-                `<span class="r-meta">${escape(d.p)} · ${LEVEL[d.l]}</span><span class="r-summary">${escape(d.s)}</span></a>`,
+                `<span class="r-meta">${escape(d.p)} · ${d.c ?? LEVEL[d.l]}</span><span class="r-summary">${escape(d.s)}</span></a>`,
             )
             .join('')
         : `<p class="r-empty">Ничего не найдено. Попробуйте начало слова или имя функции.</p>`;

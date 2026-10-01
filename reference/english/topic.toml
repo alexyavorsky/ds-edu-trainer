@@ -1,0 +1,80 @@
+# Грамматика английского A1 → B2 (+ C1 выборочно): разделы и порядок статей — docs/ENGLISH_PLAN.md, С4.
+# Статьи past-simple и present-perfect-vs-past-simple — образцы формата от потока платформы (П2b);
+# поток С4 их перепишет или доработает. Остальные статьи оглавления пока не написаны («скоро»).
+title = "Английская грамматика"
+summary = "Правила английской грамматики от A1 до B2: формулы, примеры с переводом и частые ошибки русскоговорящих."
+order = 10
+direction = "english"
+beta = true
+
+[[sections]]
+title = "Настоящее время"
+articles = ["to-be", "present-simple", "present-continuous", "present-simple-vs-continuous"]
+
+[[sections]]
+title = "Прошедшее время"
+articles = ["past-simple", "irregular-verbs", "past-continuous", "used-to", "past-perfect", "past-perfect-continuous", "narrative-tenses"]
+
+[[sections]]
+title = "Present Perfect"
+articles = ["present-perfect", "present-perfect-vs-past-simple", "present-perfect-continuous"]
+
+[[sections]]
+title = "Будущее время"
+articles = ["will", "going-to", "future-comparison", "time-clauses-future", "future-continuous-perfect", "future-in-the-past"]
+
+[[sections]]
+title = "Пассив"
+articles = ["passive-basics", "passive-tenses", "passive-reporting", "causative"]
+
+[[sections]]
+title = "Модальные глаголы"
+articles = ["modals-overview", "can-could-ability", "permission-requests", "must-have-to", "should-ought-to", "modals-deduction-present", "modals-perfect"]
+
+[[sections]]
+title = "Условные предложения и нереальность"
+articles = ["conditionals-overview", "zero-first-conditional", "second-conditional", "third-conditional", "mixed-conditionals", "unless-provided", "wish-if-only"]
+
+[[sections]]
+title = "Косвенная речь"
+articles = ["sequence-of-tenses", "reported-statements", "reported-questions", "reporting-verbs"]
+
+[[sections]]
+title = "Существительные и артикли"
+articles = ["plural-nouns", "countable-uncountable", "possessive-s", "articles-a-the", "zero-article", "articles-names", "articles-generic"]
+
+[[sections]]
+title = "Количество"
+articles = ["some-any-no", "much-many-a-lot", "quantifiers"]
+
+[[sections]]
+title = "Местоимения"
+articles = ["personal-pronouns", "reflexive-pronouns", "indefinite-pronouns", "it-there"]
+
+[[sections]]
+title = "Прилагательные и наречия"
+articles = ["adjectives", "adverbs", "comparatives", "comparison-structures", "too-enough-so-such"]
+
+[[sections]]
+title = "Предлоги"
+articles = ["prepositions-time", "prepositions-place", "dependent-prepositions"]
+
+[[sections]]
+title = "Глагольные конструкции"
+articles = ["gerund-infinitive", "verbs-change-meaning", "verb-object-infinitive", "infinitive-purpose"]
+
+[[sections]]
+title = "Фразовые глаголы"
+articles = ["phrasal-verbs", "phrasal-verbs-common"]
+
+[[sections]]
+title = "Предложение и вопросы"
+articles = ["word-order", "there-is", "negatives", "questions", "subject-questions", "indirect-questions", "question-tags", "short-answers"]
+
+[[sections]]
+title = "Сложное предложение"
+articles = ["relative-clauses-defining", "relative-clauses-non-defining", "linking-cause-result", "linking-contrast", "participle-clauses", "emphasis", "inversion"]
+
+[[sections]]
+title = "Итоги"
+articles = ["tenses-overview", "common-mistakes", "british-american"]

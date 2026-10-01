@@ -4,7 +4,9 @@
  */
 import { createHash } from 'node:crypto';
 import type { CodeCell, StoredOutput } from './format.ts';
-import { courseLessons, lessonFiles, lessonPackages, loadCourses, type CourseSource, type LessonSource } from './load.ts';
+import { exerciseFingerprint } from '../english/exercises.ts';
+import type { Exercise } from '../english/check.ts';
+import { courseLessons, isTestKind, lessonFiles, lessonPackages, lessonUrl, loadCourses, type CourseSource, type LessonSource } from './load.ts';
 
 let cache: CourseSource[] | null = null;
 
@@ -88,5 +90,29 @@ export function lessonPageData(course: CourseSource, lesson: LessonSource): Less
     packages: lessonPackages(course.meta, lesson.meta),
     files: lessonFiles(lesson.meta),
     cells,
+  };
+}
+
+// ─── Уроки английского ──────────────────────────────────────────────────────
+
+/** Данные урока английского для src/scripts/english/practice.ts (тип — EnglishPageData там же). */
+export function englishPageData(course: CourseSource, lesson: LessonSource, cefr: Map<string, string>) {
+  const mode = lesson.meta.kind === 'placement' ? 'placement' : isTestKind(lesson.meta.kind) ? 'test' : 'drill';
+  const exercises = lesson.exercises.map((e: Exercise) => ({ ...e, hash: hash(exerciseFingerprint(e)) }));
+  const refs = [...new Set(lesson.exercises.flatMap((e) => [...e.ref, ...e.items.flatMap((i) => i.ref)]))];
+  return {
+    lesson: lesson.meta.id,
+    course: course.slug,
+    mode,
+    exercises,
+    placement:
+      mode === 'placement'
+        ? {
+            cefr: Object.fromEntries(refs.map((r) => [r, cefr.get(r) ?? ''])),
+            modules: course.modules
+              .filter((m) => m.meta.level && m.lessons.length)
+              .map((m) => ({ level: m.meta.level!, number: m.number, title: m.meta.title, href: lessonUrl(m.lessons[0]) })),
+          }
+        : undefined,
   };
 }

@@ -1,0 +1,27 @@
+---
+/**
+ * «Ошибка → правильно»: `<Fix wrong="…" right="…">почему</Fix>`. Отличающиеся слова подсвечиваются сами
+ * (разница по словам), поэтому в атрибутах разметки нет.
+ */
+import { wordDiff } from '../../lib/english/diff';
+import '../../styles/english.css';
+
+interface Props {
+  wrong: string;
+  right: string;
+}
+const { wrong, right } = Astro.props;
+const diff = wordDiff(wrong, right);
+---
+
+<div class="en-fix">
+  <p class="en-fix-line is-wrong">
+    <span class="en-fix-mark" aria-label="неверно">✗</span>
+    <span lang="en">{diff.wrong.map((t) => (t.changed ? <del>{t.text}</del> : t.text))}</span>
+  </p>
+  <p class="en-fix-line is-right">
+    <span class="en-fix-mark" aria-label="верно">✓</span>
+    <span lang="en">{diff.right.map((t) => (t.changed ? <ins>{t.text}</ins> : t.text))}</span>
+  </p>
+  <div class="en-fix-why"><slot /></div>
+</div>

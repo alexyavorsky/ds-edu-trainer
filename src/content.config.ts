@@ -77,9 +77,9 @@ const topics = defineCollection({
   schema: z.object({
     title: z.string(),
     summary: z.string(),
-    package: z.string(),
-    version: z.string(),
-    docs: z.url(),
+    package: z.string().optional(), // у темы без пакета (грамматика английского) — нет
+    version: z.string().optional(),
+    docs: z.url().optional(),
     order: z.number().int().default(100),
     direction,
     beta,
@@ -88,6 +88,9 @@ const topics = defineCollection({
 });
 
 const articleRef = z.string().regex(/^[a-z0-9-]+\/[a-z0-9-]+$/);
+
+/** Уровень CEFR — у статей грамматики английского (docs/ENGLISH_PLAN.md, С4). */
+export const CEFR = ['A1', 'A2', 'B1', 'B2', 'C1'] as const;
 
 const reference = defineCollection({
   loader: glob({ pattern: '*/*.mdx', base: './reference' }),
@@ -98,8 +101,11 @@ const reference = defineCollection({
     requires: z.array(articleRef).max(3).default([]),
     related: z.array(articleRef).default([]),
     functions: z.array(z.string()).default([]),
-    docs: z.url(),
-    kind: z.enum(['article', 'overview']).default('article'),
+    docs: z.url().optional(), // у статей без пакета (английский) — нет
+    kind: z.enum(['article', 'contrast', 'overview']).default('article'), // contrast — «X или Y» (английский)
+    cefr: z.enum(CEFR).optional(), // обязателен у темы english — проверяет scripts/validate_english.ts
+    contrasts: z.array(articleRef).default([]), // статьи-сравнения: у статьи с ними обязателен раздел «Сравнение»
+    patterns: z.array(z.string()).default([]), // формы и слова для поиска (have done, already) — вместо functions
   }),
 });
 
@@ -111,7 +117,7 @@ const lessons = defineCollection({
     title: z.string(),
     summary: z.string(),
     minutes: z.number().int().min(5).max(30),
-    kind: z.enum(['lesson', 'project']).default('lesson'),
+    kind: z.enum(['lesson', 'project', 'review', 'test', 'placement']).default('lesson'), // review/test/placement — английский
     optional: z.boolean().default(false), // «дополнительно»: урок можно пропустить, дальше он не нужен
     introduces: z.array(z.string()).default([]),
     reference: z.array(articleRef).default([]),
