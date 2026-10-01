@@ -348,8 +348,8 @@ boris_top = ...
 def test_results():
     "removed — True, missing — False"
     names = [p.name for p in boris.items]
-    if removed is False and names.count("Раф") > 1:
-        assert False, "похоже, ячейка выполнена второй раз: чай уже убран прошлым запуском, а раф добавлен дважды. Нажмите «Выполнить все выше» и выполните ячейку один раз"
+    if removed is False and "Чай" not in names:
+        assert False, "removed = False, а чая в корзине уже нет: похоже, его убрал прошлый запуск ячейки. Нажмите «Выполнить все выше» и выполните ячейку один раз"
     assert removed is True, f"removed = {removed!r}: чай в корзине был, remove должен вернуть True"
     assert missing is False, f"missing = {missing!r}: какао в корзине нет, remove должен вернуть False"
 
