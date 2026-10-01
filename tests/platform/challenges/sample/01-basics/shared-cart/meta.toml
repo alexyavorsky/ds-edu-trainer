@@ -1,0 +1,8 @@
+id = "smp-shared-cart"
+title = "Общая корзина"
+difficulty = "medium"
+type = "fix-bug"
+bugs = 1
+tags = ["атрибут класса"]
+refs = ["sample/classes"]
+hints = ["Где создаётся список товаров — в классе или в __init__?"]

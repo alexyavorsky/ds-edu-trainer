@@ -17,6 +17,7 @@ interface WorkbenchData {
   footer: string;
   packages: string[];
   filename: string;
+  data: string | null; // data.py задачи
 }
 
 interface Saved {
@@ -215,7 +216,7 @@ export function initWorkbench(root: HTMLElement): void {
     const got: (TestResult | undefined)[] = [];
 
     const end: RunEnd = await python.run(
-      { kind: 'task', packages: data.packages, code, footer: data.footer },
+      { kind: 'task', packages: data.packages, code, footer: data.footer, ...(data.data ? { data: data.data } : {}) },
       {
         onStatus: (text) => {
           engineStatus.textContent = text;

@@ -6,12 +6,14 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import type { Loader, LoaderContext } from 'astro/loaders';
 import { parse as parseToml } from 'smol-toml';
-import { bundleParts, type ChallengeType, type Difficulty } from './bundle';
+import { contentPath } from './paths';
+import { bundleParts, parsePins, type ChallengeType, type Difficulty } from './bundle';
 
 const ROOT = resolve('.');
-export const CHALLENGES_DIR = join(ROOT, 'challenges');
-export const REFERENCE_DIR = join(ROOT, 'reference');
+export const CHALLENGES_DIR = contentPath('challenges');
+export const REFERENCE_DIR = contentPath('reference');
 const RUNNER_PATH = join(ROOT, 'runtime', 'runner.py');
+const REQUIREMENTS_PATH = join(ROOT, 'requirements-dev.txt');
 
 const CHAPTER_DIR_RE = /^(\d{2})-[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -90,6 +92,7 @@ export function challengesLoader(): Loader {
       const load = async () => {
         context.store.clear();
         const runner = read(RUNNER_PATH);
+        const pins = existsSync(REQUIREMENTS_PATH) ? parsePins(read(REQUIREMENTS_PATH)) : {};
         for (const book of subdirs(CHALLENGES_DIR)) {
           const bookPath = join(CHALLENGES_DIR, book);
           if (!existsSync(join(bookPath, 'book.toml'))) continue;
@@ -119,6 +122,9 @@ export function challengesLoader(): Loader {
                 taskMd,
                 tests: file('tests.py') ?? '',
                 runner,
+                data: file('data.py'),
+                packages: (bookMeta.packages as string[] | undefined) ?? [],
+                pins,
               };
               const id = `${book}/${chapter}/${slug}`;
               const raw = {
@@ -131,6 +137,7 @@ export function challengesLoader(): Loader {
                 solution: file('solution.py'),
                 code: file('code.py'),
                 tests: file('tests.py'),
+                data: file('data.py'),
                 packages: bookMeta.packages ?? [],
                 ...(isComplexity ? {} : (({ header, footer }) => ({ bundleHeader: header, bundleFooter: footer }))(bundleParts(common))),
               };

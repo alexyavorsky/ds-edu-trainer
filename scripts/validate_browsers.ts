@@ -68,7 +68,7 @@ function loadTasks() {
         const variants: [string, string][] = [['solution.py', read(join(dir, 'solution.py'))]];
         const alt = join(dir, 'alt_solutions');
         if (existsSync(alt)) for (const f of readdirSync(alt).filter((n) => n.endsWith('.py')).sort()) variants.push([`alt_solutions/${f}`, read(join(alt, f))]);
-        tasks.push({ id: meta.id, packages: bookMeta.packages ?? [], footer: bundleFooter(read(join(dir, 'tests.py')), runner), variants });
+        tasks.push({ id: meta.id, packages: bookMeta.packages ?? [], footer: bundleFooter(read(join(dir, 'tests.py')), runner), data: existsSync(join(dir, 'data.py')) ? read(join(dir, 'data.py')) : undefined, variants });
       }
     }
   }

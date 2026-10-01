@@ -36,8 +36,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-CHALLENGES = ROOT / "challenges"
+# EDU_CONTENT_ROOT — другая папка с той же структурой (образцы платформы tests/platform), как в src/lib/paths.ts
+CONTENT = (ROOT / os.environ["EDU_CONTENT_ROOT"]).resolve() if os.environ.get("EDU_CONTENT_ROOT") else ROOT
+CHALLENGES = CONTENT / "challenges"
 RUNNER = ROOT / "runtime" / "runner.py"
+REQUIREMENTS = ROOT / "requirements-dev.txt"
 
 DIFFICULTIES = ("easy", "medium", "hard")
 TYPES = ("implement", "fix-bug", "complete", "complexity")
@@ -52,11 +55,13 @@ TYPE_RU = {
 CODE_FILES = ("task.md", "starter.py", "solution.py", "tests.py")
 COMPLEXITY_FILES = ("task.md", "code.py")
 IGNORED_FILES = {"__pycache__", ".DS_Store"}
+DATA_FILE = "data.py"  # необязательные данные задачи: в копируемом файле — блок перед заготовкой, тесты их используют
+DATA_MAX_LINES = 150
 MUTANTS_FILE = "mutants.toml"  # типичные ошибки: «найти → заменить» в solution.py; каждая должна ловиться тестами
 ALT_DIR = "alt_solutions"  # корректные, но «неэкономные» решения: должны проходить тесты, на сайте не показываются
 
 META_REQUIRED = {"id", "title", "difficulty", "type", "tags", "hints"}
-META_OPTIONAL = {"bugs", "order", "refs", "complexity"}
+META_OPTIONAL = {"bugs", "order", "refs", "lessons", "complexity"}
 # book.toml описывает раздел задач: книгу (kind = "book") или тему (kind = "topic", например NumPy).
 BOOK_REQUIRED = {"title", "code", "direction"}
 BOOK_OPTIONAL = {"kind", "author", "edition", "order", "description", "packages", "reference", "beta"}
@@ -75,6 +80,8 @@ TIMEOUT = 15
 PYTHON_MIN = (3, 10)  # задачи должны запускаться на Python 3.10+
 MIN_TESTS = 3
 SEPARATOR = "# ════ Тесты — ниже этой линии ничего менять не нужно " + "═" * 19
+DATA_SEPARATOR = "# ════ Данные задачи — их можно вызывать в своём коде " + "═" * 19
+CODE_SEPARATOR = "# ════ Решение " + "═" * 58
 TESTS_LIST_COMMENT = "# Тесты задачи по порядку — запускаются только они"
 
 
@@ -146,6 +153,21 @@ def chapter_label(chapter_dir: Path, chapter_meta: dict, kind: str = "book") -> 
     return f"{word} {number}. {chapter_meta['title']}"
 
 
+def pinned_versions() -> dict[str, str]:
+    """Версии из requirements-dev.txt: на них проверены задачи тем (строка «Нужно: …» в docstring)."""
+    pins = {}
+    for line in REQUIREMENTS.read_text("utf-8").splitlines() if REQUIREMENTS.exists() else []:
+        m = re.match(r"^([A-Za-z0-9_.-]+)==([^\s#]+)", line)
+        if m:
+            pins[m[1].lower()] = m[2]
+    return pins
+
+
+def needs_line(packages: list[str], pins: dict[str, str]) -> str:
+    """«Нужно: numpy (проверено на 2.5.3)» — зеркало src/lib/bundle.ts::needsLine."""
+    return "Нужно: " + ", ".join(f"{p} (проверено на {pins[p]})" if p in pins else p for p in packages)
+
+
 def build_bundle(task_dir: Path, code_file: str = "starter.py", code: str | None = None) -> str:
     """Склеивает запускаемый .py. Логика зеркалится в src/lib/bundle.ts."""
     chapter_dir, book_dir = task_dir.parent, task_dir.parent.parent
@@ -167,6 +189,7 @@ def build_bundle(task_dir: Path, code_file: str = "starter.py", code: str | None
             fill(first_paragraph(task_md)),
             "",
             *extra,
+            *([needs_line(book_meta["packages"], pinned_versions())] if book_meta.get("packages") else []),
             f"Запуск: python3 {task_dir.name.replace('-', '_')}.py (на Windows: python {task_dir.name.replace('-', '_')}.py)",
             '"""',
         ]
@@ -174,6 +197,9 @@ def build_bundle(task_dir: Path, code_file: str = "starter.py", code: str | None
     code = (code if code is not None else (task_dir / code_file).read_text("utf-8")).strip()
     tests = (task_dir / "tests.py").read_text("utf-8").strip()
     runner = RUNNER.read_text("utf-8").strip()
+    data_path = task_dir / DATA_FILE
+    if data_path.exists():  # данные — перед заготовкой: их можно вызвать в своём коде и посмотреть
+        header += f"\n\n{DATA_SEPARATOR}\n\n{data_path.read_text('utf-8').strip()}\n\n\n{CODE_SEPARATOR}"
     return f"{header}\n\n{code}\n\n\n{SEPARATOR}\n\n{tests}\n\n\n{tests_list(tests)}\n\n\n{runner}\n"
 
 
@@ -267,6 +293,13 @@ def check_meta(r: TaskReport, book_code: str) -> None:
         for ref in meta["refs"]:
             if ref not in known:
                 r.errors.append(f"refs: статьи справочника «{ref}» нет (ожидается «тема/статья», например numpy/broadcasting)")
+    if "lessons" in meta and not is_str_list(meta["lessons"]):
+        r.errors.append("lessons: нужен список id уроков курсов, например [\"np-broadcasting\"]")
+    elif "lessons" in meta:
+        known_lessons = course_lessons()
+        for lesson in meta["lessons"]:
+            if lesson not in known_lessons:
+                r.errors.append(f"lessons: урока «{lesson}» нет в courses/ (нужен id из frontmatter lesson.mdx, например np-first-array)")
 
     task_type = meta.get("type")
     if task_type == "fix-bug":
@@ -304,7 +337,7 @@ def check_files(r: TaskReport) -> bool:
     missing = [f for f in expected if f not in present]
     for f in missing:
         r.errors.append(f"нет файла {f}")
-    extra = present - set(expected) - {"meta.toml", ALT_DIR, MUTANTS_FILE}
+    extra = present - set(expected) - {"meta.toml", ALT_DIR, MUTANTS_FILE, *((DATA_FILE,) if r.meta.get("type") != "complexity" else ())}
     if extra:
         r.warnings.append(f"лишние файлы: {', '.join(sorted(extra))}")
     return not missing
@@ -331,16 +364,55 @@ def parse_py(r: TaskReport, name: str) -> ast.Module | None:
         return None
 
 
+def function_signature(node: ast.FunctionDef | ast.AsyncFunctionDef, with_decorators: bool = True) -> str:
+    """У методов декораторы — часть интерфейса (@property, @classmethod); у функций — нет (@cache в решении — можно)."""
+    decorators = "".join(f"@{ast.unparse(d)} " for d in node.decorator_list) if with_decorators else ""
+    returns = f" -> {ast.unparse(node.returns)}" if node.returns else ""
+    return f"{decorators}({ast.unparse(node.args)}){returns}"
+
+
+def is_public(name: str) -> bool:
+    """Публичный интерфейс класса: обычные имена и магические методы (__init__, __eq__…), но не _внутренние."""
+    return not name.startswith("_") or (name.startswith("__") and name.endswith("__"))
+
+
+def class_signature(node: ast.ClassDef) -> str:
+    """Декораторы и базовые классы: «@dataclass(frozen=True) class(Base)»."""
+    decorators = "".join(f"@{ast.unparse(d)} " for d in node.decorator_list)
+    bases = ", ".join(ast.unparse(b) for b in [*node.bases, *node.keywords])
+    return f"{decorators}class({bases})"
+
+
 def signatures(tree: ast.Module) -> dict[str, str]:
+    """Имя → сигнатура: функции верхнего уровня, классы (декораторы и базы) и их публичные методы «Класс.метод»."""
     result = {}
     for node in tree.body:
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-            result[node.name] = f"({ast.unparse(node.args)})" + (
-                f" -> {ast.unparse(node.returns)}" if node.returns else ""
-            )
+            result[node.name] = function_signature(node, with_decorators=False)
         elif isinstance(node, ast.ClassDef):
-            result[node.name] = "class"
+            result[node.name] = class_signature(node)
+            for item in node.body:
+                if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and is_public(item.name):
+                    key = f"{node.name}.{item.name}"
+                    # свойство с сеттером: два метода с одним именем — сигнатуры через «|»
+                    result[key] = f"{result[key]} | {function_signature(item)}" if key in result else function_signature(item)
     return result
+
+
+def class_members(tree: ast.Module) -> set[str]:
+    """Публичные методы и атрибуты уровня класса (поля dataclass) — для проверки, что видит tests.py.
+
+    Атрибуты экземпляра (self.x = …) не учитываются: в заготовке implement тело __init__ — raise NotImplementedError."""
+    names: set[str] = set()
+    for cls in (n for n in tree.body if isinstance(n, ast.ClassDef)):
+        for node in cls.body:
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                names.add(node.name)
+            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+                names.add(node.target.id)
+            elif isinstance(node, ast.Assign):
+                names.update(t.id for t in node.targets if isinstance(t, ast.Name))
+    return {n for n in names if is_public(n)}
 
 
 def check_code(r: TaskReport) -> bool:
@@ -356,6 +428,11 @@ def check_code(r: TaskReport) -> bool:
             r.errors.append(f"в solution.py нет {name}, объявленного в starter.py")
         elif sol_sig[name] != sig:
             r.errors.append(f"сигнатура {name} различается: starter {sig} ≠ solution {sol_sig[name]}")
+    starter_classes = {n.name for n in starter.body if isinstance(n, ast.ClassDef)}
+    for name in sorted(sol_sig.keys() - s_sig.keys()):
+        cls = name.split(".")[0]
+        if "." in name and cls in starter_classes:
+            r.errors.append(f"в starter.py у класса {cls} нет метода {name.split('.')[1]}, который есть в solution.py — объявите его в заготовке")
     if not any(isinstance(n, (ast.FunctionDef, ast.ClassDef)) for n in starter.body):
         r.errors.append("starter.py не объявляет ни одной функции")
 
@@ -373,6 +450,20 @@ def check_code(r: TaskReport) -> bool:
     used = {n.id for n in ast.walk(tests) if isinstance(n, ast.Name)}
     for name in sorted((used & sol_sig.keys()) - s_sig.keys() - own):
         r.errors.append(f"tests.py использует {name}, которого нет в starter.py — у пользователя будет NameError")
+    # атрибуты и методы классов решения, к которым обращаются тесты, должны быть видны и в заготовке
+    attrs = {n.attr for n in ast.walk(tests) if isinstance(n, ast.Attribute)}
+    own_members = class_members(tests)
+    for name in sorted((attrs & class_members(solution)) - class_members(starter) - own_members):
+        r.errors.append(f"tests.py обращается к .{name}, которого нет в классах starter.py — объявите метод или атрибут в заготовке")
+    if (r.path / DATA_FILE).exists():
+        data = parse_py(r, DATA_FILE)
+        if data is not None:
+            lines = len((r.path / DATA_FILE).read_text("utf-8").strip().splitlines())
+            if lines > DATA_MAX_LINES:
+                r.errors.append(f"{DATA_FILE}: {lines} строк, не больше {DATA_MAX_LINES} — данные строятся кодом, а не хранятся таблицей")
+            clash = {n.name for n in data.body if isinstance(n, (ast.FunctionDef, ast.ClassDef))} & (s_sig.keys() | own)
+            for name in sorted(clash):
+                r.errors.append(f"{DATA_FILE}: {name} объявлен и в данных, и в заготовке или тестах")
 
     starter_src = (r.path / "starter.py").read_text("utf-8")
     solution_src = (r.path / "solution.py").read_text("utf-8")
@@ -410,22 +501,28 @@ def check_code(r: TaskReport) -> bool:
 # ─── Запуск тестов ──────────────────────────────────────────────────────────
 
 PROBE = f"""
-import json, os, runpy, sys
+import json, os, runpy, sys, warnings
 g = runpy.run_path(sys.argv[1], run_name="__bundle__")
+if sys.argv[2:] == ["strict"]:  # эталон: устаревший API — ошибка теста, а не тихое предупреждение
+    warnings.filterwarnings("error", category=DeprecationWarning)
+    warnings.filterwarnings("error", category=FutureWarning)
+    pandas_errors = sys.modules.get("pandas.errors")
+    if pandas_errors is not None and hasattr(pandas_errors, "SettingWithCopyWarning"):
+        warnings.filterwarnings("error", category=pandas_errors.SettingWithCopyWarning)
 print({RESULT_MARK!r} + json.dumps(g["_run_tests"](verbose=False), ensure_ascii=False), flush=True)
 os._exit(0)  # зависший тест остаётся в фоновом потоке — не ждём его
 """
 
 
-def run_bundle(source: str) -> tuple[list | None, str]:
-    """Возвращает (результаты тестов, текст ошибки)."""
+def run_bundle(source: str, strict: bool = False) -> tuple[list | None, str]:
+    """Возвращает (результаты тестов, текст ошибки). strict — Deprecation/FutureWarning в тестах становятся ошибками."""
     with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False, encoding="utf-8") as f:
         f.write(source)
         path = f.name
     env = {**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONDONTWRITEBYTECODE": "1"}
     try:
         proc = subprocess.run(
-            [sys.executable, "-c", PROBE, path], capture_output=True, text=True, timeout=TIMEOUT, env=env
+            [sys.executable, "-c", PROBE, path, *(["strict"] if strict else [])], capture_output=True, text=True, timeout=TIMEOUT, env=env
         )
     except subprocess.TimeoutExpired:
         return None, f"завис: не завершился за {TIMEOUT} с"
@@ -457,7 +554,7 @@ def run_as_script(source: str) -> str:
 
 def check_runs(r: TaskReport) -> None:
     solution = build_bundle(r.path, "solution.py")
-    results, err = run_bundle(solution)
+    results, err = run_bundle(solution, strict=True)
     if results is None:
         r.errors.append(f"solution: {err}")
     else:
@@ -481,7 +578,7 @@ def check_runs(r: TaskReport) -> None:
     alts = alt_files(r)
     passed_alts = 0
     for alt in alts:
-        results, err = run_bundle(build_bundle(r.path, code=alt.read_text("utf-8")))
+        results, err = run_bundle(build_bundle(r.path, code=alt.read_text("utf-8")), strict=True)
         if results is None:
             r.errors.append(f"{ALT_DIR}/{alt.name}: {err}")
             continue
@@ -599,7 +696,7 @@ def validate_task(task_dir: Path, book_code: str, packages: frozenset[str] = fro
 def check_imports(r: TaskReport, packages: frozenset[str]) -> None:
     """В задачах по книгам — только стандартная библиотека; в задачах темы ещё и её пакеты."""
     allowed = set(sys.stdlib_module_names) | set(packages)
-    for name in ("starter.py", "solution.py", "tests.py", *(f"{ALT_DIR}/{p.name}" for p in alt_files(r))):
+    for name in ("starter.py", "solution.py", "tests.py", DATA_FILE, *(f"{ALT_DIR}/{p.name}" for p in alt_files(r))):
         path = r.path / name
         if not path.exists():
             continue
@@ -609,14 +706,30 @@ def check_imports(r: TaskReport, packages: frozenset[str]) -> None:
             for module in modules:
                 top = module.split(".")[0]
                 if top not in allowed:
-                    where = "задачах по книгам — только стандартная библиотека" if not packages else f"теме разрешены {', '.join(sorted(packages))}"
+                    where = "этом разделе — только стандартная библиотека (packages пуст)" if not packages else f"теме разрешены {', '.join(sorted(packages))} и стандартная библиотека"
                     r.errors.append(f"{name}: import {module} — в {where}")
+
+
+_lessons: set[str] | None = None
+
+
+def course_lessons() -> set[str]:
+    """id уроков курсов из frontmatter courses/<курс>/<модуль>/<урок>/lesson.mdx — для поля lessons."""
+    global _lessons
+    if _lessons is None:
+        _lessons = set()
+        for mdx in (CONTENT / "courses").glob("*/*/*/lesson.mdx"):
+            front = mdx.read_text("utf-8").split("---")
+            m = re.search(r"^id:\s*['\"]?([a-z0-9-]+)", front[1] if len(front) > 2 else "", re.M)
+            if m:
+                _lessons.add(m[1])
+    return _lessons
 
 
 def reference_articles() -> set[str]:
     """id статей справочника («numpy/broadcasting») по оглавлениям reference/*/topic.toml."""
     ids: set[str] = set()
-    for topic_path in (ROOT / "reference").glob("*/topic.toml"):
+    for topic_path in (CONTENT / "reference").glob("*/topic.toml"):
         for section in load_toml(topic_path).get("sections", []):
             ids.update(f"{topic_path.parent.name}/{slug}" for slug in section.get("articles", []))
     return ids
@@ -753,11 +866,12 @@ def check_book_kind(book: dict, book_dir: Path, errors: list[str]) -> frozenset[
         if packages:
             errors.append(f"{where}: задачи по книгам работают на стандартной библиотеке — packages не нужен")
         return frozenset()
-    if not is_str_list(packages, allow_empty=False) or not set(packages) <= KNOWN_PACKAGES:
-        errors.append(f"{where}: у темы нужен packages — непустой список из {', '.join(sorted(KNOWN_PACKAGES))}")
+    # packages = [] — тема на стандартной библиотеке (ООП): как книга, но с reference и подписью «Раздел»
+    if "packages" not in book or not is_str_list(packages) or not set(packages) <= KNOWN_PACKAGES:
+        errors.append(f"{where}: у темы нужен packages — список из {', '.join(sorted(KNOWN_PACKAGES))} или [] (только стандартная библиотека)")
         return frozenset()
     reference = book.get("reference")
-    if reference is not None and not (ROOT / "reference" / str(reference) / "topic.toml").exists():
+    if reference is not None and not (CONTENT / "reference" / str(reference) / "topic.toml").exists():
         errors.append(f"{where}: reference = {reference!r} — такой темы справочника нет")
     return frozenset(packages)
 

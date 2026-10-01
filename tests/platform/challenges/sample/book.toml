@@ -1,0 +1,10 @@
+# Образец раздела задач без пакетов (как ООП): kind = "topic", packages = [] — только стандартная библиотека.
+title = "Образец: задачи без пакетов"
+kind = "topic"
+code = "smp"
+order = 1
+direction = "python"
+beta = true
+packages = []
+reference = "sample"
+description = "Тестовый раздел для проверки платформы: классы, data.py, ссылки на уроки."

@@ -6,21 +6,24 @@
  */
 import { execFileSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { parse } from 'smol-toml';
-import { buildBundle } from '../src/lib/bundle.ts';
+import { buildBundle, parsePins } from '../src/lib/bundle.ts';
 
 const root = join(import.meta.dirname, '..');
+// EDU_CONTENT_ROOT — образцы платформы (tests/platform), как в src/lib/paths.ts
+const content = process.env.EDU_CONTENT_ROOT ? resolve(root, process.env.EDU_CONTENT_ROOT) : root;
 const dirs = (p: string) => readdirSync(p).filter((n) => !n.startsWith('.') && statSync(join(p, n)).isDirectory()).sort();
 const read = (p: string) => readFileSync(p, 'utf-8');
 const runner = read(join(root, 'runtime', 'runner.py'));
+const pins = parsePins(read(join(root, 'requirements-dev.txt')));
 
 let checked = 0;
 let failed = 0;
-for (const book of dirs(join(root, 'challenges'))) {
-  const bookMeta = parse(read(join(root, 'challenges', book, 'book.toml'))) as Record<string, any>;
-  for (const chapter of dirs(join(root, 'challenges', book))) {
-    const chapterDir = join(root, 'challenges', book, chapter);
+for (const book of dirs(join(content, 'challenges'))) {
+  const bookMeta = parse(read(join(content, 'challenges', book, 'book.toml'))) as Record<string, any>;
+  for (const chapter of dirs(join(content, 'challenges', book))) {
+    const chapterDir = join(content, 'challenges', book, chapter);
     const chapterMeta = parse(read(join(chapterDir, 'chapter.toml'))) as Record<string, any>;
     for (const slug of dirs(chapterDir)) {
       const dir = join(chapterDir, slug);
@@ -34,14 +37,17 @@ for (const book of dirs(join(root, 'challenges'))) {
           difficulty: meta.difficulty,
           type: meta.type,
           bookTitle: bookMeta.title,
-          chapterLabel: `Глава ${Number(chapter.slice(0, 2))}. ${chapterMeta.title}`,
+          chapterLabel: `${bookMeta.kind === 'topic' ? 'Раздел' : 'Глава'} ${Number(chapter.slice(0, 2))}. ${chapterMeta.title}`,
           slug,
           taskMd: read(join(dir, 'task.md')),
           code: read(join(dir, file)),
           tests: read(join(dir, 'tests.py')),
           runner,
+          data: existsSync(join(dir, 'data.py')) ? read(join(dir, 'data.py')) : undefined,
+          packages: bookMeta.packages ?? [],
+          pins,
         });
-        const py = execFileSync('python3', [join(root, 'scripts', 'validate.py'), '--bundle', dir, ...flag], { encoding: 'utf-8' });
+        const py = execFileSync('python3', [join(root, 'scripts', 'validate.py'), '--bundle', dir, ...flag], { encoding: 'utf-8', env: process.env });
         checked++;
         if (ts !== py) {
           failed++;

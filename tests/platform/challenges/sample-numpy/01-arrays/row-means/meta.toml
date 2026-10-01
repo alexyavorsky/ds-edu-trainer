@@ -1,0 +1,6 @@
+id = "snp-row-means"
+title = "Средние по строкам"
+difficulty = "easy"
+type = "implement"
+tags = ["axis"]
+hints = ["Среднее по строкам — mean(axis=1)."]

@@ -16,14 +16,24 @@ interface Props {
   footer: string;
   packages: string[];
   filename: string; // имя копируемого файла: find_term.py
+  taskData?: string; // data.py: выполняется перед кодом из редактора, показывается свёрнутым блоком
 }
-const { taskId, starter, tests, header, footer, packages, filename } = Astro.props;
+const { taskId, starter, tests, header, footer, packages, filename, taskData } = Astro.props;
 const starterHash = createHash('sha256').update(starter).digest('hex').slice(0, 16);
-const data = JSON.stringify({ taskId, starter, starterHash, header, footer, packages, filename }).replace(/</g, '\\u003c');
+const data = JSON.stringify({ taskId, starter, starterHash, header, footer, packages, filename, data: taskData ?? null }).replace(/</g, '\\u003c');
 ---
 
 <section class="workbench" data-workbench>
   <script type="application/json" data-workbench-data set:html={data} />
+
+  {
+    taskData && (
+      <details class="task-data">
+        <summary>Данные задачи — функции можно вызывать в своём коде</summary>
+        <CodeBlock code={taskData} filename="data.py — только для чтения" />
+      </details>
+    )
+  }
 
   <div class="bar">
     <h2 class="section-title">Решение</h2>
@@ -368,6 +378,18 @@ const data = JSON.stringify({ taskId, starter, starterHash, header, footer, pack
     border-top: 1px solid var(--border);
     font-size: 12.5px;
     color: var(--medium);
+  }
+  .task-data {
+    margin-bottom: 14px;
+  }
+  .task-data summary {
+    cursor: pointer;
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .task-data summary:hover {
+    color: var(--text);
   }
   .tests-source {
     margin-top: 12px;

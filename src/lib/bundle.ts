@@ -16,6 +16,8 @@ export type Difficulty = keyof typeof DIFFICULTY_RU;
 export type ChallengeType = keyof typeof TYPE_RU;
 
 const SEPARATOR = '# ════ Тесты — ниже этой линии ничего менять не нужно ' + '═'.repeat(19);
+const DATA_SEPARATOR = '# ════ Данные задачи — их можно вызывать в своём коде ' + '═'.repeat(19);
+const CODE_SEPARATOR = '# ════ Решение ' + '═'.repeat(58);
 
 /** Нормативные разделы task.md, которые попадают в docstring. */
 export const DOCSTRING_SECTIONS = ['Ограничения', 'Правила'];
@@ -109,6 +111,24 @@ export interface BundleInput {
   code: string; // starter.py или solution.py
   tests: string;
   runner: string;
+  data?: string; // data.py задачи: блок «Данные» перед заготовкой
+  packages?: string[]; // пакеты темы: строка «Нужно: numpy (проверено на 2.5.3)» в docstring
+  pins?: Record<string, string>; // версии из requirements-dev.txt
+}
+
+/** «Нужно: numpy (проверено на 2.5.3)» — зеркало validate.py::needs_line. */
+export function needsLine(packages: string[], pins: Record<string, string>): string {
+  return `Нужно: ${packages.map((p) => (pins[p] ? `${p} (проверено на ${pins[p]})` : p)).join(', ')}`;
+}
+
+/** Версии пакетов из текста requirements-dev.txt: «numpy==2.5.3» → { numpy: '2.5.3' }. */
+export function parsePins(text: string): Record<string, string> {
+  const pins: Record<string, string> = {};
+  for (const line of text.split('\n')) {
+    const m = /^([A-Za-z0-9_.-]+)==([^\s#]+)/.exec(line);
+    if (m) pins[m[1].toLowerCase()] = m[2];
+  }
+  return pins;
 }
 
 const TESTS_LIST_COMMENT = '# Тесты задачи по порядку — запускаются только они';
@@ -137,10 +157,13 @@ export function bundleParts(i: Omit<BundleInput, 'code'>): { header: string; foo
       ...section.items.map((it) => wrap(it.text, 76, it.marker, ' '.repeat(it.marker.length))),
       '',
     ]),
+    ...(i.packages?.length ? [needsLine(i.packages, i.pins ?? {})] : []),
     `Запуск: python3 ${i.slug.replaceAll('-', '_')}.py (на Windows: python ${i.slug.replaceAll('-', '_')}.py)`,
     '"""',
   ].join('\n');
-  return { header, footer: bundleFooter(i.tests, i.runner) };
+  // данные — перед заготовкой: их можно вызвать в своём коде; на сайте их выполняет воркер перед кодом из редактора
+  const data = i.data ? `\n\n${DATA_SEPARATOR}\n\n${i.data.trim()}\n\n\n${CODE_SEPARATOR}` : '';
+  return { header: header + data, footer: bundleFooter(i.tests, i.runner) };
 }
 
 /** Всё, что идёт после кода решения: разделитель, tests.py, список _TESTS и раннер. Его же выполняет сайт. */

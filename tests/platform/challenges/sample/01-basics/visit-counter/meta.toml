@@ -1,0 +1,8 @@
+id = "smp-visit-counter"
+title = "Счётчик посетителей"
+difficulty = "easy"
+type = "implement"
+tags = ["класс", "методы"]
+refs = ["sample/classes"]
+lessons = ["smp-first-class"]
+hints = ["Начальное значение задаётся в __init__: self.value = 0."]
