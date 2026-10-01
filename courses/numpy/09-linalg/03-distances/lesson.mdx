@@ -81,7 +81,7 @@ reference: [numpy/linalg, numpy/broadcasting]
 Диагональ нужно исключить: заполним её бесконечностью `np.inf` — числом, которое больше любого другого.
 `np.fill_diagonal(a, значение)` записывает значение на диагональ таблицы — меняет её на месте:
 
-<Demo id="neighbor" title="Ближайший сосед каждой точки" />
+<Demo id="neighbor" title="Ближайший сосед каждой точки" gate="off" />
 
 <Mistake title="fill_diagonal ничего не возвращает">
 Как `a.sort()` из урока о сортировке, `np.fill_diagonal` меняет таблицу на месте и возвращает `None`. Запись

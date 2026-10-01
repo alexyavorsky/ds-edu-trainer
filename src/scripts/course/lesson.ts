@@ -10,6 +10,10 @@
  *   ученик что-то написал, проверяется; не решённое (или пропущенное) заменяется эталонным решением —
  *   следующие ячейки не ломаются, а код ученика остаётся в редакторе.
  * - Код упражнений сохраняется в localStorage, изменённый код демонстраций — нет.
+ * - Ответ упражнения — сохранённый вывод демонстраций его раздела и текст <After> — скрыт плашкой, пока
+ *   упражнение не решено (data-gate). Начальное состояние и кнопки плашек — встроенный скрипт страницы;
+ *   здесь — открытие при решении и отметке «Урок пройден» (renderGate). Живой вывод виден всегда, и выполненная
+ *   ячейка остаётся открытой до перезагрузки страницы.
  * Код выполняется только по нажатию — никогда из ссылки или параметров URL.
  */
 import { python, type RunEnd } from '../../lib/python/client';
@@ -178,6 +182,7 @@ class DemoView extends CellView {
   private showStored(): void {
     this.live.hidden = true;
     this.live.replaceChildren();
+    this.root.classList.remove('has-live');
     if (this.stored) this.stored.hidden = false;
   }
 
@@ -185,6 +190,7 @@ class DemoView extends CellView {
     if (this.stored) this.stored.hidden = true;
     this.live.replaceChildren(...children);
     this.live.hidden = false;
+    this.root.classList.add('has-live'); // плашка скрытого вывода не нужна, пока виден живой
   }
 
   status(text: string, isError = false): void {
@@ -211,6 +217,7 @@ class DemoView extends CellView {
     }
     const d = end.data as LessonDone;
     this.setCount(this.lesson.nextCount());
+    this.root.classList.add('is-open'); // вывод ячейки уже показан — после «Вернуть» сохранённый не прячем
     const expected = this.data.raises && !edited && d.error?.mro.includes(this.data.raises);
     const markError = (line: number) => {
       if (this.view && this.editor) this.editor.goToLine(this.view, line);
@@ -550,6 +557,25 @@ class Lesson {
     this.bar.querySelector('[data-restart]')!.addEventListener('click', () => this.restart());
     python.subscribe(() => this.renderBar());
     this.renderBar();
+    this.initGate();
+  }
+
+  // ─── Скрытие ответа до решения упражнения ───
+
+  private initGate(): void {
+    this.renderGate();
+    document.addEventListener(progress.COURSE_EVENT, () => this.renderGate());
+    window.addEventListener('storage', (e) => e.key === progress.STORE_KEY && this.renderGate());
+  }
+
+  /** Скрытое открыто, если «его» упражнение решено или урок отмечен пройденным (в том числе вручную). */
+  private renderGate(): void {
+    const exercises = this.data.cells.filter((c) => c.kind === 'exercise').map((c) => c.id);
+    const done = progress.isDone(this.id, exercises);
+    const solved = (id: string) => (id === '*' ? exercises.every((e) => progress.isSolved(this.id, e)) : progress.isSolved(this.id, id));
+    document.querySelectorAll<HTMLElement>('[data-gate]').forEach((el) => {
+      el.classList.toggle('is-unlocked', done || solved(el.dataset.gate!));
+    });
   }
 
   /** Код всех упражнений урока: id ячейки → текст из редактора. */

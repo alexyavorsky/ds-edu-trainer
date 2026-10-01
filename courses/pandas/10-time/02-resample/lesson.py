@@ -9,8 +9,9 @@ orders["revenue"] = orders["price"] * orders["quantity"]
 daily = orders.groupby("date")["revenue"].sum()
 calendar = pd.date_range("2025-01-01", "2025-12-31")
 sales = daily.reindex(calendar, fill_value=0)
-order_count = orders.groupby("date")["order_id"].nunique().reindex(calendar, fill_value=0)
-order_count.head(4)
+order_count = orders.groupby("date")["order_id"].nunique().reindex(calendar, fill_value=0).rename("orders")
+print(sales.head(3))
+order_count.head(3)
 
 # %% month-end
 order_count.resample("ME").sum().head(4)
@@ -22,9 +23,9 @@ order_count.resample("MS").sum().head(4)
 order_count.resample("M").sum()
 
 # %% stamp
-busiest = order_count.resample("ME").sum().idxmax()
-print(busiest)
-print(busiest.month, busiest.quarter)
+quarter = order_count.resample("QE").sum().index[1]
+print(quarter)
+print(quarter.month, quarter.quarter)
 
 # %% months [exercise]
 monthly = sales.resample("ME").sum()

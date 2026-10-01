@@ -245,6 +245,9 @@ src/scripts/python/  editor.ts (CodeMirror 6, отдельный чанк), task
   SharedArrayBuffer не используется: он требует заголовков COOP/COEP.
 - **Память.** `WebAssembly.Memory.grow` ограничен (`memoryLimitMB`): Python получает `MemoryError`, а не съедает
   память вкладки. После `MemoryError` воркер пересоздаётся — WebAssembly не отдаёт память обратно.
+- **Пакеты.** Пакет, который не загрузился, `engine.ts` загружает ещё раз, а в ошибку «пакет … не загрузился
+  за две попытки» добавляет текст Pyodide: в Node.js воркеры валидатора курсов одновременно скачивают колёса
+  в кэш `node_modules/pyodide`, и изредка пакет не загружался с первого раза.
 - **Падения.** onerror / onmessageerror / аварийная остановка Pyodide (переполнение стека WebAssembly при очень
   глубокой рекурсии) → сообщение, новый воркер, следующий запуск работает.
 - **Задача.** Код из редактора записывается в `main.py` (номера строк = строки редактора, исходник доступен
@@ -276,7 +279,7 @@ courses/data/            наборы данных (generate.py, README.md — �
 courses/prelude.py       настройки отображения для сеанса урока
 src/lib/courses/         format.ts (разбор lesson.py и lesson.mdx), load.ts (курсы с диска), site.ts (для страниц),
                          notebook.ts (экспорт .ipynb)
-src/components/course/   Demo, Exercise, Hint, Quiz, Explain, Note, Mistake, CellOutput, CourseSidebar
+src/components/course/   Demo, Exercise, Hint, Quiz, Explain, Note, Mistake, After, GatePlaque, CellOutput, CourseSidebar
 src/scripts/course/      lesson.ts (ячейки и состояние урока), progress.ts (прогресс в localStorage)
 src/pages/courses/       /courses · /courses/<курс> · /courses/<курс>/<урок> (+ .ipynb) · /courses/data/<файл>
 runtime/lesson_exec.py   сеанс урока: ячейки как в Jupyter, проверка упражнения раннером задач — общий для
@@ -290,4 +293,10 @@ runtime/lesson_exec.py   сеанс урока: ячейки как в Jupyter, 
   в `data/` каждого сеанса.
 - Проверка — `node scripts/validate_courses.ts [--update] [--strict]` (Pyodide через `scripts/node-python.ts`
   и CPython через `scripts/course_cpython.py`), в CI — задание «Курсы»; в трёх браузерах уроки с эталонами
-  выполняет `scripts/validate_browsers.ts`.
+  выполняет `scripts/validate_browsers.ts`: не больше 5 минут на урок (`LESSON_TIMEOUT`, `--lesson-timeout`),
+  зависший урок останавливается с ошибкой «браузер, урок, последняя начатая ячейка, сколько прошло», остальные
+  проверяются дальше (COURSES_PLAN.md, «Проверка»).
+- Ответ упражнения до его решения скрыт: вывод демонстраций раздела упражнения (`demoGates` в format.ts,
+  `data-gate` в `<Demo>`) и текст `<After>`. Начальное состояние по localStorage и кнопки плашек — встроенный
+  скрипт страницы урока, дальнейшее открытие — `lesson.ts`; без JS всё видно — COURSES_PLAN.md, «Ячейки и
+  состояние».

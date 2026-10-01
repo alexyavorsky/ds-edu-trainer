@@ -32,7 +32,7 @@ data: [orders.csv, products.csv, customers_raw.csv, returns_raw.csv, shop_orders
 <Hint>Все файлы лежат в папке `data/`. Даты при чтении — параметр `parse_dates=["date"]`.</Hint>
 </Exercise>
 
-<Demo id="look" title="Грязные выгрузки" />
+<Demo id="look" title="Грязные выгрузки" gate="off" />
 
 ## Шаг 2. Клиенты
 
@@ -105,12 +105,14 @@ data: [orders.csv, products.csv, customers_raw.csv, returns_raw.csv, shop_orders
 <Hint>Все пропуски таблицы: `data.isna().sum().sum()` — сумма по столбцам и ещё раз сумма.</Hint>
 </Exercise>
 
-<Demo id="result" title="Рабочая таблица" />
+<Demo id="result" title="Рабочая таблица" gate="lesson" />
 
 ## Что получилось
 
+<After id="*">
 Из четырёх файлов — одна таблица: 2448 строк, 16 столбцов, ни одного пропуска. Выручка по городам совпала
 с известной. Возвраты уменьшили выручку на 142 тысячи рублей — 4.3 %.
+</After>
 
 По дороге были сделаны все шаги, которые отличают аккуратную работу от «как-нибудь»:
 

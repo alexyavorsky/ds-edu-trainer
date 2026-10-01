@@ -13,7 +13,7 @@
   const workerUrl = `/_astro/${await worker.text()}`;
   const allTasks = await tasks.json();
   const allLessons = await lessons.json();
-  const { timeoutFactor, defaultTestTimeout, probes } = await config.json();
+  const { timeoutFactor, defaultTestTimeout, probes, lessonTimeout } = await config.json();
   const only = params.get('only')?.split(',');
 
   /** Один воркер; при таймауте или падении завершается, как на сайте. */
@@ -118,31 +118,55 @@
       }
       py.stop();
     }
-    // Уроки курсов: все ячейки с эталонами по порядку в одном сеансе, как их выполняет страница урока
+    // Уроки курсов: все ячейки с эталонами по порядку в одном сеансе, как их выполняет страница урока.
+    // На урок — не больше lessonTimeout секунд (вместе с запуском Python): зависший урок останавливается,
+    // в отчёт идёт последняя начатая ячейка, остальные уроки проверяются дальше.
     const same = (a, b) => JSON.stringify([a.lines, a.result, a.error]) === JSON.stringify([b.lines, b.result, b.error]);
     for (const lesson of allLessons.filter((l) => !only || only.includes(l.id))) {
-      const py = await startPython(`урок ${lesson.id}`);
-      for (const step of lesson.steps) {
-        const { expected, raises, ...rest } = step;
-        const end = await py.run({ kind: 'lesson', lesson: lesson.id, session: 'browser', files: lesson.files, packages: lesson.packages, ...rest });
-        let status = 'passed';
-        if (end.type !== 'done') status = `${end.type}${end.message ? `: ${end.message}` : ''}`;
-        else if (step.op === 'check') {
-          const bad = (end.data.results ?? []).filter((r) => r.status !== 'passed');
-          if (end.data.phase !== 'tests') status = `${end.data.phase}: ${end.data.error?.text ?? end.data.results?.[0]?.title}`;
-          else if (bad.length) status = bad.map((r) => `«${r.title}»: ${r.message}`).join('; ');
-        } else {
-          const got = { lines: end.data.lines, result: end.data.result, error: end.data.error?.text ?? null };
-          if (end.data.error && !(raises && end.data.error.mro.includes(raises))) status = end.data.error.text;
-          else if (raises && !end.data.error) status = `ожидалась ошибка ${raises}`;
-          else if (expected && !same(got, expected)) status = `вывод отличается от сохранённого: ${JSON.stringify(got).slice(0, 300)}`;
+      const started = performance.now();
+      const at = { cell: 'запуск Python', kind: 'start' }; // последняя начатая ячейка
+      let py = null;
+      let expired = false;
+      const work = (async () => {
+        const fresh = await startPython(`урок ${lesson.id}`);
+        if (expired) return fresh.stop();
+        py = fresh;
+        for (const step of lesson.steps) {
+          const { expected, raises, ...rest } = step;
+          at.cell = step.cell;
+          at.kind = step.op;
+          const end = await py.run({ kind: 'lesson', lesson: lesson.id, session: 'browser', files: lesson.files, packages: lesson.packages, ...rest });
+          if (expired) return;
+          let status = 'passed';
+          if (end.type !== 'done') status = `${end.type}${end.message ? `: ${end.message}` : ''}`;
+          else if (step.op === 'check') {
+            const bad = (end.data.results ?? []).filter((r) => r.status !== 'passed');
+            if (end.data.phase !== 'tests') status = `${end.data.phase}: ${end.data.error?.text ?? end.data.results?.[0]?.title}`;
+            else if (bad.length) status = bad.map((r) => `«${r.title}»: ${r.message}`).join('; ');
+          } else {
+            const got = { lines: end.data.lines, result: end.data.result, error: end.data.error?.text ?? null };
+            if (end.data.error && !(raises && end.data.error.mro.includes(raises))) status = end.data.error.text;
+            else if (raises && !end.data.error) status = `ожидалась ошибка ${raises}`;
+            else if (expected && !same(got, expected)) status = `вывод отличается от сохранённого: ${JSON.stringify(got).slice(0, 300)}`;
+          }
+          result.lessons.push({ id: lesson.id, cell: step.cell, status });
+          if (status !== 'passed') log(`✗ ${lesson.id} ${step.cell}: ${status}`);
+          if (end.type !== 'done') break;
         }
-        result.lessons.push({ id: lesson.id, cell: step.cell, status });
-        if (status !== 'passed') log(`✗ ${lesson.id} ${step.cell}: ${status}`);
-        if (end.type !== 'done') break;
+        return 'done';
+      })();
+      let timer;
+      const outcome = await Promise.race([work, new Promise((resolve) => (timer = setTimeout(() => resolve('expired'), lessonTimeout * 1000)))]);
+      clearTimeout(timer);
+      if (outcome === 'expired') {
+        expired = true;
+        work.catch(() => {}); // запуск Python, завершившийся ошибкой уже после остановки, не важен
+        const seconds = Math.round((performance.now() - started) / 1000);
+        result.lessons.push({ id: lesson.id, cell: at.cell, kind: at.kind, status: 'lesson-timeout', seconds, limit: lessonTimeout });
+        log(`✗ ${lesson.id}: не уложился в ${lessonTimeout} с, последняя начатая ячейка — ${at.cell} (${seconds} с)`);
       }
-      py.stop();
-      log(`урок ${lesson.id}: выполнен`);
+      py?.stop();
+      log(`урок ${lesson.id}: ${outcome === 'expired' ? 'остановлен по времени' : 'выполнен'}`);
     }
   } catch (error) {
     result.error = String(error);

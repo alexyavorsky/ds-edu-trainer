@@ -1,0 +1,18 @@
+---
+/**
+ * Плашка на месте скрытого ответа (вывод демонстрации или <After>): что решить и две кнопки. Кнопки
+ * обрабатывает встроенный скрипт страницы урока — они работают, даже если модуль lesson.ts не загрузился.
+ */
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+---
+
+<div class="out-gate">
+  <span class="gate-text">{text}</span>
+  <span class="gate-actions">
+    <button type="button" class="btn btn-ghost small" data-gate-show title="Показать скрытое здесь">Показать всё равно</button>
+    <button type="button" class="btn btn-ghost small" data-gate-all title="Показать всё скрытое в уроке">Весь вывод урока</button>
+  </span>
+</div>

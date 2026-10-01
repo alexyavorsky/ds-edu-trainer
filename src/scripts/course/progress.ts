@@ -5,7 +5,8 @@
  * t — время изменения (мс): по нему синхронизация выбирает более свежую версию.
  * Урок пройден, если его отметили вручную или решены все упражнения (явная отметка важнее).
  */
-const KEY = 'edu:course:v1';
+export const STORE_KEY = 'edu:course:v1';
+const KEY = STORE_KEY;
 export const COURSE_EVENT = 'edu:course-change';
 
 interface Store {

@@ -93,6 +93,42 @@
 .cell-out[hidden] {
   display: none;
 }
+
+/* Скрытие ответа до решения упражнения: вывод демонстраций [data-gate] и текст <After>. html.gate-on ставит
+   встроенный скрипт страницы урока до разметки (без JS всё видно); он же и lesson.ts ставят is-unlocked —
+   упражнение решено или урок отмечен пройденным; is-open — «Показать всё равно» или ячейку выполняли;
+   has-live — сейчас показан живой вывод. */
+.out-gate {
+  display: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 10px 12px 10px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.after > .out-gate {
+  margin: 1em 0;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+}
+.gate-text {
+  flex: 1 1 260px;
+}
+.gate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.gate-on [data-gate]:not(.is-unlocked):not(.is-open) > .cell-out,
+.gate-on [data-gate]:not(.is-unlocked):not(.is-open) > .after-body {
+  display: none;
+}
+.gate-on [data-gate]:not(.is-unlocked):not(.is-open):not(.has-live) > .out-gate {
+  display: flex;
+}
 .out-label {
   display: block;
   padding: 8px 16px 0;

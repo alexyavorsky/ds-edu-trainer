@@ -108,8 +108,17 @@ export class Engine {
         await pyodide.loadPackage('micropip', quiet);
         await pyodide.pyimport('micropip').install(pin);
       } else {
-        await pyodide.loadPackage(name, quiet);
-        if (!pyodide.loadedPackages[name]) throw new Error(`пакет ${name} не загрузился`);
+        // Пакет, который не загрузился, пробуем ещё раз: в Node.js несколько воркеров валидатора могут
+        // одновременно скачивать одно колесо в кэш pyodide. Текст ошибки Pyodide — в сообщение.
+        const errors: string[] = [];
+        const collect = { messageCallback: () => {}, errorCallback: (text: string) => void errors.push(text) };
+        for (let attempt = 1; attempt <= 2 && !pyodide.loadedPackages[name]; attempt++) {
+          await pyodide.loadPackage(name, collect).catch((error: unknown) => void errors.push(errorText(error)));
+        }
+        if (!pyodide.loadedPackages[name]) {
+          const detail = [...new Set(errors)].join('; ').slice(0, 500);
+          throw new Error(`пакет ${name} не загрузился за две попытки${detail ? `: ${detail}` : ''}`);
+        }
       }
       this.loaded.add(name);
     }
