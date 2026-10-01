@@ -59,7 +59,7 @@ def test_discounted():
     assert p.price == 220, f"после discounted(20) price = {p.price!r}: метод должен вернуть новую цену, а не менять атрибут"
     assert got != 44, "44 — это размер скидки, а нужна цена после скидки"
     assert got == 176, f"discounted(20) у капучино = {got!r}, а нужно 176"
-    assert Product("Чай", 125, 400).discounted(10) == 112, "Product(\"Чай\", 125, 400).discounted(10) — 112: округлите до целых рублей"
+    assert Product("Чай", 133, 400).discounted(10) == 120, "Product(\"Чай\", 133, 400).discounted(10) — 120 (119.7 после скидки): округлите до целых рублей"
 # ─── другое решение ───
 class Product:
     def __init__(self, name, price, volume):
@@ -128,10 +128,12 @@ def _cappuccino():
 
 
 def test_copied():
-    "в классе остались методы шага 1"
+    "методы шага 1 скопированы и работают"
     p = _cappuccino()
     for method in ["per_100ml", "discounted"]:
         assert hasattr(p, method), f"в классе нет метода {method} — скопируйте класс из шага 1 целиком"
+    assert p.per_100ml() == 73.3, f"per_100ml() у капучино вернул {p.per_100ml()!r}, а нужно 73.3 — в скопированном классе ошибка из шага 1"
+    assert p.discounted(20) == 176, f"discounted(20) у капучино вернул {p.discounted(20)!r}, а нужно 176 — в скопированном классе ошибка из шага 1"
 
 
 def test_plain():

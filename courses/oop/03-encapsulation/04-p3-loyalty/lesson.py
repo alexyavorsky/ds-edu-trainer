@@ -214,6 +214,7 @@ def _card(total):
         assert hasattr(LoyaltyCard, name), f"в классе нет {name} — скопируйте класс из шага 1 целиком"
     if total:
         card.earn(total)
+    assert card.total == total and card.points == total * 5 // 100, "earn, points или total работают не так, как в шаге 1 — в скопированном классе ошибка из шага 1"
     return card
 
 
@@ -433,6 +434,8 @@ def test_error():
 
 def test_left():
     "left — остаток после списания 100"
+    if left < 220 and (220 - left) % 100 == 0:
+        assert False, f"left = {left}: списание 100 баллов повторилось — похоже, ячейка выполнена несколько раз. Нажмите «Выполнить все выше» и выполните ячейку один раз"
     assert left != 320, "остаток не изменился — после неудачной попытки спишите 100 баллов: anna.spend(100)"
     assert left == 220, f"left = {left!r}, а после списания 100 из 320 баллов осталось 220"
 # ─── другое решение ───

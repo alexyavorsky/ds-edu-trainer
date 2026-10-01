@@ -47,7 +47,7 @@
       "lines": [],
       "result": null,
       "html": null,
-      "error": "AttributeError: 'function' object has no attribute 'upper'"
+      "error": "TypeError: unsupported operand type(s) for +: 'method' and 'str'"
     }
   }
 }

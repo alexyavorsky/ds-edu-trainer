@@ -161,44 +161,44 @@ print(boris.items)
 print(anna.items is boris.items)
 
 # %% fix-default [exercise]
-class Order:
-    def __init__(self, customer, items=None):
-        self.customer = customer
-        if items is None:
-            self.items = []
+class Delivery:
+    def __init__(self, address, notes=None):
+        self.address = address
+        if notes is None:
+            self.notes = []
         else:
-            self.items = list(items)
+            self.notes = list(notes)
 # ─── заготовка ───
-class Order:
-    def __init__(self, customer, items=[]):
-        self.customer = customer
-        self.items = items
+class Delivery:
+    def __init__(self, address, notes=[]):
+        self.address = address
+        self.notes = notes
 # ─── проверка ───
 def test_own_lists():
-    "у заказов без items — свои пустые списки"
-    a, b = Order("Анна"), Order("Борис")
-    assert a.items == [] and b.items == [], f"у новых заказов items = {a.items} и {b.items}, а нужно []"
-    a.items.append("Латте")
-    assert b.items == [], "товар из заказа Анны появился у Бориса — у заказов общий список; значение по умолчанию — None, список создаётся в __init__"
+    "у доставок без notes — свои пустые списки"
+    a, b = Delivery("Лесная, 5"), Delivery("Садовая, 12")
+    assert a.notes == [] and b.notes == [], f"у новых доставок notes = {a.notes} и {b.notes}, а нужно []"
+    a.notes.append("домофон не работает")
+    assert b.notes == [], "заметка одной доставки появилась у другой — у доставок общий список; значение по умолчанию — None, список создаётся в __init__"
 
 
 def test_given():
     "переданный список копируется"
-    drinks = ["Раф", "Чай"]
-    order = Order("Анна", drinks)
-    assert order.items == ["Раф", "Чай"], f"у Order(\"Анна\", [\"Раф\", \"Чай\"]) items = {order.items}"
-    order.items.append("Какао")
-    assert drinks == ["Раф", "Чай"], "заказ изменил чужой список — храните его копию: list(items)"
+    notes = ["позвонить заранее"]
+    d = Delivery("Лесная, 5", notes)
+    assert d.notes == ["позвонить заранее"], f"у доставки с заметками notes = {d.notes}"
+    d.notes.append("оставить у двери")
+    assert notes == ["позвонить заранее"], "доставка изменила чужой список — храните его копию: list(notes)"
 # ─── другое решение ───
-class Order:
-    def __init__(self, customer, items=None):
-        self.customer = customer
-        self.items = list(items) if items is not None else []
+class Delivery:
+    def __init__(self, address, notes=None):
+        self.address = address
+        self.notes = list(notes) if notes is not None else []
 # ─── ошибка ───
-class Order:
-    def __init__(self, customer, items=None):
-        self.customer = customer
-        if items is None:
-            self.items = []
+class Delivery:
+    def __init__(self, address, notes=None):
+        self.address = address
+        if notes is None:
+            self.notes = []
         else:
-            self.items = items
+            self.notes = notes

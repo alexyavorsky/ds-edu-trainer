@@ -37,6 +37,7 @@ def test_kinds():
     assert isinstance(kinds, list), f"kinds — это {type(kinds).__name__}, а нужен список строк"
     assert len(kinds) == 6, f"в kinds {len(kinds)} элементов, а значений в values 6"
     assert all(isinstance(k, str) for k in kinds), "в kinds должны быть имена классов строками: type(v).__name__, а не сам type(v)"
+    assert not kinds[0].startswith("<class"), f"в kinds {kinds[0]!r} — это текст всего класса; нужно только имя: type(v).__name__"
     assert kinds == ["int", "str", "float", "list", "dict", "bool"], f"в kinds {kinds}"
 # ─── другое решение ───
 values = [150, "латте", 2.5, ["чай"], {"раф": 260}, True]

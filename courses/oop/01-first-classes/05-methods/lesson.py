@@ -40,7 +40,10 @@ class Drink:
 # ─── проверка ───
 def test_label():
     "Drink(\"Капучино\", 220).label() = \"Капучино — 220 ₽\""
-    got = Drink("Капучино", 220).label()
+    try:
+        got = Drink("Капучино", 220).label()
+    except TypeError as e:
+        assert False, f"label() не вызывается: {e}. Первым параметром метода должен быть self"
     assert got is not None, "метод ничего не возвращает — нужен return, а не print"
     assert isinstance(got, str), f"label() вернул {type(got).__name__}, а нужна строка"
     assert got == "Капучино — 220 ₽", f"label() вернул {got!r}, а нужно \"Капучино — 220 ₽\""
@@ -48,7 +51,10 @@ def test_label():
 
 def test_other():
     "у другого экземпляра — своя строка"
-    got = Drink("Раф", 260).label()
+    try:
+        got = Drink("Раф", 260).label()
+    except TypeError:
+        assert False, "label() не вызывается — первым параметром метода должен быть self"
     assert got == "Раф — 260 ₽", f"Drink(\"Раф\", 260).label() вернул {got!r} — берите название и цену из self, а не пишите их в строке"
 # ─── другое решение ───
 class Drink:
@@ -73,6 +79,14 @@ class Drink:
         self.price = price
 
     def label(self):
+        return "Капучино — 220 ₽"
+# ─── ошибка ───
+class Drink:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+
+    def label():
         return "Капучино — 220 ₽"
 
 # %% state
@@ -267,12 +281,12 @@ class Cookie:
 Cookie("Овсяное").label()
 
 # %% no-parens
-text = latte.label  # без скобок: сам метод
-print(type(text).__name__)
-print(text())
+method = latte.label  # без скобок: сам метод, а не строка
+print(type(method).__name__)
+print(method())
 
-# %% no-parens-error [raises=AttributeError]
-latte.label.upper()
+# %% no-parens-error [raises=TypeError]
+latte.label + "!"
 
 # %% parens-quiz [quiz]
 print(type(latte.label()).__name__)

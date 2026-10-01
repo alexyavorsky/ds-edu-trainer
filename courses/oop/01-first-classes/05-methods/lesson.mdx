@@ -43,7 +43,7 @@ reference: []
 с момента создания машина сварила 50 чашек или больше, иначе `False`.
 
 <Hint>В `brew`: `self.cups = self.cups + count`.</Hint>
-<Hint>В `needs_cleaning`: `return self.cups >= 50`.</Hint>
+<Hint>`needs_cleaning` сравнивает `self.cups` с 50 и возвращает результат сравнения; ровно 50 чашек — уже пора чистить.</Hint>
 </Exercise>
 
 ## Метод с параметрами
@@ -75,7 +75,7 @@ reference: []
 
 <Demo id="no-parens" title="Метод без скобок" />
 
-<Demo id="no-parens-error" title="Строковый метод у метода" />
+<Demo id="no-parens-error" title="Метод плюс строка" />
 
 <Mistake title="метод без скобок">
 Если в выводе или в ошибке видно `method` там, где ждали строку или число, — где-то пропущены скобки: `latte.label`

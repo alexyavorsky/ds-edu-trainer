@@ -143,9 +143,11 @@ def _filled():
         assert False, "Cart() не создаётся — скопируйте в класс __init__ из шага 1"
     for method in ["add", "total"]:
         assert hasattr(cart, method), f"в классе нет метода {method} — скопируйте класс из шага 1 целиком"
+    assert getattr(cart, "items", None) == [], "у новой корзины должен быть пустой список items — в скопированном классе ошибка из шага 1"
     tea1, raf, tea2 = Product("Чай", 120), Product("Раф", 260), Product("Чай", 120)
     for p in [tea1, raf, tea2]:
         cart.add(p)
+    assert len(cart.items) == 3 and cart.total() == 500, "add и total работают не так, как в шаге 1 — в скопированном классе ошибка из шага 1"
     return cart, tea1, raf, tea2
 
 
@@ -315,6 +317,7 @@ boris_new = ...
 def test_price():
     "цена latte — 250"
     assert latte.price == 250, f"latte.price = {latte.price!r}, а нужно 250"
+    assert anna.items and anna.items[0] is latte, "в latte теперь не тот товар, что лежит в корзинах: похоже, latte присвоили новый объект. Нажмите «Выполнить все выше» и меняйте цену у существующего товара"
 
 
 def test_totals():
@@ -323,7 +326,7 @@ def test_totals():
     assert boris_new == 370, f"boris_new = {boris_new!r}, а корзина Бориса стоит 370"
     assert anna.total() == 390, "в корзине Анны должна быть новая цена — меняйте цену у самого latte, а не создавайте новый товар"
 # ─── другое решение ───
-latte.price += 30
+latte.price = 220 + 30
 anna_new, boris_new = anna.total(), boris.total()
 # ─── ошибка ───
 latte = Product("Латте", 250)
@@ -344,6 +347,9 @@ boris_top = ...
 # ─── проверка ───
 def test_results():
     "removed — True, missing — False"
+    names = [p.name for p in boris.items]
+    if removed is False and names.count("Раф") > 1:
+        assert False, "похоже, ячейка выполнена второй раз: чай уже убран прошлым запуском, а раф добавлен дважды. Нажмите «Выполнить все выше» и выполните ячейку один раз"
     assert removed is True, f"removed = {removed!r}: чай в корзине был, remove должен вернуть True"
     assert missing is False, f"missing = {missing!r}: какао в корзине нет, remove должен вернуть False"
 

@@ -240,51 +240,64 @@ boris.add("Чай")
 print(anna.items)
 print(boris.items)
 
-# %% fix-cart [exercise]
-class Cart:
-    def __init__(self):
-        self.items = []
+# %% fix-table [exercise]
+class Table:
+    def __init__(self, number):
+        self.number = number
+        self.orders = []
 
-    def add(self, name):
-        self.items.append(name)
+    def order(self, drink):
+        self.orders.append(drink)
 # ─── заготовка ───
-class Cart:
-    items = []
+class Table:
+    orders = []
 
-    def add(self, name):
-        self.items.append(name)
+    def __init__(self, number):
+        self.number = number
+
+    def order(self, drink):
+        self.orders.append(drink)
 # ─── проверка ───
-def test_own_lists():
-    "у двух корзин — свои товары"
+def _tables():
     try:
-        a, b = Cart(), Cart()
+        return Table(1), Table(2)
     except TypeError as e:
-        assert False, f"Cart() не создаётся: {e}. У __init__ корзины только параметр self"
-    assert hasattr(a, "items"), "у корзины нет атрибута items — создайте список в __init__: self.items = []"
-    a.add("Латте")
-    b.add("Чай")
-    assert a.items != ["Латте", "Чай"], "товары обеих корзин попали в один список — у каждой корзины должен быть свой: self.items = [] в __init__"
-    assert a.items == ["Латте"] and b.items == ["Чай"], f"в корзинах {a.items} и {b.items}, а нужно ['Латте'] и ['Чай']"
+        assert False, f"Table(1) не создаётся: {e}. У __init__ параметры self и number"
+
+
+def test_own_lists():
+    "у двух столиков — свои заказы"
+    a, b = _tables()
+    assert hasattr(a, "orders"), "у столика нет атрибута orders — создайте список в __init__: self.orders = []"
+    a.order("Латте")
+    b.order("Чай")
+    assert a.orders != ["Латте", "Чай"], "заказы обоих столиков попали в один список — у каждого столика должен быть свой: self.orders = [] в __init__"
+    assert a.orders == ["Латте"] and b.orders == ["Чай"], f"у столиков заказы {a.orders} и {b.orders}, а нужно ['Латте'] и ['Чай']"
+    assert a.number == 1 and b.number == 2, "номер столика по-прежнему берётся из параметра number"
 
 
 def test_new_empty():
-    "новая корзина пустая"
-    Cart().add("Раф")
-    fresh = Cart()
-    assert fresh.items == [], f"в новой корзине уже лежат товары {fresh.items} — список не должен быть общим"
+    "у нового столика заказов нет"
+    first, _ = _tables()
+    assert hasattr(first, "orders"), "у столика нет атрибута orders — создайте список в __init__"
+    first.order("Раф")
+    fresh, _ = _tables()
+    assert fresh.orders == [], f"у нового столика уже есть заказы {fresh.orders} — список не должен быть общим"
 # ─── другое решение ───
-class Cart:
-    def __init__(self):
-        self.items = list()
+class Table:
+    def __init__(self, number):
+        self.orders = list()
+        self.number = number
 
-    def add(self, name):
-        self.items.append(name)
+    def order(self, drink):
+        self.orders.append(drink)
 # ─── ошибка ───
-class Cart:
-    items = []
+class Table:
+    orders = []
 
-    def __init__(self):
-        self.items = Cart.items
+    def __init__(self, number):
+        self.number = number
+        self.orders = Table.orders
 
-    def add(self, name):
-        self.items.append(name)
+    def order(self, drink):
+        self.orders.append(drink)

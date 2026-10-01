@@ -81,12 +81,22 @@ class Product:
     def price(self, value):
         ...
 # ─── проверка ───
+def _product(name, price):
+    "создаёт Product; запись в self.price внутри сеттера даёт бесконечную рекурсию — понятное сообщение"
+    try:
+        return Product(name, price)
+    except RecursionError:
+        assert False, "сеттер вызывает сам себя: внутри него запись идёт в self.price — пишите в self._price"
+
+
 def _raises_value_error(action):
     "True, если action() выбросил ValueError"
     try:
         action()
     except ValueError:
         return True
+    except RecursionError:
+        assert False, "сеттер вызывает сам себя: внутри него запись идёт в self.price — пишите в self._price"
     return False
 
 
@@ -99,7 +109,7 @@ def test_property():
 
 def test_valid():
     "верная цена записывается"
-    p = Product("Латте", 220)
+    p = _product("Латте", 220)
     assert p.price == 220, f"у Product(\"Латте\", 220) price = {p.price!r}, а нужно 220"
     p.price = 250
     assert p.price == 250, f"после p.price = 250 цена {p.price!r}"
@@ -107,7 +117,7 @@ def test_valid():
 
 def test_invalid():
     "цена 0 и меньше — ValueError, старая цена на месте"
-    p = Product("Латте", 220)
+    p = _product("Латте", 220)
     for bad in [0, -50]:
         def assign(bad=bad):
             p.price = bad
@@ -178,6 +188,21 @@ class Product:
         if value < 0:
             raise ValueError("цена должна быть больше нуля")
         self._price = value
+# ─── ошибка ───
+class Product:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, value):
+        if value <= 0:
+            raise ValueError("цена должна быть больше нуля")
+        self.price = value
 
 # %% init-check [raises=ValueError]
 class Cup:
@@ -228,8 +253,8 @@ class Review:
 
     @stars.setter
     def stars(self, value):
-        if not isinstance(value, int) or value < 1 or value > 5:
-            raise ValueError("оценка — целое число от 1 до 5")
+        if value < 1 or value > 5:
+            raise ValueError("оценка — от 1 до 5")
         self._stars = value
 # ─── заготовка ───
 class Review:
@@ -260,7 +285,7 @@ def test_is_property():
 
 def test_create_invalid():
     "неверная оценка при создании — ValueError"
-    for bad in [0, 6, 4.5]:
+    for bad in [0, 6, -1]:
         assert _value_error(lambda bad=bad: Review("Анна", bad)), f"Review(\"Анна\", {bad}) создался — в __init__ пишите через свойство: self.stars = stars"
 
 
@@ -286,8 +311,8 @@ class Review:
 
     @stars.setter
     def stars(self, value):
-        if value not in [1, 2, 3, 4, 5] or isinstance(value, float):
-            raise ValueError("оценка — целое число от 1 до 5")
+        if not 1 <= value <= 5:
+            raise ValueError("оценка — от 1 до 5")
         self._stars = value
 # ─── ошибка ───
 class Review:
@@ -301,8 +326,8 @@ class Review:
 
     @stars.setter
     def stars(self, value):
-        if not isinstance(value, int) or value < 1 or value > 5:
-            raise ValueError("оценка — целое число от 1 до 5")
+        if value < 1 or value > 5:
+            raise ValueError("оценка — от 1 до 5")
         self._stars = value
 # ─── ошибка ───
 class Review:
@@ -316,8 +341,8 @@ class Review:
 
     @stars.setter
     def stars(self, value):
-        if value < 1 or value > 5:
-            raise ValueError("оценка — целое число от 1 до 5")
+        if value > 5:
+            raise ValueError("оценка — от 1 до 5")
         self._stars = value
 
 # %% import [exercise]
