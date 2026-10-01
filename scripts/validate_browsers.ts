@@ -164,6 +164,9 @@ function option(argv: string[], name: string): string | null {
   return i >= 0 ? (argv[i + 1] ?? '') : null;
 }
 
+/** Статус «Python упал», а не «проверка не прошла»: воркер погиб, Pyodide в аварийном состоянии, вкладка без памяти. */
+const CRASH = /^(crash|load-error)|fatally failed|Out of bounds memory|RuntimeError: (unreachable|memory access out of bounds)/;
+
 type Item = { kind: 'task' | 'lesson'; id: string; seconds: number; rows: { id: string; status: string; variant?: string; cell?: string }[] };
 
 /**
@@ -242,6 +245,16 @@ async function main(argv: string[]): Promise<number> {
         withProbes ? runTab(getBrowser, url, name, null, done) : Promise.resolve({} as Partial<CheckResult>),
         ...tabs.map((ids) => runTab(getBrowser, url, name, ids, done)),
       ]);
+      // Падение самого Python (не проверки): повтор задачи или урока один раз отдельной вкладкой, с предупреждением
+      const crashed = done.filter((d) => d.rows.some((r) => CRASH.test(r.status)));
+      if (crashed.length) {
+        for (const item of crashed) {
+          const bad = item.rows.find((r) => CRASH.test(r.status))!;
+          warn(name, `Python упал: ${item.kind === 'task' ? 'задача' : 'урок'} ${item.id}, ${bad.cell ? `ячейка ${bad.cell}` : bad.variant}: ${bad.status} — повтор`);
+          done.splice(done.indexOf(item), 1);
+        }
+        parts.push(await runTab(getBrowser, url, name, crashed.map((c) => c.id), done));
+      }
       await (await browser).close().catch(() => {});
       const seconds = ((performance.now() - started) / 1000).toFixed(0);
       const userAgent = parts.find((p) => p.userAgent)?.userAgent ?? '';
