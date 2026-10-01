@@ -172,7 +172,17 @@ class LessonSession:
         cell = self.run_cell(code, filename)
         if cell.error is not None:
             return {"cell": cell, "phase": "run", "results": []}
+        stubs = stub_methods(code)
         for name in targets:
+            if name.startswith("class "):  # цель-класс: объявлен ли он и дописаны ли методы
+                cls = name[6:]
+                if not isinstance(self.namespace.get(cls), type):
+                    message = f"класс {cls} не объявлен — в решении должна быть строка «class {cls}:»"
+                elif stubs.get(cls):
+                    message = f"допишите метод {cls}.{stubs[cls][0]} — сейчас вместо тела многоточие"
+                else:
+                    continue
+                return {"cell": cell, "phase": "missing", "results": [{"title": message, "status": "not_written", "message": "", "error_type": None, "line": None}]}
             value = self.namespace.get(name, _MISSING)
             if value is _MISSING:
                 message = f"переменная {name} не создана — в решении должна быть строка «{name} = …»"
@@ -200,6 +210,21 @@ class LessonSession:
 
 
 _MISSING = object()
+
+
+def stub_methods(code: str) -> dict[str, list[str]]:
+    """Методы классов ячейки, тело которых — только `...` (после docstring): {класс: [метод, …]}."""
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return {}
+    stubs: dict[str, list[str]] = {}
+    for cls in (n for n in tree.body if isinstance(n, ast.ClassDef)):
+        for fn in (n for n in cls.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))):
+            body = fn.body[1:] if fn.body and isinstance(fn.body[0], ast.Expr) and isinstance(fn.body[0].value, ast.Constant) and isinstance(fn.body[0].value.value, str) else fn.body
+            if len(body) == 1 and isinstance(body[0], ast.Expr) and isinstance(body[0].value, ast.Constant) and body[0].value.value is Ellipsis:
+                stubs.setdefault(cls.name, []).append(fn.name)
+    return stubs
 _NUMPY_REPR = re.compile(r"np\.(?:u?int|float)\d+\(([^()]*)\)|np\.str_\(('[^']*'|\"[^\"]*\")\)|np\.(True|False)_")
 
 

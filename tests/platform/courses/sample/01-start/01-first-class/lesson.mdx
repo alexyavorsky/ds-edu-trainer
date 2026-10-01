@@ -1,0 +1,30 @@
+---
+id: smp-first-class
+title: Первый класс
+summary: Класс со счётчиком и методами — образец урока без пакетов.
+minutes: 10
+introduces: [class, def __init__, def __repr__, "@property"]
+reference: [sample/classes]
+---
+
+Класс описывает, как устроены объекты, а экземпляр хранит своё состояние.
+
+<Demo id="counter" title="Счётчик" />
+
+<Exercise id="cup" title="Чашка">
+Объявите класс `Cup` с атрибутом `volume`, который задаётся при создании.
+
+<Hint>В `__init__` сохраните аргумент: `self.volume = volume`.</Hint>
+</Exercise>
+
+<Exercise id="cart" title="Корзина">
+Допишите методы `add` и `count` класса `Cart`.
+
+<Hint>Товары храните списком, созданным в `__init__`.</Hint>
+</Exercise>
+
+<Exercise id="price" title="Цена со скидкой">
+Сделайте у класса `Price` свойство `discounted` — цена со скидкой 10 %.
+
+<Hint>Свойство объявляется декоратором `@property`.</Hint>
+</Exercise>

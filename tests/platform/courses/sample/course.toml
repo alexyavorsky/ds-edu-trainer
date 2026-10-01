@@ -1,0 +1,13 @@
+# Образец курса без пакета (как ООП): python вместо package, сбор понятий для курса по языку.
+title = "Образец: курс без пакета"
+code = "smp"
+order = 1
+direction = "python"
+beta = true
+python = "3.10"
+concepts = "python"
+reference = "sample"
+requires = []
+summary = "Тестовый курс для проверки платформы: уроки на стандартной библиотеке."
+audience = "Для проверки платформы."
+prerequisites = ["Ничего — это образец."]

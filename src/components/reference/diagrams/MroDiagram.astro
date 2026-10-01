@@ -1,0 +1,118 @@
+---
+/**
+ * Схема «ромб» и порядок MRO: класс наследует от двух классов с общим предком; внизу — порядок поиска
+ * методов (Child.__mro__). Имена по умолчанию — из кофейни; статья или урок может передать свои.
+ *
+ *   <MroDiagram />
+ *   <MroDiagram top="Base" left="A" right="B" bottom="C" />
+ */
+import Diagram from './Diagram.astro';
+
+interface Props {
+  top?: string;
+  left?: string;
+  right?: string;
+  bottom?: string;
+  caption?: string;
+}
+const { top = 'Payment', left = 'CardPayment', right = 'BonusPayment', bottom = 'MixedPayment' } = Astro.props;
+const mro = [bottom, left, right, top, 'object'];
+const caption =
+  Astro.props.caption ??
+  `class ${bottom}(${left}, ${right}): метод ищется по порядку MRO — сам класс, базовые слева направо, общий предок ${top} один раз и в конце.`;
+---
+
+<Diagram caption={caption} label={`Ромб наследования: ${bottom} наследует ${left} и ${right}, оба наследуют ${top}. Порядок MRO: ${mro.join(', ')}`}>
+  <div class="diamond">
+    <span class="node top">{top}</span>
+    <svg class="edges r2" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true">
+      <line x1="50" y1="0" x2="25" y2="24" /><line x1="50" y1="0" x2="75" y2="24" />
+    </svg>
+    <span class="node left">{left}</span>
+    <span class="node right">{right}</span>
+    <svg class="edges r4" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true">
+      <line x1="25" y1="0" x2="50" y2="24" /><line x1="75" y1="0" x2="50" y2="24" />
+    </svg>
+    <span class="node bottom">{bottom}</span>
+  </div>
+  <ol class="mro" aria-label="Порядок MRO">
+    {mro.map((name, i) => <li><span class="n">{i + 1}</span>{name}</li>)}
+  </ol>
+</Diagram>
+
+<style>
+  .diamond {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 24px auto 24px auto;
+    justify-items: center;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .node {
+    padding: 6px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .top {
+    grid-column: 1 / 3;
+    grid-row: 1;
+  }
+  .left {
+    grid-column: 1;
+    grid-row: 3;
+  }
+  .right {
+    grid-column: 2;
+    grid-row: 3;
+  }
+  .bottom {
+    grid-column: 1 / 3;
+    grid-row: 5;
+    border-color: var(--accent-strong);
+  }
+  .edges {
+    grid-column: 1 / 3;
+    width: 100%;
+    height: 24px;
+  }
+  .r2 {
+    grid-row: 2;
+  }
+  .r4 {
+    grid-row: 4;
+  }
+  .edges line {
+    stroke: var(--border-strong);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+  .mro {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 14px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--text-2);
+  }
+  .n {
+    display: inline-grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    font-size: 11px;
+  }
+</style>

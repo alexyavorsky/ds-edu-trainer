@@ -72,11 +72,17 @@ const trimBlock = (lines: string[]) => {
   return out.join('\n');
 };
 
-/** Переменные, которые заготовка задаёт многоточием: `total = ...` на верхнем уровне. */
+const CLASS_RE = /^class\s+([A-Za-z_]\w*)/;
+
+/**
+ * Цели заготовки: переменные, которые она задаёт многоточием (`total = ...` на верхнем уровне), и классы
+ * (`class Product:` → «class Product»): у класса проверка сначала смотрит, объявлен ли он и не остались ли
+ * методы с телом `...` (runtime/lesson_exec.py).
+ */
 export function starterTargets(starter: string): string[] {
   return starter
     .split('\n')
-    .map((l) => TARGET_RE.exec(l)?.[1])
+    .map((l) => TARGET_RE.exec(l)?.[1] ?? (CLASS_RE.exec(l) ? `class ${CLASS_RE.exec(l)![1]}` : undefined))
     .filter((n): n is string => !!n);
 }
 
@@ -153,7 +159,7 @@ export type Block =
 
 /** Компоненты, которые можно писать в уроке (кроме Demo/Exercise/Quiz). Схемы — из справочника. */
 export const TEXT_COMPONENTS = new Set(['Note', 'Mistake']);
-export const DIAGRAMS = new Set(['AxisDiagram', 'BroadcastDiagram', 'GroupbyDiagram', 'MeltPivotDiagram', 'StackUnstackDiagram', 'MergeDiagram']);
+export const DIAGRAMS = new Set(['AxisDiagram', 'BroadcastDiagram', 'GroupbyDiagram', 'MeltPivotDiagram', 'StackUnstackDiagram', 'MergeDiagram', 'ClassDiagram', 'MroDiagram']);
 
 const SELF_RE = /^<([A-Z]\w*)((?:\s+\w+="[^"]*")*)\s*\/>\s*$/;
 const OPEN_RE = /^<([A-Z]\w*)((?:\s+\w+="[^"]*")*)\s*>\s*$/;

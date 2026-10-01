@@ -1,0 +1,13 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "counter": {
+      "lines": [],
+      "result": [
+        "Counter(value=1)"
+      ],
+      "html": null,
+      "error": null
+    }
+  }
+}

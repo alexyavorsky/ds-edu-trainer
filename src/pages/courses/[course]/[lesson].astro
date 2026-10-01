@@ -1,5 +1,5 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection, getEntry, render } from 'astro:content';
 import Badge from '../../../components/Badge.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import BugReportLink from '../../../components/BugReportLink.astro';
@@ -29,6 +29,7 @@ const pos = order.findIndex((l) => l.meta.id === lesson.meta.id);
 const link = (l?: LessonSource) => l && { href: lessonUrl(l), label: l.meta.title };
 const module = course.modules.find((m) => m.slug === lesson.module)!;
 const lastInModule = module.lessons[module.lessons.length - 1] === lesson;
+const practice = module.meta.practice ? await getEntry('chapters', module.meta.practice) : undefined; // раздел задач модуля
 const exercises = lesson.cells.filter((c) => c.kind === 'exercise').length;
 const titles = new Map((await getCollection('reference')).map((a) => [a.id, a.data.title]));
 const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u003c');
@@ -122,10 +123,17 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
         lastInModule && (
           <section class="more">
             <h2 class="section-title">Практика по модулю</h2>
-            <p class="muted">
-              Задачи по {course.meta.title} для самостоятельной практики появятся в разделе{' '}
-              <a href={`/${course.slug}`}>«Задачи → {course.meta.title}»</a>.
-            </p>
+            {practice ? (
+              <p class="muted">
+                Задачи по теме модуля для самостоятельной практики:{' '}
+                <a href={`/${practice.id}`}>«{practice.data.title}»</a>.
+              </p>
+            ) : (
+              <p class="muted">
+                Задачи по {course.meta.title} для самостоятельной практики появятся в разделе{' '}
+                <a href={`/${course.slug}`}>«Задачи → {course.meta.title}»</a>.
+              </p>
+            )}
           </section>
         )
       }

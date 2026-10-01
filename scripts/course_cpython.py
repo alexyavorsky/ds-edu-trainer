@@ -38,10 +38,16 @@ MODULE_ALIASES = {"np", "pd", "plt"}
 
 
 def versions() -> dict:
-    import numpy
-    import pandas
+    """Версии Python и пакетов курсов; нет пакета — None (курсу без пакета, например ООП, он не нужен)."""
+    import importlib.metadata as md
 
-    return {"python": sys.version.split()[0], "numpy": numpy.__version__, "pandas": pandas.__version__}
+    found: dict = {"python": sys.version.split()[0]}
+    for name in ("numpy", "pandas"):
+        try:
+            found[name] = md.version(name)
+        except md.PackageNotFoundError:
+            found[name] = None
+    return found
 
 
 # ─── Понятия ────────────────────────────────────────────────────────────────
@@ -58,12 +64,78 @@ def dotted(node: ast.AST) -> str | None:
     return None
 
 
-def concepts(code: str) -> list[str]:
+PY_CALLS = {"super", "isinstance", "issubclass", "hasattr", "getattr", "setattr"}  # понятия-вызовы курса по языку
+
+
+def declared_names(code: str) -> set[str]:
+    """Имена, которые код объявляет сам: классы, функции, методы, атрибуты self.x и класса, поля dataclass.
+
+    Для курса по языку (ООП): обращение .x к своему атрибуту и x= в вызове своего класса — не новые понятия."""
+    names: set[str] = set()
+    for node in ast.walk(ast.parse(code)):
+        if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+            names.add(node.name)
+            if not isinstance(node, ast.ClassDef):
+                names.update(a.arg for a in [*node.args.posonlyargs, *node.args.args, *node.args.kwonlyargs])
+            else:
+                for item in node.body:
+                    if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
+                        names.add(item.target.id)
+                    elif isinstance(item, ast.Assign):
+                        names.update(t.id for t in item.targets if isinstance(t, ast.Name))
+        elif isinstance(node, ast.Attribute) and isinstance(node.ctx, ast.Store):
+            names.add(node.attr)
+    return names
+
+
+def python_concepts(tree: ast.Module, declared: set[str]) -> set[str]:
+    """Конструкции языка как понятия (курс ООП): class, наследование, магические методы, декораторы, super() …"""
+    found: set[str] = set()
+    called = {id(n.func) for n in ast.walk(tree) if isinstance(n, ast.Call)}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ClassDef):
+            found.add("class(Base)" if node.bases else "class")
+            for item in node.body:
+                if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and item.name.startswith("__") and item.name.endswith("__"):
+                    found.add(f"def {item.name}")
+        if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+            for d in node.decorator_list:
+                target = d.func if isinstance(d, ast.Call) else d
+                name = target.attr if isinstance(target, ast.Attribute) else target.id if isinstance(target, ast.Name) else None
+                if name and name not in declared - {"setter", "getter", "deleter"}:
+                    found.add(f"@{name}")
+        elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in PY_CALLS:
+            found.add(f"{node.func.id}()")
+        elif isinstance(node, ast.Raise):
+            found.add("raise from" if node.cause is not None else "raise")
+        elif isinstance(node, (ast.Yield, ast.YieldFrom)):
+            found.add("yield")
+        elif isinstance(node, ast.Import):
+            found.update(f"import {a.name.split('.')[0]}" for a in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module and not node.level:
+            found.add(f"import {node.module.split('.')[0]}")
+        elif isinstance(node, ast.Attribute) and node.attr.startswith("__") and node.attr.endswith("__") and id(node) not in called:
+            found.add(f".{node.attr}")  # магические атрибуты: __dict__, __mro__, __class__ (вызов super().__init__() — нет)
+    return found
+
+
+def concepts(code: str, python_mode: bool = False, declared: set[str] | frozenset[str] = frozenset()) -> list[str]:
     """np.x / pd.x — функции модулей (полным путём), .x — атрибуты и методы, x= — именованные аргументы, @ — матричное умножение.
 
-    Имена новых столбцов в assign(имя=…) и в именованной агрегации agg(имя=(столбец, функция)) — не понятия."""
+    Имена новых столбцов в assign(имя=…) и в именованной агрегации agg(имя=(столбец, функция)) — не понятия.
+    python_mode (курс по языку, concepts = "python" в course.toml): .x и x= не считаются, если x объявлен в коде
+    урока или прошлых уроков (declared) или вызывается свой класс / функция; плюс конструкции — python_concepts."""
     tree = ast.parse(code)
     inner = {id(n.value) for n in ast.walk(tree) if isinstance(n, ast.Attribute)}
+    own_calls = set()  # именованные аргументы вызовов своих классов и функций — не понятия
+    if python_mode:
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Call):
+                callee = n.func.attr if isinstance(n.func, ast.Attribute) else n.func.id if isinstance(n.func, ast.Name) else None
+                if callee in declared:
+                    own_calls.update(id(k) for k in n.keywords)
+            if isinstance(n, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):  # @x.setter — понятие «@setter», не «.setter»
+                inner.update(id(d.func if isinstance(d, ast.Call) else d) for d in n.decorator_list)
     # имена новых столбцов — не параметры: assign(revenue=…), agg(total=("price", "sum"))
     column_names = set()
     for n in ast.walk(tree):
@@ -79,18 +151,43 @@ def concepts(code: str) -> list[str]:
             if chain and chain.split(".")[0] in MODULE_ALIASES:
                 found.add(chain)
                 continue
-            if not node.attr.startswith("__"):
+            if not node.attr.startswith("__") and node.attr not in declared:
                 found.add(f".{node.attr}")
             # методы в цепочке: orders.columns.tolist() → .columns и .tolist
             value = node.value
             while isinstance(value, ast.Attribute):
-                found.add(f".{value.attr}")
+                if value.attr not in declared:
+                    found.add(f".{value.attr}")
                 value = value.value
-        elif isinstance(node, ast.keyword) and node.arg and id(node) not in column_names:
+        elif isinstance(node, ast.keyword) and node.arg and id(node) not in column_names and id(node) not in own_calls:
             found.add(f"{node.arg}=")
         elif isinstance(node, (ast.BinOp, ast.AugAssign)) and isinstance(node.op, ast.MatMult):
             found.add("@")
+    if python_mode:
+        found |= python_concepts(tree, set(declared))
     return sorted(found)
+
+
+def collect_concepts(snippets: dict[str, str], python_lessons: list[list[str]]) -> dict:
+    """Понятия каждого фрагмента. python_lessons — уроки курсов по языку по порядку: имена, объявленные в уроке и
+    в прошлых уроках курса, накапливаются и не считаются понятиями."""
+    result: dict = {}
+    mode: dict[str, set[str]] = {}  # урок → объявленные имена (только у курсов по языку)
+    for lessons in python_lessons:
+        declared: set[str] = set()
+        for lesson in lessons:
+            for key, code in snippets.items():
+                if key.startswith(f"{lesson}#"):
+                    with contextlib.suppress(SyntaxError):
+                        declared |= declared_names(code)
+            mode[lesson] = set(declared)
+    for key, code in snippets.items():
+        lesson = key.split("#")[0]
+        try:
+            result[key] = concepts(code, lesson in mode, mode.get(lesson, set()))
+        except SyntaxError as e:
+            result[key] = {"error": f"SyntaxError: {e.msg} (строка {e.lineno})"}
+    return result
 
 
 # ─── Прогоны урока ──────────────────────────────────────────────────────────
@@ -150,12 +247,7 @@ def main() -> None:
     if mode == "versions":
         result = versions()
     elif mode == "concepts":
-        result = {}
-        for key, code in task["snippets"].items():
-            try:
-                result[key] = concepts(code)
-            except SyntaxError as e:
-                result[key] = {"error": f"SyntaxError: {e.msg} (строка {e.lineno})"}
+        result = collect_concepts(task["snippets"], task.get("python", []))
     elif mode == "run":
         result = run_lessons(task["runs"])
     elif mode == "notebook":

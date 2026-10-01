@@ -1,0 +1,156 @@
+---
+/**
+ * Схема «класс и экземпляры»: атрибуты класса и экземпляров, необязательный базовый класс и порядок поиска
+ * атрибута (экземпляр → класс → базовый класс). Данные по умолчанию — кофейня; статья или урок может передать свои.
+ *
+ *   <ClassDiagram />
+ *   <ClassDiagram cls={{ name: 'Cart', attrs: [['tax', '0.2']], methods: ['add', 'total'] }}
+ *                 instances={[{ name: 'cart', attrs: [['items', '[]']] }]} lookup="tax" />
+ */
+import Diagram from './Diagram.astro';
+
+interface Box {
+  name: string;
+  attrs?: [string, string][];
+  methods?: string[];
+}
+interface Props {
+  cls?: Box;
+  base?: Box;
+  instances?: Box[];
+  lookup?: string; // атрибут, путь поиска которого подсвечивается
+  caption?: string;
+}
+const {
+  cls = { name: 'Product', attrs: [['discount', '0']], methods: ['__init__', 'total'] },
+  base,
+  instances = [
+    { name: 'latte', attrs: [['name', "'латте'"], ['price', '180']] },
+    { name: 'tea', attrs: [['name', "'чай'"], ['price', '90']] },
+  ],
+  lookup = 'discount',
+} = Astro.props;
+const has = (box: Box | undefined, name: string) => !!box && ((box.attrs ?? []).some(([k]) => k === name) || (box.methods ?? []).includes(name));
+const foundIn = has(instances[0], lookup) ? 'instance' : has(cls, lookup) ? 'class' : has(base, lookup) ? 'base' : null;
+const where = { instance: `экземпляре ${instances[0]?.name}`, class: `классе ${cls.name}`, base: `базовом классе ${base?.name}` };
+const caption =
+  Astro.props.caption ??
+  `Атрибут ищется снизу вверх: экземпляр → класс${base ? ' → базовый класс' : ''}. ${instances[0]?.name}.${lookup} найден в ${foundIn ? where[foundIn] : '— нигде: AttributeError'}.`;
+const steps = [
+  { box: instances[0], kind: 'instance' as const },
+  { box: cls, kind: 'class' as const },
+  ...(base ? [{ box: base, kind: 'base' as const }] : []),
+];
+---
+
+<Diagram caption={caption} label={`Схема: класс ${cls.name}, его экземпляры и поиск атрибута ${lookup}`}>
+  <div class="layout">
+    {
+      base && (
+        <div class:list={['box', 'base', foundIn === 'base' && 'hit']}>
+          <span class="kind">базовый класс</span>
+          <span class="name">{base.name}</span>
+          {(base.attrs ?? []).map(([k, v]) => <code class:list={[k === lookup && 'is-lookup']}>{k} = {v}</code>)}
+          {(base.methods ?? []).map((m) => <code class:list={['method', m === lookup && 'is-lookup']}>{m}()</code>)}
+        </div>
+      )
+    }
+    {base && <span class="arrow" aria-hidden="true">↑ наследует</span>}
+    <div class:list={['box', 'cls', foundIn === 'class' && 'hit']}>
+      <span class="kind">класс</span>
+      <span class="name">{cls.name}</span>
+      {(cls.attrs ?? []).map(([k, v]) => <code class:list={[k === lookup && 'is-lookup']}>{k} = {v}</code>)}
+      {(cls.methods ?? []).map((m) => <code class:list={['method', m === lookup && 'is-lookup']}>{m}()</code>)}
+    </div>
+    <span class="arrow" aria-hidden="true">↑ экземпляры</span>
+    <div class="instances">
+      {
+        instances.map((inst, i) => (
+          <div class:list={['box', 'inst', i === 0 && foundIn === 'instance' && 'hit']}>
+            <span class="kind">экземпляр</span>
+            <span class="name">{inst.name}</span>
+            {(inst.attrs ?? []).map(([k, v]) => <code class:list={[k === lookup && i === 0 && 'is-lookup']}>{k} = {v}</code>)}
+          </div>
+        ))
+      }
+    </div>
+    <ol class="path" aria-label={`Порядок поиска ${lookup}`}>
+      {steps.map((s) => <li class:list={[foundIn === s.kind && 'hit']}>{s.box?.name}</li>)}
+    </ol>
+  </div>
+</Diagram>
+
+<style>
+  .layout {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+  }
+  .instances {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+  .box {
+    display: grid;
+    gap: 4px;
+    min-width: 170px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+  }
+  .box.hit {
+    border-color: var(--accent-strong);
+    box-shadow: 0 0 0 1px var(--accent-strong) inset;
+  }
+  .kind {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  .name {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--text);
+  }
+  code {
+    font-size: 12.5px;
+    color: var(--text-2);
+    background: none;
+    padding: 0;
+  }
+  code.method {
+    color: var(--easy);
+  }
+  code.is-lookup {
+    color: var(--accent-strong);
+    font-weight: 600;
+  }
+  .arrow {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .path {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .path li + li::before {
+    content: '→ ';
+    color: var(--faint);
+  }
+  .path li.hit {
+    color: var(--accent-strong);
+    font-weight: 600;
+  }
+</style>

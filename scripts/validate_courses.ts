@@ -24,6 +24,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync
 import { availableParallelism } from 'node:os';
 import { join } from 'node:path';
 import { type Block, type CodeCell, type ExerciseCell, type OutputFile, type StoredOutput } from '../src/lib/courses/format.ts';
+import { CHALLENGES_DIR, contentPath } from '../src/lib/paths.ts';
 import { courseLessons, DATA_DIR, lessonFiles, lessonPackages, loadCourses, type CourseSource, type LessonSource } from '../src/lib/courses/load.ts';
 import { buildNotebook } from '../src/lib/courses/notebook.ts';
 import { DIRECTION_IDS } from '../src/lib/directions.ts';
@@ -88,16 +89,20 @@ function pinned(): Record<string, string> {
 
 // ─── Структура ──────────────────────────────────────────────────────────────
 
-const referenceExists = (id: string) => existsSync(join(root, 'reference', `${id}.mdx`));
+const referenceExists = (id: string) => existsSync(contentPath('reference', `${id}.mdx`));
 const stripTicks = (text: string) => text.replace(/^`(.*)`$/, '$1').trim();
 
 function checkStructure(courses: CourseSource[], strict: boolean, r: Report): void {
   const ids = new Map<string, string>();
   for (const course of courses) {
     const c = course.meta;
-    for (const key of ['title', 'code', 'package', 'summary', 'audience', 'reference', 'direction'] as const) {
+    for (const key of ['title', 'code', 'summary', 'audience', 'reference', 'direction'] as const) {
       if (!c[key]) r.error(course.slug, `course.toml: нет поля ${key}`);
     }
+    // курс по пакету (NumPy, pandas) — package; курс на стандартной библиотеке (ООП) — python, минимальная версия
+    if (!c.package && !/^3\.\d+$/.test(c.python ?? '')) r.error(course.slug, 'course.toml: нужен package (numpy · pandas) или python = "3.10" — минимальная версия для курса без пакетов');
+    if (c.package && c.python) r.error(course.slug, 'course.toml: python задаётся только у курса без package');
+    if (c.concepts !== undefined && c.concepts !== 'python') r.error(course.slug, 'course.toml: concepts — только "python" (сбор понятий для курса по языку)');
     if (c.direction && !DIRECTION_IDS.includes(c.direction)) r.error(course.slug, `course.toml: direction — одно из ${DIRECTION_IDS.join(', ')}`);
     if (c.beta !== undefined && typeof c.beta !== 'boolean') r.error(course.slug, 'course.toml: beta — true или false');
     if (!c.prerequisites?.length) r.error(course.slug, 'course.toml: пустой prerequisites («что нужно знать»)');
@@ -112,6 +117,9 @@ function checkStructure(courses: CourseSource[], strict: boolean, r: Report): vo
       const where = `${course.slug}/${module.slug}`;
       if (!module.meta.title || !module.meta.summary) r.error(where, 'module.toml: нужны title и summary');
       if (!module.meta.outcomes?.length) r.error(where, 'module.toml: пустой outcomes («что умеет после модуля»)');
+      if (module.meta.practice !== undefined && !existsSync(join(CHALLENGES_DIR, module.meta.practice, 'chapter.toml'))) {
+        r.error(where, `module.toml: practice = "${module.meta.practice}" — нет раздела задач challenges/${module.meta.practice}`);
+      }
       const last = module.lessons[module.lessons.length - 1];
       if ((strict || c.complete) && last && last.meta.kind !== 'project') r.error(where, `модуль должен заканчиваться мини-проектом (kind: project), а последний урок — ${last.meta.id}`);
       if (!module.lessons.length) r.warn(where, 'в модуле нет уроков');
@@ -178,6 +186,10 @@ function checkBlocks(lesson: LessonSource, lessonUrls: Set<string>, r: Report): 
     if (c.kind !== 'exercise') continue;
     if (!/^def test_\w+/m.test(c.tests)) r.error(at, `упражнение ${c.id}: в проверке нет функций test_*`);
     for (const t of c.targets) {
+      if (t.startsWith('class ')) {
+        if (!new RegExp(`^${t}\\b`, 'm').test(c.solution)) r.error(at, `упражнение ${c.id}: заготовка объявляет ${t}, а эталон — нет`);
+        continue;
+      }
       if (!new RegExp(`^${t}\\s*[=,]|^\\s*${t}\\s*=|,\\s*${t}\\s*=`, 'm').test(c.solution)) r.error(at, `упражнение ${c.id}: заготовка задаёт ${t} = ..., а эталон её не присваивает`);
     }
     if (!c.alts.length) r.warn(at, `упражнение ${c.id}: нет «другого решения»`);
@@ -199,7 +211,9 @@ function checkConcepts(courses: CourseSource[], python: string, r: Report): Map<
       }
     }
   }
-  const found = cpython(python, { mode: 'concepts', snippets }) as Record<string, string[] | { error: string }>;
+  // курсы по языку (concepts = "python"): уроки по порядку — имена, объявленные в уроках, не считаются понятиями
+  const pythonLessons = courses.filter((c) => c.meta.concepts === 'python').map((c) => courseLessons(c).map((l) => l.meta.id));
+  const found = cpython(python, { mode: 'concepts', snippets, python: pythonLessons }) as Record<string, string[] | { error: string }>;
   const review = new Map<string, string[]>(); // урок → понятия прошлых уроков в его упражнениях (повторение)
   const introducedBy = (course: CourseSource) => new Map(courseLessons(course).flatMap((l) => l.meta.introduces.map((c) => [c, l.meta.id] as [string, string])));
   for (const course of courses) {
@@ -374,7 +388,7 @@ const sameOutput = (a: StoredOutput, b: StoredOutput) =>
 
 /** Графики демонстраций (SVG из прогона в Pyodide) — в public/course-plots/<курс>/<урок>/<ячейка>-<n>.svg. */
 function syncPlots(course: CourseSource, lesson: LessonSource, plots: Map<string, string>, update: boolean, r: Report): void {
-  const dir = join(root, 'public', 'course-plots', course.slug, lesson.slug);
+  const dir = contentPath('public', 'course-plots', course.slug, lesson.slug);
   const existing = existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.svg')) : [];
   for (const [name, svg] of plots) {
     const path = join(dir, name);
@@ -413,10 +427,12 @@ async function main(argv: string[]): Promise<number> {
 
   const all = loadCourses();
   checkStructure(all, strict, r);
-  const versions = cpython(python, { mode: 'versions' }) as Record<string, string>;
+  const versions = cpython(python, { mode: 'versions' }) as Record<string, string | null>;
   const pins = pinned();
-  for (const name of ['numpy', 'pandas']) {
-    if (versions[name] !== pins[name]) r.error('окружение', `CPython: ${name} ${versions[name]}, а в requirements-dev.txt ${pins[name]} — поставьте зафиксированные версии`);
+  // версии пакетов важны, только если среди проверяемых есть курс по пакету (pandas тянет numpy)
+  const needed = new Set(all.filter((c) => !selected.length || selected.includes(c.slug) || courseLessons(c).some((l) => selected.includes(l.meta.id))).flatMap((c) => (c.meta.package ? ['numpy', c.meta.package] : [])));
+  for (const name of needed) {
+    if (versions[name] !== pins[name]) r.error('окружение', `CPython: ${name} ${versions[name] ?? 'не установлен'}, а в requirements-dev.txt ${pins[name]} — поставьте зафиксированные версии`);
   }
   const review = checkConcepts(all, python, r);
 
@@ -427,15 +443,17 @@ async function main(argv: string[]): Promise<number> {
   );
   const runs = chosen.filter(({ lesson }) => !lesson.problems.length).flatMap(({ course, lesson }) => planRuns(course, lesson));
   const size = Math.max(1, Math.min(4, availableParallelism() - 1));
-  console.log(`Pyodide ${PYODIDE_VERSION} · CPython ${versions.python}, NumPy ${versions.numpy}, pandas ${versions.pandas} · уроков ${chosen.length}, прогонов ${runs.length}`);
+  console.log(`Pyodide ${PYODIDE_VERSION} · CPython ${versions.python}, NumPy ${versions.numpy ?? '—'}, pandas ${versions.pandas ?? '—'} · уроков ${chosen.length}, прогонов ${runs.length}`);
 
   const [pyodide, cpy] = await Promise.all([
     runPyodide(runs, size),
     Promise.resolve().then(() => cpython(python, { mode: 'run', runs: runs.map((x) => ({ lesson: x.lesson.meta.id, files: x.lesson.meta.data, steps: x.steps })) }) as StepResult[][]),
   ]);
 
-  const lock = JSON.parse(read(join(root, 'node_modules', 'pyodide', 'pyodide-lock.json'))) as { packages: Record<string, { version: string }> };
+  const lock = JSON.parse(read(join(root, 'node_modules', 'pyodide', 'pyodide-lock.json'))) as { info?: { python?: string }; packages: Record<string, { version: string }> };
   const npVersion = (name: string) => lock.packages[name]?.version ?? '?';
+  // подпись сохранённого вывода: версия пакета курса или — у курса без пакета — версия Python в Pyodide
+  const generatedFor = (course: CourseSource) => (course.meta.package ? `${course.meta.title} ${npVersion(course.meta.package)}` : `Python ${lock.info?.python ?? '?'}`);
   for (const { course, lesson } of chosen) {
     const at = lesson.meta.id;
     const lessonRuns = runs.map((run, i) => ({ run, i })).filter(({ run }) => run.lesson === lesson);
@@ -449,7 +467,7 @@ async function main(argv: string[]): Promise<number> {
     // сохранённый вывод — из прогона с эталонами в Pyodide; CPython должен совпадать, кроме [platform]
     const main = lessonRuns.find(({ run }) => run.label === 'эталоны');
     if (!main || typeof pyodide[main.i] === 'string') continue;
-    const fresh: OutputFile = { generated: `Pyodide ${PYODIDE_VERSION} · ${course.meta.title} ${npVersion(course.meta.package)}`, cells: {} };
+    const fresh: OutputFile = { generated: `Pyodide ${PYODIDE_VERSION} · ${generatedFor(course)}`, cells: {} };
     const plots = new Map<string, string>();
     main.run.steps.forEach((step, k) => {
       const cell = lesson.cells.find((c) => c.id === step.cell)!;
@@ -458,6 +476,8 @@ async function main(argv: string[]): Promise<number> {
       const out = stored(result);
       (result.plots ?? []).forEach((svg, n) => plots.set(`${cell.id}-${n + 1}.svg`, svg));
       fresh.cells[cell.id] = out;
+      // repr объекта без __repr__ («<Cup object at 0x10f3…>») меняется от запуска к запуску
+      if (/\bat 0x[0-9a-fA-F]{6,}/.test(JSON.stringify(out))) r.error(at, `ячейка ${cell.id}: в выводе адрес объекта (at 0x…) — он меняется от запуска к запуску; добавьте классу __repr__`);
       const c = cpy[main.i][k];
       if (c && !('platform' in cell.flags) && !sameOutput(out, stored(c))) {
         r.error(at, `ячейка ${cell.id}: вывод в CPython и в браузере разный — сделайте его независимым от платформы или поставьте [platform]\n${diffText(out, stored(c))}`);

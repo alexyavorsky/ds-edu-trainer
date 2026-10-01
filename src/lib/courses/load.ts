@@ -3,13 +3,14 @@
  * (+ output.json — пишет валидатор). Папка = сущность, реестров нет. Общее для сайта и scripts/*.ts.
  */
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join } from 'node:path';
 import { parse as parseToml } from 'smol-toml';
 import { parse as parseYaml } from 'yaml';
 import type { Direction } from '../directions.ts';
+import { contentPath } from '../paths.ts';
 import { parseLessonMdx, parseLessonPy, splitFrontmatter, type Block, type CodeCell, type OutputFile } from './format.ts';
 
-export const COURSES_DIR = join(resolve('.'), 'courses');
+export const COURSES_DIR = contentPath('courses');
 export const DATA_DIR = join(COURSES_DIR, 'data');
 const NUMBERED_RE = /^(\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 
@@ -17,7 +18,9 @@ export interface CourseMeta {
   title: string;
   code: string; // префикс id уроков: np, pd
   order: number;
-  package: string; // numpy · pandas — версия в Pyodide и в requirements-dev.txt
+  package?: string; // numpy · pandas — версия в Pyodide и в requirements-dev.txt; нет — курс на стандартной библиотеке (ООП)
+  python?: string; // у курса без пакета: минимальная версия Python, «3.10» (её проверяет первая ячейка .ipynb)
+  concepts?: 'python'; // сбор понятий для курса по языку (ООП): классы, декораторы, super() — см. scripts/course_cpython.py
   summary: string;
   audience: string; // для кого курс
   prerequisites: string[]; // что нужно знать
@@ -32,6 +35,7 @@ export interface ModuleMeta {
   title: string;
   summary: string;
   outcomes: string[]; // что человек умеет после модуля
+  practice?: string; // раздел задач по теме модуля «книга/глава» (oop/02-inheritance): ссылка «Задачи по теме»
 }
 
 export interface LessonMeta {
@@ -158,7 +162,7 @@ export function lessonFiles(meta: LessonMeta): { name: string; url: string }[] {
   return meta.data.map((name) => ({ name, url: `/courses/data/${name}` }));
 }
 
-/** Пакеты урока в браузере: пакет курса (pandas тянет numpy) и дополнительные. */
+/** Пакеты урока в браузере: пакет курса (pandas тянет numpy) и дополнительные; курс без пакета ничего не грузит. */
 export function lessonPackages(course: CourseMeta, meta: LessonMeta): string[] {
-  return [...new Set(['numpy', course.package, ...meta.packages])];
+  return [...new Set([...(course.package ? ['numpy', course.package] : []), ...meta.packages])];
 }

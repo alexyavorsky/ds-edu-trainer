@@ -7,9 +7,11 @@ import Syntax from './Syntax.astro';
 import VersionNote from './VersionNote.astro';
 import AxisDiagram from './diagrams/AxisDiagram.astro';
 import BroadcastDiagram from './diagrams/BroadcastDiagram.astro';
+import ClassDiagram from './diagrams/ClassDiagram.astro';
 import GroupbyDiagram from './diagrams/GroupbyDiagram.astro';
 import MeltPivotDiagram from './diagrams/MeltPivotDiagram.astro';
 import MergeDiagram from './diagrams/MergeDiagram.astro';
+import MroDiagram from './diagrams/MroDiagram.astro';
 import StackUnstackDiagram from './diagrams/StackUnstackDiagram.astro';
 
 export const referenceComponents = {
@@ -21,8 +23,10 @@ export const referenceComponents = {
   VersionNote,
   AxisDiagram,
   BroadcastDiagram,
+  ClassDiagram,
   GroupbyDiagram,
   MeltPivotDiagram,
   MergeDiagram,
+  MroDiagram,
   StackUnstackDiagram,
 };
