@@ -56,31 +56,6 @@ const topics = all.filter((b) => b.book.data.kind === 'topic');
   <section class="block">
     <h2 class="section-title">Темы</h2>
     <div class="grid">
-      {
-        topics.map(({ book, chapters, challenges }) => (
-          <a href={`/${book.id}`} class:list={['book card', !challenges.length && 'soon-card']}>
-            <span class="cover" aria-hidden="true">
-              <Icon name="terminal" size={20} />
-            </span>
-            <div class="info">
-              <h3>
-                {book.data.title} {!challenges.length && <span class="pill">скоро</span>}
-              </h3>
-              {book.data.description && <p class="desc">{book.data.description}</p>}
-              {challenges.length > 0 ? (
-                <>
-                  <p class="stats">
-                    {chapters.length} разделов · {tasksLabel(challenges.length)}
-                  </p>
-                  <ProgressBar ids={challenges.map((c) => c.data.taskId)} />
-                </>
-              ) : (
-                <p class="stats">Задач пока нет — есть справочник</p>
-              )}
-            </div>
-          </a>
-        ))
-      }
       <a href="/reference" class="book card">
         <span class="cover" aria-hidden="true">
           <Icon name="search" size={20} />
