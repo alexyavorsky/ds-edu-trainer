@@ -127,10 +127,12 @@ def declared_names(code: str) -> set[str]:
     return names
 
 
-def python_concepts(code: str, declared: set[str]) -> list[str]:
+def python_concepts(code: str, declared: set[str], local: set[str] | None = None) -> list[str]:
     """Понятия ООП: конструкции (class, class(Base), магические методы, декораторы, super(), raise, yield, is),
     импорты «модуль.имя», встроенные функции из PYTHON_CALLS, .x — только чужие атрибуты (не объявленные уроком),
-    x= — только у чужих вызовов. Магические атрибуты (.__dict__, .__name__) — тоже понятия."""
+    x= — только у чужих вызовов (параметры, объявленные в этом же уроке, — local). Магические атрибуты
+    (.__dict__, .__name__) — тоже понятия."""
+    local = declared if local is None else local
     tree = ast.parse(code)
     found: set[str] = set()
     # @price.setter — понятие «@setter», а не атрибут .setter
@@ -168,7 +170,7 @@ def python_concepts(code: str, declared: set[str]) -> list[str]:
                     found.add(f".{attr}")
             elif attr not in declared and not MANGLED.fullmatch(attr):
                 found.add(f".{attr}")
-        elif isinstance(node, ast.keyword) and node.arg and node.arg not in declared:
+        elif isinstance(node, ast.keyword) and node.arg and node.arg not in local:
             found.add(f"{node.arg}=")
     found.discard("")
     return sorted(found)
@@ -196,12 +198,14 @@ def concepts_task(snippets: dict[str, str], python_courses: list[list[str]]) -> 
         declared: set[str] = set()
         for lesson in course:
             own = {k: v for k, v in snippets.items() if k.split("#")[0] == lesson}
+            local: set[str] = set()  # параметры своих классов и функций — только этого урока: order= у dataclass — понятие
             for code in own.values():
                 with contextlib.suppress(SyntaxError):
-                    declared |= declared_names(code)
+                    local |= declared_names(code)
+            declared |= local
             for key, code in own.items():
                 try:
-                    result[key] = python_concepts(code, declared)
+                    result[key] = python_concepts(code, declared, local)
                 except SyntaxError as e:
                     result[key] = {"error": f"SyntaxError: {e.msg} (строка {e.lineno})"}
     return result

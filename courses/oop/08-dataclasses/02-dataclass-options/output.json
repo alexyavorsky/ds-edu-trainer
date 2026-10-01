@@ -1,0 +1,32 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "post-init": {
+      "lines": [
+        "Cup(name='Капучино', volume=300)",
+        "ValueError: объём 30 мл — меньше 50 мл не бывает"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "frozen": {
+      "lines": [
+        "FrozenInstanceError cannot assign to field 'percent'",
+        "2 True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "replace": {
+      "lines": [
+        "Coupon(code='ОСЕНЬ', percent=10)",
+        "Coupon(code='ЗИМА', percent=15)"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

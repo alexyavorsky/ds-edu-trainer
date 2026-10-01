@@ -1,0 +1,38 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "dataclass": {
+      "lines": [
+        "Product(name='Латте', price=220)",
+        "True False",
+        "Латте 220"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "defaults": {
+      "lines": [
+        "Cup(name='Капучино', volume=250) Cup(name='Капучино', volume=400)"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "mutable": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "ValueError: mutable default <class 'list'> for field items is not allowed: use default_factory"
+    },
+    "factory": {
+      "lines": [
+        "Basket(customer='Анна', items=['Латте'])",
+        "Basket(customer='Борис', items=[])"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}
