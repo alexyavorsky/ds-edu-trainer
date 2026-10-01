@@ -233,7 +233,10 @@ def _menu():
 def test_getitem():
     "menu[название] — товар"
     menu = _menu()
-    got = menu["Чай"]
+    try:
+        got = menu["Чай"]
+    except KeyError:
+        assert False, "menu[\"Чай\"] выбросил KeyError, хотя чай в меню есть — raise должен стоять после цикла, когда проверены все товары"
     assert got is not None, "menu[\"Чай\"] вернул None — верните найденный товар"
     assert isinstance(got, Product) and got.name == "Чай", f"menu[\"Чай\"] = {got!r}, а нужен товар «Чай»"
 

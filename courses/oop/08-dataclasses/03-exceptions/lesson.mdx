@@ -2,7 +2,7 @@
 id: oop-exceptions
 title: Свои исключения
 summary: "Исключение — тоже класс: своя иерархия ShopError → OutOfStockError, атрибуты исключения с подробностями, перехват по базовому классу и цепочка raise … from."
-minutes: 20
+minutes: 25
 introduces: [raise from, .__cause__]
 reference: []
 ---
@@ -14,8 +14,9 @@ reference: []
 
 ## Исключение — это класс
 
-Каждое исключение — экземпляр класса, а все классы исключений наследуют от `Exception` (`ValueError` —
-тоже). Своё исключение — подкласс `Exception`; часто ему не нужно ничего, кроме имени. По соглашению имя
+Каждое исключение — экземпляр класса. Почти все классы исключений — и все, с которыми вы встречались, включая
+`ValueError`, — наследуют от `Exception` (выше него только `BaseException` для служебных вроде
+`KeyboardInterrupt` — Ctrl+C). Своё исключение — подкласс `Exception`; часто ему не нужно ничего, кроме имени. По соглашению имя
 заканчивается на `Error`:
 
 <Demo id="own" title="Своё исключение" />
@@ -63,7 +64,8 @@ reference: []
 (или его нет вовсе), функция выбрасывает `OutOfStockError` с подробностями и склад не меняет; иначе —
 уменьшает количество.
 
-<Hint>Сколько есть — `stock.get(name, 0)`; если меньше `qty` — `raise OutOfStockError(name, qty, available)`.</Hint>
+<Hint>Сколько товара есть, если ключа нет? Метод словаря, который возвращает значение по умолчанию.</Hint>
+<Hint>Не хватает — `raise OutOfStockError(name, qty, available)` до изменения склада.</Hint>
 </Exercise>
 
 ## `raise … from`: цепочка исключений
@@ -80,7 +82,8 @@ reference: []
 число из строки вида `"x2"` — после буквы `x`. Если число не разбирается, функция выбрасывает
 `OrderFormatError("неверное количество: x два")` с исходным `ValueError` в качестве причины.
 
-<Hint>`int(text[1:])` внутри `try`; в `except ValueError as err:` — `raise OrderFormatError(…) from err`.</Hint>
+<Hint>Число — всё после первого символа: срез `text[1:]` и `int` внутри `try`.</Hint>
+<Hint>В `except ValueError as err:` — своё исключение с `from err`.</Hint>
 </Exercise>
 
 <Quiz id="catch-quiz">

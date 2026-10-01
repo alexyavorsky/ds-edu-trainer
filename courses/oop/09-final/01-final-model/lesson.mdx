@@ -2,7 +2,7 @@
 id: oop-final-model
 title: "Итоговый проект: каталог и корзина"
 summary: "Первая часть кассы «Кофейной лавки»: свои исключения, товар-dataclass, каталог-контейнер, загрузка каталога из строк и корзина, которая берёт товары из каталога."
-minutes: 25
+minutes: 30
 kind: project
 introduces: []
 reference: []
@@ -33,7 +33,7 @@ reference: []
 ## Шаг 2. Товар
 
 <Exercise id="product" title="Product">
-Объявите неизменяемый dataclass `Product` с полями `name`, `price` (целое) и `category` (строка, например
+Объявите неизменяемый dataclass `Product` с полями `name` (строка), `price` (целое) и `category` (строка, например
 `"кофе"`). Цена не больше нуля — `ValueError` при создании. `str(product)` — `"Латте — 220 ₽"`.
 
 <Hint>`@dataclass(frozen=True)`, проверка — в `__post_init__`, текст — в `__str__`.</Hint>

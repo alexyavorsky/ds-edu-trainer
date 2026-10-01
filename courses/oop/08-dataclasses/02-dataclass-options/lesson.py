@@ -54,6 +54,8 @@ def _value_error(*args):
         Product(*args)
     except ValueError:
         return True
+    except Exception as e:
+        assert False, f"Product{args} выбросил {type(e).__name__}, а нужен ValueError"
     return False
 
 

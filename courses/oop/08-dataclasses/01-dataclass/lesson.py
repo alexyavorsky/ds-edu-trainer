@@ -199,13 +199,17 @@ class Customer:
         self.visits.append(date)
         self.points += 10
 # ─── проверка ───
-from dataclasses import fields, is_dataclass
+from dataclasses import MISSING, fields, is_dataclass
 
 
 def test_dataclass():
     "Customer — dataclass с четырьмя полями"
     assert is_dataclass(Customer), "Customer — не dataclass: поставьте @dataclass над классом"
     assert [f.name for f in fields(Customer)] == ["name", "phone", "points", "visits"], f"поля: {[f.name for f in fields(Customer)]} — объявите их с аннотациями"
+    assert fields(Customer)[3].default_factory is not MISSING, "поле visits объявите через field(default_factory=list) — так у каждого покупателя будет свой список"
+    # методы, которые написал декоратор, скомпилированы из «<string>» (__repr__ обёрнут — берём __wrapped__)
+    own = [m for m in ["__init__", "__repr__", "__eq__"] if not getattr(getattr(Customer, m), "__wrapped__", getattr(Customer, m)).__code__.co_filename.startswith("<")]
+    assert not own, f"в классе остались свои {', '.join(own)} — удалите их: эти методы напишет декоратор"
 
 
 def test_defaults():

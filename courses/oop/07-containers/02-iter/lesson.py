@@ -19,8 +19,7 @@ class Shift:
         self._hours = list(hours)
 
     def __iter__(self):
-        for hour in self._hours:
-            yield hour
+        return iter(self._hours)  # новый итератор по списку часов
 
 
 morning = Shift("Анна", ["08:00", "09:00", "10:00"])
@@ -71,6 +70,8 @@ def test_for():
     try:
         names = [p.name for p in _menu()]
     except TypeError as e:
+        if "list" in str(e):
+            assert False, "__iter__ вернул список — список итерируемый, но не итератор: верните iter(self._items) или выдавайте товары через yield"
         assert False, f"меню не перебирается циклом: {e}. __iter__ должен выдавать товары через yield"
     assert names == ["Латте", "Чай", "Раф"], f"цикл по меню дал {names}"
 
@@ -78,7 +79,11 @@ def test_for():
 def test_twice():
     "меню можно пройти дважды"
     menu = _menu()
-    first, second = list(menu), list(menu)
+    try:
+        first, second = list(menu), list(menu)
+    except TypeError:
+        assert False, "меню не перебирается циклом — сначала исправьте __iter__ (проверка выше)"
+    assert len(first) == 3, f"проход по меню дал {len(first)} элементов, а товаров 3 — выдавайте каждый товар через yield p, а не весь список"
     assert len(second) == 3, "второй проход по меню пуст — __iter__ должен каждый раз начинать заново"
     assert first == second
 # ─── другое решение ───
@@ -255,6 +260,11 @@ class Playlist:
 
     def __iter__(self):
         return iter(self._songs)
+
+# %% generator-quiz [quiz]
+cheap = Menu([Product("Латте", 220), Product("Чай", 120), Product("Какао", 190)]).cheaper_than(200)
+list(cheap)
+print(list(cheap))
 
 # %% next-quiz [quiz]
 it = iter(["латте"])

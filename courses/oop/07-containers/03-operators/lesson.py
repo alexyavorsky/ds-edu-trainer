@@ -97,6 +97,8 @@ def test_foreign():
         got = Money.__dict__["__add__"](Money(220), 5)
     except AttributeError:
         assert False, "сложение с числом падает — сначала проверьте тип: isinstance(other, Money)"
+    except TypeError:
+        assert False, "для чужого типа __add__ выбросил TypeError, а должен вернуть NotImplemented — TypeError Python выбросит сам, если и второй объект не умеет"
     assert got is NotImplemented, f"Money.__add__ с числом вернул {got!r}, а нужно NotImplemented"
 
 
@@ -215,7 +217,10 @@ class Grams:
 def test_mul():
     "Grams(18) * 3"
     portion = Grams(18)
-    got = portion * 3
+    try:
+        got = portion * 3
+    except TypeError:
+        assert False, "Grams(18) * 3 не работает: __mul__ вернул NotImplemented для 3 — проверяйте, что множитель — int, а не Grams"
     assert got == Grams(54), f"Grams(18) * 3 = {got!r}, а нужно Grams(54)"
     assert portion.value == 18, "умножение изменило исходный вес — возвращайте новый Grams"
 

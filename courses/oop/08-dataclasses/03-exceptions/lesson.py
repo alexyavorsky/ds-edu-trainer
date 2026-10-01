@@ -138,7 +138,7 @@ def test_attrs():
 def test_message():
     "str(error) — понятный текст"
     got = str(_error())
-    assert got != "", "у исключения пустой текст — передайте его в super().__init__(…)"
+    assert got != "('Сироп', 2, 1)", "текст исключения — кортеж аргументов: передайте готовую фразу в super().__init__(…)"
     assert got == "мало «Сироп»: нужно 2, есть 1", f"str(error) = {got!r}"
 # ─── другое решение ───
 class OutOfStockError(ShopError):

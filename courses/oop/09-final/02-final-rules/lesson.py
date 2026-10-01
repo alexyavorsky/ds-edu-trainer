@@ -31,9 +31,35 @@ class Line:
 class Cart:
     lines: list = field(default_factory=list)
 
+    def __len__(self):
+        return len(self.lines)
+
+    def __iter__(self):
+        return iter(self.lines)
+
     @property
     def subtotal(self):
         return sum(line.cost for line in self.lines)
+
+
+class PaymentError(ShopError):
+    pass
+
+
+class PaymentMethod(ABC):
+    @abstractmethod
+    def pay(self, amount):
+        ...
+
+
+class Cash(PaymentMethod):
+    def __init__(self, given):
+        self.given = given
+
+    def pay(self, amount):
+        if self.given < amount:
+            raise PaymentError("недостаточно наличных")
+        return f"наличные {self.given} ₽, сдача {self.given - amount} ₽"
 
 
 latte = Product("Латте", 240, "кофе")
@@ -43,7 +69,8 @@ tea = Product("Чай", 120, "чай")
 raf = Product("Раф", 260, "кофе")
 
 sample = Cart([Line(latte, 3), Line(croissant, 2)])
-print(sample.subtotal, [line.cost for line in sample.lines])
+print(sample.subtotal, len(sample), [line.cost for line in sample])
+print(Cash(1000).pay(900))
 
 # %% discount [exercise]
 class Discount(ABC):
@@ -115,12 +142,12 @@ class PercentDiscount(Discount):
 
 class CategoryDiscount(Discount):
     def __init__(self, category, percent):
-        super().__init__(f"{category} −{percent} %")
+        super().__init__(f"{category} -{percent} %")
         self.category = category
         self.percent = percent
 
     def amount(self, cart):
-        base = sum(line.cost for line in cart.lines if line.product.category == self.category)
+        base = sum(line.cost for line in cart if line.product.category == self.category)
         return round(base * self.percent / 100)
 # ─── заготовка ───
 class PercentDiscount(Discount):
@@ -143,16 +170,19 @@ def test_percent():
     d = PercentDiscount(10)
     assert hasattr(d, "title"), "у скидки нет title — вызовите super().__init__(название)"
     assert str(d) == "скидка 10 %", f"название {str(d)!r}"
-    assert d.amount(Cart([Line(latte, 3), Line(croissant, 2)])) == 100, "10 % от корзины на 1000 ₽ — 100"
+    got = d.amount(Cart([Line(latte, 3), Line(croissant, 2)]))
+    assert isinstance(got, int), f"скидка {got!r} — дробное число; округлите до целых: round(...)"
+    assert got == 100, "10 % от корзины на 1000 ₽ — 100"
 
 
 def test_category():
     "CategoryDiscount — только своя категория"
     d = CategoryDiscount("выпечка", 20)
     assert hasattr(d, "title"), "у скидки нет title — вызовите super().__init__(название)"
-    assert str(d) == "выпечка −20 %", f"название {str(d)!r}, а нужно \"выпечка −20 %\""
+    assert str(d) == "выпечка -20 %", f"название {str(d)!r}, а нужно \"выпечка -20 %\""
     cart = Cart([Line(latte, 3), Line(croissant, 2)])
     got = d.amount(cart)
+    assert isinstance(got, int), f"скидка {got!r} — дробное число; округлите до целых: round(...)"
     assert got != 200, "скидка посчитана от всей корзины, а нужно только от строк категории «выпечка»"
     assert got == 56, f"20 % от выпечки (280 ₽) = {got!r}, а нужно 56"
     assert d.amount(Cart([Line(tea, 1)])) == 0, "без выпечки скидка 0"
@@ -170,11 +200,11 @@ class CategoryDiscount(Discount):
     def __init__(self, category, percent):
         self.category = category
         self.percent = percent
-        super().__init__(f"{category} −{percent} %")
+        super().__init__(f"{category} -{percent} %")
 
     def amount(self, cart):
         base = 0
-        for line in cart.lines:
+        for line in cart:
             if line.product.category == self.category:
                 base += line.cost
         return round(base * self.percent / 100)
@@ -190,7 +220,7 @@ class PercentDiscount(Discount):
 
 class CategoryDiscount(Discount):
     def __init__(self, category, percent):
-        super().__init__(f"{category} −{percent} %")
+        super().__init__(f"{category} -{percent} %")
         self.category = category
         self.percent = percent
 
@@ -198,26 +228,6 @@ class CategoryDiscount(Discount):
         return round(cart.subtotal * self.percent / 100)
 
 # %% payments [exercise]
-class PaymentError(ShopError):
-    pass
-
-
-class PaymentMethod(ABC):
-    @abstractmethod
-    def pay(self, amount):
-        ...
-
-
-class Cash(PaymentMethod):
-    def __init__(self, given):
-        self.given = given
-
-    def pay(self, amount):
-        if self.given < amount:
-            raise PaymentError("недостаточно наличных")
-        return f"наличные {self.given} ₽, сдача {self.given - amount} ₽"
-
-
 class Card(PaymentMethod):
     def __init__(self, balance):
         self.balance = balance
@@ -228,66 +238,37 @@ class Card(PaymentMethod):
         self.balance -= amount
         return f"карта: {amount} ₽"
 # ─── заготовка ───
-# объявите PaymentError, PaymentMethod, Cash и Card
+class Card(PaymentMethod):
+    def __init__(self, balance):
+        ...
+
+    def pay(self, amount):
+        ...
 # ─── проверка ───
-def _cls(name):
-    cls = globals().get(name)
-    assert isinstance(cls, type), f"класса {name} нет — объявите его"
-    return cls
-
-
-def test_hierarchy():
-    "PaymentError и PaymentMethod"
-    assert issubclass(_cls("PaymentError"), ShopError), "PaymentError должен наследовать от ShopError"
-    method = _cls("PaymentMethod")
-    assert issubclass(method, ABC) and "pay" in getattr(method, "__abstractmethods__", set()), "PaymentMethod — абстрактный класс с абстрактным pay"
-    for name in ["Cash", "Card"]:
-        assert issubclass(_cls(name), method), f"{name} должен наследовать от PaymentMethod"
-
-
 def _payment_error(action):
     try:
         action()
-    except _cls("PaymentError") as e:
+    except PaymentError as e:
         return str(e)
+    except Exception as e:
+        assert False, f"выброшен {type(e).__name__}, а нужен PaymentError"
     return None
 
 
-def test_cash():
-    "наличные"
-    assert _cls("Cash")(1000).pay(900) == "наличные 1000 ₽, сдача 100 ₽", f"Cash(1000).pay(900) = {Cash(1000).pay(900)!r}"
-    assert _payment_error(lambda: Cash(200).pay(234)) == "недостаточно наличных", "Cash(200).pay(234) должен выбросить PaymentError(\"недостаточно наличных\")"
-
-
 def test_card():
-    "карта"
-    card = _cls("Card")(2000)
+    "оплата картой"
+    assert issubclass(Card, PaymentMethod), "Card должен наследовать от PaymentMethod"
+    card = Card(2000)
     assert card.pay(664) == "карта: 664 ₽", "Card(2000).pay(664) должен вернуть \"карта: 664 ₽\""
     assert card.balance == 1336, f"после оплаты баланс {card.balance}, а нужно 1336"
+
+
+def test_not_enough():
+    "не хватает — PaymentError, баланс прежний"
+    card = Card(1000)
     assert _payment_error(lambda: card.pay(5000)) == "недостаточно средств", "оплата больше баланса должна выбросить PaymentError(\"недостаточно средств\")"
-    assert card.balance == 1336, "после отказа баланс не должен меняться"
+    assert card.balance == 1000, "после отказа баланс не должен меняться"
 # ─── другое решение ───
-class PaymentError(ShopError):
-    """Оплата не прошла."""
-
-
-class PaymentMethod(ABC):
-    @abstractmethod
-    def pay(self, amount):
-        """Провести оплату и вернуть строку для чека."""
-
-
-class Cash(PaymentMethod):
-    def __init__(self, given):
-        self.given = given
-
-    def pay(self, amount):
-        change = self.given - amount
-        if change < 0:
-            raise PaymentError("недостаточно наличных")
-        return f"наличные {self.given} ₽, сдача {change} ₽"
-
-
 class Card(PaymentMethod):
     def __init__(self, balance):
         self.balance = balance
@@ -298,26 +279,6 @@ class Card(PaymentMethod):
         self.balance = self.balance - amount
         return "карта: " + str(amount) + " ₽"
 # ─── ошибка ───
-class PaymentError(ShopError):
-    pass
-
-
-class PaymentMethod(ABC):
-    @abstractmethod
-    def pay(self, amount):
-        ...
-
-
-class Cash(PaymentMethod):
-    def __init__(self, given):
-        self.given = given
-
-    def pay(self, amount):
-        if self.given < amount:
-            raise PaymentError("недостаточно наличных")
-        return f"наличные {self.given} ₽, сдача {self.given - amount} ₽"
-
-
 class Card(PaymentMethod):
     def __init__(self, balance):
         self.balance = balance
@@ -326,6 +287,16 @@ class Card(PaymentMethod):
         self.balance -= amount
         if self.balance < 0:
             raise PaymentError("недостаточно средств")
+        return f"карта: {amount} ₽"
+# ─── ошибка ───
+class Card(PaymentMethod):
+    def __init__(self, balance):
+        self.balance = balance
+
+    def pay(self, amount):
+        if amount > self.balance:
+            raise ValueError("недостаточно средств")
+        self.balance -= amount
         return f"карта: {amount} ₽"
 
 # %% receipt [exercise]
@@ -351,8 +322,20 @@ class Receipt:
         ]
         return "\n".join(lines)
 # ─── заготовка ───
+@dataclass
 class Receipt:
-    ...
+    number: int
+    subtotal: int
+    discount: str
+    saved: int
+    payment: str
+
+    @property
+    def total(self):
+        return self.subtotal - self.saved
+
+    def __str__(self):
+        ...
 # ─── проверка ───
 from dataclasses import fields, is_dataclass
 
@@ -452,7 +435,7 @@ def test_best():
     assert getattr(reg, "receipts", None) == [], "у новой кассы receipts — пустой список"
     got = reg.best_discount(Cart([Line(croissant, 3), Line(muffin, 2), Line(tea, 1)]))
     assert isinstance(got, Discount), f"best_discount вернул {got!r}, а нужна сама скидка"
-    assert str(got) == "выпечка −20 %", f"для корзины с выпечкой лучшая скидка — «выпечка −20 %» (136 ₽ против 80 ₽), а выбрана {got}"
+    assert str(got) == "выпечка -20 %", f"для корзины с выпечкой лучшая скидка — «выпечка -20 %» (136 ₽ против 80 ₽), а выбрана {got}"
 
 
 def test_checkout():
@@ -460,6 +443,7 @@ def test_checkout():
     reg = _register()
     receipt = reg.checkout(Cart([Line(latte, 3), Line(croissant, 2)]), Cash(1000))
     assert isinstance(receipt, Receipt), f"checkout вернул {type(receipt).__name__}, а нужен Receipt"
+    assert isinstance(receipt.saved, int), f"скидка в чеке {receipt.saved!r} — дробное число: округлите скидку в amount через round"
     assert (receipt.number, receipt.subtotal, receipt.discount, receipt.saved, receipt.total) == (1, 1000, "скидка 10 %", 100, 900), f"чек: {receipt!r}"
     assert receipt.payment == "наличные 1000 ₽, сдача 100 ₽", f"строка оплаты: {receipt.payment!r} — платить нужно сумму после скидки"
     second = reg.checkout(Cart([Line(tea, 2)]), Card(1000))
