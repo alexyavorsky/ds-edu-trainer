@@ -1,0 +1,65 @@
+{
+  "generated": "Pyodide 314.0.7 · Python 3.14.2",
+  "cells": {
+    "eq": {
+      "lines": [
+        "True False",
+        "True"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "foreign": {
+      "lines": [],
+      "result": null,
+      "html": null,
+      "error": "AttributeError: 'str' object has no attribute 'name'"
+    },
+    "not-implemented": {
+      "lines": [
+        "True",
+        "False False"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "false-vs-ni": {
+      "lines": [
+        "True",
+        "False"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "unhashable": {
+      "lines": [
+        "None"
+      ],
+      "result": null,
+      "html": null,
+      "error": "TypeError: cannot use 'Product' as a set element (unhashable type: 'Product')"
+    },
+    "hash": {
+      "lines": [
+        "2",
+        "True",
+        "30"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    },
+    "lost": {
+      "lines": [
+        "False",
+        "1 [Product('Латте', 250)]"
+      ],
+      "result": null,
+      "html": null,
+      "error": null
+    }
+  }
+}

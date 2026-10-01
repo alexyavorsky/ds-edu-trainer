@@ -157,6 +157,8 @@ def python_concepts(code: str, declared: set[str]) -> list[str]:
             found.update(f"{node.module}.{a.name}" for a in node.names)
         elif isinstance(node, ast.Import):
             found.update(f"import {a.name}" for a in node.names)
+        elif isinstance(node, ast.Name) and node.id == "NotImplemented":
+            found.add("NotImplemented")
         elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in PYTHON_CALLS:
             found.add(f"{node.func.id}()" if node.func.id == "super" else node.func.id)
         elif isinstance(node, ast.Attribute):

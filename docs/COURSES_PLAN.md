@@ -526,7 +526,7 @@ np.array([10, 20]) / 4
   Курс с `concepts = "python"` (ООП) собирает другие понятия: конструкции `class`, `class(Base)`, каждый
   объявленный магический метод (`__init__`, `__repr__`…), декораторы `@property`, `@setter`, `@classmethod`,
   `@staticmethod`, вызовы `super()`, `type`, `isinstance`, `issubclass`, `hasattr`/`getattr`/`setattr`, `repr`,
-  `hash`, `iter`, `next`, операторы `raise`, `raise from`, `yield`, `is`, импорты `модуль.имя`
+  `hash`, `iter`, `next`, значение `NotImplemented`, операторы `raise`, `raise from`, `yield`, `is`, импорты `модуль.имя`
   (`dataclasses.dataclass`, `abc.ABC`), магические атрибуты `.__dict__`, `.__name__`. `.x` и `x=` — только чужие:
   атрибуты, методы, поля и параметры, объявленные в коде урока или прошлых уроков, понятиями не считаются.
 - **Заготовка-класс:** метод класса, тело которого в заготовке — только `...`, — цель заготовки «Класс.метод»
