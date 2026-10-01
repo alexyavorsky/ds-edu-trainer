@@ -36,7 +36,7 @@ export interface ExerciseCell {
   tests: string;
   alts: string[]; // другие верные решения: проверка проходит, следующие ячейки работают
   mistakes: string[]; // типичные ошибки: проверка обязана их поймать
-  targets: string[]; // переменные, которые заготовка задаёт как `x = ...`
+  targets: string[]; // переменные, которые заготовка задаёт как `x = ...`, и недописанные методы «Класс.метод»
   line: number;
 }
 
@@ -72,12 +72,32 @@ const trimBlock = (lines: string[]) => {
   return out.join('\n');
 };
 
-/** Переменные, которые заготовка задаёт многоточием: `total = ...` на верхнем уровне. */
+/**
+ * Что заготовка оставляет ученику: переменные `total = ...` на верхнем уровне и методы классов, тело которых —
+ * только `...` (и комментарии): `class Product:` → `def total(self):` → `...` даёт цель «Product.total».
+ */
 export function starterTargets(starter: string): string[] {
-  return starter
-    .split('\n')
-    .map((l) => TARGET_RE.exec(l)?.[1])
-    .filter((n): n is string => !!n);
+  const targets: string[] = [];
+  let cls: string | null = null;
+  let method: string | null = null;
+  let abstract = false;
+  for (const line of starter.split('\n')) {
+    const variable = TARGET_RE.exec(line)?.[1];
+    if (variable) targets.push(variable);
+    if (!line.trim() || line.trim().startsWith('#')) continue;
+    const classMatch = /^class\s+([A-Za-z_]\w*)/.exec(line);
+    if (classMatch) [cls, method] = [classMatch[1], null];
+    else if (!/^\s/.test(line)) [cls, method] = [null, null];
+    else if (cls && /^ {4}def\s+([A-Za-z_]\w*)/.test(line)) {
+      method = abstract ? null : /^ {4}def\s+([A-Za-z_]\w*)/.exec(line)![1];
+      abstract = false;
+    } else if (cls && method && /^ {8}\.\.\.\s*(#.*)?$/.test(line)) {
+      targets.push(`${cls}.${method}`);
+      method = null;
+    } else if (/^ {4}@/.test(line)) abstract ||= /^ {4}@abstractmethod\b/.test(line); // `...` абстрактного метода — не заготовка
+    else method = null;
+  }
+  return targets;
 }
 
 export function parseLessonPy(text: string): Parsed<CodeCell[]> {

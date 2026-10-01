@@ -94,9 +94,13 @@ function checkStructure(courses: CourseSource[], strict: boolean, r: Report): vo
   const ids = new Map<string, string>();
   for (const course of courses) {
     const c = course.meta;
-    for (const key of ['title', 'code', 'package', 'summary', 'audience', 'reference'] as const) {
+    for (const key of ['title', 'code', 'summary', 'audience'] as const) {
       if (!c[key]) r.error(course.slug, `course.toml: нет поля ${key}`);
     }
+    // курс по библиотеке: package и reference; курс о самом Python (ООП): python — минимальная версия
+    if (!c.package && !c.python) r.error(course.slug, 'course.toml: нужно поле package (курс по библиотеке) или python (курс без пакетов)');
+    if (c.package && !c.reference) r.error(course.slug, 'course.toml: нет поля reference');
+    if (c.concepts !== undefined && c.concepts !== 'python') r.error(course.slug, `course.toml: concepts = "${c.concepts}" — допустимо только "python"`);
     if (!c.prerequisites?.length) r.error(course.slug, 'course.toml: пустой prerequisites («что нужно знать»)');
     const slugs = new Set<string>();
     const lessonUrls = new Set(courses.flatMap((x) => courseLessons(x).map((l) => `/courses/${x.slug}/${l.slug}`)));
@@ -182,6 +186,11 @@ function checkBlocks(lesson: LessonSource, lessonUrls: Set<string>, r: Report): 
     if (c.kind !== 'exercise') continue;
     if (!/^def test_\w+/m.test(c.tests)) r.error(at, `упражнение ${c.id}: в проверке нет функций test_*`);
     for (const t of c.targets) {
+      if (t.includes('.')) {
+        const [cls, method] = t.split('.');
+        if (!new RegExp(`^class ${cls}\\b[\\s\\S]*^ {4}def ${method}\\(`, 'm').test(c.solution)) r.error(at, `упражнение ${c.id}: заготовка оставляет метод ${t}, а в эталоне его нет`);
+        continue;
+      }
       if (!new RegExp(`^${t}\\s*[=,]|^\\s*${t}\\s*=|,\\s*${t}\\s*=`, 'm').test(c.solution)) r.error(at, `упражнение ${c.id}: заготовка задаёт ${t} = ..., а эталон её не присваивает`);
     }
     if (!c.alts.length) r.warn(at, `упражнение ${c.id}: нет «другого решения»`);
@@ -203,7 +212,9 @@ function checkConcepts(courses: CourseSource[], python: string, r: Report): Map<
       }
     }
   }
-  const found = cpython(python, { mode: 'concepts', snippets }) as Record<string, string[] | { error: string }>;
+  // курс о самом Python (concepts = "python"): уроки по порядку — имена, объявленные в уроке и раньше, не понятия
+  const pythonLessons = courses.filter((c) => c.meta.concepts === 'python').map((c) => courseLessons(c).map((l) => l.meta.id));
+  const found = cpython(python, { mode: 'concepts', snippets, python: pythonLessons }) as Record<string, string[] | { error: string }>;
   const review = new Map<string, string[]>(); // урок → понятия прошлых уроков в его упражнениях (повторение)
   const introducedBy = (course: CourseSource) => new Map(courseLessons(course).flatMap((l) => l.meta.introduces.map((c) => [c, l.meta.id] as [string, string])));
   for (const course of courses) {
@@ -438,7 +449,7 @@ async function main(argv: string[]): Promise<number> {
     Promise.resolve().then(() => cpython(python, { mode: 'run', runs: runs.map((x) => ({ lesson: x.lesson.meta.id, files: x.lesson.meta.data, steps: x.steps })) }) as StepResult[][]),
   ]);
 
-  const lock = JSON.parse(read(join(root, 'node_modules', 'pyodide', 'pyodide-lock.json'))) as { packages: Record<string, { version: string }> };
+  const lock = JSON.parse(read(join(root, 'node_modules', 'pyodide', 'pyodide-lock.json'))) as { info: { python: string }; packages: Record<string, { version: string }> };
   const npVersion = (name: string) => lock.packages[name]?.version ?? '?';
   for (const { course, lesson } of chosen) {
     const at = lesson.meta.id;
@@ -453,7 +464,7 @@ async function main(argv: string[]): Promise<number> {
     // сохранённый вывод — из прогона с эталонами в Pyodide; CPython должен совпадать, кроме [platform]
     const main = lessonRuns.find(({ run }) => run.label === 'эталоны');
     if (!main || typeof pyodide[main.i] === 'string') continue;
-    const fresh: OutputFile = { generated: `Pyodide ${PYODIDE_VERSION} · ${course.meta.title} ${npVersion(course.meta.package)}`, cells: {} };
+    const fresh: OutputFile = { generated: `Pyodide ${PYODIDE_VERSION} · ${course.meta.package ? `${course.meta.title} ${npVersion(course.meta.package)}` : `Python ${lock.info.python}`}`, cells: {} };
     const plots = new Map<string, string>();
     main.run.steps.forEach((step, k) => {
       const cell = lesson.cells.find((c) => c.id === step.cell)!;
@@ -462,6 +473,10 @@ async function main(argv: string[]): Promise<number> {
       const out = stored(result);
       (result.plots ?? []).forEach((svg, n) => plots.set(`${cell.id}-${n + 1}.svg`, svg));
       fresh.cells[cell.id] = out;
+      // repr объекта без __repr__ — «<… object at 0x10a3…>»: адрес меняется от запуска к запуску
+      if (/ at 0x[0-9a-f]{6,}/.test([...out.lines, ...(out.result ?? []), out.error ?? ''].join('\n'))) {
+        r.error(at, `ячейка ${cell.id}: в выводе адрес объекта (at 0x…) — он меняется от запуска к запуску; добавьте классу __repr__ или печатайте атрибуты`);
+      }
       const c = cpy[main.i][k];
       if (c && !('platform' in cell.flags) && !sameOutput(out, stored(c))) {
         r.error(at, `ячейка ${cell.id}: вывод в CPython и в браузере разный — сделайте его независимым от платформы или поставьте [platform]\n${diffText(out, stored(c))}`);
