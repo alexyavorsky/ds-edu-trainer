@@ -53,6 +53,7 @@ REFERENCE = ROOT / "reference"
 PRELUDE = REFERENCE / "prelude.py"
 REQUIREMENTS = ROOT / "requirements-dev.txt"
 PLOTS = ROOT / "public" / "reference" / "plots"
+DIRECTIONS = ("python", "data", "git", "english")  # как DIRECTIONS в src/lib/directions.ts
 
 sys.path.insert(0, str(ROOT / "runtime"))
 from reference_exec import ExampleRunner  # noqa: E402 — общий с сайтом запуск примеров
@@ -257,9 +258,13 @@ def load_topics() -> tuple[dict[str, dict], list[Article], list[str], list[str]]
             continue
         meta = tomllib.loads(topic_path.read_text(encoding="utf-8"))
         topics[topic_dir.name] = meta
-        for key in ("title", "summary", "package", "version", "docs", "sections"):
+        for key in ("title", "summary", "package", "version", "docs", "direction", "sections"):
             if key not in meta:
                 errors.append(f"{topic_dir.name}/topic.toml: нет поля {key}")
+        if "direction" in meta and meta["direction"] not in DIRECTIONS:
+            errors.append(f"{topic_dir.name}/topic.toml: direction — одно из {', '.join(DIRECTIONS)}")
+        if not isinstance(meta.get("beta", False), bool):
+            errors.append(f"{topic_dir.name}/topic.toml: beta — true или false")
         listed: set[str] = set()
         for section in meta.get("sections", []):
             for slug in section.get("articles", []):

@@ -1,4 +1,6 @@
 ---
+import { getNavMenus } from '../lib/nav';
+import BetaBadge from './BetaBadge.astro';
 import BugReportLink from './BugReportLink.astro';
 
 interface Props {
@@ -10,6 +12,12 @@ const { taskId, articleId, lessonId } = Astro.props;
 const path = Astro.url.pathname;
 const inReference = path.startsWith('/reference');
 const inCourses = path.startsWith('/courses');
+const menus = await getNavMenus();
+const tabs = [
+  { label: 'Задачи', href: '/', active: !inReference && !inCourses, groups: menus.tasks },
+  { label: 'Курсы', href: '/courses', active: inCourses, groups: menus.courses },
+  { label: 'Справочник', href: '/reference', active: inReference, groups: menus.reference },
+];
 ---
 
 <header class="header">
@@ -21,11 +29,30 @@ const inCourses = path.startsWith('/courses');
       <span class="logo-text">Тренажёр</span>
     </a>
     <nav class="nav" aria-label="Разделы">
-      <a href="/" class:list={['nav-link', !inReference && !inCourses && 'is-active']}>Задачи</a>
-      <a href="/courses" class:list={['nav-link', inCourses && 'is-active']}>Курсы</a>
-      <a href="/reference" class:list={['nav-link', inReference && 'is-active']}>
-        Справочник
-      </a>
+      {
+        tabs.map((tab) => (
+          <div class="nav-item">
+            <a href={tab.href} class:list={['nav-link', tab.active && 'is-active']}>
+              {tab.label}
+            </a>
+            {tab.groups.length > 0 && (
+              <div class="menu" role="group" aria-label={tab.label}>
+                {tab.groups.map((group) => (
+                  <div class="menu-group">
+                    <p class="menu-title">{group.title}</p>
+                    {group.items.map((item) => (
+                      <a class="menu-link" href={item.href}>
+                        {item.title}
+                        {item.beta && <BetaBadge />}
+                      </a>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))
+      }
     </nav>
     <div class="header-actions">
       <BugReportLink taskId={taskId} articleId={articleId} lessonId={lessonId} compact />
@@ -91,6 +118,64 @@ const inCourses = path.startsWith('/courses');
   }
   .nav-link.is-active {
     color: var(--text);
+  }
+  .nav-item {
+    position: relative;
+  }
+  /* Меню раскрывается по наведению и при фокусе с клавиатуры; на сенсорных и узких экранах — только переход
+     на страницу вида, где разделы тоже сгруппированы по направлениям. */
+  .menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    display: none;
+    min-width: 240px;
+    padding: 8px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.45);
+  }
+  .menu::before {
+    content: '';
+    position: absolute;
+    inset: -8px 0 auto;
+    height: 8px;
+  }
+  @media (hover: hover) and (min-width: 721px) {
+    .nav-item:hover .menu,
+    .nav-item:focus-within .menu {
+      display: grid;
+      gap: 6px;
+    }
+  }
+  .menu-group + .menu-group {
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+  }
+  .menu-title {
+    margin: 2px 8px 4px;
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  .menu-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+  .menu-link:hover,
+  .menu-link:focus-visible {
+    color: var(--text);
+    background: var(--surface-2);
   }
   .header-actions {
     margin-left: auto;

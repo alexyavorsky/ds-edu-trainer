@@ -2,6 +2,11 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { booksLoader, chaptersLoader, challengesLoader, topicsLoader } from './lib/challenges';
+import { DIRECTION_IDS } from './lib/directions';
+
+/** Направление (группа на главной, в /courses, /reference и в меню) и пометка «бета» — у разделов всех видов. */
+const direction = z.enum(DIRECTION_IDS);
+const beta = z.boolean().default(false);
 
 const books = defineCollection({
   loader: booksLoader(),
@@ -15,6 +20,8 @@ const books = defineCollection({
     order: z.number().int().default(100),
     packages: z.array(z.string()).default([]), // у темы — нужные пакеты; у книги пусто (только stdlib)
     reference: z.string().optional(), // тема справочника, по разделам которой строятся главы
+    direction,
+    beta,
   }),
 });
 
@@ -74,6 +81,8 @@ const topics = defineCollection({
     version: z.string(),
     docs: z.url(),
     order: z.number().int().default(100),
+    direction,
+    beta,
     sections: z.array(z.object({ title: z.string(), articles: z.array(z.string()).min(1) })).min(1),
   }),
 });

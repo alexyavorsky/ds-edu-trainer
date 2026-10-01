@@ -1,6 +1,7 @@
 title = "pandas"
 code = "pd"
 order = 2
+direction = "data"
 package = "pandas"
 reference = "pandas"
 complete = true

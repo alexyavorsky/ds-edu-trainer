@@ -26,6 +26,7 @@ import { join } from 'node:path';
 import { type Block, type CodeCell, type ExerciseCell, type OutputFile, type StoredOutput } from '../src/lib/courses/format.ts';
 import { courseLessons, DATA_DIR, lessonFiles, lessonPackages, loadCourses, type CourseSource, type LessonSource } from '../src/lib/courses/load.ts';
 import { buildNotebook } from '../src/lib/courses/notebook.ts';
+import { DIRECTION_IDS } from '../src/lib/directions.ts';
 import { fillNotebook } from '../src/lib/courses/notebook-fill.ts';
 import { PYODIDE_VERSION } from '../src/lib/python/config.ts';
 import type { LessonDone, TestResult } from '../src/lib/python/protocol.ts';
@@ -94,9 +95,11 @@ function checkStructure(courses: CourseSource[], strict: boolean, r: Report): vo
   const ids = new Map<string, string>();
   for (const course of courses) {
     const c = course.meta;
-    for (const key of ['title', 'code', 'package', 'summary', 'audience', 'reference'] as const) {
+    for (const key of ['title', 'code', 'package', 'summary', 'audience', 'reference', 'direction'] as const) {
       if (!c[key]) r.error(course.slug, `course.toml: нет поля ${key}`);
     }
+    if (c.direction && !DIRECTION_IDS.includes(c.direction)) r.error(course.slug, `course.toml: direction — одно из ${DIRECTION_IDS.join(', ')}`);
+    if (c.beta !== undefined && typeof c.beta !== 'boolean') r.error(course.slug, 'course.toml: beta — true или false');
     if (!c.prerequisites?.length) r.error(course.slug, 'course.toml: пустой prerequisites («что нужно знать»)');
     const slugs = new Set<string>();
     const lessonUrls = new Set(courses.flatMap((x) => courseLessons(x).map((l) => `/courses/${x.slug}/${l.slug}`)));

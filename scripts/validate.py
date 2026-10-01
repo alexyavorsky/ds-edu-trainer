@@ -58,8 +58,10 @@ ALT_DIR = "alt_solutions"  # корректные, но «неэкономные
 META_REQUIRED = {"id", "title", "difficulty", "type", "tags", "hints"}
 META_OPTIONAL = {"bugs", "order", "refs", "complexity"}
 # book.toml описывает раздел задач: книгу (kind = "book") или тему (kind = "topic", например NumPy).
-BOOK_REQUIRED = {"title", "code"}
-BOOK_OPTIONAL = {"kind", "author", "edition", "order", "description", "packages", "reference"}
+BOOK_REQUIRED = {"title", "code", "direction"}
+BOOK_OPTIONAL = {"kind", "author", "edition", "order", "description", "packages", "reference", "beta"}
+# Направления сайта (группы на главной и в меню) — как DIRECTIONS в src/lib/directions.ts.
+DIRECTIONS = ("python", "data", "git", "english")
 BOOK_KINDS = ("book", "topic")
 # Задачи по книгам — только стандартная библиотека; у темы разрешены пакеты из её поля packages.
 KNOWN_PACKAGES = {"numpy", "pandas"}
@@ -737,6 +739,10 @@ def check_book_kind(book: dict, book_dir: Path, errors: list[str]) -> frozenset[
     """Проверяет поля раздела задач и возвращает разрешённые пакеты (пусто — только stdlib)."""
     where = f"{book_dir.name}/book.toml"
     kind = book.get("kind", "book")
+    if "direction" in book and book["direction"] not in DIRECTIONS:
+        errors.append(f"{where}: direction — одно из {', '.join(DIRECTIONS)}")
+    if not isinstance(book.get("beta", False), bool):
+        errors.append(f"{where}: beta — true или false")
     if kind not in BOOK_KINDS:
         errors.append(f"{where}: kind — одно из {', '.join(BOOK_KINDS)}")
         return frozenset()
