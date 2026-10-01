@@ -54,8 +54,10 @@ reference: [numpy/broadcasting]
 
 <Demo id="half" title="Вспомним про половинки" />
 
+<After id="rubles">
 Цена 2612.5 превратилась в 2612, а не в 2613: половинки округляются к чётному, как в уроке о статистике.
 Для прайс-листа это приемлемо, но в бухгалтерии правило округления задают явно.
+</After>
 
 ## Шаг 5. Цена за штуку
 
@@ -88,7 +90,7 @@ reference: [numpy/broadcasting]
 
 ## Выводы
 
-<Demo id="summary" title="Прайс-лист" />
+<Demo id="summary" title="Прайс-лист" gate="lesson" />
 
 Весь прайс-лист — четыре массива (два столбца и две строки) и одно выражение
 `cost[:, np.newaxis] * amounts * (1 - volume_discount) * markup[:, np.newaxis]`. Добавится товар или новый

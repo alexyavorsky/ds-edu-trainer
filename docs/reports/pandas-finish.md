@@ -232,3 +232,26 @@ PR #4 `numpy-review` к моменту работы в main не слит — п
 - М4 resample `stamp`: метка квартала `"QE"` (30 июня: месяц 6, квартал 2) — `"QE"` уже в таблице выше.
 - М6 project-clean-2 `total`: сообщение без правильного числа.
 - Проверки: `validate_courses.ts pandas` ✓, check 0 ошибок, build ✓, chromium по pandas 51/51 ✓.
+
+## Курс NumPy
+
+После слияния main (PR #4 `numpy-review`) курс NumPy пройден тем же способом.
+- **Итоги проектов:** `gate="lesson"` у итоговых демонстраций 11 проектов (`summary` в 10, `final` в project-pixels);
+  `<After id="*">` — «Выводы» с ответами в 9 проектах (в project-prices выводы без чисел, в project-pixels их нет).
+- **`gate="off"`** — новый материал в разделе упражнения: `other-array` (boolean-filter), `speed` (simulation),
+  `no-header` (genfromtxt), `concat-2d` (join-split), `neighbor` (distances). По разделу упражнения скрыт вывод 7
+  демонстраций: `change-print`, `count-print`, `hot-print`, `half`, `check-fill`, `recommend`, `naive-days`.
+- **Текст с ответом в `<After>`** (9): project-pixels `count`, project-hot-days `days`, project-prices `rubles`,
+  project-dice `fair`, genfromtxt `zero-trap`, project-knn `predict`, `naive`, final-revenue `categories`, `delivery`.
+- **Переписано:** заголовок `count-print` «Почему 13, а не 14» (называл ответ) → «Крест и число закрашенных точек»;
+  «Типичная ошибка» под `quality` в final-revenue — без долей 20.6/21.4 % и оценок 2.4/3.7 (это ответы).
+- Оставлено: числа, которые не ответ (145.3 и точность дробных, 29 строк вместо 28 в Mistake genfromtxt, 0.4 —
+  неверный ответ в Mistake vectorize, «один день из 28» в project-station, 2448 строк в Mistake final-revenue).
+- Проверки: `validate_courses.ts numpy` ✓; `npm run check` 0 ошибок; build ✓; `validate_browsers.ts chromium`
+  по 43 урокам NumPy ✓ (ячеек 403); Playwright на project-knn — пусто: 6 мест скрыто, все упражнения решены: всё видно.
+- Изменённые места: lesson.mdx 16 уроков NumPy (`01-start/05-project-expenses`, `02-shape/05-project-moscow`,
+  `03-indexing/05-project-pixels`, `04-masks/02-boolean-filter`, `04-masks/04-project-hot-days`,
+  `05-axes/05-project-grades`, `06-broadcasting/04-project-prices`, `07-random/03-simulation`,
+  `07-random/04-project-dice`, `08-missing/02-genfromtxt`, `08-missing/03-join-split`, `08-missing/04-project-station`,
+  `09-linalg/03-distances`, `09-linalg/05-project-knn`, `10-final/01-final-revenue`, `10-final/02-final-dynamics`);
+  lesson.py и output.json не менялись.
