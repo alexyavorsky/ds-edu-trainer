@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { courseLessons } from '../../lib/courses/load';
+import { courseLessons, lessonExerciseIds } from '../../lib/courses/load';
 import { getCourses } from '../../lib/courses/site';
 import { lessonsLabel, modulesLabel } from '../../lib/labels';
 
@@ -9,7 +9,7 @@ const courses = getCourses().map((course) => {
   return {
     course,
     lessons,
-    progress: lessons.map((l) => `${l.meta.id}:${l.cells.filter((c) => c.kind === 'exercise').map((c) => c.id).join(',')}`).join(';'),
+    progress: lessons.map((l) => `${l.meta.id}:${lessonExerciseIds(l).join(',')}`).join(';'),
   };
 });
 ---

@@ -1,13 +1,13 @@
 ---
 /** Программа курса сбоку от урока: модули и уроки, отметки пройденных. На узком экране — выдвижная панель. */
-import { lessonUrl, type CourseSource } from '../../lib/courses/load';
+import { lessonExerciseIds, lessonUrl, type CourseSource } from '../../lib/courses/load';
 
 interface Props {
   course: CourseSource;
   currentId?: string;
 }
 const { course, currentId } = Astro.props;
-const exercises = (l: CourseSource['modules'][number]['lessons'][number]) => l.cells.filter((c) => c.kind === 'exercise').map((c) => c.id).join(',');
+const exercises = (l: CourseSource['modules'][number]['lessons'][number]) => lessonExerciseIds(l).join(',');
 ---
 
 <nav class="course-nav" aria-label={`Программа курса ${course.meta.title}`}>

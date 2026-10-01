@@ -22,7 +22,7 @@ import { extname, join } from 'node:path';
 import { chromium, firefox, webkit, type BrowserType } from 'playwright';
 import { parse as parseToml } from 'smol-toml';
 import { bundleFooter } from '../src/lib/bundle.ts';
-import { courseLessons, lessonFiles, lessonPackages, loadCourses } from '../src/lib/courses/load.ts';
+import { courseLessons, isPythonCourse, lessonFiles, lessonPackages, loadCourses } from '../src/lib/courses/load.ts';
 import { PYTHON_CONFIG } from '../src/lib/python/config.ts';
 
 /** Глубина рекурсии с запоминанием, которую тесты задач могут требовать (Safari падает на ~70). */
@@ -81,7 +81,7 @@ function loadTasks() {
  * упражнений проходили.
  */
 function loadLessons() {
-  return loadCourses().flatMap((course) =>
+  return loadCourses().filter(isPythonCourse).flatMap((course) =>
     courseLessons(course).map((lesson) => ({
       id: lesson.meta.id,
       packages: lessonPackages(course.meta, lesson.meta),

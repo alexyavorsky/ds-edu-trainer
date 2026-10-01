@@ -24,7 +24,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync
 import { availableParallelism } from 'node:os';
 import { join } from 'node:path';
 import { type Block, type CodeCell, type ExerciseCell, type OutputFile, type StoredOutput } from '../src/lib/courses/format.ts';
-import { courseLessons, DATA_DIR, lessonFiles, lessonPackages, loadCourses, type CourseSource, type LessonSource } from '../src/lib/courses/load.ts';
+import { courseLessons, DATA_DIR, isPythonCourse, lessonFiles, lessonPackages, loadCourses, type CourseSource, type LessonSource } from '../src/lib/courses/load.ts';
 import { buildNotebook } from '../src/lib/courses/notebook.ts';
 import { fillNotebook } from '../src/lib/courses/notebook-fill.ts';
 import { PYODIDE_VERSION } from '../src/lib/python/config.ts';
@@ -408,7 +408,7 @@ async function main(argv: string[]): Promise<number> {
   const r = new Report();
   const started = performance.now();
 
-  const all = loadCourses();
+  const all = loadCourses().filter(isPythonCourse); // курсы без Python (английский) — scripts/validate_english.ts
   checkStructure(all, strict, r);
   const versions = cpython(python, { mode: 'versions' }) as Record<string, string>;
   const pins = pinned();

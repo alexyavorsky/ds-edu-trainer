@@ -149,10 +149,13 @@ export type Block =
   | { type: 'demo'; id: string; title: string; line: number }
   | { type: 'exercise'; id: string; title: string; prompt: string; hints: string[]; line: number }
   | { type: 'quiz'; id: string; question: string; options: QuizOption[]; explain: string; line: number }
+  | { type: 'practice'; id: string; line: number } // упражнение по английскому: ключи — в exercises.toml
   | { type: 'component'; name: string; attrs: Record<string, string>; body: string | null; line: number };
 
-/** Компоненты, которые можно писать в уроке (кроме Demo/Exercise/Quiz). Схемы — из справочника. */
+/** Компоненты, которые можно писать в уроке (кроме Demo/Exercise/Quiz/Practice). Схемы — из справочника. */
 export const TEXT_COMPONENTS = new Set(['Note', 'Mistake']);
+/** Компоненты справочника грамматики — в уроках английского (курс с runtime = "none"). */
+export const ENGLISH_COMPONENTS = new Set(['Examples', 'Formula', 'Fix']);
 export const DIAGRAMS = new Set(['AxisDiagram', 'BroadcastDiagram', 'GroupbyDiagram', 'MeltPivotDiagram', 'StackUnstackDiagram', 'MergeDiagram']);
 
 const SELF_RE = /^<([A-Z]\w*)((?:\s+\w+="[^"]*")*)\s*\/>\s*$/;
@@ -247,11 +250,14 @@ export function parseLessonMdx(text: string): Parsed<Block[]> {
         else question.push(l);
       }
       blocks.push({ type: 'quiz', id: attrs.id ?? '', question: trimBlock(question), options, explain: explain.join('\n\n'), line: at });
+    } else if (name === 'Practice') {
+      if (inner) problems.push(`строка ${at}: <Practice id="…" /> пишется без содержимого`);
+      blocks.push({ type: 'practice', id: attrs.id ?? '', line: at });
     } else {
-      if (!TEXT_COMPONENTS.has(name) && !DIAGRAMS.has(name)) problems.push(`строка ${at}: неизвестный компонент <${name}>`);
+      if (!TEXT_COMPONENTS.has(name) && !DIAGRAMS.has(name) && !ENGLISH_COMPONENTS.has(name)) problems.push(`строка ${at}: неизвестный компонент <${name}>`);
       blocks.push({ type: 'component', name, attrs, body: inner ? trimBlock(inner) : null, line: at });
     }
-    if ((name === 'Demo' || name === 'Exercise' || name === 'Quiz') && !attrs.id) problems.push(`строка ${at}: у <${name}> нет id`);
+    if ((name === 'Demo' || name === 'Exercise' || name === 'Quiz' || name === 'Practice') && !attrs.id) problems.push(`строка ${at}: у <${name}> нет id`);
   }
   if (!fence) flushText();
   else problems.push('незакрытый блок кода ```');

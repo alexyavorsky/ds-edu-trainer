@@ -1,11 +1,14 @@
 /**
  * Курсы с диска: courses/<курс>/course.toml, <NN-модуль>/module.toml, <NN-урок>/lesson.mdx + lesson.py
  * (+ output.json — пишет валидатор). Папка = сущность, реестров нет. Общее для сайта и scripts/*.ts.
+ * Курс с runtime = "none" (английский): у урока вместо lesson.py — exercises.toml (src/lib/english).
  */
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parse as parseToml } from 'smol-toml';
 import { parse as parseYaml } from 'yaml';
+import type { Exercise } from '../english/check.ts';
+import { parseExercises } from '../english/exercises.ts';
 import { parseLessonMdx, parseLessonPy, splitFrontmatter, type Block, type CodeCell, type OutputFile } from './format.ts';
 
 export const COURSES_DIR = join(resolve('.'), 'courses');
@@ -14,9 +17,11 @@ const NUMBERED_RE = /^(\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
 
 export interface CourseMeta {
   title: string;
-  code: string; // префикс id уроков: np, pd
+  code: string; // префикс id уроков: np, pd, en
   order: number;
-  package: string; // numpy · pandas — версия в Pyodide и в requirements-dev.txt
+  runtime: 'python' | 'none'; // none — курс без Python (английский): упражнения из exercises.toml, Pyodide не грузится
+  beta: boolean;
+  package: string; // numpy · pandas — версия в Pyodide и в requirements-dev.txt (у runtime = "none" — пусто)
   summary: string;
   audience: string; // для кого курс
   prerequisites: string[]; // что нужно знать
@@ -29,14 +34,19 @@ export interface ModuleMeta {
   title: string;
   summary: string;
   outcomes: string[]; // что человек умеет после модуля
+  level?: string; // уровень модуля в курсе английского: «A1–A2», «B1», «B2» — страница курса группирует по нему
 }
+
+export type LessonKind = 'lesson' | 'project' | 'review' | 'test' | 'placement';
+/** Уроки с проверкой в конце (баллы, зачёт 80 %), а не по ходу. */
+export const isTestKind = (kind: LessonKind) => kind === 'test' || kind === 'placement';
 
 export interface LessonMeta {
   id: string;
   title: string;
   summary: string;
   minutes: number;
-  kind: 'lesson' | 'project';
+  kind: LessonKind; // review · test · placement — у курса английского
   optional: boolean; // «дополнительно»: дальше по курсу не понадобится, можно пропустить
   introduces: string[]; // новые понятия урока: np.array, .shape, axis=
   reference: string[]; // статьи справочника «тема/статья»
@@ -53,6 +63,7 @@ export interface LessonSource {
   meta: LessonMeta;
   blocks: Block[];
   cells: CodeCell[];
+  exercises: Exercise[]; // упражнения по английскому (exercises.toml), у уроков Python — пусто
   output: OutputFile | null;
   problems: string[]; // ошибки формата — их показывает валидатор
 }
@@ -81,7 +92,7 @@ export function lessonMeta(raw: Record<string, unknown>): LessonMeta {
     title: String(raw.title ?? ''),
     summary: String(raw.summary ?? ''),
     minutes: Number(raw.minutes ?? 0),
-    kind: raw.kind === 'project' ? 'project' : 'lesson',
+    kind: (['project', 'review', 'test', 'placement'] as const).find((k) => k === raw.kind) ?? 'lesson',
     optional: raw.optional === true,
     introduces: (raw.introduces as string[]) ?? [],
     reference: (raw.reference as string[]) ?? [],
@@ -102,7 +113,13 @@ export function loadLesson(course: string, module: string, folder: string): Less
   }
   const blocks = parseLessonMdx(mdx);
   const py = existsSync(join(dir, 'lesson.py')) ? parseLessonPy(read(join(dir, 'lesson.py'))) : { value: [], problems: [] };
-  problems.push(...blocks.problems.map((p) => `lesson.mdx: ${p}`), ...py.problems.map((p) => `lesson.py: ${p}`));
+  const ex = existsSync(join(dir, 'exercises.toml')) ? parseExercises(read(join(dir, 'exercises.toml'))) : { value: [], problems: [] };
+  problems.push(...blocks.problems.map((p) => `lesson.mdx: ${p}`), ...py.problems.map((p) => `lesson.py: ${p}`), ...ex.problems.map((p) => `exercises.toml: ${p}`));
+  const practice = blocks.value.flatMap((b) => (b.type === 'practice' ? [b.id] : []));
+  const order = ex.value.map((e) => e.id);
+  if (practice.join() !== order.join()) {
+    problems.push(`порядок <Practice> в lesson.mdx (${practice.join(', ') || '—'}) не совпадает с [[exercise]] в exercises.toml (${order.join(', ') || '—'})`);
+  }
   const outputPath = join(dir, 'output.json');
   const [, number, slug] = NUMBERED_RE.exec(folder)!;
   return {
@@ -114,6 +131,7 @@ export function loadLesson(course: string, module: string, folder: string): Less
     meta: lessonMeta(raw),
     blocks: blocks.value,
     cells: py.value,
+    exercises: ex.value,
     output: existsSync(outputPath) ? (JSON.parse(read(outputPath)) as OutputFile) : null,
     problems,
   };
@@ -136,7 +154,11 @@ export function loadCourses(): CourseSource[] {
           .filter((l) => existsSync(join(COURSES_DIR, slug, m, l, 'lesson.mdx')))
           .map((l) => loadLesson(slug, m, l)),
       }));
-    courses.push({ slug, meta: { ...meta, order: meta.order ?? 100, requires: meta.requires ?? [] }, modules });
+    courses.push({
+      slug,
+      meta: { ...meta, order: meta.order ?? 100, requires: meta.requires ?? [], runtime: meta.runtime ?? 'python', beta: meta.beta ?? false, package: meta.package ?? '' },
+      modules,
+    });
   }
   return courses.sort((a, b) => a.meta.order - b.meta.order);
 }
@@ -149,6 +171,14 @@ export function courseLessons(course: CourseSource): LessonSource[] {
 export function lessonUrl(lesson: { course: string; slug: string }): string {
   return `/courses/${lesson.course}/${lesson.slug}`;
 }
+
+/** Упражнения урока, по которым он засчитывается: ячейки [exercise] у Python, <Practice> у английского. */
+export function lessonExerciseIds(lesson: LessonSource): string[] {
+  return lesson.exercises.length ? lesson.exercises.map((e) => e.id) : lesson.cells.filter((c) => c.kind === 'exercise').map((c) => c.id);
+}
+
+/** Курсы с Python: им нужны Pyodide, .ipynb, проверки validate_courses/validate_browsers. */
+export const isPythonCourse = (course: CourseSource) => course.meta.runtime !== 'none';
 
 /** Файлы данных урока с адресами, по которым их берёт Python в браузере. */
 export function lessonFiles(meta: LessonMeta): { name: string; url: string }[] {
