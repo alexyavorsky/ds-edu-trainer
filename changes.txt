@@ -1,0 +1,4 @@
+1./Users/aleksandr/Projects/edu-platform/courses/numpy/03-indexing/05-project-pixels/lesson.py
+замена теста и его вывода в задаче один: показывалось решение
+2.изменена надпись футера
+3.удалены пустые карточки задачника с главного экрана

@@ -31,8 +31,8 @@ frame = np.zeros((6, 10), dtype=int)
 def test_frame():
     "по краям — единицы, внутри — нули"
     got = frame.tolist()
-    assert got[0] == [1] * 10 and got[-1] == [1] * 10, "верхняя и нижняя строки должны быть закрашены: frame[0] = 1 и frame[-1] = 1"
-    assert all(r[0] == 1 and r[-1] == 1 for r in got), "левый и правый столбцы должны быть закрашены: frame[:, 0] = 1 и frame[:, -1] = 1"
+    assert got[0] == [1] * 10 and got[-1] == [1] * 10, "верхняя и нижняя строки должны быть закрашены."
+    assert all(r[0] == 1 and r[-1] == 1 for r in got), "левый и правый столбцы должны быть закрашены."
     assert all(v == 0 for r in got[1:-1] for v in r[1:-1]), "внутри рамки должны остаться нули"
 # ─── другое решение ───
 frame = np.ones((6, 10), dtype=int)
