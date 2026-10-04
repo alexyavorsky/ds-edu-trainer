@@ -106,7 +106,7 @@ function taskId(file: string): string | null {
   const parts = file.split('/'); // challenges/<книга>/<глава>/<задача>/…
   if (parts.length < 5) return null; // book.toml, файл главы — вся книга
   const meta = join(root, ...parts.slice(0, 4), 'meta.toml');
-  return existsSync(meta) ? String((parseToml(readFileSync(meta, 'utf-8')) as { id: string }).id) : '';
+  return existsSync(meta) ? String((parseToml(readFileSync(meta, 'utf-8')) as { id: string }).id) : null; // удалена — вся книга
 }
 
 function articleId(file: string): string | null {
@@ -124,14 +124,13 @@ function lessonId(file: string): string | null {
   }
   if (file.startsWith('public/course-plots/')) {
     const m = /^public\/course-plots\/([^/]+\/[^/]+)\//.exec(file); // графики урока: public/course-plots/<курс>/<урок>/…
-    return m ? (lessonPlots.get(m[1]) ?? '') : null;
+    return m ? (lessonPlots.get(m[1]) ?? null) : null;
   }
   for (let dir = dirname(file); dir !== '.' && dir !== 'courses'; dir = dirname(dir)) {
     const id = lessonDirs.get(dir);
     if (id) return id;
   }
-  // файл урока, которого уже нет (удалён или переименован), — '' (проверять нечего), файл курса или модуля — весь курс
-  return /^courses\/[^/]+\/[^/]+\/[^/]+\//.test(file) ? '' : null;
+  return null; // файл курса или модуля, или урок удалён (структура курса изменилась) — весь раздел
 }
 
 export interface Plan {
@@ -167,7 +166,6 @@ export function plan(files: string[] | null): Plan {
     const ids = [...new Set(spec.areas.flatMap((a) => [...(areaIds.get(a) ?? [])]).filter(Boolean))].sort();
     job.run = all || ids.length > 0 || (!spec.ids && spec.areas.some((a) => areaIds.has(a)));
     job.ids = all || !spec.ids ? null : ids;
-    if (job.ids && !job.ids.length) job.run = false; // только удалённые уроки или задачи — выполнять нечего
   }
   const areas = [...new Set([...areaAll, ...areaIds.keys()])];
   return { full: false, reason: areas.length ? `изменены разделы: ${areas.join(', ')}` : 'проверять нечего', jobs };

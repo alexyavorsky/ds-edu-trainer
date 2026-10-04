@@ -348,7 +348,7 @@ pull_request workflow не запускает: push-прогон ветки пр
   `scripts/node-python.ts`, `scripts/pyodide-worker.ts`, сам план — запускается всё целиком.
 - Разделы `AREAS`: `tasks` (`challenges/`), `reference` (`reference/`, `public/reference/`), `courses` (`courses/`,
   `public/course-plots/`), `site` (`src/`, `public/`, `supabase/`). Файл задачи, статьи, урока (и графики урока) —
-  только этот id; файл книги, курса, модуля — весь раздел. Общие части раздела (`runtime/runner.py` и валидатор
+  только этот id; файл книги, курса, модуля и удалённая задача или урок — весь раздел. Общие части раздела (`runtime/runner.py` и валидатор
   задач, `runtime/lesson_exec.py`, `src/lib/courses/`, `courses/data/`, `courses/prelude.py`, валидатор
   справочника…) — весь раздел.
 - `JOBS`: задание → разделы и свои скрипты (`validate_pyodide.ts`, `validate_browsers.ts` + `browser-check.html`).
