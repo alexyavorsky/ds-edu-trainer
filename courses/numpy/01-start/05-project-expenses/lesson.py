@@ -19,15 +19,15 @@ avg2 = ...
 # ─── проверка ───
 def test_avg1():
     "avg1 — средние траты в день первой недели"
-    assert not isinstance(avg1, np.ndarray), "avg1 — массив, а нужно одно число: week1.mean()"
-    assert abs(avg1 - 2147.142857) < 0.001, f"avg1 = {avg1}, а в первую неделю в среднем тратилось ≈ 2147.14 ₽"
+    assert not isinstance(avg1, np.ndarray), "avg1 — массив, а нужно одно число — среднее за день"
+    assert abs(avg1 - 2147.142857) < 0.001, f"avg1 = {avg1} — это не средние траты первой недели"
 
 
 def test_avg2():
     "avg2 — средние траты в день второй недели"
-    assert not isinstance(avg2, np.ndarray), "avg2 — массив, а нужно одно число: week2.mean()"
+    assert not isinstance(avg2, np.ndarray), "avg2 — массив, а нужно одно число — среднее за день"
     assert abs(avg2 - 2147.142857) > 0.001, "avg2 совпадает со средним первой недели — посчитайте его по week2"
-    assert abs(avg2 - 2428.571428) < 0.001, f"avg2 = {avg2}, а во вторую неделю в среднем тратилось ≈ 2428.57 ₽"
+    assert abs(avg2 - 2428.571428) < 0.001, f"avg2 = {avg2} — это не средние траты второй недели"
 # ─── другое решение ───
 avg1 = week1.sum() / 7
 avg2 = np.mean(week2)
@@ -42,7 +42,7 @@ change = ...
 # ─── проверка ───
 def test_array():
     "change — массив из семи разниц"
-    assert isinstance(change, np.ndarray), f"change — это {type(change).__name__}, а нужен массив: week2 - week1"
+    assert isinstance(change, np.ndarray), f"change — это {type(change).__name__}, а нужен массив"
     assert len(change) == 7, f"в change {len(change)} чисел, а дней 7"
 
 
@@ -51,7 +51,7 @@ def test_values():
     assert isinstance(change, np.ndarray), "change пока не массив — сначала исправьте то, о чём говорит проверка выше"
     got = change.tolist()
     assert got != [130, -170, 320, -1250, 200, -900, -300], "знаки перевёрнуты: из второй недели вычитайте первую"
-    assert got == [-130, 170, -320, 1250, -200, 900, 300], f"получилось {got}, а в понедельник траты изменились на 1320 − 1450 = −130 ₽"
+    assert got == [-130, 170, -320, 1250, -200, 900, 300], f"получилось {got}, а в понедельник траты изменились на −130 ₽"
 # ─── другое решение ───
 change = -week1 + week2
 # ─── ошибка ───
@@ -88,13 +88,13 @@ max_sum = ...
 def test_day():
     "max_day — название самого дорогого дня"
     assert not isinstance(max_day, (int, np.integer)), f"max_day = {max_day} — это число; нужно название дня из списка days"
-    assert max_day == "сб", f"max_day = {max_day!r}, а больше всего во второй неделе потратили в субботу"
+    assert max_day == "сб", f"max_day = {max_day!r} — это не самый дорогой день второй недели"
 
 
 def test_sum():
     "max_sum — сколько потратили в этот день"
-    assert max_sum != 5, "5 — это индекс дня; сама сумма — week2.max()"
-    assert max_sum == 5100, f"max_sum = {max_sum}, а в субботу потратили 5100 ₽"
+    assert max_sum != 5, "5 — это индекс дня, а нужна сама сумма"
+    assert max_sum == 5100, f"max_sum = {max_sum} — это не наибольшая сумма за день"
 # ─── другое решение ───
 i = week2.argmax()
 max_day = days[i]
@@ -112,15 +112,15 @@ left_total = ...
 # ─── проверка ───
 def test_left():
     "left — остаток бюджета по дням"
-    assert isinstance(left, np.ndarray), f"left — это {type(left).__name__}, а нужен массив: 2000 - week2"
+    assert isinstance(left, np.ndarray), f"left — это {type(left).__name__}, а нужен массив"
     got = left.tolist()
     assert got != [-680, -850, -20, 450, 900, 3100, 100], "знаки перевёрнуты: остаток — это бюджет минус траты"
-    assert got == [680, 850, 20, -450, -900, -3100, -100], f"получилось {got}, а в понедельник осталось 2000 − 1320 = 680 ₽"
+    assert got == [680, 850, 20, -450, -900, -3100, -100], f"получилось {got}, а в понедельник осталось 680 ₽"
 
 
 def test_total():
     "left_total — остаток за неделю"
-    assert left_total == -3000, f"left_total = {left_total}, а за неделю бюджет превышен на 3000 ₽ (остаток −3000)"
+    assert left_total == -3000, f"left_total = {left_total} — это не сумма остатков по дням"
 # ─── другое решение ───
 left = 2000 - week2
 left_total = 2000 * 7 - week2.sum()
@@ -137,7 +137,7 @@ def test_shares():
     "доля каждого дня в тратах недели, в процентах"
     assert isinstance(shares, np.ndarray), f"shares — это {type(shares).__name__}, а нужен массив"
     got = np.asarray(shares, dtype=float)
-    assert not np.isclose(got.sum(), 1), "сумма долей — 1: это доли, а нужны проценты — умножьте на 100"
+    assert not np.isclose(got.sum(), 1), "сумма долей — 1: это доли, а нужны проценты"
     assert np.isclose(got.sum(), 100), f"сумма процентов — {got.sum():.1f}, а должна быть 100: делите на сумму за неделю"
     assert np.allclose(got, [7.76, 6.76, 11.65, 14.41, 17.06, 30.0, 12.35], atol=0.01), f"получилось {np.round(got, 1).tolist()}"
 # ─── другое решение ───

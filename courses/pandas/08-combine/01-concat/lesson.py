@@ -36,18 +36,18 @@ avg_rating = ...
 # ─── проверка ───
 def test_year():
     "year — доставка за весь год, индекс подряд"
-    assert isinstance(year, pd.DataFrame), f"year — это {type(year).__name__}, а нужна таблица: pd.concat([h1, h2], ...)"
-    assert len(year) == 1576, f"в year {len(year)} строк, а за год заказов 1576: обе таблицы в списке, в квадратных скобках"
+    assert isinstance(year, pd.DataFrame), f"year — это {type(year).__name__}, а нужна таблица"
+    assert len(year) == 1576, f"в year {len(year)} строк: нужны строки обеих таблиц"
     assert list(year.columns) == ["order_id", "days", "rating"], f"столбцы сейчас {list(year.columns)}, а должны остаться order_id, days, rating"
-    assert year["order_id"].iloc[0] == 10001, "сначала должно идти первое полугодие: pd.concat([h1, h2], ...)"
-    assert year.index.is_unique, "метки индекса повторяются: добавьте ignore_index=True"
-    assert list(year.index[-2:]) == [1574, 1575], "индекс должен идти от 0 до 1575 подряд: ignore_index=True"
+    assert year["order_id"].iloc[0] == 10001, "сначала должно идти первое полугодие"
+    assert year.index.is_unique, "метки индекса повторяются: вспомните параметр ignore_index"
+    assert list(year.index[-2:]) == [1574, 1575], "индекс должен идти от 0 до 1575 подряд"
 
 
 def test_numbers():
     "n_orders и avg_rating — число заказов и средняя оценка за год"
-    assert n_orders == 1576, f"n_orders = {n_orders!r}, а заказов за год 1576"
-    assert abs(avg_rating - 3.650390625) < 1e-9, f"avg_rating = {avg_rating!r}, а средняя оценка за год ≈ 3.65"
+    assert n_orders == 1576, f"n_orders = {n_orders!r} — это не число заказов за год"
+    assert abs(avg_rating - 3.650390625) < 1e-9, f"avg_rating = {avg_rating!r} — это не средняя оценка за год"
 # ─── другое решение ───
 year = pd.concat([h1, h2]).reset_index(drop=True)
 n_orders = year.shape[0]
@@ -81,18 +81,18 @@ slower_half = ...
 # ─── проверка ───
 def test_by_half():
     "by_half — заказы, средний срок и число заказов без оценки по полугодиям"
-    assert isinstance(by_half, pd.DataFrame), f"by_half — это {type(by_half).__name__}, а нужна таблица: marked.groupby(\"half\").agg(...)"
+    assert isinstance(by_half, pd.DataFrame), f"by_half — это {type(by_half).__name__}, а нужна таблица"
     assert list(by_half.index) == [1, 2], f"в индексе сейчас {list(by_half.index)}, а должны быть полугодия 1 и 2"
     assert list(by_half.columns) == ["orders", "days", "no_rating"], f"столбцы сейчас {list(by_half.columns)}, а нужны orders, days, no_rating"
-    assert by_half["orders"].tolist() == [816, 760], "orders — число строк в полугодии: (\"order_id\", \"size\")"
-    assert abs(by_half.loc[1, "days"] - 4.175641) < 1e-5 and abs(by_half.loc[2, "days"] - 4.419973) < 1e-5, "days — средний срок доставки: (\"days\", \"mean\")"
+    assert by_half["orders"].tolist() == [816, 760], "orders не тот: нужно число строк в полугодии"
+    assert abs(by_half.loc[1, "days"] - 4.175641) < 1e-5 and abs(by_half.loc[2, "days"] - 4.419973) < 1e-5, "days не тот: нужен средний срок доставки"
     assert by_half["no_rating"].tolist() != [529, 495], "в no_rating — число заказов С оценкой; без оценки — число строк минус число оценок"
-    assert by_half["no_rating"].tolist() == [287, 265], "no_rating — сколько заказов без оценки: orders минус число непустых rating"
+    assert by_half["no_rating"].tolist() == [287, 265], "no_rating не тот: нужно число заказов без оценки"
 
 
 def test_slower():
     "slower_half — полугодие с более долгой доставкой"
-    assert slower_half == 2, f"slower_half = {slower_half!r}, а дольше везли во втором полугодии: by_half[\"days\"].idxmax()"
+    assert slower_half == 2, f"slower_half = {slower_half!r} — это не полугодие с более долгой доставкой"
 # ─── другое решение ───
 g = marked.groupby("half")
 by_half = pd.DataFrame({"orders": g.size(), "days": g["days"].mean(), "no_rating": g.size() - g["rating"].count()})
@@ -118,16 +118,16 @@ station_temp = ...
 # ─── проверка ───
 def test_stations():
     "stations — три станции одной таблицей"
-    assert isinstance(stations, pd.DataFrame), f"stations — это {type(stations).__name__}, а нужна таблица: pd.concat(parts, ...)"
+    assert isinstance(stations, pd.DataFrame), f"stations — это {type(stations).__name__}, а нужна таблица"
     assert stations.shape == (84, 5), f"у stations размер {stations.shape}, а нужно 84 строки (3 станции × 28 дней) и 5 столбцов"
     assert stations["station"].value_counts().to_dict() == {"center": 28, "airport": 28, "forest": 28}, "в stations должно быть по 28 строк каждой станции"
-    assert stations.index.is_unique and list(stations.index[-1:]) == [83], "индекс должен идти от 0 до 83 подряд: ignore_index=True"
+    assert stations.index.is_unique and list(stations.index[-1:]) == [83], "индекс должен идти от 0 до 83 подряд"
 
 
 def test_temp():
     "station_temp — средняя температура по станциям, два знака"
-    assert isinstance(station_temp, pd.Series) and len(station_temp) == 3, "station_temp — Series по трём станциям: stations.groupby(\"station\")[\"temp\"].mean()"
-    assert station_temp["center"] == -2.86 and station_temp["forest"] == -6.08, "средние должны быть округлены до двух знаков: в центре −2.86, в лесу −6.08"
+    assert isinstance(station_temp, pd.Series) and len(station_temp) == 3, "station_temp — Series по трём станциям"
+    assert station_temp["center"] == -2.86 and station_temp["forest"] == -6.08, "средние должны быть округлены до двух знаков"
 # ─── другое решение ───
 stations = pd.concat([parts[0], parts[1], parts[2]]).reset_index(drop=True)
 station_temp = stations.pivot_table(values="temp", index="station", aggfunc="mean")["temp"].round(2)

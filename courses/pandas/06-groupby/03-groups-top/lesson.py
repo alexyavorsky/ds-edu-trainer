@@ -26,7 +26,7 @@ category_table = ...
 # ─── проверка ───
 def test_table():
     "category_table — таблица со столбцами category и revenue"
-    assert not isinstance(category_table, pd.Series), "category_table — Series с категориями в индексе, а нужна таблица: as_index=False в groupby или reset_index() после"
+    assert not isinstance(category_table, pd.Series), "category_table — Series с категориями в индексе, а нужна таблица"
     assert isinstance(category_table, pd.DataFrame), f"category_table — это {type(category_table).__name__}, а нужна таблица"
     assert list(category_table.columns) == ["category", "revenue"], f"столбцы сейчас {list(category_table.columns)}, а нужны category и revenue"
     assert len(category_table) == 5 and category_table["revenue"].sum() == 3301420, "в таблице должны быть пять категорий с суммой выручки"
@@ -36,8 +36,8 @@ def test_order():
     "строки — по убыванию выручки, индекс с нуля"
     assert isinstance(category_table, pd.DataFrame) and "revenue" in category_table.columns, "сначала исправьте то, о чём говорит проверка выше"
     values = category_table["revenue"].tolist()
-    assert values == sorted(values, reverse=True), "строки должны идти по убыванию выручки: sort_values(\"revenue\", ascending=False)"
-    assert list(category_table.index) == [0, 1, 2, 3, 4], f"индекс сейчас {list(category_table.index)}, а нужен 0–4 подряд: reset_index(drop=True) после сортировки"
+    assert values == sorted(values, reverse=True), "строки должны идти по убыванию выручки"
+    assert list(category_table.index) == [0, 1, 2, 3, 4], f"индекс сейчас {list(category_table.index)}, а нужен 0–4 подряд: сбросьте индекс после сортировки"
     assert category_table.loc[0, "category"] == "Кофе", "первой должна быть категория с наибольшей выручкой"
 # ─── другое решение ───
 category_table = orders.groupby("category")["revenue"].sum().sort_values(ascending=False).reset_index()
@@ -68,17 +68,17 @@ weak = ...
 def test_pairs():
     "pair_table — выручка и число заказов по парам «город, канал»"
     assert isinstance(pair_table, pd.DataFrame), f"pair_table — это {type(pair_table).__name__}, а нужна таблица"
-    assert "city" in pair_table.columns and "channel" in pair_table.columns, "city и channel должны быть обычными столбцами, а не индексом: as_index=False"
+    assert "city" in pair_table.columns and "channel" in pair_table.columns, "city и channel должны быть обычными столбцами, а не индексом"
     assert list(pair_table.columns) == ["city", "channel", "total", "orders"], f"столбцы сейчас {list(pair_table.columns)}, а нужны city, channel, total, orders"
     assert len(pair_table) == 15 and pair_table["total"].sum() == 3301420, "в pair_table 15 строк — по одной на пару, total — сумма revenue"
-    assert pair_table["orders"].sum() == 1576, "orders — число разных заказов: orders=(\"order_id\", \"nunique\")"
+    assert pair_table["orders"].sum() == 1576, "orders не тот: нужно число разных заказов"
 
 
 def test_weak():
     "weak — пары, где заказов меньше 55, от меньшего к большему"
-    assert isinstance(weak, pd.DataFrame), f"weak — это {type(weak).__name__}, а нужна таблица: pair_table[маска]"
+    assert isinstance(weak, pd.DataFrame), f"weak — это {type(weak).__name__}, а нужна таблица"
     assert "orders" in weak.columns and len(weak) > 0 and weak["orders"].max() < 55, "в weak должны быть только пары, где заказов меньше 55"
-    assert len(weak) == 4, f"в weak {len(weak)} строк, а пар с числом заказов меньше 55 — {4}"
+    assert len(weak) == 4, f"в weak {len(weak)} строк — проверьте условие"
     assert weak["orders"].tolist() == sorted(weak["orders"].tolist()), "отсортируйте weak по числу заказов по возрастанию"
 # ─── другое решение ───
 pair_table = orders.groupby(["city", "channel"]).agg(total=("revenue", "sum"), orders=("order_id", "nunique")).reset_index()
@@ -112,9 +112,9 @@ def test_worst():
     assert list(worst.columns) == ["category", "product", "revenue"], f"столбцы сейчас {list(worst.columns)}, а нужны category, product, revenue"
     assert len(worst) == 5, f"в worst {len(worst)} строк, а категорий пять — по одному товару на каждую"
     assert worst["category"].tolist() == ["Аксессуары", "Кофе", "Посуда", "Сладости", "Чай"], "отсортируйте worst по категории и пронумеруйте строки заново"
-    assert "Кофемолка ручная" not in worst["product"].tolist(), "в worst попали лучшие товары, а нужны худшие: products отсортирована по убыванию — худшие в конце каждой группы, tail(1)"
-    assert worst["product"].tolist() == ["Фильтры бумажные", "Кофе без кофеина 250 г", "Кружка 350 мл", "Печенье овсяное", "Травяной сбор 50 г"], f"товары сейчас {worst['product'].tolist()}"
-    assert list(worst.index) == [0, 1, 2, 3, 4], "индекс должен идти с нуля подряд: reset_index(drop=True)"
+    assert "Кофемолка ручная" not in worst["product"].tolist(), "в worst попали лучшие товары, а нужны худшие: products отсортирована по убыванию — худшие в конце каждой группы"
+    assert worst["product"].tolist() == ["Фильтры бумажные", "Кофе без кофеина 250 г", "Кружка 350 мл", "Печенье овсяное", "Травяной сбор 50 г"], f"товары сейчас {worst['product'].tolist()}: нужен последний товар каждой категории"
+    assert list(worst.index) == [0, 1, 2, 3, 4], "индекс должен идти с нуля подряд"
 # ─── другое решение ───
 worst = products.sort_values("revenue").groupby("category").head(1).sort_values("category").reset_index(drop=True)
 # ─── ошибка ───
@@ -133,18 +133,18 @@ vip = ...
 def test_customers():
     "customers — выручка по покупателям с городом"
     assert isinstance(customers, pd.DataFrame), f"customers — это {type(customers).__name__}, а нужна таблица"
-    assert list(customers.columns) == ["city", "customer_id", "revenue"], f"столбцы сейчас {list(customers.columns)}, а нужны city, customer_id, revenue: groupby([\"city\", \"customer_id\"], as_index=False)"
+    assert list(customers.columns) == ["city", "customer_id", "revenue"], f"столбцы сейчас {list(customers.columns)}, а нужны city, customer_id, revenue"
     assert len(customers) == 213 and customers["revenue"].sum() == 3301420, "в customers 213 строк — по одной на покупателя"
 
 
 def test_vip():
     "vip — два лучших покупателя каждого города"
     assert isinstance(vip, pd.DataFrame), f"vip — это {type(vip).__name__}, а нужна таблица"
-    assert len(vip) != 2, "в vip два покупателя на всю таблицу, а нужно по два на каждый город: .groupby(\"city\").head(2)"
-    assert len(vip) == 10, f"в vip {len(vip)} строк, а нужно 10: по два покупателя на пять городов"
+    assert len(vip) != 2, "в vip два покупателя на всю таблицу, а нужно по два на каждый город"
+    assert len(vip) == 10, f"в vip {len(vip)} строк, а нужно по два покупателя на каждый из пяти городов"
     assert vip["city"].value_counts().tolist() == [2, 2, 2, 2, 2], "в vip должно быть ровно по два покупателя на город"
-    assert vip["customer_id"].tolist() == ["C122", "C138", "C076", "C203", "C134", "C118", "C023", "C090", "C137", "C024"], "это не лучшие покупатели: сначала отсортируйте customers по убыванию выручки, потом groupby(\"city\").head(2); в конце — сортировка по городу и убыванию выручки"
-    assert list(vip.index) == list(range(10)), "индекс должен идти с нуля подряд: reset_index(drop=True)"
+    assert vip["customer_id"].tolist() == ["C122", "C138", "C076", "C203", "C134", "C118", "C023", "C090", "C137", "C024"], "это не лучшие покупатели: сначала отсортируйте customers по убыванию выручки, потом берите первых в каждом городе; в конце — сортировка по городу и убыванию выручки"
+    assert list(vip.index) == list(range(10)), "индекс должен идти с нуля подряд"
 # ─── другое решение ───
 customers = orders.groupby(["city", "customer_id"])["revenue"].sum().reset_index()
 vip = customers.sort_values(["city", "revenue"], ascending=[True, False]).groupby("city").head(2).reset_index(drop=True)

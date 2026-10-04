@@ -38,15 +38,15 @@ above_mean = ...
 # ─── проверка ───
 def test_typical():
     "mean_revenue и median_revenue — среднее и медиана выручки строки"
-    assert abs(mean_revenue - 1348.61928) < 1e-4, f"mean_revenue = {mean_revenue!r}, а среднее ≈ 1348.62: revenue.mean()"
+    assert abs(mean_revenue - 1348.61928) < 1e-4, f"mean_revenue = {mean_revenue!r} — это не средняя выручка строки"
     assert abs(median_revenue - 1348.61928) > 1e-4, "в median_revenue — среднее; медиану считает метод median()"
-    assert median_revenue == 1080, f"median_revenue = {median_revenue!r}, а медиана — 1080"
+    assert median_revenue == 1080, f"median_revenue = {median_revenue!r} — это не медиана выручки строки"
 
 
 def test_above():
     "above_mean — доля строк с выручкой выше средней"
     assert abs(above_mean - 963) > 1e-9, "963 — число таких строк, а нужна доля: среднее маски"
-    assert abs(above_mean - 963 / 2448) < 1e-9, f"above_mean = {above_mean!r}, а доля ≈ 0.393: среднее маски revenue > mean_revenue"
+    assert abs(above_mean - 963 / 2448) < 1e-9, f"above_mean = {above_mean!r} — это не доля строк с выручкой выше средней"
 # ─── другое решение ───
 orders = pd.read_csv("data/shop_orders.csv")
 revenue = orders["price"] * orders["quantity"]
@@ -89,16 +89,16 @@ range_nsk = ...
 # ─── проверка ───
 def test_city():
     "novosibirsk — погода в Новосибирске"
-    assert isinstance(novosibirsk, pd.DataFrame), f"novosibirsk — это {type(novosibirsk).__name__}, а нужна таблица: weather[маска]"
-    assert len(novosibirsk) == 365 and (novosibirsk["city"] == "Новосибирск").all(), "в novosibirsk должны быть 365 строк одного города: weather[weather[\"city\"] == \"Новосибирск\"]"
+    assert isinstance(novosibirsk, pd.DataFrame), f"novosibirsk — это {type(novosibirsk).__name__}, а нужна таблица"
+    assert len(novosibirsk) == 365 and (novosibirsk["city"] == "Новосибирск").all(), "в novosibirsk должны быть 365 строк одного города"
 
 
 def test_numbers():
     "среднее, стандартное отклонение и размах temp_max"
-    assert abs(mean_nsk - 4.359178) < 1e-5, f"mean_nsk = {mean_nsk!r}, а средний дневной максимум ≈ 4.36"
-    assert abs(std_nsk - 13.959101) < 1e-5, f"std_nsk = {std_nsk!r}, а стандартное отклонение ≈ 13.96: метод std()"
+    assert abs(mean_nsk - 4.359178) < 1e-5, f"mean_nsk = {mean_nsk!r} — это не средний дневной максимум"
+    assert abs(std_nsk - 13.959101) < 1e-5, f"std_nsk = {std_nsk!r} — это не стандартное отклонение дневного максимума"
     assert abs(range_nsk - 30.7) > 1e-9, "в range_nsk — максимум, а размах — это максимум минус минимум"
-    assert abs(range_nsk - 51.4) < 1e-9, f"range_nsk = {range_nsk!r}, а размах — 51.4 градуса: max() − min()"
+    assert abs(range_nsk - 51.4) < 1e-9, f"range_nsk = {range_nsk!r} — это не размах: максимум минус минимум"
 # ─── другое решение ───
 novosibirsk = weather.query("city == 'Новосибирск'")
 stats = novosibirsk["temp_max"].describe()
@@ -129,16 +129,16 @@ n_hot = ...
 # ─── проверка ───
 def test_q90():
     "q90 — 90-й процентиль дневного максимума"
-    assert abs(q90 - 18.5) > 1e-9, "18.5 — это квантиль 0.75; нужен 0.9"
-    assert abs(q90 - 22.0) < 1e-9, f"q90 = {q90!r}, а 90-й процентиль — 22.0: moscow[\"temp_max\"].quantile(0.9)"
+    assert abs(q90 - 18.5) > 1e-9, "18.5 — это квантиль 0.75, а нужен 90-й процентиль"
+    assert abs(q90 - 22.0) < 1e-9, f"q90 = {q90!r} — это не 90-й процентиль дневного максимума"
 
 
 def test_hot():
     "hot_days — дни теплее q90"
-    assert isinstance(hot_days, pd.DataFrame), f"hot_days — это {type(hot_days).__name__}, а нужна таблица: moscow[маска]"
-    assert len(hot_days) != 38, "в hot_days попали дни с температурой ровно 22.0: условие — строго больше q90"
-    assert len(hot_days) == 36 and n_hot == 36, f"в hot_days {len(hot_days)} строк, n_hot = {n_hot!r}, а дней теплее q90 — 36"
-    assert hot_days["temp_max"].min() > 22.0, "в hot_days есть дни не теплее 22.0"
+    assert isinstance(hot_days, pd.DataFrame), f"hot_days — это {type(hot_days).__name__}, а нужна таблица"
+    assert len(hot_days) != 38, "в hot_days попали дни с температурой, равной q90: нужны строго теплее"
+    assert len(hot_days) == 36 and n_hot == 36, f"в hot_days {len(hot_days)} строк, n_hot = {n_hot!r} — проверьте условие"
+    assert hot_days["temp_max"].min() > 22.0, "в hot_days есть дни не теплее q90"
 # ─── другое решение ───
 q90 = moscow["temp_max"].quantile([0.9]).iloc[0]
 hot_days = moscow.query("temp_max > @q90")
@@ -175,16 +175,16 @@ windiest = ...
 def test_coldest():
     "самая холодная ночь: метка строки и дата"
     assert coldest_label != 196, "196 — метка самого тёплого дня; самую низкую температуру ищет idxmin по столбцу temp_min"
-    assert coldest_label == 44, f"coldest_label = {coldest_label!r}, а метка строки с наименьшим temp_min — 44: moscow[\"temp_min\"].idxmin()"
-    assert not isinstance(coldest_date, pd.Series), "coldest_date — целая строка, а нужна одна дата: moscow.loc[coldest_label, \"date\"]"
-    assert coldest_date == pd.to_datetime("2025-02-14"), f"coldest_date = {coldest_date}, а самая холодная ночь — 14 февраля"
+    assert coldest_label == 44, f"coldest_label = {coldest_label!r} — это не метка строки с наименьшим temp_min"
+    assert not isinstance(coldest_date, pd.Series), "coldest_date — целая строка, а нужна одна дата"
+    assert coldest_date == pd.to_datetime("2025-02-14"), f"coldest_date = {coldest_date} — это не дата самой холодной ночи"
 
 
 def test_windiest():
     "windiest — строка самого ветреного дня"
-    assert isinstance(windiest, pd.Series), f"windiest — это {type(windiest).__name__}, а нужна строка таблицы: moscow.loc[метка]"
+    assert isinstance(windiest, pd.Series), f"windiest — это {type(windiest).__name__}, а нужна строка таблицы"
     assert "wind_ms" in windiest.index, "windiest должна быть целой строкой таблицы moscow со всеми столбцами"
-    assert windiest["wind_ms"] == 13.6 and windiest["date"] == pd.to_datetime("2025-08-07"), "это не самый ветреный день: метка — moscow[\"wind_ms\"].idxmax()"
+    assert windiest["wind_ms"] == 13.6 and windiest["date"] == pd.to_datetime("2025-08-07"), "это не самый ветреный день"
 # ─── другое решение ───
 coldest_label = moscow.sort_values("temp_min").index[0]
 coldest_date = moscow["date"].loc[coldest_label]

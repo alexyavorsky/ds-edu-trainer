@@ -23,18 +23,18 @@ tea = ...
 # ─── проверка ───
 def test_total():
     "total — выручка Москвы за каждый день года"
-    assert isinstance(total, pd.Series), f"total — это {type(total).__name__}, а нужен Series: msk.groupby(\"date\")[\"revenue\"].sum().reindex(...)"
-    assert len(total) == 365, f"в total {len(total)} значений, а нужно 365 — по одному на каждый день: reindex(calendar, fill_value=0)"
-    assert total.isna().sum() == 0, "в total пропуски: в дни без продаж выручка — ноль, fill_value=0"
-    assert total.sum() == 1310110, "сумма total должна быть выручкой Москвы за год — 1 310 110"
+    assert isinstance(total, pd.Series), f"total — это {type(total).__name__}, а нужен Series"
+    assert len(total) == 365, f"в total {len(total)} значений, а нужно 365 — по одному на каждый день"
+    assert total.isna().sum() == 0, "в total пропуски: в дни без продаж выручка — ноль"
+    assert total.sum() == 1310110, "сумма total не равна выручке Москвы за год"
 
 
 def test_tea():
     "tea — выручка от чая в Москве за каждый день года"
-    assert isinstance(tea, pd.Series) and len(tea) == 365, "tea — 365 значений: сначала отберите строки категории «Чай», потом группировка и reindex"
-    assert tea.isna().sum() == 0, "в tea пропуски: fill_value=0"
-    assert tea.sum() != 1310110, "в tea вся выручка, а нужен только чай: msk[msk[\"category\"] == \"Чай\"]"
-    assert tea.sum() == 230690, "сумма tea должна быть выручкой от чая в Москве — 230 690"
+    assert isinstance(tea, pd.Series) and len(tea) == 365, "tea — 365 значений"
+    assert tea.isna().sum() == 0, "в tea пропуски: в дни без продаж выручка — ноль"
+    assert tea.sum() != 1310110, "в tea вся выручка, а нужен только чай"
+    assert tea.sum() == 230690, "сумма tea не равна выручке от чая в Москве"
 # ─── другое решение ───
 calendar = pd.date_range("2025-01-01", "2025-12-31")
 total = msk.set_index("date")["revenue"].resample("D").sum().reindex(calendar, fill_value=0)
@@ -57,17 +57,17 @@ gaps = ...
 # ─── проверка ───
 def test_data():
     "data — температура, осадки и продажи рядом"
-    assert isinstance(data, pd.DataFrame), f"data — это {type(data).__name__}, а нужна таблица: pd.DataFrame({{...}})"
+    assert isinstance(data, pd.DataFrame), f"data — это {type(data).__name__}, а нужна таблица"
     assert list(data.columns) == ["temp", "rain", "tea", "total"], f"столбцы сейчас {list(data.columns)}, а нужны temp, rain, tea, total"
     assert len(data) == 365, f"в data {len(data)} строк, а должно быть 365 — по дню"
     assert abs(data["temp"].iloc[0] - (-3.2)) < 1e-9, "temp — столбец temp_max таблицы moscow"
-    assert data["tea"].sum() == 230690 and data["total"].sum() == 1310110, "tea и total — ряды из прошлого шага"
+    assert data["tea"].sum() == 230690 and data["total"].sum() == 1310110, "tea и total не те: нужны ряды из прошлого шага"
 
 
 def test_gaps():
     "gaps — пропуски по столбцам"
-    assert isinstance(gaps, pd.Series) and list(gaps.index) == ["temp", "rain", "tea", "total"], "gaps — data.isna().sum()"
-    assert gaps["rain"] == 1 and gaps.sum() == 1, "в data один пропуск — в столбце rain"
+    assert isinstance(gaps, pd.Series) and list(gaps.index) == ["temp", "rain", "tea", "total"], "gaps — это должно быть число пропусков в каждом столбце data"
+    assert gaps["rain"] == 1 and gaps.sum() == 1, "числа не те: нужно число пропусков в каждом столбце data"
 # ─── другое решение ───
 data = pd.concat([moscow["temp_max"].rename("temp"), moscow["precip_mm"].rename("rain"), tea.rename("tea"), total.rename("total")], axis=1)
 gaps = len(data) - data.count()
@@ -90,13 +90,13 @@ r_rain = ...
 # ─── проверка ───
 def test_r_day():
     "r_day — корреляция температуры и продаж чая по дням"
-    assert not isinstance(r_day, (pd.Series, pd.DataFrame)), "r_day — таблица или Series, а нужно одно число: data[\"temp\"].corr(data[\"tea\"])"
-    assert abs(r_day - (-0.1715)) < 1e-3, f"r_day = {r_day!r}, а корреляция temp и tea по дням ≈ −0.17"
+    assert not isinstance(r_day, (pd.Series, pd.DataFrame)), "r_day — таблица или Series, а нужно одно число"
+    assert abs(r_day - (-0.1715)) < 1e-3, f"r_day = {r_day!r} — это не корреляция temp и tea"
 
 
 def test_r_rain():
     "r_rain — корреляция осадков и общей выручки"
-    assert abs(r_rain - 0.0625) < 1e-3, f"r_rain = {r_rain!r}, а корреляция rain и total ≈ 0.06"
+    assert abs(r_rain - 0.0625) < 1e-3, f"r_rain = {r_rain!r} — это не корреляция rain и total"
 # ─── другое решение ───
 r_day = data[["temp", "tea"]].corr().loc["temp", "tea"]
 r_rain = data["total"].corr(data["rain"])
@@ -113,17 +113,17 @@ r_week = ...
 # ─── проверка ───
 def test_weekly():
     "weekly — средняя температура и выручка от чая по полным неделям"
-    assert isinstance(weekly, pd.DataFrame), f"weekly — это {type(weekly).__name__}, а нужна таблица: data.resample(\"W\").agg(...)"
+    assert isinstance(weekly, pd.DataFrame), f"weekly — это {type(weekly).__name__}, а нужна таблица"
     assert list(weekly.columns) == ["temp", "tea"], f"столбцы сейчас {list(weekly.columns)}, а нужны temp и tea"
-    assert len(weekly) != 53, "в weekly 53 недели вместе с неполными: отбросьте первую и последнюю — iloc[1:-1]"
+    assert len(weekly) != 53, "в weekly 53 недели вместе с неполными: отбросьте первую и последнюю"
     assert len(weekly) == 51, f"в weekly {len(weekly)} строк, а полных недель 51"
-    assert weekly["tea"].iloc[0] > 3000, "tea — сумма за неделю, а не среднее: (\"tea\", \"sum\")"
-    assert weekly["temp"].iloc[0] > -20, "temp — средняя за неделю, а не сумма: (\"temp\", \"mean\")"
+    assert weekly["tea"].iloc[0] > 3000, "tea — сумма за неделю, а не среднее"
+    assert weekly["temp"].iloc[0] > -20, "temp — средняя за неделю, а не сумма"
 
 
 def test_r_week():
     "r_week — корреляция по неделям"
-    assert abs(r_week - (-0.4110)) < 1e-3, f"r_week = {r_week!r}, а корреляция temp и tea по неделям ≈ −0.41"
+    assert abs(r_week - (-0.4110)) < 1e-3, f"r_week = {r_week!r} — это не корреляция temp и tea по неделям"
 # ─── другое решение ───
 weekly = pd.DataFrame({"temp": data["temp"].resample("W").mean(), "tea": data["tea"].resample("W").sum()}).iloc[1:-1]
 r_week = weekly.corr().loc["temp", "tea"]
@@ -142,15 +142,15 @@ tea_peak = ...
 # ─── проверка ───
 def test_monthly():
     "monthly — средняя температура и выручка от чая по месяцам"
-    assert isinstance(monthly, pd.DataFrame) and list(monthly.columns) == ["temp", "tea"], "monthly — таблица со столбцами temp и tea: data.resample(\"ME\").agg(...)"
+    assert isinstance(monthly, pd.DataFrame) and list(monthly.columns) == ["temp", "tea"], "monthly — таблица со столбцами temp и tea"
     assert len(monthly) == 12, f"в monthly {len(monthly)} строк, а месяцев 12"
-    assert monthly["temp"].iloc[0] == -3.8 and monthly["tea"].iloc[0] == 27400, "январь: средняя температура −3.8 (один знак), чай — 27400"
+    assert monthly["temp"].iloc[0] == -3.8 and monthly["tea"].iloc[0] == 27400, "значения не те: средняя температура и сумма чая за месяц, один знак"
 
 
 def test_answers():
     "r_month — корреляция по месяцам, tea_peak — лучший месяц чая"
-    assert abs(r_month - (-0.7041)) < 2e-3, f"r_month = {r_month!r}, а корреляция temp и tea по месяцам ≈ −0.70"
-    assert tea_peak == 12, f"tea_peak = {tea_peak!r}, а больше всего чая продано в декабре (12): monthly[\"tea\"].idxmax().month"
+    assert abs(r_month - (-0.7041)) < 2e-3, f"r_month = {r_month!r} — это не корреляция temp и tea по месяцам"
+    assert tea_peak == 12, f"tea_peak = {tea_peak!r} — это не номер лучшего месяца чая"
 # ─── другое решение ───
 monthly = pd.DataFrame({"temp": data["temp"].resample("ME").mean(), "tea": data["tea"].resample("ME").sum()}).round(1)
 r_month = monthly.corr().loc["tea", "temp"]
@@ -172,16 +172,16 @@ tea_by_band = ...
 # ─── проверка ───
 def test_band():
     "band — температурная группа дня"
-    assert "band" in data.columns, "в data нет столбца band: pd.cut(data[\"temp\"], bins=[-50, 0, 15, 50], labels=[...])"
+    assert "band" in data.columns, "в data нет столбца band"
     counts = data["band"].value_counts()
-    assert counts["мороз"] == 106 and counts["прохладно"] == 129 and counts["тепло"] == 130, "группы не те: границы −50, 0, 15, 50; подписи — мороз, прохладно, тепло"
+    assert counts["мороз"] == 106 and counts["прохладно"] == 129 and counts["тепло"] == 130, "группы не те: сверьте границы и подписи с условием"
 
 
 def test_tea():
     "tea_by_band — средняя дневная выручка от чая в каждой группе"
-    assert isinstance(tea_by_band, pd.Series) and len(tea_by_band) == 3, "tea_by_band — Series по трём группам: data.groupby(\"band\")[\"tea\"].mean()"
-    assert tea_by_band["мороз"] != 96850, "в tea_by_band суммы, а нужна средняя выручка в день: mean()"
-    assert tea_by_band.tolist() == [913.7, 544.3, 489.4], f"значения сейчас {tea_by_band.tolist()}, а должны быть [913.7, 544.3, 489.4] — округлите до одного знака"
+    assert isinstance(tea_by_band, pd.Series) and len(tea_by_band) == 3, "tea_by_band — Series по трём группам"
+    assert tea_by_band["мороз"] != 96850, "в tea_by_band суммы, а нужна средняя выручка в день"
+    assert tea_by_band.tolist() == [913.7, 544.3, 489.4], f"значения сейчас {tea_by_band.tolist()}: нужна средняя дневная выручка чая в группе, один знак"
 # ─── другое решение ───
 data["band"] = pd.cut(data["temp"], [-50, 0, 15, 50], labels=["мороз", "прохладно", "тепло"])
 tea_by_band = data.pivot_table(values="tea", index="band", aggfunc="mean")["tea"].round(1)

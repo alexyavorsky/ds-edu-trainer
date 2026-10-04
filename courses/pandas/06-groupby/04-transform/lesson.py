@@ -37,17 +37,17 @@ orders["revenue"] = orders["price"] * orders["quantity"]
 # ─── проверка ───
 def test_total():
     "city_total — выручка города в каждой строке"
-    assert "city_total" in orders.columns, "в orders нет столбца city_total: orders.groupby(\"city\")[\"revenue\"].transform(\"sum\")"
-    assert orders["city_total"].notna().all(), "в city_total пропуски: похоже, в столбец записан результат .sum() — в нём пять значений с городами в индексе. Нужен .transform(\"sum\")"
+    assert "city_total" in orders.columns, "в orders нет столбца city_total"
+    assert orders["city_total"].notna().all(), "в city_total пропуски: похоже, в столбец записан результат .sum() — в нём пять значений с городами в индексе. Нужно значение города в каждой строке — вспомните transform"
     assert orders["city_total"].nunique() == 5, "в city_total должно быть пять разных значений — по одному на город"
-    assert orders.loc[0, "city_total"] == 1310110 and orders.loc[4, "city_total"] == 440150, "значения не те: сумма revenue по городу строки"
+    assert orders.loc[0, "city_total"] == 1310110 and orders.loc[4, "city_total"] == 440150, "значения не те: нужна выручка города этой строки"
 
 
 def test_share():
     "city_share — доля строки в выручке своего города"
     assert "city_share" in orders.columns, "в orders нет столбца city_share"
-    assert abs(orders.loc[0, "city_share"] - 6400 / 3301420) > 1e-9, "это доля в выручке всего магазина, а нужна доля в выручке своего города: revenue / city_total"
-    assert abs(orders.loc[0, "city_share"] - 6400 / 1310110) < 1e-12, f"city_share в первой строке — {orders.loc[0, 'city_share']}, а должно быть ≈ 0.0049"
+    assert abs(orders.loc[0, "city_share"] - 6400 / 3301420) > 1e-9, "это доля в выручке всего магазина, а нужна доля в выручке своего города"
+    assert abs(orders.loc[0, "city_share"] - 6400 / 1310110) < 1e-12, f"city_share в первой строке — {orders.loc[0, 'city_share']}: нужна доля строки в выручке своего города"
     assert abs(orders["city_share"].sum() - 5) < 1e-9, "доли внутри каждого города должны в сумме давать 1"
 # ─── другое решение ───
 orders = pd.read_csv("data/shop_orders.csv")
@@ -87,18 +87,18 @@ n_multi = ...
 # ─── проверка ───
 def test_lines():
     "lines — сколько позиций в заказе этой строки"
-    assert "lines" in orders.columns, "в orders нет столбца lines: orders.groupby(\"order_id\")[\"product\"].transform(\"size\")"
-    assert orders["lines"].notna().all(), "в lines пропуски: нужен transform(\"size\"), а не size() — он возвращает по одному значению на заказ"
-    assert orders["lines"].tolist()[:7] == [2, 2, 2, 2, 2, 2, 1], f"первые значения lines — {orders['lines'].tolist()[:7]}, а должны быть [2, 2, 2, 2, 2, 2, 1]: в первых трёх заказах по две позиции"
-    assert orders["lines"].max() == 3 and (orders["lines"] == 1).sum() == 832, "значения не те: число строк в группе по order_id"
+    assert "lines" in orders.columns, "в orders нет столбца lines"
+    assert orders["lines"].notna().all(), "в lines пропуски: size() возвращает по одному значению на заказ, а нужно значение в каждой строке"
+    assert orders["lines"].tolist()[:7] == [2, 2, 2, 2, 2, 2, 1], f"первые значения lines — {orders['lines'].tolist()[:7]}: в первых трёх заказах по две позиции"
+    assert orders["lines"].max() == 3 and (orders["lines"] == 1).sum() == 832, "значения не те: нужно число позиций заказа этой строки"
 
 
 def test_multi():
     "multi — строки заказов из трёх и более позиций, n_multi — число таких заказов"
-    assert isinstance(multi, pd.DataFrame), f"multi — это {type(multi).__name__}, а нужна таблица: orders[маска]"
-    assert len(multi) == 384, f"в multi {len(multi)} строк, а строк в заказах из трёх позиций — 384"
-    assert n_multi != 384, "384 — число строк, а заказов меньше: разные order_id считает nunique()"
-    assert n_multi == 128, f"n_multi = {n_multi!r}, а заказов из трёх и более позиций — 128"
+    assert isinstance(multi, pd.DataFrame), f"multi — это {type(multi).__name__}, а нужна таблица"
+    assert len(multi) == 384, f"в multi {len(multi)} строк — проверьте условие"
+    assert n_multi != 384, "384 — число строк, а заказов меньше: нужны разные номера заказов"
+    assert n_multi == 128, f"n_multi = {n_multi!r} — это не число заказов из трёх и более позиций"
 # ─── другое решение ───
 orders["lines"] = orders.groupby("order_id")["product"].transform("count")
 multi = orders.query("lines >= 3")
@@ -129,18 +129,18 @@ n_unusual = ...
 # ─── проверка ───
 def test_anomaly():
     "anomaly — отклонение дневного максимума от нормы месяца"
-    assert "anomaly" in weather.columns, "в weather нет столбца anomaly: temp_max минус norm"
+    assert "anomaly" in weather.columns, "в weather нет столбца anomaly"
     assert abs(weather.loc[0, "anomaly"] - (-0.629032)) > 1e-5, "знак перепутан: из температуры дня вычитают норму"
-    assert abs(weather.loc[0, "anomaly"] - 0.629032) < 1e-5, f"anomaly в первой строке — {weather.loc[0, 'anomaly']}, а должно быть ≈ 0.63"
+    assert abs(weather.loc[0, "anomaly"] - 0.629032) < 1e-5, f"anomaly в первой строке — {weather.loc[0, 'anomaly']}: отклонение — это температура дня минус норма"
     assert weather["anomaly"].isna().sum() == 2, "пропусков в anomaly должно быть два — там, где неизвестен temp_max"
 
 
 def test_warmest():
     "warmest — день с наибольшим отклонением вверх, n_unusual — число необычных дней"
-    assert isinstance(warmest, pd.Series) and "city" in warmest.index, "warmest — строка таблицы weather: weather.loc[weather[\"anomaly\"].idxmax()]"
-    assert warmest["city"] == "Сочи" and warmest["date"] == pd.to_datetime("2025-03-29"), "это не день с наибольшим отклонением: метка — weather[\"anomaly\"].idxmax()"
-    assert n_unusual != 12, "посчитаны только тёплые отклонения: нужны отклонения в обе стороны — модуль, .abs()"
-    assert n_unusual == 20, f"n_unusual = {n_unusual!r}, а дней с отклонением больше 8 градусов в любую сторону — 20"
+    assert isinstance(warmest, pd.Series) and "city" in warmest.index, "warmest — строка таблицы weather"
+    assert warmest["city"] == "Сочи" and warmest["date"] == pd.to_datetime("2025-03-29"), "это не день с наибольшим отклонением"
+    assert n_unusual != 12, "посчитаны только тёплые отклонения: нужны отклонения в обе стороны — по модулю"
+    assert n_unusual == 20, f"n_unusual = {n_unusual!r} — это не число дней с отклонением больше 8 градусов в любую сторону"
 # ─── другое решение ───
 weather = weather.assign(anomaly=weather["temp_max"] - weather["norm"])
 warmest = weather.sort_values("anomaly", ascending=False).iloc[0]
@@ -168,18 +168,18 @@ above_share = ...
 # ─── проверка ───
 def test_columns():
     "cat_price — средняя цена категории, above_avg — цена строки выше неё"
-    assert "cat_price" in orders.columns, "в orders нет столбца cat_price: orders.groupby(\"category\")[\"price\"].transform(\"mean\")"
-    assert orders["cat_price"].notna().all() and orders["cat_price"].nunique() == 5, "в cat_price должно быть пять разных значений без пропусков: transform(\"mean\")"
-    assert abs(orders.loc[0, "cat_price"] - 1165.277778) < 1e-5, "cat_price — средняя цена по строкам категории: в первой строке (аксессуары) ≈ 1165.28"
-    assert "above_avg" in orders.columns and orders["above_avg"].dtype == bool, "above_avg — маска: orders[\"price\"] > orders[\"cat_price\"]"
+    assert "cat_price" in orders.columns, "в orders нет столбца cat_price"
+    assert orders["cat_price"].notna().all() and orders["cat_price"].nunique() == 5, "в cat_price должно быть пять разных значений без пропусков"
+    assert abs(orders.loc[0, "cat_price"] - 1165.277778) < 1e-5, "cat_price — средняя цена по строкам категории"
+    assert "above_avg" in orders.columns and orders["above_avg"].dtype == bool, "above_avg — это должна быть маска"
     assert orders["above_avg"].sum() == 889, "маска не та: цена строки строго больше средней цены её категории"
 
 
 def test_share():
     "above_share — доля строк дороже среднего в каждой категории"
-    assert isinstance(above_share, pd.Series) and len(above_share) == 5, "above_share — Series по пяти категориям: orders.groupby(\"category\")[\"above_avg\"].mean()"
-    assert above_share.max() <= 1, "в above_share числа строк, а нужны доли: среднее маски — mean()"
-    assert abs(above_share["Кофе"] - (orders.loc[orders["category"] == "Кофе", "above_avg"].mean())) < 1e-12 and abs((above_share * orders.groupby("category").size()).sum() - 889) < 1e-6, "доли не те: среднее столбца above_avg по категориям"
+    assert isinstance(above_share, pd.Series) and len(above_share) == 5, "above_share — Series по пяти категориям"
+    assert above_share.max() <= 1, "в above_share числа строк, а нужны доли"
+    assert abs(above_share["Кофе"] - (orders.loc[orders["category"] == "Кофе", "above_avg"].mean())) < 1e-12 and abs((above_share * orders.groupby("category").size()).sum() - 889) < 1e-6, "доли не те: нужна доля строк дороже среднего внутри каждой категории"
 # ─── другое решение ───
 orders["cat_price"] = orders["category"].map(orders.groupby("category")["price"].mean())
 orders["above_avg"] = orders["price"] > orders["cat_price"]

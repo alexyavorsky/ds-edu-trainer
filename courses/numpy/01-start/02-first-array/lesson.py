@@ -22,7 +22,7 @@ temps = ...
 # ─── проверка ───
 def test_array():
     "temps — массив NumPy"
-    assert isinstance(temps, np.ndarray), f"temps — это {type(temps).__name__}, а нужен массив: передайте список в np.array(...)"
+    assert isinstance(temps, np.ndarray), f"temps — это {type(temps).__name__}, а нужен массив — его создают из списка"
 
 
 def test_values():
@@ -50,14 +50,14 @@ temps_f = ...
 # ─── проверка ───
 def test_array():
     "temps_f — массив той же длины, что temps"
-    assert isinstance(temps_f, np.ndarray), f"temps_f — это {type(temps_f).__name__}, а нужен массив: посчитайте формулу прямо с массивом temps"
+    assert isinstance(temps_f, np.ndarray), f"temps_f — это {type(temps_f).__name__}, а нужен массив: формула с массивом даёт массив"
     assert len(temps_f) == 7, f"в temps_f {len(temps_f)} чисел, а температур 7"
 
 
 def test_values():
     "значения переведены по формуле F = C × 9 / 5 + 32"
     got = np.asarray(temps_f, dtype=float)
-    assert not np.allclose(got, [90.0, 95.4, 91.8, 102.6, 99.0, 88.2, 93.6]), "похоже, 32 прибавлено до умножения: сначала temps * 9 / 5, потом + 32"
+    assert not np.allclose(got, [90.0, 95.4, 91.8, 102.6, 99.0, 88.2, 93.6]), "похоже, 32 прибавлено до умножения: вспомните порядок действий в формуле"
     assert np.allclose(got, [64.4, 69.8, 66.2, 77.0, 73.4, 62.6, 68.0]), f"получилось {np.round(got, 1).tolist()}, а 18 °C — это 64.4 °F"
 # ─── другое решение ───
 temps_f = 32 + temps * 1.8
@@ -88,8 +88,8 @@ def test_array():
 def test_values():
     "цены подняты на 10 %, к каждой прибавлено 20 ₽"
     got = np.asarray(new_prices, dtype=float)
-    assert not np.allclose(got, [154, 110, 71.5, 352]), "похоже, 20 ₽ прибавлены до повышения: сначала умножьте на 1.1, потом прибавьте 20"
-    assert not np.allclose(got, [32, 28, 24.5, 50]), "умножение на 0.1 даёт 10 % от цены, а нужна цена плюс 10 % — умножьте на 1.1"
+    assert not np.allclose(got, [154, 110, 71.5, 352]), "похоже, 20 ₽ прибавлены до повышения: сначала повышение на 10 %, потом надбавка"
+    assert not np.allclose(got, [32, 28, 24.5, 50]), "умножение на 0.1 даёт 10 % от цены, а нужна цена плюс 10 % — то есть 110 % цены"
     assert np.allclose(got, [152, 108, 69.5, 350]), f"получилось {np.round(got, 2).tolist()}, а позиция за 120 ₽ должна стоить 152 ₽"
 
 
@@ -118,14 +118,14 @@ minutes = ...
 # ─── проверка ───
 def test_seconds():
     "seconds — массив из пяти длительностей"
-    assert isinstance(seconds, np.ndarray), f"seconds — это {type(seconds).__name__}, а нужен массив: np.array([...])"
+    assert isinstance(seconds, np.ndarray), f"seconds — это {type(seconds).__name__}, а нужен массив — создайте его из списка"
     got = np.asarray(seconds).tolist()
     assert got == [185, 240, 210, 330, 150], f"в seconds сейчас {got}"
 
 
 def test_minutes():
     "minutes — те же длительности в минутах"
-    assert isinstance(minutes, np.ndarray), f"minutes — это {type(minutes).__name__}, а нужен массив: разделите массив seconds на 60"
+    assert isinstance(minutes, np.ndarray), f"minutes — это {type(minutes).__name__}, а нужен массив: арифметика с массивом даёт массив"
     got = np.asarray(minutes, dtype=float)
     assert not np.allclose(got, [11100, 14400, 12600, 19800, 9000]), "вы умножили на 60, а секунды в минуты переводят делением"
     assert np.allclose(got, [185 / 60, 4, 3.5, 5.5, 2.5]), f"получилось {np.round(got, 2).tolist()}, а 240 секунд — это 4 минуты"

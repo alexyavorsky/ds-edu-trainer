@@ -36,15 +36,15 @@ march_warmest = ...
 # ─── проверка ───
 def test_march():
     "march — мартовские дни"
-    assert isinstance(march, pd.DataFrame), f"march — это {type(march).__name__}, а нужна таблица: moscow.loc[\"2025-03\"]"
-    assert len(march) == 31, f"в march {len(march)} строк, а в марте 31 день: moscow.loc[\"2025-03\"]"
+    assert isinstance(march, pd.DataFrame), f"march — это {type(march).__name__}, а нужна таблица"
+    assert len(march) == 31, f"в march {len(march)} строк, а в марте 31 день"
     assert set(march.index.month) == {3}, "в march должны быть только мартовские дни"
 
 
 def test_warmest():
     "march_max — наибольшая температура марта, march_warmest — её дата"
-    assert abs(march_max - 8.3) < 1e-9, f"march_max = {march_max!r}, а наибольший temp_max в марте — 8.3"
-    assert march_warmest == pd.to_datetime("2025-03-19"), f"march_warmest = {march_warmest}, а самый тёплый день марта — 19-е: march[\"temp_max\"].idxmax()"
+    assert abs(march_max - 8.3) < 1e-9, f"march_max = {march_max!r} — это не наибольший temp_max марта"
+    assert march_warmest == pd.to_datetime("2025-03-19"), f"march_warmest = {march_warmest} — это не дата самого тёплого дня марта"
 # ─── другое решение ───
 march = moscow[moscow.index.month == 3]
 march_max = max(march["temp_max"])
@@ -79,16 +79,16 @@ holidays_mean = ...
 # ─── проверка ───
 def test_summer():
     "summer — три летних месяца, summer_mean — средний дневной максимум"
-    assert isinstance(summer, pd.DataFrame) and len(summer) == 92, "summer — 92 дня с июня по август: moscow.loc[\"2025-06\":\"2025-08\"]"
-    assert abs(summer_mean - 21.128261) < 1e-5, f"summer_mean = {summer_mean!r}, а средний дневной максимум лета ≈ 21.13"
+    assert isinstance(summer, pd.DataFrame) and len(summer) == 92, "summer — 92 дня с июня по август"
+    assert abs(summer_mean - 21.128261) < 1e-5, f"summer_mean = {summer_mean!r} — это не средний дневной максимум лета"
 
 
 def test_holidays():
     "holidays — temp_max с 1 по 11 мая включительно"
-    assert isinstance(holidays, pd.Series), f"holidays — это {type(holidays).__name__}, а нужен Series: moscow.loc[срез дат, \"temp_max\"]"
+    assert isinstance(holidays, pd.Series), f"holidays — это {type(holidays).__name__}, а нужен Series"
     assert len(holidays) != 10, "в holidays 10 дней: срез по меткам включает обе границы — 11 мая тоже должно войти"
     assert len(holidays) == 11 and holidays.index[0] == pd.to_datetime("2025-05-01") and holidays.index[-1] == pd.to_datetime("2025-05-11"), "holidays — 11 дней с 1 по 11 мая"
-    assert abs(holidays_mean - 13.490909) < 1e-5, f"holidays_mean = {holidays_mean!r}, а средняя за эти дни ≈ 13.49: holidays.mean()"
+    assert abs(holidays_mean - 13.490909) < 1e-5, f"holidays_mean = {holidays_mean!r} — это не средняя holidays"
 # ─── другое решение ───
 summer = moscow[moscow.index.month.isin([6, 7, 8])]
 summer_mean = summer["temp_max"].sum() / summer["temp_max"].count()
@@ -131,22 +131,22 @@ december = ...
 # ─── проверка ───
 def test_calendar():
     "calendar — все дни 2025 года"
-    assert isinstance(calendar, pd.DatetimeIndex), f"calendar — это {type(calendar).__name__}, а нужен набор дат: pd.date_range(\"2025-01-01\", \"2025-12-31\")"
+    assert isinstance(calendar, pd.DatetimeIndex), f"calendar — это {type(calendar).__name__}, а нужен набор дат"
     assert len(calendar) == 365, f"в calendar {len(calendar)} дней, а в 2025 году их 365"
 
 
 def test_sales():
     "sales — выручка за каждый день года, без пропущенных дат"
-    assert isinstance(sales, pd.Series), f"sales — это {type(sales).__name__}, а нужен Series: daily.reindex(calendar, fill_value=0)"
+    assert isinstance(sales, pd.Series), f"sales — это {type(sales).__name__}, а нужен Series"
     assert len(sales) == 365, f"в sales {len(sales)} значений, а должно быть 365 — по одному на каждый день года"
-    assert sales.isna().sum() == 0, "в sales пропуски: в дни без продаж выручка — ноль, fill_value=0"
-    assert sales.sum() == 3301420, "сумма sales должна остаться выручкой года — 3 301 420"
+    assert sales.isna().sum() == 0, "в sales пропуски: в дни без продаж выручка — ноль"
+    assert sales.sum() == 3301420, "сумма sales должна остаться выручкой года"
 
 
 def test_numbers():
     "empty_days — дней без продаж, december — выручка декабря"
-    assert empty_days == 7, f"empty_days = {empty_days!r}, а дней без продаж — 7: сумма маски sales == 0"
-    assert december == 371310, f"december = {december!r}, а выручка декабря — 371310: sales.loc[\"2025-12\"].sum()"
+    assert empty_days == 7, f"empty_days = {empty_days!r} — это не число дней без продаж"
+    assert december == 371310, f"december = {december!r} — это не выручка декабря"
 # ─── другое решение ───
 calendar = pd.date_range("2025-01-01", periods=365)
 sales = daily.reindex(calendar).fillna(0)

@@ -26,16 +26,16 @@ spb_tea = ...
 # ─── проверка ───
 def test_table():
     "by_city — выручка: категории в строках, города в столбцах"
-    assert isinstance(by_city, pd.DataFrame), f"by_city — это {type(by_city).__name__}, а нужна таблица: orders.pivot_table(...)"
-    assert by_city.shape != (5, 5) or "Чай" in by_city.index, "в строках должны быть категории, а в столбцах города: index=\"category\", columns=\"city\""
+    assert isinstance(by_city, pd.DataFrame), f"by_city — это {type(by_city).__name__}, а нужна таблица"
+    assert by_city.shape != (5, 5) or "Чай" in by_city.index, "в строках должны быть категории, а в столбцах города"
     assert by_city.shape == (5, 5) and "Москва" in by_city.columns, f"у by_city размер {by_city.shape}, а нужно 5 категорий × 5 городов"
-    assert abs(by_city.loc["Кофе", "Москва"] - 1968.6) > 100, "в ячейках средние, а нужны суммы: aggfunc=\"sum\""
-    assert by_city.loc["Кофе", "Москва"] == 774640, "значения не те: values=\"revenue\", aggfunc=\"sum\""
+    assert abs(by_city.loc["Кофе", "Москва"] - 1968.6) > 100, "в ячейках средние, а нужны суммы"
+    assert by_city.loc["Кофе", "Москва"] == 774640, "значения не те: нужна сумма revenue"
 
 
 def test_cell():
     "spb_tea — выручка от чая в Санкт-Петербурге"
-    assert spb_tea == 152710, f"spb_tea = {spb_tea!r}, а выручка от чая в Санкт-Петербурге — 152710: by_city.loc[\"Чай\", \"Санкт-Петербург\"]"
+    assert spb_tea == 152710, f"spb_tea = {spb_tea!r}: возьмите ячейку by_city по меткам строки и столбца"
 # ─── другое решение ───
 by_city = orders.groupby(["category", "city"])["revenue"].sum().unstack()
 spb_tea = by_city["Санкт-Петербург"]["Чай"]
@@ -65,16 +65,16 @@ site_share = ...
 # ─── проверка ───
 def test_items():
     "items — продано штук: категории × каналы, с итогами"
-    assert isinstance(items, pd.DataFrame), f"items — это {type(items).__name__}, а нужна таблица: orders.pivot_table(...)"
-    assert "Всего" in items.index and "Всего" in items.columns, "в items нет строки и столбца «Всего»: margins=True, margins_name=\"Всего\""
+    assert isinstance(items, pd.DataFrame), f"items — это {type(items).__name__}, а нужна таблица"
+    assert "Всего" in items.index and "Всего" in items.columns, "в items нет строки и столбца «Всего»: вспомните параметры margins и margins_name"
     assert items.shape == (6, 4), f"у items размер {items.shape}, а нужно 6 строк (5 категорий и итог) и 4 столбца (3 канала и итог)"
-    assert items.loc["Кофе", "сайт"] != 469, "в ячейках число строк, а нужна сумма штук: values=\"quantity\", aggfunc=\"sum\""
-    assert items.loc["Кофе", "сайт"] == 1026 and items.loc["Всего", "Всего"] == 5210, "значения не те: values=\"quantity\", aggfunc=\"sum\""
+    assert items.loc["Кофе", "сайт"] != 469, "в ячейках число строк, а нужна сумма штук"
+    assert items.loc["Кофе", "сайт"] == 1026 and items.loc["Всего", "Всего"] == 5210, "значения не те: нужна сумма quantity"
 
 
 def test_share():
     "site_share — доля сайта в проданных штуках"
-    assert abs(site_share - 2466 / 5210) < 1e-9, f"site_share = {site_share!r}, а доля сайта ≈ 0.473: итог столбца «сайт», делённый на общий итог"
+    assert abs(site_share - 2466 / 5210) < 1e-9, f"site_share = {site_share!r} — это не доля сайта в проданных штуках"
 # ─── другое решение ───
 items = orders.pivot_table(values="quantity", index="category", columns="channel", aggfunc="sum", margins=True, margins_name="Всего")
 site_share = orders.loc[orders["channel"] == "сайт", "quantity"].sum() / orders["quantity"].sum()
@@ -105,15 +105,15 @@ december_top = ...
 def test_monthly():
     "monthly — выручка: месяцы в строках, категории в столбцах"
     assert isinstance(monthly, pd.DataFrame), f"monthly — это {type(monthly).__name__}, а нужна таблица"
-    assert monthly.shape == (12, 5), f"у monthly размер {monthly.shape}, а нужно 12 месяцев × 5 категорий: index=\"month\", columns=\"category\""
+    assert monthly.shape == (12, 5), f"у monthly размер {monthly.shape}, а нужно 12 месяцев × 5 категорий"
     assert "Чай" in monthly.columns and list(monthly.index) == list(range(1, 13)), "в строках — месяцы 1–12, в столбцах — категории"
-    assert monthly.loc[12, "Чай"] == 103630 and monthly.loc[1, "Кофе"] == 164800, "значения не те: values=\"revenue\", aggfunc=\"sum\""
+    assert monthly.loc[12, "Чай"] == 103630 and monthly.loc[1, "Кофе"] == 164800, "значения не те: нужна сумма revenue"
 
 
 def test_peaks():
     "tea_peak — лучший месяц чая, december_top — главная категория декабря"
-    assert tea_peak == 12, f"tea_peak = {tea_peak!r}, а больше всего чая продано в декабре (12): monthly[\"Чай\"].idxmax()"
-    assert isinstance(december_top, str), f"december_top — это {type(december_top).__name__}, а нужно название категории: monthly.loc[12].idxmax()"
+    assert tea_peak == 12, f"tea_peak = {tea_peak!r} — это не месяц с наибольшей выручкой чая"
+    assert isinstance(december_top, str), f"december_top — это {type(december_top).__name__}, а нужно название категории"
     assert december_top == "Кофе", f"december_top = {december_top!r}, а наибольшая выручка в декабре — у другой категории"
 # ─── другое решение ───
 monthly = orders.groupby(["month", "category"])["revenue"].sum().unstack(fill_value=0)
@@ -142,15 +142,15 @@ best_subject = ...
 def test_table():
     "group_subject — средний балл: группы × предметы, один знак"
     assert isinstance(group_subject, pd.DataFrame), f"group_subject — это {type(group_subject).__name__}, а нужна таблица"
-    assert group_subject.shape == (3, 5), f"у group_subject размер {group_subject.shape}, а нужно 3 группы × 5 предметов: index=\"group\", columns=\"subject\""
+    assert group_subject.shape == (3, 5), f"у group_subject размер {group_subject.shape}, а нужно 3 группы × 5 предметов"
     assert "ИТ-22" in group_subject.index and "Физика" in group_subject.columns, "в строках — группы, в столбцах — предметы"
-    assert group_subject.loc["ИТ-22", "Программирование"] != 1548, "в ячейках суммы, а нужны средние баллы: aggfunc=\"mean\""
-    assert abs(group_subject.loc["ИТ-22", "Программирование"] - 77.4) < 1e-9, "значения не те или не округлены: средний балл с round(1) — у ИТ-22 по программированию 77.4"
+    assert group_subject.loc["ИТ-22", "Программирование"] != 1548, "в ячейках суммы, а нужны средние баллы"
+    assert abs(group_subject.loc["ИТ-22", "Программирование"] - 77.4) < 1e-9, "значения не те или не округлены: нужен средний балл с одним знаком"
 
 
 def test_best():
     "best_subject — лучший предмет группы ИТ-22"
-    assert best_subject == "Программирование", f"best_subject = {best_subject!r}, а самый высокий средний балл у ИТ-22 — по другому предмету: group_subject.loc[\"ИТ-22\"].idxmax()"
+    assert best_subject == "Программирование", f"best_subject = {best_subject!r}, а самый высокий средний балл у ИТ-22 — по другому предмету"
 # ─── другое решение ───
 group_subject = grades.groupby(["group", "subject"])["score"].mean().unstack().round(1)
 best_subject = group_subject.loc["ИТ-22"].sort_values(ascending=False).index[0]

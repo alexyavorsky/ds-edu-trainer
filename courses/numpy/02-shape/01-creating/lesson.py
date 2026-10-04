@@ -17,14 +17,14 @@ year_total = ...
 # ─── проверка ───
 def test_plan():
     "plan — 12 взносов по 5000"
-    assert isinstance(plan, np.ndarray), f"plan — это {type(plan).__name__}, а нужен массив: np.full(12, 5000)"
+    assert isinstance(plan, np.ndarray), f"plan — это {type(plan).__name__}, а нужен массив"
     assert len(plan) == 12, f"в plan {len(plan)} взносов, а месяцев в году 12"
     assert np.asarray(plan).tolist() == [5000] * 12, f"в plan {np.asarray(plan).tolist()}, а каждый взнос — 5000"
 
 
 def test_total():
     "year_total — сумма за год"
-    assert year_total == 60000, f"year_total = {year_total}, а за год накопится 12 × 5000 = 60000"
+    assert year_total == 60000, f"year_total = {year_total} — это не сумма взносов за год"
 # ─── другое решение ───
 plan = np.ones(12) * 5000
 year_total = np.sum(plan)
@@ -44,9 +44,9 @@ hours = ...
 # ─── проверка ───
 def test_hours():
     "hours — числа от 0 до 23"
-    assert isinstance(hours, np.ndarray), f"hours — это {type(hours).__name__}, а нужен массив: np.arange(...)"
+    assert isinstance(hours, np.ndarray), f"hours — это {type(hours).__name__}, а нужен массив"
     got = np.asarray(hours).tolist()
-    assert got != list(range(23)), "не хватает часа 23: конец в arange не входит, возьмите 24"
+    assert got != list(range(23)), "не хватает часа 23: конец в arange не входит"
     assert got != list(range(1, 25)), "часы суток начинаются с 0 и заканчиваются на 23"
     assert got == list(range(24)), f"в hours {got}"
 # ─── другое решение ───
@@ -63,9 +63,9 @@ even = ...
 # ─── проверка ───
 def test_even():
     "even — чётные числа от 2 до 20 включительно"
-    assert isinstance(even, np.ndarray), f"even — это {type(even).__name__}, а нужен массив: np.arange с шагом 2"
+    assert isinstance(even, np.ndarray), f"even — это {type(even).__name__}, а нужен массив с шагом 2"
     got = np.asarray(even).tolist()
-    assert got != [2, 4, 6, 8, 10, 12, 14, 16, 18], "не хватает 20: конец в arange не входит — возьмите конец побольше, например 21"
+    assert got != [2, 4, 6, 8, 10, 12, 14, 16, 18], "не хватает 20: конец в arange не входит"
     assert got == [2, 4, 6, 8, 10, 12, 14, 16, 18, 20], f"в even {got}"
 # ─── другое решение ───
 even = np.arange(1, 11) * 2
@@ -86,10 +86,10 @@ levels = ...
 # ─── проверка ───
 def test_levels():
     "levels — пять ступеней от 100 до 300"
-    assert isinstance(levels, np.ndarray), f"levels — это {type(levels).__name__}, а нужен массив: np.linspace(...)"
+    assert isinstance(levels, np.ndarray), f"levels — это {type(levels).__name__}, а нужен массив"
     got = np.asarray(levels, dtype=float)
-    assert len(got) == 5, f"в levels {len(got)} значений, а нужно 5 — это третий аргумент linspace"
-    assert np.allclose(got, [100, 150, 200, 250, 300]), f"в levels {got.tolist()}, а ступени — 100, 150, 200, 250, 300"
+    assert len(got) == 5, f"в levels {len(got)} значений, а нужно 5: вспомните, какой аргумент linspace задаёт число значений"
+    assert np.allclose(got, [100, 150, 200, 250, 300]), f"в levels {got.tolist()}: ступени должны идти от 100 до 300 через равные промежутки"
 # ─── другое решение ───
 levels = np.arange(100, 301, 50)
 # ─── ошибка ───

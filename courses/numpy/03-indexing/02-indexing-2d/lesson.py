@@ -20,13 +20,13 @@ day10_rain = ...
 # ─── проверка ───
 def test_min():
     "day10_min — минимальная температура 10 января"
-    assert day10_min != weather[10, 1] or weather[10, 1] == weather[9, 1], "это 11 января: 10 января — строка с индексом 9"
-    assert day10_min == weather[9, 1], f"day10_min = {day10_min}, а минимум 10 января — {weather[9, 1]}: строка 9, столбец 1"
+    assert day10_min != weather[10, 1] or weather[10, 1] == weather[9, 1], "это 11 января: строки считают с нуля"
+    assert day10_min == weather[9, 1], f"day10_min = {day10_min} — это не минимум 10 января"
 
 
 def test_rain():
     "day10_rain — осадки 10 января"
-    assert day10_rain == weather[9, 3], f"day10_rain = {day10_rain}, а осадки 10 января — {weather[9, 3]}: строка 9, столбец 3"
+    assert day10_rain == weather[9, 3], f"day10_rain = {day10_rain} — это не осадки 10 января"
 # ─── другое решение ───
 day = weather[9]
 day10_min = day[1]
@@ -50,16 +50,16 @@ tmax = ...
 def test_shape():
     "tmin и tmax — столбцы по 365 значений"
     for name, value in [("tmin", tmin), ("tmax", tmax)]:
-        assert isinstance(value, np.ndarray), f"{name} — это {type(value).__name__}, а нужен столбец weather[:, номер]"
-        assert value.shape != (4,), f"{name} — строка из 4 чисел, а нужен столбец: weather[:, номер]"
+        assert isinstance(value, np.ndarray), f"{name} — это {type(value).__name__}, а нужен столбец таблицы weather"
+        assert value.shape != (4,), f"{name} — строка из 4 чисел, а нужен столбец"
         assert value.shape == (365,), f"у {name} форма {value.shape}, а нужен столбец из 365 значений"
 
 
 def test_values():
     "в tmin минимумы, в tmax максимумы"
     assert isinstance(tmin, np.ndarray) and isinstance(tmax, np.ndarray) and tmin.shape == tmax.shape == (365,), "сначала исправьте то, о чём говорит проверка выше"
-    assert tmin.min() == -14.9, "tmin — не столбец минимумов: его номер 1"
-    assert tmax.max() == 27.2, "tmax — не столбец максимумов: его номер 2"
+    assert tmin.min() == -14.9, "tmin — не столбец минимумов — номера столбцов считают с нуля"
+    assert tmax.max() == 27.2, "tmax — не столбец максимумов — номера столбцов считают с нуля"
 # ─── другое решение ───
 tmin = weather[0:365, 1]
 tmax = weather[:, -2]
@@ -75,8 +75,8 @@ day1 = ...
 def test_day1():
     "day1 — четыре показателя 1 января"
     assert isinstance(day1, np.ndarray), f"day1 — это {type(day1).__name__}, а нужна строка таблицы"
-    assert day1.shape != (365,), "это столбец, а нужна строка: один индекс — weather[0]"
-    assert day1.tolist() == [1.0, -9.9, -3.2, 0.0], f"day1 = {day1.tolist()}, а 1 января — [1, −9.9, −3.2, 0]"
+    assert day1.shape != (365,), "это столбец, а нужна строка: для строки достаточно одного индекса"
+    assert day1.tolist() == [1.0, -9.9, -3.2, 0.0], f"day1 = {day1.tolist()} — это не строка 1 января"
 # ─── другое решение ───
 day1 = weather[0, :]
 # ─── ошибка ───
@@ -100,15 +100,15 @@ march = ...
 def test_shape():
     "march — 31 день × 2 столбца"
     assert isinstance(march, np.ndarray), f"march — это {type(march).__name__}, а нужен блок таблицы"
-    assert march.shape != (30, 2), "в блоке 30 дней: конец среза не входит, возьмите строки 59:90"
+    assert march.shape != (30, 2), "в блоке 30 дней: конец среза не входит"
     assert march.shape == (31, 2), f"форма march — {march.shape}, а нужно (31, 2): 31 день, два столбца температур"
 
 
 def test_values():
     "это мартовские минимумы и максимумы"
     assert isinstance(march, np.ndarray) and march.shape == (31, 2), "сначала исправьте то, о чём говорит проверка выше"
-    assert march.tolist()[0] == weather[59, 1:3].tolist(), "блок должен начинаться с 1 марта (строка 59) и столбца 1"
-    assert march.tolist()[-1] == weather[89, 1:3].tolist(), "блок должен заканчиваться 31 марта (строка 89)"
+    assert march.tolist()[0] == weather[59, 1:3].tolist(), "блок должен начинаться с 1 марта и столбца минимумов"
+    assert march.tolist()[-1] == weather[89, 1:3].tolist(), "блок должен заканчиваться 31 марта"
 # ─── другое решение ───
 temps = weather[:, 1:3]
 march = temps[59:90]

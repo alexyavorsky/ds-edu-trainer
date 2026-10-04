@@ -22,7 +22,7 @@ def test_values():
     "это три последних балла"
     assert isinstance(last3, list), "last3 пока не список — сначала исправьте то, о чём говорит проверка выше"
     assert last3 != [72, 85, 90], "это три первых балла, а нужны последние: считайте с конца"
-    assert last3 == [64, 88, 95], f"в last3 {last3}, а три последних балла — [64, 88, 95]"
+    assert last3 == [64, 88, 95], f"в last3 {last3} — это не три последних балла"
 # ─── другое решение ───
 last3 = scores[3:]
 # ─── ошибка ───
@@ -43,12 +43,12 @@ tea = ...
 # ─── проверка ───
 def test_tea():
     "tea — остаток чая"
-    assert tea == 30, f"tea = {tea!r}, а чая на складе 30 — возьмите значение по ключу \"чай\""
+    assert tea == 30, f"tea = {tea!r}, а нужен остаток чая — значение по ключу \"чай\""
 
 
 def test_cocoa():
     "в stock появилось какао, 5 штук"
-    assert "какао" in stock, "в stock нет ключа \"какао\" — добавьте его: stock[\"какао\"] = 5"
+    assert "какао" in stock, "в stock нет ключа \"какао\": новый ключ добавляется присваиванием по ключу"
     assert stock["какао"] == 5, f"какао в stock — {stock['какао']!r}, а нужно 5"
 # ─── другое решение ───
 tea = stock.get("чай")
@@ -77,7 +77,7 @@ positive_total = ...
 def test_total():
     "сумма только положительных значений"
     assert positive_total != 2000, "2000 — сумма всех значений вместе с убытками; складывайте только те, что больше нуля"
-    assert positive_total == 2450, f"positive_total = {positive_total!r}, а сумма прибыльных дней — 2450"
+    assert positive_total == 2450, f"positive_total = {positive_total!r} — это не сумма прибыльных дней"
 # ─── другое решение ───
 profit = [1200, -300, 450, 0, -150, 800]
 positive_total = sum(p for p in profit if p > 0)
@@ -137,8 +137,8 @@ squares = ...
 # ─── проверка ───
 def test_squares():
     "squares — квадраты чисел от 1 до 10"
-    assert isinstance(squares, list), f"squares — это {type(squares).__name__}, а нужен список: [выражение for x in ...]"
-    assert squares != [x ** 2 for x in range(10)], "получились квадраты чисел от 0 до 9: начните диапазон с 1 и закончите на 11"
+    assert isinstance(squares, list), f"squares — это {type(squares).__name__}, а нужен список — подойдёт списочное выражение"
+    assert squares != [x ** 2 for x in range(10)], "получились квадраты чисел от 0 до 9, а нужны от 1 до 10: вспомните, какие числа выдаёт range — начало входит, конец нет"
     assert squares == [1, 4, 9, 16, 25, 36, 49, 64, 81, 100], f"в squares {squares}"
 # ─── другое решение ───
 squares = [x * x for x in range(1, 11)]

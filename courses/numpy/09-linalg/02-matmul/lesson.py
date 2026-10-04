@@ -22,9 +22,9 @@ final = ...
 # ─── проверка ───
 def test_final():
     "final — итоговая оценка"
-    assert not isinstance(final, np.ndarray) or final.shape == (), "final — массив: это поэлементное произведение *, а нужна сумма — @"
-    assert abs(final - 255 / 3) > 1e-6, "это простое среднее трёх оценок, а нужно взвешенное: marks @ weights"
-    assert abs(final - 83.6) < 1e-9, f"final = {final}, а взвешенная оценка — 0.5·78 + 0.3·92 + 0.2·85 = 83.6"
+    assert not isinstance(final, np.ndarray) or final.shape == (), "final — массив: это поэлементное произведение *, а нужна сумма произведений"
+    assert abs(final - 255 / 3) > 1e-6, "это простое среднее трёх оценок, а нужно взвешенное"
+    assert abs(final - 83.6) < 1e-9, f"final = {final} — это не взвешенная оценка"
 # ─── другое решение ───
 marks = np.array([78, 92, 85])
 weights = np.array([0.5, 0.3, 0.2])
@@ -75,14 +75,14 @@ best = ...
 def test_finals():
     "finals — итоги четырёх студентов"
     assert isinstance(finals, np.ndarray), f"finals — это {type(finals).__name__}, а нужен массив из четырёх итогов"
-    assert finals.shape != (4, 3), "finals — таблица (4, 3): это поэлементное *, а суммы по строкам даёт @"
+    assert finals.shape != (4, 3), "finals — таблица (4, 3): это поэлементное *, а нужны суммы произведений по строкам"
     assert finals.shape == (4,), f"у finals форма {finals.shape}, а студентов 4"
-    assert np.allclose(finals, [82.5, 63.6, 90.9, 65.9]), f"finals = {finals}, а итоги с весами 0.5, 0.3, 0.2 — [82.5, 63.6, 90.9, 65.9]"
+    assert np.allclose(finals, [82.5, 63.6, 90.9, 65.9]), f"finals = {finals} — это не итоги с весами 0.5, 0.3, 0.2"
 
 
 def test_best():
     "best — строка лучшего студента"
-    assert best == 2, f"best = {best}, а лучший итог (90.9) — у студента в строке 2"
+    assert best == 2, f"best = {best} — это не строка студента с лучшим итогом"
 # ─── другое решение ───
 scores = np.array([
     [78, 85, 90],
@@ -138,15 +138,15 @@ total_profit = ...
 # ─── проверка ───
 def test_rc():
     "rc — выручка и затраты каждого заказа"
-    assert isinstance(rc, np.ndarray) and rc.shape == (5, 2), f"rc — таблица (5, 2): orders @ price_cost"
-    assert rc[:, 0].tolist() == [790, 650, 540, 1410, 730], "столбец 0 rc — выручка заказов: orders @ price_cost"
+    assert isinstance(rc, np.ndarray) and rc.shape == (5, 2), "rc — это должна быть таблица (5, 2)"
+    assert rc[:, 0].tolist() == [790, 650, 540, 1410, 730], "столбец 0 rc — выручка заказов"
 
 
 def test_profit():
     "profit и total_profit — прибыль"
     assert np.shape(profit) == (5,), f"у profit форма {np.shape(profit)}, а заказов 5: выручка минус затраты по строкам"
-    assert profit.tolist() == [495, 385, 350, 840, 485], f"profit = {profit.tolist()}, а прибыль заказов — [495, 385, 350, 840, 485]"
-    assert total_profit == 2555, f"total_profit = {total_profit}, а общая прибыль — 2555"
+    assert profit.tolist() == [495, 385, 350, 840, 485], f"profit = {profit.tolist()}: прибыль — выручка минус затраты"
+    assert total_profit == 2555, f"total_profit = {total_profit} — это не сумма прибыли всех заказов"
 # ─── другое решение ───
 price_cost = np.array([
     [180, 70],     # цена, себестоимость

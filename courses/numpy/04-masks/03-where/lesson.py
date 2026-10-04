@@ -20,12 +20,12 @@ def test_fixed():
     "в fixed отрицательные заменены нулём"
     assert isinstance(fixed, np.ndarray), f"fixed — это {type(fixed).__name__}, а нужна копия массива sold"
     assert fixed.tolist() != [48, 52, 61, 0, 58], "из fixed выкинуты элементы, а нужно заменить их нулём, сохранив все дни"
-    assert fixed.tolist() == [48, 52, 0, 61, 0, 0, 58], f"fixed = {fixed.tolist()}, а должно быть [48, 52, 0, 61, 0, 0, 58]"
+    assert fixed.tolist() == [48, 52, 0, 61, 0, 0, 58], f"fixed = {fixed.tolist()}: отрицательные должны стать нулём, остальное — как в sold"
 
 
 def test_sold():
     "sold не изменился"
-    assert sold.tolist() == [48, 52, -3, 61, 0, -7, 58], "sold изменился: сделайте копию sold.copy() и меняйте её"
+    assert sold.tolist() == [48, 52, -3, 61, 0, -7, 58], "sold изменился: сделайте копию sold и меняйте её"
 # ─── другое решение ───
 sold = np.array([48, 52, -3, 61, 0, -7, 58])
 fixed = np.where(sold < 0, 0, sold)
@@ -57,11 +57,11 @@ bonus = ...
 # ─── проверка ───
 def test_bonus():
     "премия 10 % от перевыполнения, остальным 0"
-    assert isinstance(bonus, np.ndarray), f"bonus — это {type(bonus).__name__}, а нужен массив из np.where"
+    assert isinstance(bonus, np.ndarray), f"bonus — это {type(bonus).__name__}, а нужен массив"
     got = np.asarray(bonus, dtype=float).tolist()
-    assert got != [12000, 0, 15000, 0, 11000], "премия посчитана от всех продаж, а нужно от превышения плана: (sales - 100000) * 0.1"
+    assert got != [12000, 0, 15000, 0, 11000], "премия посчитана от всех продаж, а нужно от превышения плана"
     assert got != [2000, -500, 5000, -2000, 1000], "у невыполнивших план премия отрицательная, а должна быть 0 — используйте np.where"
-    assert got == [2000, 0, 5000, 0, 1000], f"bonus = {got}, а премии — [2000, 0, 5000, 0, 1000]"
+    assert got == [2000, 0, 5000, 0, 1000], f"bonus = {got} — это не 10 % от перевыполнения плана"
 # ─── другое решение ───
 sales = np.array([120000, 95000, 150000, 80000, 110000])
 extra = sales - 100000
@@ -89,10 +89,10 @@ scores = ...
 # ─── проверка ───
 def test_scores():
     "баллы прижаты к границам 0 и 100"
-    assert isinstance(scores, np.ndarray), f"scores — это {type(scores).__name__}, а нужен массив: np.clip(raw, 0, 100)"
+    assert isinstance(scores, np.ndarray), f"scores — это {type(scores).__name__}, а нужен массив"
     got = scores.tolist()
     assert got != [88, 67, 100, 0], "выброшены элементы, а нужно прижать их к границам и сохранить все баллы"
-    assert got == [88, 100, 0, 67, 100, 0, 100], f"scores = {got}, а должно быть [88, 100, 0, 67, 100, 0, 100]"
+    assert got == [88, 100, 0, 67, 100, 0, 100], f"scores = {got}: баллы ниже 0 должны стать 0, выше 100 — 100, остальные не меняются"
 # ─── другое решение ───
 raw = np.array([88, 104, -5, 67, 100, 0, 121])
 scores = np.where(raw > 100, 100, np.where(raw < 0, 0, raw))
@@ -112,7 +112,7 @@ warm_days = ...
 # ─── проверка ───
 def test_season():
     "season — подпись для каждого дня"
-    assert isinstance(season, np.ndarray), f"season — это {type(season).__name__}, а нужен массив подписей из np.where"
+    assert isinstance(season, np.ndarray), f"season — это {type(season).__name__}, а нужен массив подписей"
     assert season.shape == (365,), f"у season форма {season.shape}, а нужна подпись на каждый из 365 дней"
     assert set(season.tolist()) == {"тепло", "холодно"}, f"в season должны быть только подписи \"тепло\" и \"холодно\", а есть {sorted(set(season.tolist()))[:4]}"
 
@@ -120,7 +120,7 @@ def test_season():
 def test_count():
     "warm_days — число тёплых дней"
     assert warm_days != 235, "235 — это «холодные» дни: проверьте порядок подписей — сначала для «да», потом для «нет»"
-    assert warm_days == 130, f"warm_days = {warm_days}, а дней с максимумом 15 °C и выше — 130"
+    assert warm_days == 130, f"warm_days = {warm_days} — это не число тёплых дней"
 # ─── другое решение ───
 season = np.where(tmax < 15, "холодно", "тепло")
 warm_days = (tmax >= 15).sum()

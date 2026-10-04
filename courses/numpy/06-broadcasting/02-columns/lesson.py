@@ -29,7 +29,7 @@ def test_shape():
 def test_values():
     "каждая строка умножена на наценку своего магазина"
     assert isinstance(final, np.ndarray) and final.shape == (3, 4), "сначала исправьте то, о чём говорит проверка выше"
-    assert np.allclose(final, [[150, 100, 56.25, 375], [130, 85, 50, 290], [121, 99, 44, 341]]), f"final = {final.tolist()}"
+    assert np.allclose(final, [[150, 100, 56.25, 375], [130, 85, 50, 290], [121, 99, 44, 341]]), f"final = {final.tolist()}: каждая строка (магазин) умножается на свою наценку"
 # ─── другое решение ───
 store_markup = np.array([1.25, 1.0, 1.1])
 final = prices * store_markup.reshape(3, 1)
@@ -68,8 +68,8 @@ def test_shape():
 def test_rows():
     "в каждой строке среднее отклонение — 0"
     assert isinstance(personal, np.ndarray) and personal.shape == (30, 5), "сначала исправьте то, о чём говорит проверка выше"
-    assert not np.allclose(personal.mean(axis=0), 0), "вычтено среднее по предметам (axis=0), а нужно среднее каждого студента — axis=1"
-    assert np.allclose(personal.mean(axis=1), 0), "в каждой строке среднее должно стать 0: вычитайте scores.mean(axis=1, keepdims=True)"
+    assert not np.allclose(personal.mean(axis=0), 0), "вычтено среднее по предметам, а нужно среднее каждого студента"
+    assert np.allclose(personal.mean(axis=1), 0), "в каждой строке среднее должно стать 0: вычитайте среднее своей строки"
     assert np.allclose(personal[0], [-1.6, -20.6, -1.6, 12.4, 11.4]), f"у первого студента получилось {np.round(personal[0], 1).tolist()}"
 # ─── другое решение ───
 scores = np.loadtxt("data/scores.csv", delimiter=",", skiprows=1, usecols=(1, 2, 3, 4, 5))
@@ -97,9 +97,9 @@ cost = ...
 def test_cost():
     "cost — таблица 5 товаров × 4 количества"
     assert isinstance(cost, np.ndarray), f"cost — это {type(cost).__name__}, а нужна таблица"
-    assert cost.shape != (4, 5), "товары оказались в столбцах: цены должны быть столбцом — unit_price[:, np.newaxis]"
+    assert cost.shape != (4, 5), "товары оказались в столбцах: цены должны быть столбцом"
     assert cost.shape == (5, 4), f"форма cost — {cost.shape}, а нужно (5, 4)"
-    assert cost[3].tolist() == [300, 600, 1500, 3000], f"строка товара за 300 ₽ — {cost[3].tolist()}, а должна быть [300, 600, 1500, 3000]"
+    assert cost[3].tolist() == [300, 600, 1500, 3000], f"строка товара за 300 ₽ — {cost[3].tolist()}: в строке — цена 1, 2, 5 и 10 штук"
 # ─── другое решение ───
 unit_price = np.array([120, 80, 45, 300, 15])
 amounts = np.array([1, 2, 5, 10])
@@ -123,7 +123,7 @@ centered = ...
 def test_centered():
     "в каждой строке среднее стало 0"
     assert isinstance(centered, np.ndarray) and centered.shape == (3, 3), "centered — таблица 3 × 3"
-    assert centered.tolist() != [[-1, -3, -5], [2, 0, -2], [5, 3, 1]], "среднее приложилось как строка: добавьте keepdims=True"
+    assert centered.tolist() != [[-1, -3, -5], [2, 0, -2], [5, 3, 1]], "среднее приложилось как строка: нужно сохранить у него форму столбца"
     assert centered.tolist() == [[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]], f"centered = {centered.tolist()}"
 # ─── другое решение ───
 centered = sq - sq.mean(axis=1)[:, np.newaxis]

@@ -25,7 +25,7 @@ orders = pd.read_csv("data/shop_orders.csv")
 # ─── проверка ───
 def test_column():
     "в orders появился столбец revenue"
-    assert "revenue" in orders.columns, "в таблице orders нет столбца revenue: orders[\"revenue\"] = ..."
+    assert "revenue" in orders.columns, "в таблице orders нет столбца revenue"
     assert orders.shape[1] == 10, f"в orders {orders.shape[1]} столбцов, а должно стать 10: девять исходных и revenue"
     assert list(orders.columns)[-1] == "revenue", "новый столбец должен оказаться последним"
 
@@ -35,7 +35,7 @@ def test_values():
     assert "revenue" in orders.columns, "сначала добавьте столбец revenue"
     assert orders["revenue"].dtype != object, "в столбце revenue не числа: справа от = должно стоять произведение двух столбцов"
     assert orders["revenue"].sum() != 1685990 + 5210, "цену и количество нужно перемножить, а не сложить"
-    assert orders["revenue"].sum() == 3301420, f"сумма revenue — {orders['revenue'].sum()}, а выручка за год — 3 301 420: цена × количество"
+    assert orders["revenue"].sum() == 3301420, f"сумма revenue — {orders['revenue'].sum()}: revenue — это цена × количество"
 # ─── другое решение ───
 orders = pd.read_csv("data/shop_orders.csv")
 orders = orders.assign(revenue=orders["quantity"] * orders["price"])
@@ -61,11 +61,11 @@ products["markup"] = (products["price"] / products["cost"]).round(1)
 # ─── проверка ───
 def test_markup():
     "в products появился столбец markup"
-    assert "markup" in products.columns, "в таблице products нет столбца markup: products[\"markup\"] = ..."
+    assert "markup" in products.columns, "в таблице products нет столбца markup"
     assert products["markup"].dtype != object, "в столбце markup не числа"
     assert abs(products.loc[0, "markup"] - 0.6) > 1e-9, "дробь перевёрнута: наценка — это цена, делённая на себестоимость"
-    assert abs(products.loc[0, "markup"] - 1.6666667) > 1e-4, "значения не округлены: добавьте .round(1) — выражение перед точкой возьмите в скобки"
-    assert abs(products.loc[0, "markup"] - 1.7) < 1e-9, f"в первой строке markup = {products.loc[0, 'markup']}, а должно быть 1.7 (1450 / 870)"
+    assert abs(products.loc[0, "markup"] - 1.6666667) > 1e-4, "значения не округлены до одного знака"
+    assert abs(products.loc[0, "markup"] - 1.7) < 1e-9, f"в первой строке markup = {products.loc[0, 'markup']}, а должно быть 1.7"
     assert abs(products["markup"].sum() - 41.0) < 1e-6, "не все значения верны: цена / себестоимость, округлённая до одного знака"
 # ─── другое решение ───
 ratio = products["price"] / products["cost"]
@@ -105,9 +105,9 @@ catalog = ...
 def test_catalog():
     "catalog — без currency и is_costly, name переименован в product"
     assert isinstance(catalog, pd.DataFrame), f"catalog — это {type(catalog).__name__}, а нужна таблица"
-    assert "currency" not in catalog.columns and "is_costly" not in catalog.columns, "в catalog остались столбцы currency или is_costly: drop(columns=[...])"
-    assert "name" not in catalog.columns, "в catalog остался столбец name: rename(columns={\"name\": \"product\"})"
-    assert "product" in catalog.columns, "в catalog нет столбца product: rename(columns={\"name\": \"product\"})"
+    assert "currency" not in catalog.columns and "is_costly" not in catalog.columns, "в catalog остались столбцы currency или is_costly"
+    assert "name" not in catalog.columns, "в catalog остался столбец name: его нужно переименовать в product"
+    assert "product" in catalog.columns, "в catalog нет столбца product"
     expected = {"product_id", "product", "category", "price", "cost", "margin", "markup"}
     lost = sorted(expected - set(catalog.columns))
     assert not lost, f"в catalog нет столбцов {lost}: удалить нужно только currency и is_costly"
@@ -152,7 +152,7 @@ def test_columns():
 
 def test_total():
     "total_to_pay — сумма к оплате за год"
-    assert abs(total_to_pay - 3136349.0) < 1e-3, f"total_to_pay = {total_to_pay!r}, а сумма столбца to_pay — 3 136 349"
+    assert abs(total_to_pay - 3136349.0) < 1e-3, f"total_to_pay = {total_to_pay!r} — это не сумма столбца to_pay"
 # ─── другое решение ───
 orders = orders.assign(discount=orders["revenue"] * 0.05)
 orders = orders.assign(to_pay=orders["revenue"] - orders["discount"])

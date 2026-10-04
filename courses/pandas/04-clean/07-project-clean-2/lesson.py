@@ -27,16 +27,16 @@ no_date = ...
 def test_signup():
     "signup — даты регистрации"
     assert "signup" in customers.columns, "в customers нет столбца signup"
-    assert str(customers["signup"].dtype).startswith("datetime64"), f"тип signup — {customers['signup'].dtype}, а нужны даты: pd.to_datetime"
+    assert str(customers["signup"].dtype).startswith("datetime64"), f"тип signup — {customers['signup'].dtype}, а нужны даты"
     assert customers["signup"].isna().sum() < 50, "распознан только один формат: соберите оба через fillna — дат с точками в файле тоже много"
-    assert customers["signup"].isna().sum() == 6, f"в signup {customers['signup'].isna().sum()} пропусков, а должно остаться 6 — только там, где даты не было"
-    assert customers["signup"].max() <= pd.to_datetime("2025-06-30"), "есть даты позже июня 2025 года — день и месяц перепутаны: разбирайте каждый формат явно, с format="
-    assert customers["signup"].dt.year.value_counts()[2023] == 109, "даты прочитаны неверно: форматы — \"%Y-%m-%d\" и \"%d.%m.%Y\""
+    assert customers["signup"].isna().sum() == 6, f"в signup {customers['signup'].isna().sum()} пропусков: пропуски должны остаться только там, где даты не было"
+    assert customers["signup"].max() <= pd.to_datetime("2025-06-30"), "есть даты позже июня 2025 года — день и месяц перепутаны: разбирайте каждый формат явно"
+    assert customers["signup"].dt.year.value_counts()[2023] == 109, "даты прочитаны неверно: проверьте оба формата"
 
 
 def test_no_date():
     "no_date — у скольких строк даты нет"
-    assert no_date == 6, f"no_date = {no_date!r}, а строк без даты регистрации 6"
+    assert no_date == 6, f"no_date = {no_date!r} — это не число строк без даты регистрации"
 # ─── другое решение ───
 dotted = pd.to_datetime(customers["signup_date"], format="%d.%m.%Y", errors="coerce")
 iso = pd.to_datetime(customers["signup_date"], format="%Y-%m-%d", errors="coerce")
@@ -64,15 +64,15 @@ total_points = ...
 def test_points():
     "points — баллы целыми числами, «нет» и пропуск — ноль"
     assert "points" in customers.columns, "в customers нет столбца points"
-    assert customers["points"].isna().sum() == 0, "в points остались пропуски: «нет» и пустое поле значат ноль баллов — fillna(0)"
-    assert str(customers["points"].dtype) in ("int64", "int32"), f"тип points — {customers['points'].dtype}, а нужен целый: после fillna(0) добавьте astype(\"int64\")"
-    assert customers["points"].max() == 3100, "наибольшее число баллов должно быть 3100: уберите пробел между тысячами до перевода в числа"
-    assert customers.loc[1, "points"] == 2400, f"у клиента в строке 1 баллов {customers.loc[1, 'points']}, а в файле записано «2 400»: .str.replace(\" \", \"\")"
+    assert customers["points"].isna().sum() == 0, "в points остались пропуски: «нет» и пустое поле значат ноль баллов"
+    assert str(customers["points"].dtype) in ("int64", "int32"), f"тип points — {customers['points'].dtype}, а нужен целый"
+    assert customers["points"].max() == 3100, "баллы с пробелом между тысячами потерялись: уберите пробел до перевода в числа"
+    assert customers.loc[1, "points"] == 2400, f"у клиента в строке 1 баллов {customers.loc[1, 'points']}, а в файле записано «2 400»: уберите пробел до перевода в числа"
 
 
 def test_total():
     "total_points — сумма баллов"
-    assert total_points != 138910, "значения с пробелом («2 400») превратились в пропуски и потом в нули: сначала .str.replace(\" \", \"\"), потом pd.to_numeric"
+    assert total_points != 138910, "значения с пробелом («2 400») превратились в пропуски и потом в нули: сначала уберите пробел, потом переводите в числа"
     assert total_points == 219360, f"total_points = {total_points!r} не совпадает с суммой баллов всех строк: проверьте, что points посчитан для каждой строки"
 # ─── другое решение ───
 text = customers["bonus"].fillna("0").replace({"нет": "0"}).str.replace(" ", "")
@@ -100,17 +100,17 @@ def test_clean():
     "clean — по одной строке на клиента"
     assert isinstance(clean, pd.DataFrame), f"clean — это {type(clean).__name__}, а нужна таблица"
     assert list(clean.columns) == ["customer_id", "name", "city", "signup", "segment", "email", "points"], f"столбцы сейчас {list(clean.columns)}, а нужны из списка columns"
-    assert len(clean) != 257, "в clean все 257 строк: дубликаты не удалены — drop_duplicates()"
+    assert len(clean) != 257, "в clean все 257 строк: дубликаты не удалены"
     assert len(clean) != 245, "осталось 5 лишних строк: drop_duplicates вызван до отбора columns — сравнились и сырые signup_date и bonus"
-    assert len(clean) == 240, f"в clean {len(clean)} строк, а клиентов 240"
+    assert len(clean) == 240, f"в clean {len(clean)} строк — должна остаться одна строка на клиента"
     assert clean["customer_id"].nunique() == 240, "в clean повторяются customer_id"
 
 
 def test_order():
     "clean отсортирована по customer_id, индекс с нуля"
     ids = clean["customer_id"].tolist()
-    assert ids == sorted(ids), "clean должна быть отсортирована по customer_id: sort_values(\"customer_id\")"
-    assert list(clean.index) == list(range(len(clean))), "индекс clean должен идти с нуля подряд: reset_index(drop=True) — после сортировки"
+    assert ids == sorted(ids), "clean должна быть отсортирована по customer_id"
+    assert list(clean.index) == list(range(len(clean))), "индекс clean должен идти с нуля подряд: сбросьте индекс после сортировки"
 # ─── другое решение ───
 columns = ["customer_id", "name", "city", "signup", "segment", "email", "points"]
 clean = customers.drop_duplicates(subset=["customer_id"])[columns].sort_values("customer_id").reset_index(drop=True)
@@ -143,15 +143,15 @@ avg_points = ...
 def test_city():
     "by_city — клиентов по городам"
     assert isinstance(by_city, pd.Series), f"by_city — это {type(by_city).__name__}, а нужен результат value_counts()"
-    assert by_city.sum() == 240, f"в by_city всего {by_city.sum()} клиентов, а в clean их 240: считайте по таблице clean"
-    assert len(by_city) == 5 and by_city["Москва"] == 89, "числа не те: clean[\"city\"].value_counts()"
+    assert by_city.sum() == 240, f"в by_city всего {by_city.sum()} клиентов: считайте по таблице clean"
+    assert len(by_city) == 5 and by_city["Москва"] == 89, "числа не те: нужны подсчёты по столбцу city таблицы clean"
 
 
 def test_rest():
     "wholesale — оптовые клиенты, avg_points — средний бонус"
-    assert isinstance(wholesale, pd.DataFrame), f"wholesale — это {type(wholesale).__name__}, а нужна таблица: clean[маска]"
-    assert len(wholesale) == 26 and (wholesale["segment"] == "оптовый").all(), f"в wholesale {len(wholesale)} строк, а оптовых клиентов 26"
-    assert abs(avg_points - 862.1666667) < 1e-4, f"avg_points = {avg_points!r}, а средний бонус ≈ 862.17: clean[\"points\"].mean()"
+    assert isinstance(wholesale, pd.DataFrame), f"wholesale — это {type(wholesale).__name__}, а нужна таблица"
+    assert len(wholesale) == 26 and (wholesale["segment"] == "оптовый").all(), f"в wholesale {len(wholesale)} строк — нужны оптовые клиенты из clean"
+    assert abs(avg_points - 862.1666667) < 1e-4, f"avg_points = {avg_points!r} — это не средний бонус клиентов clean"
 # ─── другое решение ───
 by_city = clean.value_counts("city")
 wholesale = clean.query("segment == 'оптовый'")

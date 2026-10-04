@@ -22,14 +22,14 @@ discounted = ...
 # ─── проверка ───
 def test_shape():
     "discounted — таблица 3 × 4"
-    assert isinstance(discounted, np.ndarray), f"discounted — это {type(discounted).__name__}, а нужен массив: prices * discount"
+    assert isinstance(discounted, np.ndarray), f"discounted — это {type(discounted).__name__}, а нужен массив"
     assert discounted.shape == (3, 4), f"форма discounted — {discounted.shape}, а должна остаться (3, 4)"
 
 
 def test_values():
     "у каждого товара своя скидка"
     assert isinstance(discounted, np.ndarray) and discounted.shape == (3, 4), "сначала исправьте то, о чём говорит проверка выше"
-    assert np.allclose(discounted, [[108, 80, 36, 285], [117, 85, 40, 275.5], [99, 90, 32, 294.5]]), f"discounted = {discounted.tolist()}: сравните с prices * discount — у каждого столбца (товара) своя скидка"
+    assert np.allclose(discounted, [[108, 80, 36, 285], [117, 85, 40, 275.5], [99, 90, 32, 294.5]]), f"discounted = {discounted.tolist()}: у каждого столбца (товара) своя скидка"
 # ─── другое решение ───
 discount = np.array([0.9, 1.0, 0.8, 0.95])
 discounted = discount * prices
@@ -57,12 +57,12 @@ def test_dev():
     "dev — отклонения от средних по предметам"
     assert isinstance(dev, np.ndarray), f"dev — это {type(dev).__name__}, а нужна таблица"
     assert dev.shape == (30, 5), f"форма dev — {dev.shape}, а должна быть (30, 5)"
-    assert np.allclose(dev.mean(axis=0), 0), "среднее отклонение по каждому предмету должно быть 0 — вычитайте scores.mean(axis=0)"
+    assert np.allclose(dev.mean(axis=0), 0), "среднее отклонение по каждому предмету должно быть 0 — вычитайте среднее своего предмета"
 
 
 def test_above():
     "above — оценки выше среднего своего предмета"
-    assert above == 74, f"above = {above}, а оценок выше среднего по предмету — 74"
+    assert above == 74, f"above = {above} — это не число оценок выше среднего своего предмета"
 # ─── другое решение ───
 dev = scores - np.mean(scores, axis=0)
 above = np.sum(scores > scores.mean(axis=0))
@@ -92,7 +92,7 @@ def test_shape():
 def test_values():
     "по каждому дню недели среднее отклонение — 0"
     assert isinstance(vs_weekday, np.ndarray) and vs_weekday.shape == weeks.shape, "сначала исправьте то, о чём говорит проверка выше"
-    assert np.allclose(vs_weekday.mean(axis=0), 0), "вычитайте среднее по столбцам — weeks.mean(axis=0)"
+    assert np.allclose(vs_weekday.mean(axis=0), 0), "по каждому дню недели среднее отклонение должно быть 0: вычитайте среднее по столбцам"
 # ─── другое решение ───
 vs_weekday = weeks - np.mean(weeks, axis=0)
 # ─── ошибка ───

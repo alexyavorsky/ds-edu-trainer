@@ -23,7 +23,7 @@ warmest_night = ...
 # ─── проверка ───
 def test_values():
     "warm_nights — минимумы выше 15 °C"
-    assert isinstance(warm_nights, np.ndarray), f"warm_nights — это {type(warm_nights).__name__}, а нужен массив: tmin[tmin > 15]"
+    assert isinstance(warm_nights, np.ndarray), f"warm_nights — это {type(warm_nights).__name__}, а нужен массив"
     assert warm_nights.dtype != bool, "это маска из True/False, а нужны сами температуры: подставьте маску в квадратные скобки"
     assert (warm_nights > 15).all(), "в warm_nights есть значения не выше 15 °C"
     assert len(warm_nights) == 55, f"в warm_nights {len(warm_nights)} значений, а тёплых ночей (выше 15 °C) — 55"
@@ -31,7 +31,7 @@ def test_values():
 
 def test_max():
     "warmest_night — самая тёплая ночь"
-    assert warmest_night == 21.8, f"warmest_night = {warmest_night}, а самая тёплая ночь — 21.8 °C"
+    assert warmest_night == 21.8, f"warmest_night = {warmest_night} — это не самая тёплая ночь"
 # ─── другое решение ───
 mask = tmin > 15
 warm_nights = tmin[mask]
@@ -52,15 +52,15 @@ rain_mean = ...
 # ─── проверка ───
 def test_rain_only():
     "rain_only — осадки дождливых дней"
-    assert isinstance(rain_only, np.ndarray), f"rain_only — это {type(rain_only).__name__}, а нужен массив: precip[precip > 0]"
-    assert rain_only.dtype != bool, "это маска, а нужны сами осадки: подставьте маску в скобки precip[...]"
+    assert isinstance(rain_only, np.ndarray), f"rain_only — это {type(rain_only).__name__}, а нужен массив"
+    assert rain_only.dtype != bool, "это маска, а нужны сами осадки: подставьте маску в квадратные скобки"
     assert len(rain_only) == 168, f"в rain_only {len(rain_only)} значений, а дней с осадками — 168"
 
 
 def test_mean():
     "rain_mean — средние осадки дождливого дня"
     assert abs(rain_mean - 1.948767) > 1e-4, "это среднее по всем дням; нужно среднее только по дням с осадками"
-    assert abs(rain_mean - 4.233929) < 1e-5, f"rain_mean = {rain_mean}, а в дождливый день в среднем выпадало ≈ 4.23 мм"
+    assert abs(rain_mean - 4.233929) < 1e-5, f"rain_mean = {rain_mean} — это не средние осадки дождливого дня"
 # ─── другое решение ───
 rain_only = precip[precip != 0]
 rain_mean = rain_only.sum() / len(rain_only)
@@ -85,8 +85,8 @@ thaw_rain = ...
 # ─── проверка ───
 def test_count():
     "thaw_rain — дни с переходом через ноль и осадками"
-    assert thaw_rain != 38, "38 — дни с переходом через ноль без учёта осадков: добавьте третье условие (precip > 0)"
-    assert thaw_rain == 21, f"thaw_rain = {thaw_rain}, а таких дней — 21: проверьте все три условия и знак &"
+    assert thaw_rain != 38, "38 — дни с переходом через ноль без учёта осадков: добавьте третье условие — про осадки"
+    assert thaw_rain == 21, f"thaw_rain = {thaw_rain}: проверьте все три условия и знак &"
 # ─── другое решение ───
 cross = (tmin < 0) & (tmax > 0)
 thaw_rain = (cross & (precip > 0)).sum()
@@ -103,7 +103,7 @@ unusual = ...
 def test_unusual():
     "unusual — жаркие или очень холодные дни"
     assert unusual != 0, "0 — это «и жаркий, и холодный одновременно»; нужно «или» — знак |"
-    assert unusual == 21, f"unusual = {unusual}, а необычных дней — 21"
+    assert unusual == 21, f"unusual = {unusual} — это не число жарких или очень холодных дней"
 # ─── другое решение ───
 unusual = (tmax > 25).sum() + (tmin < -12).sum()
 # ─── ошибка ───
@@ -123,8 +123,8 @@ dry_max = ...
 # ─── проверка ───
 def test_dry():
     "dry_max — средний максимум дней без осадков"
-    assert abs(dry_max - 9.305357) > 1e-5, "это средний максимум дождливых дней; нужны дни без осадков — ~(precip > 0)"
-    assert abs(dry_max - 8.967513) < 1e-5, f"dry_max = {dry_max}, а средний максимум сухих дней ≈ 8.97 °C"
+    assert abs(dry_max - 9.305357) > 1e-5, "это средний максимум дождливых дней; нужны дни без осадков — вспомните, как перевернуть маску"
+    assert abs(dry_max - 8.967513) < 1e-5, f"dry_max = {dry_max} — это не средний максимум дней без осадков"
 # ─── другое решение ───
 dry_max = tmax[precip == 0].mean()
 # ─── ошибка ───

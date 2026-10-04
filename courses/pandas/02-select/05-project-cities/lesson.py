@@ -17,16 +17,16 @@ kazan_big = ...
 def test_revenue():
     "revenue — выручка каждой строки"
     assert isinstance(revenue, pd.Series), f"revenue — это {type(revenue).__name__}, а нужен Series: цена × количество"
-    assert len(revenue) == 2448 and revenue.sum() == 3301420, "revenue — это orders[\"price\"] * orders[\"quantity\"] по всем строкам"
+    assert len(revenue) == 2448 and revenue.sum() == 3301420, "revenue — это должна быть выручка (цена × количество) каждой строки"
 
 
 def test_kazan():
     "kazan_big — покупки в Казани на 5000 ₽ и больше"
-    assert isinstance(kazan_big, pd.DataFrame), f"kazan_big — это {type(kazan_big).__name__}, а нужна таблица: orders[(условие) & (условие)]"
+    assert isinstance(kazan_big, pd.DataFrame), f"kazan_big — это {type(kazan_big).__name__}, а нужна таблица"
     assert len(kazan_big) > 0, "в kazan_big нет строк: сравнивать с 5000 нужно выручку строки, а не цену"
     assert (kazan_big["city"] == "Казань").all(), "в kazan_big есть другие города"
     assert (kazan_big["price"] * kazan_big["quantity"]).min() >= 5000, "в kazan_big есть строки с выручкой меньше 5000"
-    assert len(kazan_big) == 5, f"в kazan_big {len(kazan_big)} строк, а подходящих 5"
+    assert len(kazan_big) == 5, f"в kazan_big {len(kazan_big)} строк — проверьте оба условия"
 # ─── другое решение ───
 revenue = orders["quantity"] * orders["price"]
 kazan_big = orders.loc[(orders["city"] == "Казань") & (revenue >= 5000)]
@@ -56,18 +56,18 @@ tea_rest = ...
 def test_masks():
     "is_winter и is_tea — маски"
     assert isinstance(is_winter, pd.Series) and is_winter.dtype == bool, "is_winter должна быть маской — Series из True и False"
-    assert is_winter.sum() != 0, "в is_winter нет ни одного True: январь–февраль ИЛИ декабрь — оператор |, а не &"
-    assert is_winter.sum() != 329, "в is_winter только декабрь: добавьте январь и февраль — даты раньше \"2025-03-01\""
-    assert is_winter.sum() == 764, f"в is_winter {is_winter.sum()} зимних строк, а их 764: даты до 1 марта или с 1 декабря"
-    assert isinstance(is_tea, pd.Series) and is_tea.dtype == bool and is_tea.sum() == 682, "is_tea — маска: категория равна \"Чай\""
+    assert is_winter.sum() != 0, "в is_winter нет ни одного True: январь–февраль ИЛИ декабрь"
+    assert is_winter.sum() != 329, "в is_winter только декабрь: добавьте январь и февраль"
+    assert is_winter.sum() == 764, f"в is_winter {is_winter.sum()} зимних строк: зима — даты до 1 марта или с 1 декабря"
+    assert isinstance(is_tea, pd.Series) and is_tea.dtype == bool and is_tea.sum() == 682, "is_tea — это должна быть маска строк с чаем"
 
 
 def test_shares():
     "tea_winter и tea_rest — доля чая зимой и в остальное время"
     assert abs(tea_winter - 268) > 1e-9, "268 — число строк с чаем зимой; доля — среднее маски is_tea по зимним строкам"
-    assert abs(tea_winter - 268 / 682) > 1e-9, "это доля зимы среди чая; нужна доля чая среди зимних строк: is_tea[is_winter].mean()"
-    assert abs(tea_winter - 268 / 764) < 1e-9, f"tea_winter = {tea_winter!r}, а доля чая зимой ≈ 0.351"
-    assert abs(tea_rest - 414 / 1684) < 1e-9, f"tea_rest = {tea_rest!r}, а доля чая в остальное время ≈ 0.246: маска ~is_winter"
+    assert abs(tea_winter - 268 / 682) > 1e-9, "это доля зимы среди чая; нужна доля чая среди зимних строк"
+    assert abs(tea_winter - 268 / 764) < 1e-9, f"tea_winter = {tea_winter!r} — это не доля чая среди зимних строк"
+    assert abs(tea_rest - 414 / 1684) < 1e-9, f"tea_rest = {tea_rest!r} — это не доля чая среди остальных строк"
 # ─── другое решение ───
 is_winter = ~orders["date"].between("2025-03-01", "2025-11-30")
 is_tea = orders["category"] == "Чай"
@@ -96,15 +96,15 @@ market_costly = ...
 def test_prices():
     "site_price и market_price — средняя цена строки на сайте и маркетплейсе"
     assert abs(site_price - 688.7214) > 1e-3, "это средняя цена по всей таблице; нужны только строки с каналом \"сайт\""
-    assert abs(site_price - 677.02726) < 1e-4, f"site_price = {site_price!r}, а средняя цена на сайте ≈ 677.03"
-    assert abs(market_price - 728.19777) < 1e-4, f"market_price = {market_price!r}, а средняя цена на маркетплейсе ≈ 728.20"
+    assert abs(site_price - 677.02726) < 1e-4, f"site_price = {site_price!r} — это не средняя цена строк с каналом \"сайт\""
+    assert abs(market_price - 728.19777) < 1e-4, f"market_price = {market_price!r} — это не средняя цена строк с каналом \"маркетплейс\""
 
 
 def test_costly():
     "market_costly — доля строк от 1000 ₽ на маркетплейсе"
     assert abs(market_costly - 144) > 1e-9, "144 — число строк; доля — среднее маски"
     assert abs(market_costly - 144 / 2448) > 1e-9, "это доля среди всех строк таблицы; нужна доля среди строк маркетплейса"
-    assert abs(market_costly - 144 / 627) < 1e-9, f"market_costly = {market_costly!r}, а доля ≈ 0.23"
+    assert abs(market_costly - 144 / 627) < 1e-9, f"market_costly = {market_costly!r} — это не доля строк от 1000 ₽ среди строк маркетплейса"
 # ─── другое решение ───
 site = orders[orders["channel"] == "сайт"]
 market = orders.query("channel == 'маркетплейс'")
@@ -132,12 +132,12 @@ def test_cities():
     assert isinstance(pricey_cities, pd.Series), f"pricey_cities — это {type(pricey_cities).__name__}, а нужен результат value_counts()"
     assert "Москва" in pricey_cities.index, "в индексе pricey_cities нет городов: value_counts нужен у столбца city"
     assert pricey_cities.sum() != 2448, "посчитаны все строки, а нужны только с ценой выше 2000: сначала фильтр, потом value_counts"
-    assert pricey_cities.sum() == 66, f"в pricey_cities всего {pricey_cities.sum()} строк, а покупок дороже 2000 — 66"
+    assert pricey_cities.sum() == 66, f"в pricey_cities всего {pricey_cities.sum()} строк — проверьте условие на цену"
 
 
 def test_moscow():
     "pricey_moscow — дорогих покупок в Москве"
-    assert pricey_moscow == 26, f"pricey_moscow = {pricey_moscow!r}, а дорогих покупок в Москве 26"
+    assert pricey_moscow == 26, f"pricey_moscow = {pricey_moscow!r} — это не число дорогих покупок в Москве"
 # ─── другое решение ───
 pricey_cities = orders[orders["price"] > 2000]["city"].value_counts()
 pricey_moscow = len(orders.query("price > 2000 and city == 'Москва'"))
@@ -154,9 +154,9 @@ record_city = ...
 # ─── проверка ───
 def test_record():
     "record — строка с наибольшим количеством"
-    assert isinstance(record, pd.DataFrame), f"record — это {type(record).__name__}, а нужна таблица: orders[маска]"
-    assert len(record) == 1, f"в record {len(record)} строк, а покупка с наибольшим количеством одна: сравните quantity с его максимумом"
-    assert record["quantity"].iloc[0] == 10, "в record не та строка: количество должно быть равно orders[\"quantity\"].max()"
+    assert isinstance(record, pd.DataFrame), f"record — это {type(record).__name__}, а нужна таблица"
+    assert len(record) == 1, f"в record {len(record)} строк, а покупка с наибольшим количеством одна"
+    assert record["quantity"].iloc[0] == 10, "в record не та строка: нужна строка с наибольшим количеством"
 
 
 def test_city():

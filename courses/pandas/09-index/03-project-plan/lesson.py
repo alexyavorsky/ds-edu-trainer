@@ -19,17 +19,17 @@ plan_m = ...
 # ─── проверка ───
 def test_fact():
     "fact_m — выручка по парам «город, месяц»"
-    assert isinstance(fact_m, pd.Series), f"fact_m — это {type(fact_m).__name__}, а нужен Series: orders.groupby([\"city\", \"month\"])[\"revenue\"].sum()"
+    assert isinstance(fact_m, pd.Series), f"fact_m — это {type(fact_m).__name__}, а нужен Series"
     assert list(fact_m.index.names) == ["city", "month"], f"уровни индекса fact_m сейчас {list(fact_m.index.names)}, а нужны city и month — в этом порядке"
     assert len(fact_m) == 60 and fact_m.sum() == 3301420, "в fact_m 60 пар, сумма — выручка года"
 
 
 def test_plan():
     "plan_m — план с тем же двухуровневым индексом"
-    assert not isinstance(plan_m, pd.DataFrame), "plan_m — таблица, а нужен Series: после set_index возьмите столбец [\"plan\"]"
-    assert isinstance(plan_m, pd.Series), f"plan_m — это {type(plan_m).__name__}, а нужен Series: plan_table.set_index([\"city\", \"month\"])[\"plan\"]"
-    assert list(plan_m.index.names) == ["city", "month"], f"уровни индекса plan_m сейчас {list(plan_m.index.names)}, а нужны city и month: set_index([\"city\", \"month\"])"
-    assert len(plan_m) == 61 and plan_m.loc[("Москва", 1)] == 132000, "в plan_m 61 пара; план Москвы на январь — 132000"
+    assert not isinstance(plan_m, pd.DataFrame), "plan_m — таблица, а нужен Series: после set_index возьмите один столбец"
+    assert isinstance(plan_m, pd.Series), f"plan_m — это {type(plan_m).__name__}, а нужен Series"
+    assert list(plan_m.index.names) == ["city", "month"], f"уровни индекса plan_m сейчас {list(plan_m.index.names)}, а нужны city и month"
+    assert len(plan_m) == 61 and plan_m.loc[("Москва", 1)] == 132000, "в plan_m должны быть все 61 пара плана со значениями столбца plan"
 # ─── другое решение ───
 fact_m = orders.pivot_table(values="revenue", index=["city", "month"], aggfunc="sum")["revenue"]
 plan_m = plan_table.groupby(["city", "month"])["plan"].sum()
@@ -58,16 +58,16 @@ no_fact = ...
 # ─── проверка ───
 def test_pf():
     "pf — план и факт рядом, по всем парам"
-    assert isinstance(pf, pd.DataFrame), f"pf — это {type(pf).__name__}, а нужна таблица: pd.DataFrame({{\"plan\": plan_m, \"fact\": fact_m}})"
+    assert isinstance(pf, pd.DataFrame), f"pf — это {type(pf).__name__}, а нужна таблица"
     assert list(pf.columns)[:2] == ["plan", "fact"], f"столбцы сейчас {list(pf.columns)}, а первые два должны быть plan и fact"
-    assert len(pf) == 63, f"в pf {len(pf)} строк, а пар «город, месяц» в плане и факте вместе — 63"
+    assert len(pf) == 63, f"в pf {len(pf)} строк: нужны все пары «город, месяц» из плана и факта вместе"
 
 
 def test_gaps():
     "no_plan и no_fact — сколько пар без плана и без факта; пропуски факта — нули"
-    assert no_plan == 2, f"no_plan = {no_plan!r}, а пар без плана — 2: pf[\"plan\"].isna().sum()"
-    assert no_fact == 3, f"no_fact = {no_fact!r}, а пар без факта — 3: посчитайте пропуски до заполнения"
-    assert pf["fact"].isna().sum() == 0, "в pf[\"fact\"] остались пропуски: нет продаж — значит, выручка ноль, fillna(0). Результат запишите обратно в столбец"
+    assert no_plan == 2, f"no_plan = {no_plan!r} — это не число пар без плана"
+    assert no_fact == 3, f"no_fact = {no_fact!r}: посчитайте пропуски до заполнения"
+    assert pf["fact"].isna().sum() == 0, "в pf[\"fact\"] остались пропуски: нет продаж — значит, выручка ноль. Результат запишите обратно в столбец"
     assert pf["plan"].isna().sum() == 2, "пропуски в plan заполнять не нужно: «плана не было» — не то же самое, что «план равен нулю»"
 # ─── другое решение ───
 pf = pd.concat([plan_m, fact_m.rename("fact")], axis=1)
@@ -95,15 +95,15 @@ flat = ...
 def test_metrics():
     "gap — факт минус план, done — доля выполнения"
     assert "gap" in pf.columns and "done" in pf.columns, "в pf нужны столбцы gap и done"
-    assert pf.loc[("Казань", 3), "gap"] == -3000, "gap — факт минус план: у Казани в марте −3000"
-    assert abs(pf.loc[("Казань", 3), "done"] - 0.935) < 1e-9, "done — факт, делённый на план, с округлением до трёх знаков: у Казани в марте 0.935"
+    assert pf.loc[("Казань", 3), "gap"] == -3000, "gap не тот: нужен факт минус план"
+    assert abs(pf.loc[("Казань", 3), "done"] - 0.935) < 1e-9, "done не тот: нужна доля выполнения плана с округлением до трёх знаков"
     assert pf["done"].isna().sum() == 2, "у двух пар без плана доля выполнения должна остаться пропуском"
 
 
 def test_flat():
     "flat — плоская таблица: city и month в столбцах"
-    assert isinstance(flat, pd.DataFrame), f"flat — это {type(flat).__name__}, а нужна таблица: pf.reset_index()"
-    assert list(flat.columns) == ["city", "month", "plan", "fact", "gap", "done"], f"столбцы сейчас {list(flat.columns)}, а нужны city, month, plan, fact, gap, done: reset_index() без drop=True, после добавления gap и done"
+    assert isinstance(flat, pd.DataFrame), f"flat — это {type(flat).__name__}, а нужна таблица"
+    assert list(flat.columns) == ["city", "month", "plan", "fact", "gap", "done"], f"столбцы сейчас {list(flat.columns)}, а нужны city, month, plan, fact, gap, done: индекс нужно вернуть в столбцы после добавления gap и done"
     assert len(flat) == 63, "в flat должны быть все 63 пары"
 # ─── другое решение ───
 pf = pf.assign(gap=pf["fact"] - pf["plan"])
@@ -133,17 +133,17 @@ worst_month = ...
 # ─── проверка ───
 def test_by_month():
     "by_month — план, факт и выполнение по месяцам"
-    assert isinstance(by_month, pd.DataFrame), f"by_month — это {type(by_month).__name__}, а нужна таблица: flat.groupby(\"month\").agg(...)"
+    assert isinstance(by_month, pd.DataFrame), f"by_month — это {type(by_month).__name__}, а нужна таблица"
     assert list(by_month.columns) == ["plan", "fact", "done"], f"столбцы сейчас {list(by_month.columns)}, а нужны plan, fact, done"
-    assert len(by_month) == 12 and by_month.loc[1, "plan"] == 269000 and by_month.loc[1, "fact"] == 318940, "в by_month 12 месяцев; январь: план 269000, факт 318940"
-    assert abs(by_month.loc[1, "done"] - 1.186) < 1e-9, "done — fact / plan с округлением до трёх знаков: в январе 1.186"
+    assert len(by_month) == 12 and by_month.loc[1, "plan"] == 269000 and by_month.loc[1, "fact"] == 318940, "в by_month 12 месяцев, план и факт — суммы за месяц"
+    assert abs(by_month.loc[1, "done"] - 1.186) < 1e-9, "done не тот: нужна доля выполнения плана с округлением до трёх знаков"
 
 
 def test_answers():
     "months_ok — в скольких месяцах план выполнен, worst_month — худший месяц"
-    assert months_ok != 6, "months_ok = 6: похоже, вы считали по округлённой доле done >= 1 — в июле 183 950 / 184 000 = 0.9997 округлилось до 1.0. Сравнивайте сами суммы: by_month[\"fact\"] >= by_month[\"plan\"]"
-    assert months_ok == 5, f"months_ok = {months_ok!r}, а план выполнен в 5 месяцах: сумма маски by_month[\"fact\"] >= by_month[\"plan\"]"
-    assert worst_month == 10, f"worst_month = {worst_month!r}, а хуже всего план выполнен в октябре (10): by_month[\"done\"].idxmin()"
+    assert months_ok != 6, "months_ok = 6: похоже, вы считали по округлённой доле done >= 1 — в июле 183 950 / 184 000 = 0.9997 округлилось до 1.0. Сравнивайте сами суммы факта и плана"
+    assert months_ok == 5, f"months_ok = {months_ok!r} — это не число месяцев, где факт не меньше плана"
+    assert worst_month == 10, f"worst_month = {worst_month!r} — это не месяц с наименьшим выполнением плана"
 # ─── другое решение ───
 by_month = flat.pivot_table(values=["plan", "fact"], index="month", aggfunc="sum")[["plan", "fact"]]
 by_month["done"] = (by_month["fact"] / by_month["plan"]).round(3)
@@ -173,18 +173,18 @@ steadiest = ...
 # ─── проверка ───
 def test_ok():
     "ok — план месяца выполнен"
-    assert "ok" in flat.columns and flat["ok"].dtype == bool, "в flat нужен столбец-маска ok: flat[\"fact\"] >= flat[\"plan\"]"
+    assert "ok" in flat.columns and flat["ok"].dtype == bool, "в flat нужен столбец-маска ok"
     assert flat["ok"].sum() != 23, "сравнивать нужно сами суммы, а не округлённую долю done: 0.9997 округляется до 1.0, хотя план не выполнен"
-    assert flat["ok"].sum() == 22, "маска не та: пар, где факт не меньше плана, должно быть 22"
+    assert flat["ok"].sum() == 22, "маска не та: план выполнен, когда факт не меньше плана"
 
 
 def test_by_city():
     "by_city — план, факт, число выполненных месяцев и отклонение по городам"
     assert isinstance(by_city, pd.DataFrame), f"by_city — это {type(by_city).__name__}, а нужна таблица"
     assert list(by_city.columns) == ["plan", "fact", "months_ok", "gap"], f"столбцы сейчас {list(by_city.columns)}, а нужны plan, fact, months_ok, gap"
-    assert len(by_city) == 6 and by_city.loc["Москва", "months_ok"] == 7, "в by_city шесть городов; у Москвы план выполнен в 7 месяцах: months_ok=(\"ok\", \"sum\")"
-    assert by_city.loc["Сочи", "gap"] == -60000 and by_city.loc["Екатеринбург", "gap"] == 25350, "gap — факт минус план: Сочи — −60000, Екатеринбург — 25350"
-    assert steadiest == "Москва", f"steadiest = {steadiest!r}, а чаще всех план выполняла Москва: by_city[\"months_ok\"].idxmax()"
+    assert len(by_city) == 6 and by_city.loc["Москва", "months_ok"] == 7, "в by_city шесть городов; months_ok — число месяцев, где план выполнен"
+    assert by_city.loc["Сочи", "gap"] == -60000 and by_city.loc["Екатеринбург", "gap"] == 25350, "gap не тот: нужен факт минус план за год"
+    assert steadiest == "Москва", f"steadiest = {steadiest!r} — это не город, чаще всех выполнявший план"
 # ─── другое решение ───
 flat["ok"] = ~(flat["fact"] < flat["plan"]) & flat["plan"].notna()
 g = flat.groupby("city")
@@ -214,15 +214,15 @@ moscow_worst = ...
 # ─── проверка ───
 def test_heat():
     "heat — выполнение плана: города × месяцы"
-    assert isinstance(heat, pd.DataFrame), f"heat — это {type(heat).__name__}, а нужна таблица: flat.pivot_table(...)"
-    assert heat.shape == (6, 12), f"у heat размер {heat.shape}, а нужно 6 городов × 12 месяцев: index=\"city\", columns=\"month\""
+    assert isinstance(heat, pd.DataFrame), f"heat — это {type(heat).__name__}, а нужна таблица"
+    assert heat.shape == (6, 12), f"у heat размер {heat.shape}, а нужно 6 городов × 12 месяцев"
     assert "Москва" in heat.index and 12 in heat.columns, "в строках — города, в столбцах — месяцы"
-    assert heat.loc["Москва", 2] == 0.85 and heat.loc["Казань", 1] == 1.16, "в ячейках — done с округлением до двух знаков: Москва в феврале — 0.85"
+    assert heat.loc["Москва", 2] == 0.85 and heat.loc["Казань", 1] == 1.16, "в ячейках — done с округлением до двух знаков"
 
 
 def test_moscow():
     "moscow_worst — худший месяц Москвы"
-    assert moscow_worst == 2, f"moscow_worst = {moscow_worst!r}, а хуже всего Москва выполнила план в феврале (2): heat.loc[\"Москва\"].idxmin()"
+    assert moscow_worst == 2, f"moscow_worst = {moscow_worst!r} — это не худший месяц Москвы"
 # ─── другое решение ───
 heat = flat.pivot(index="city", columns="month", values="done").round(2)
 moscow_worst = flat[flat["city"] == "Москва"].sort_values("done").iloc[0]["month"]

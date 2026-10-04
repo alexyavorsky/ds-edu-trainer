@@ -35,7 +35,7 @@ cost_total = ...
 # ─── проверка ───
 def test_cost():
     "cost_num — себестоимость числами"
-    assert isinstance(cost_num, pd.Series), f"cost_num — это {type(cost_num).__name__}, а нужен Series: pd.to_numeric(supplier[\"cost\"], errors=\"coerce\")"
+    assert isinstance(cost_num, pd.Series), f"cost_num — это {type(cost_num).__name__}, а нужен Series"
     assert cost_num.dtype == float, f"тип cost_num — {cost_num.dtype}, а должен быть float64: текст в числа переводит pd.to_numeric"
     assert len(cost_num) == 20, f"в cost_num {len(cost_num)} значений, а товаров 20: строки удалять не нужно"
     assert cost_num[0] == 920, "значения не те: переводить нужно столбец cost"
@@ -43,10 +43,10 @@ def test_cost():
 
 def test_numbers():
     "n_bad и cost_total — сколько значений не распозналось и сумма остальных"
-    assert n_bad != 17, "17 — число распознанных значений, а нужны нераспознанные: cost_num.isna().sum()"
-    assert n_bad == 3, f"n_bad = {n_bad!r}, а нераспознанных значений 3: cost_num.isna().sum()"
+    assert n_bad != 17, "17 — число распознанных значений, а нужны нераспознанные"
+    assert n_bad == 3, f"n_bad = {n_bad!r} — это не число нераспознанных значений"
     assert not isinstance(cost_total, str), "cost_total — склеенная строка: сумму нужно считать по cost_num, а не по текстовому столбцу"
-    assert abs(cost_total - 9150) < 1e-6, f"cost_total = {cost_total!r}, а сумма распознанных значений — 9150"
+    assert abs(cost_total - 9150) < 1e-6, f"cost_total = {cost_total!r} — это не сумма распознанных значений"
 # ─── другое решение ───
 cost_num = pd.to_numeric(supplier["cost"].replace({"нет данных": None, "—": None}))
 n_bad = len(cost_num) - cost_num.count()
@@ -101,15 +101,15 @@ fives = ...
 def test_types():
     "rating и days — целые с пропусками"
     assert str(delivery["rating"].dtype) != "float64", "тип rating по-прежнему float64: результат astype нужно записать обратно в столбец"
-    assert str(delivery["rating"].dtype) == "Int64", f"тип rating — {delivery['rating'].dtype}, а нужен Int64 (с заглавной буквы, в кавычках)"
-    assert str(delivery["days"].dtype) == "Int64", f"тип days — {delivery['days'].dtype}, а нужен Int64"
+    assert str(delivery["rating"].dtype) == "Int64", f"тип rating — {delivery['rating'].dtype}, а нужен целый тип с пропусками"
+    assert str(delivery["days"].dtype) == "Int64", f"тип days — {delivery['days'].dtype}, а нужен целый тип с пропусками"
     assert delivery["rating"].isna().sum() == 287 and delivery["days"].isna().sum() == 36, "пропуски должны остаться пропусками: заполнять их не нужно"
     assert len(delivery) == 816, "строки удалять не нужно"
 
 
 def test_fives():
     "fives — сколько пятёрок"
-    assert fives == 102, f"fives = {fives!r}, а оценок «5» — 102: сумма маски delivery[\"rating\"] == 5"
+    assert fives == 102, f"fives = {fives!r} — это не число пятёрок"
 # ─── другое решение ───
 delivery = pd.read_csv("data/delivery_h1.csv")
 delivery = delivery.astype({"rating": "Int64", "days": "Int64"})
@@ -148,15 +148,15 @@ total_stock = ...
 def test_stock():
     "stock_int — остатки обычными целыми, пропуски — нули"
     assert isinstance(stock_int, pd.Series), f"stock_int — это {type(stock_int).__name__}, а нужен Series"
-    assert stock_int.isna().sum() == 0, "в stock_int остались пропуски: сначала fillna(0), потом astype(int)"
-    assert str(stock_int.dtype) != "float64", "тип stock_int — float64: после fillna(0) добавьте astype(int)"
-    assert str(stock_int.dtype) in ("int64", "int32"), f"тип stock_int — {stock_int.dtype}, а нужен обычный целый: astype(int)"
-    assert stock_int.tolist()[:4] == [120, 64, 0, 64], f"первые значения — {stock_int.tolist()[:4]}, а должны быть [120, 64, 0, 64]"
+    assert stock_int.isna().sum() == 0, "в stock_int остались пропуски: сначала заполните их нулями, потом меняйте тип"
+    assert str(stock_int.dtype) != "float64", "тип stock_int — float64, а нужен целый"
+    assert str(stock_int.dtype) in ("int64", "int32"), f"тип stock_int — {stock_int.dtype}, а нужен обычный целый"
+    assert stock_int.tolist()[:4] == [120, 64, 0, 64], f"первые значения — {stock_int.tolist()[:4]}: пропуски должны стать нулями, остальное — как в stock"
 
 
 def test_total():
     "total_stock — всего единиц на складе"
-    assert total_stock == 1253, f"total_stock = {total_stock!r}, а всего на складе 1253"
+    assert total_stock == 1253, f"total_stock = {total_stock!r} — это не сумма остатков"
 # ─── другое решение ───
 stock_int = supplier["stock"].astype("Int64").fillna(0).astype("int64")
 total_stock = int(supplier["stock"].sum())

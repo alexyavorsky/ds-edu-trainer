@@ -25,16 +25,16 @@ december = ...
 # ─── проверка ───
 def test_month():
     "month — номер месяца"
-    assert "month" in orders.columns, "в orders нет столбца month: orders[\"month\"] = orders[\"date\"].dt.month"
-    assert orders["month"].dtype != object and str(orders["month"].dtype) != "str", "в month должен быть номер месяца числом: .dt.month"
-    assert orders["month"].min() == 1 and orders["month"].max() == 12, "в month должны быть числа от 1 до 12: .dt.month, а не .dt.day"
-    assert (orders["month"] == 7).sum() == 127, "месяцы не те: номер месяца — orders[\"date\"].dt.month"
+    assert "month" in orders.columns, "в orders нет столбца month"
+    assert orders["month"].dtype != object and str(orders["month"].dtype) != "str", "в month должен быть номер месяца числом"
+    assert orders["month"].min() == 1 and orders["month"].max() == 12, "в month должны быть числа от 1 до 12"
+    assert (orders["month"] == 7).sum() == 127, "месяцы не те: нужен номер месяца из даты"
 
 
 def test_december():
     "december — строки декабря"
-    assert isinstance(december, pd.DataFrame), f"december — это {type(december).__name__}, а нужна таблица: orders[маска]"
-    assert len(december) == 329, f"в december {len(december)} строк, а декабрьских 329: orders[orders[\"month\"] == 12]"
+    assert isinstance(december, pd.DataFrame), f"december — это {type(december).__name__}, а нужна таблица"
+    assert len(december) == 329, f"в december {len(december)} строк — нужны все строки декабря"
 # ─── другое решение ───
 orders = orders.assign(month=orders["date"].dt.month)
 december = orders[orders["date"] >= "2025-12-01"]
@@ -63,14 +63,14 @@ weekend_share = ...
 def test_mask():
     "is_weekend — маска суббот и воскресений"
     assert isinstance(is_weekend, pd.Series) and is_weekend.dtype == bool, "is_weekend — маска: сравнение столбца weekday с числом"
-    assert is_weekend.sum() != 425, "в маске только воскресенья (6), а суббота — это 5: условие >= 5"
-    assert is_weekend.sum() != 758, "в маске пятница и суббота: дни считаются с нуля, суббота — 5, воскресенье — 6"
-    assert is_weekend.sum() == 812, f"в маске {is_weekend.sum()} строк, а покупок в выходные 812"
+    assert is_weekend.sum() != 425, "в маске только воскресенья (6), а суббота — это 5"
+    assert is_weekend.sum() != 758, "в маске пятница и суббота: дни считаются с нуля"
+    assert is_weekend.sum() == 812, f"в маске {is_weekend.sum()} строк — нужны субботы и воскресенья"
 
 
 def test_share():
     "weekend_share — доля покупок в выходные"
-    assert abs(weekend_share - 812 / 2448) < 1e-9, f"weekend_share = {weekend_share!r}, а доля ≈ 0.332: среднее маски"
+    assert abs(weekend_share - 812 / 2448) < 1e-9, f"weekend_share = {weekend_share!r} — это не доля покупок в выходные"
 # ─── другое решение ───
 is_weekend = orders["date"].dt.dayofweek.isin([5, 6])
 weekend_share = is_weekend.sum() / len(orders)
@@ -124,23 +124,23 @@ age_days = ...
 # ─── проверка ───
 def test_updated():
     "updated — даты обновления"
-    assert isinstance(updated, pd.Series), f"updated — это {type(updated).__name__}, а нужен Series дат: pd.to_datetime(supplier[\"updated\"], format=...)"
+    assert isinstance(updated, pd.Series), f"updated — это {type(updated).__name__}, а нужен Series дат"
     assert str(updated.dtype).startswith("datetime64"), f"тип updated — {updated.dtype}, а нужны даты: pd.to_datetime"
-    assert updated.dt.month.tolist() == [1] * 20, "все даты должны быть январскими: в файле день стоит первым — формат \"%d.%m.%Y\""
-    assert updated.dt.day.tolist()[:3] == [15, 13, 12], "дни не те: формат — \"%d.%m.%Y\""
+    assert updated.dt.month.tolist() == [1] * 20, "все даты должны быть январскими: в файле день стоит первым — задайте формат явно"
+    assert updated.dt.day.tolist()[:3] == [15, 13, 12], "дни не те: проверьте формат"
 
 
 def test_last():
     "last_update — самое позднее обновление"
-    assert last_update == pd.to_datetime("2026-01-16"), f"last_update = {last_update}, а самая поздняя дата — 16 января 2026: updated.max()"
+    assert last_update == pd.to_datetime("2026-01-16"), f"last_update = {last_update} — это не самая поздняя дата обновления"
 
 
 def test_age():
     "age_days — сколько дней прошло до 1 февраля 2026"
     assert isinstance(age_days, pd.Series), f"age_days — это {type(age_days).__name__}, а нужен Series"
-    assert not str(age_days.dtype).startswith("timedelta"), "в age_days разности дат, а нужны числа дней: добавьте .dt.days"
+    assert not str(age_days.dtype).startswith("timedelta"), "в age_days разности дат, а нужны числа дней"
     assert age_days.tolist()[:3] != [-17, -19, -20], "знак перепутан: из 1 февраля нужно вычесть дату обновления"
-    assert age_days.tolist()[:3] == [17, 19, 20], f"первые значения age_days — {age_days.tolist()[:3]}, а должны быть [17, 19, 20]"
+    assert age_days.tolist()[:3] == [17, 19, 20], f"первые значения age_days — {age_days.tolist()[:3]}"
 # ─── другое решение ───
 updated = pd.to_datetime(supplier["updated"], dayfirst=True)
 last_update = updated.sort_values().iloc[-1]
@@ -179,17 +179,17 @@ n_unparsed = ...
 # ─── проверка ───
 def test_parts():
     "dotted и slashed — даты двух других форматов"
-    assert isinstance(dotted, pd.Series) and str(dotted.dtype).startswith("datetime64"), "dotted — даты формата ДД.ММ.ГГГГ: pd.to_datetime(returns[\"return_date\"], format=\"%d.%m.%Y\", errors=\"coerce\")"
-    assert dotted.notna().sum() == 55, f"в dotted распознано {dotted.notna().sum()} дат, а с точками их 55: format=\"%d.%m.%Y\""
-    assert isinstance(slashed, pd.Series) and str(slashed.dtype).startswith("datetime64"), "slashed — даты формата ДД/ММ/ГГГГ: format=\"%d/%m/%Y\""
-    assert slashed.notna().sum() == 17, f"в slashed распознано {slashed.notna().sum()} дат, а с косой чертой их 17: format=\"%d/%m/%Y\""
+    assert isinstance(dotted, pd.Series) and str(dotted.dtype).startswith("datetime64"), "dotted — даты формата ДД.ММ.ГГГГ"
+    assert dotted.notna().sum() == 55, f"в dotted распознано {dotted.notna().sum()} дат: проверьте формат"
+    assert isinstance(slashed, pd.Series) and str(slashed.dtype).startswith("datetime64"), "slashed — даты формата ДД/ММ/ГГГГ"
+    assert slashed.notna().sum() == 17, f"в slashed распознано {slashed.notna().sum()} дат: проверьте формат"
 
 
 def test_date():
     "returns[\"date\"] — все даты, без пропусков"
     assert "date" in returns.columns, "в returns нет столбца date"
-    assert str(returns["date"].dtype).startswith("datetime64"), "в date должны быть даты: iso.fillna(dotted).fillna(slashed)"
-    assert returns["date"].isna().sum() == 0, f"в date осталось {returns['date'].isna().sum()} пропусков: соберите все три варианта — iso.fillna(dotted).fillna(slashed)"
+    assert str(returns["date"].dtype).startswith("datetime64"), "в date должны быть даты"
+    assert returns["date"].isna().sum() == 0, f"в date осталось {returns['date'].isna().sum()} пропусков: соберите все три варианта"
     assert returns["date"].max() == pd.to_datetime("2026-01-17"), "даты собраны неверно: самая поздняя должна быть 17 января 2026"
     assert n_unparsed == 0, f"n_unparsed = {n_unparsed!r}, а нераспознанных дат быть не должно"
 # ─── другое решение ───
