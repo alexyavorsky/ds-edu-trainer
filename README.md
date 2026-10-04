@@ -66,6 +66,12 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 | `npm run check` | типы TypeScript / Astro |
 | `npm run test:supabase` | миграция Supabase в PGlite (Postgres в WebAssembly): каждый пользователь видит и меняет только свои строки, аноним — ничего, слияние записей по времени |
 
+CI (`.github/workflows/tasks.yml`) на push в ветку проверяет только затронутое: изменили урок — курсы и браузеры
+только для этого урока, изменили только `docs/` — ничего, кроме плана; изменили общую часть (воркер, раннер,
+валидатор, зависимости) — всё зависимое. Push в main, ночной прогон и ручной запуск (Actions → Run workflow,
+`scope = full`) — всё: три ОС × Python 3.10–3.14, три браузера. Итог — задание `ci-ok`. Устройство —
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), раздел «CI».
+
 ## Деплой
 
 Vercel: импортировать репозиторий — Astro определяется автоматически. PDF книги в `.gitignore` и не публикуется.
