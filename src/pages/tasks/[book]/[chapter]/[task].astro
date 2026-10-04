@@ -1,16 +1,16 @@
 ---
 import { render } from 'astro:content';
-import Badge from '../../../components/Badge.astro';
-import Breadcrumbs from '../../../components/Breadcrumbs.astro';
-import BugReportLink from '../../../components/BugReportLink.astro';
-import CodeBlock from '../../../components/CodeBlock.astro';
-import ComplexityQuiz from '../../../components/ComplexityQuiz.astro';
-import Hints from '../../../components/Hints.astro';
-import PrevNext from '../../../components/PrevNext.astro';
-import SolutionReveal from '../../../components/SolutionReveal.astro';
-import SolvedToggle from '../../../components/SolvedToggle.astro';
-import TaskWorkbench from '../../../components/python/TaskWorkbench.astro';
-import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Badge from '../../../../components/Badge.astro';
+import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
+import BugReportLink from '../../../../components/BugReportLink.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import ComplexityQuiz from '../../../../components/ComplexityQuiz.astro';
+import Hints from '../../../../components/Hints.astro';
+import PrevNext from '../../../../components/PrevNext.astro';
+import SolutionReveal from '../../../../components/SolutionReveal.astro';
+import SolvedToggle from '../../../../components/SolvedToggle.astro';
+import TaskWorkbench from '../../../../components/python/TaskWorkbench.astro';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import {
   challengeUrl,
   chapterLabel,
@@ -21,8 +21,8 @@ import {
   type Book,
   type Challenge,
   type Chapter,
-} from '../../../lib/content';
-import { bugsLabel, DIFFICULTY_LABEL, TYPE_LABEL } from '../../../lib/labels';
+} from '../../../../lib/content';
+import { bugsLabel, DIFFICULTY_LABEL, TYPE_LABEL } from '../../../../lib/labels';
 
 export async function getStaticPaths() {
   const paths: { params: Record<string, string>; props: Record<string, unknown> }[] = [];
@@ -57,7 +57,7 @@ const isComplexity = c.type === 'complexity';
 <BaseLayout title={c.title} taskId={c.taskId}>
   <Breadcrumbs
     items={[
-      { label: book.data.title, href: `/${book.id}` },
+      { label: book.data.title, href: `/tasks/${book.id}` },
       { label: `${chapterLabel(chapter, book.data.kind)}. ${chapter.data.title}`, href: chapterUrl(chapter) },
       { label: c.title },
     ]}

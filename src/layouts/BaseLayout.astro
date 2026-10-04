@@ -13,8 +13,8 @@ interface Props {
   lessonId?: string;
   wide?: boolean; // шире обычного контейнера — для статей справочника с боковыми колонками
 }
-const { title, description = 'Задачи по книгам и темам для быстрого повторения.', taskId, articleId, lessonId, wide = false } = Astro.props;
-const fullTitle = title ? `${title} — Тренажёр` : 'Тренажёр задач по книгам';
+const { title, description = 'Курсы с нуля, задачи для практики и справочник для повторения: Python выполняется прямо в браузере.', taskId, articleId, lessonId, wide = false } = Astro.props;
+const fullTitle = title ? `${title} — Тренажёр` : 'Тренажёр — курсы, задачи и справочник';
 ---
 
 <!doctype html>

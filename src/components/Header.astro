@@ -12,6 +12,7 @@ const { taskId, articleId, lessonId } = Astro.props;
 const path = Astro.url.pathname;
 const inReference = path.startsWith('/reference');
 const inCourses = path.startsWith('/courses');
+const inTasks = path.startsWith('/tasks');
 ---
 
 <header class="header">
@@ -23,7 +24,7 @@ const inCourses = path.startsWith('/courses');
       <span class="logo-text">Тренажёр</span>
     </a>
     <nav class="nav" aria-label="Разделы">
-      <a href="/" class:list={['nav-link', !inReference && !inCourses && 'is-active']}>Задачи</a>
+      <a href="/tasks" class:list={['nav-link', inTasks && 'is-active']}>Задачи</a>
       <a href="/courses" class:list={['nav-link', inCourses && 'is-active']}>Курсы</a>
       <a href="/reference" class:list={['nav-link', inReference && 'is-active']}>
         Справочник

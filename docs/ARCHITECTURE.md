@@ -160,8 +160,26 @@ src/
   components/              Header, Footer, BugReportLink, Badge, Breadcrumbs, ProgressBar, ChapterCard,
                            ChallengeList (фильтры + поиск), CodeBlock (Shiki + копирование), Hints,
                            SolutionReveal, SolvedToggle, ComplexityQuiz, PrevNext, reference/*
-  pages/                   /  ·  /[book]  ·  /[book]/[chapter]  ·  /[book]/[chapter]/[task]  ·  /reference/…
+  pages/                   /  ·  /tasks  ·  /tasks/[book]  ·  /tasks/[book]/[chapter]  ·  /tasks/[book]/[chapter]/[task]  ·
+                           /courses/…  ·  /reference/…
 ```
+
+- Главная (`pages/index.astro`) — что это за сайт и откуда начать. Числа (уроки, упражнения, статьи, примеры, задачи)
+  считаются из контента при сборке; фрагмент урока — настоящие ячейки `np-first-array` с сохранённым выводом
+  (`SAMPLE` в начале файла; урока или ячейки нет — сборка останавливается с понятной ошибкой). Клиентского JS у
+  главной нет.
+- Задачи раньше жили в корне (`/<книга>/<глава>/<задача>`). Старые адреса перенаправляются двумя способами.
+  На Vercel — сервером: 301 до поиска файлов, `#якорь` браузер сохраняет. На каждый раздел (папка
+  `challenges/<раздел>/` с `book.toml`) — правило `/<раздел>/… → /tasks/<раздел>/…`; список разделов собирается при
+  сборке, поэтому правки для новой книги не нужны. `vercel.json` Vercel читает до сборки, поэтому на Vercel
+  (переменная `VERCEL`) интеграция `vercelTaskRedirects` в `astro.config.mjs` выкладывает сайт через Build Output
+  API: `dist/` → `.vercel/output/static`, правила → `.vercel/output/config.json` (посмотреть локально:
+  `VERCEL=1 npm run build`). Запасной вариант для другого хостинга, `astro dev` и `astro preview` — `redirects` в
+  `astro.config.mjs`: страницы с `<meta http-equiv="refresh">` (якорь они не переносят); на Vercel их закрывают
+  правила 301. Если имя раздела совпадёт с папкой или страницей в `src/pages` или `public` (`tasks`, `courses`…),
+  сборка остановится. Прогресс и код хранятся по id задачи, а не по адресу, поэтому переезд их не затрагивает.
+- Переход по `#якорю` не прячет заголовок под закреплённой шапкой: `scroll-padding-top` у `html` (global.css,
+  `--anchor-offset`, 72 px); урок курса, где под шапкой закреплена ещё полоса Python, задаёт 116 px.
 
 - Подсветка Shiki — при сборке, без клиентского JS; интерактив — небольшие скрипты на TS без фреймворка.
 - «Решено» и прогресс — localStorage (`edu:solved:v2` = `{id: {v, t}}`; старый `edu:solved:v1` читается) по id;

@@ -50,6 +50,9 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* переход по #якорю и scrollIntoView не прячут цель под закреплённой шапкой (56 px + граница) и оставляют зазор;
+     страница с ещё одной закреплённой полосой (урок курса) задаёт --anchor-offset побольше */
+  scroll-padding-top: var(--anchor-offset, 72px);
 }
 
 body {

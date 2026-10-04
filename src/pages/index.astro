@@ -1,142 +1,486 @@
 ---
-import Icon from '../components/Icon.astro';
-import ProgressBar from '../components/ProgressBar.astro';
+/**
+ * Главная: что это за сайт, как связаны курсы, задачи и справочник, откуда начать.
+ * Все числа считаются из контента при сборке; фрагмент урока — настоящие ячейки и сохранённый вывод.
+ * Клиентского JavaScript у страницы нет (кроме общего для всех страниц в шапке).
+ */
+import { getCollection } from 'astro:content';
+import { Code } from 'astro:components';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getBooks, getChallenges, getChapters } from '../lib/content';
-import { tasksLabel } from '../lib/labels';
+import { getBooks, getChallenges } from '../lib/content';
+import { courseLessons, lessonUrl } from '../lib/courses/load';
+import { cellOf, getCourses, storedOutput } from '../lib/courses/site';
+import { lessonsLabel, pluralRu, tasksLabel } from '../lib/labels';
+import { getExamples } from '../lib/reference';
+import { ACCOUNTS_ENABLED } from '../scripts/sync/config';
 
-const all = await Promise.all(
-  (await getBooks()).map(async (book) => ({
-    book,
-    chapters: await getChapters(book.id),
-    challenges: await getChallenges(book.id),
-  })),
-);
-const books = all.filter((b) => b.book.data.kind === 'book');
+const count = (n: number, one: string, few: string, many: string) => `${n} ${pluralRu(n, one, few, many)}`;
+const names = (list: string[]) => (list.length < 2 ? list.join('') : `${list.slice(0, -1).join(', ')} и ${list.at(-1)}`);
+
+// Курсы
+const courses = getCourses();
+const lessons = courses.flatMap((c) => courseLessons(c));
+const exercises = lessons.reduce((n, l) => n + l.cells.filter((c) => c.kind === 'exercise').length, 0);
+const courseNames = courses.map((c) => c.meta.title);
+const firstCourse = courses[0];
+const firstLesson = courseLessons(firstCourse)[0];
+
+// Справочник: примеры — все ячейки статей, кроме общей подготовки данных (setup)
+const articles = await getCollection('reference');
+const examples = articles.reduce((n, a) => n + [...getExamples(a.id).keys()].filter((id) => id !== 'setup').length, 0);
+const topics = await getCollection('topics');
+
+// Задачи
+const sections = await Promise.all((await getBooks()).map(async (book) => ({ book, tasks: (await getChallenges(book.id)).length })));
+const withTasks = sections.filter((s) => s.tasks > 0);
+const comingSoon = sections.filter((s) => s.tasks === 0).map((s) => s.book.data.title);
+const tasks = withTasks.reduce((n, s) => n + s.tasks, 0);
+const tasksNow = withTasks
+  .map((s) => `${tasksLabel(s.tasks)} по ${s.book.data.kind === 'book' ? `книге «${s.book.data.title}»` : `теме ${s.book.data.title}`}`)
+  .join(', ');
+
+// Настоящий фрагмент урока: две ячейки с сохранённым выводом и упражнение без решения
+const SAMPLE = { lesson: 'np-first-array', demos: ['first', 'discount'], exercise: 'temps' };
+const sampleLesson = lessons.find((l) => l.meta.id === SAMPLE.lesson);
+if (!sampleLesson) throw new Error(`Главная: нет урока ${SAMPLE.lesson} для фрагмента — поменяйте SAMPLE в src/pages/index.astro`);
+const sampleCourse = courses.find((c) => c.slug === sampleLesson.course)!;
+const demos = SAMPLE.demos.map((id) => {
+  const cell = cellOf(sampleLesson, id);
+  const out = storedOutput(sampleLesson, id);
+  if (cell.kind !== 'demo' || !out) throw new Error(`Главная: в уроке ${SAMPLE.lesson} нет ячейки ${id} с сохранённым выводом`);
+  return { code: cell.code, output: [...out.lines, ...(out.result ?? [])].join('\n') };
+});
+const exerciseCell = cellOf(sampleLesson, SAMPLE.exercise);
+const exerciseBlock = sampleLesson.blocks.find((b) => b.type === 'exercise' && b.id === SAMPLE.exercise);
+if (exerciseCell.kind !== 'exercise' || exerciseBlock?.type !== 'exercise') {
+  throw new Error(`Главная: в уроке ${SAMPLE.lesson} нет упражнения ${SAMPLE.exercise}`);
+}
+const checks = [...exerciseCell.tests.matchAll(/^def test_\w+\(\):\s*\n\s+"([^"]+)"/gm)].map((m) => m[1]);
+const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const prompt = escape(exerciseBlock.prompt.split(/\n\s*\n|<Hint/)[0].trim()).replace(/`([^`]+)`/g, '<code>$1</code>');
+const sampleArticles = sampleLesson.meta.reference.map((id) => articles.find((a) => a.id === id)).filter((a) => a !== undefined);
+const generated = sampleLesson.output?.generated;
 ---
 
-<BaseLayout>
+<BaseLayout
+  description={`Курсы ${names(courseNames)} с нуля, задачи для практики и справочник для повторения. Код выполняется прямо в браузере, всё бесплатно.`}
+>
   <section class="hero">
-    <p class="eyebrow">Личный тренажёр</p>
-    <h1>Задачи по книгам и темам</h1>
+    <h1>Выучить, закрепить руками и&nbsp;не&nbsp;забыть через месяц</h1>
     <p class="lead">
-      Выберите книгу и главу, скопируйте задачу в редактор и запустите — тесты сразу покажут результат. Прогресс сохраняется в этом
-      браузере.
+      Прочитать книгу или пройти курс — полдела. Через пару недель без практики всё выветривается, а когда тема снова нужна, не
+      вспомнить даже, как называлась функция. Этот сайт я собрал, чтобы закрыть весь круг: разобраться в теме с нуля, отработать её
+      на задачах и потом за минуту освежить в памяти.
+    </p>
+    <div class="actions">
+      <a class="btn btn-primary" href="/courses">Начать с курса</a>
+      <a class="btn" href="/tasks">Решать задачи</a>
+      <a class="btn btn-ghost" href="/reference">Открыть справочник</a>
+    </div>
+    <p class="facts">
+      {
+        `Сейчас здесь ${count(courses.length, 'курс', 'курса', 'курсов')} — ${lessonsLabel(lessons.length)}, ` +
+          `${count(articles.length, 'статья', 'статьи', 'статей')} справочника с ${count(examples, 'примером', 'примерами', 'примерами')} ` +
+          `и ${tasksLabel(tasks)}.`
+      }
     </p>
   </section>
 
-  <section>
-    <h2 class="section-title">Книги</h2>
-    <div class="grid">
-      {
-        books.map(({ book, chapters, challenges }) => (
-          <a href={`/${book.id}`} class="book card">
-            <span class="cover" aria-hidden="true">
-              <Icon name="book" size={20} />
-            </span>
-            <div class="info">
-              <h3>{book.data.title}</h3>
-              <p class="muted">
-                {book.data.author}
-                {book.data.edition && ` · ${book.data.edition}`}
-              </p>
-              {book.data.description && <p class="desc">{book.data.description}</p>}
-              <p class="stats">
-                {chapters.length} глав · {tasksLabel(challenges.length)}
-              </p>
-              <ProgressBar ids={challenges.map((c) => c.data.taskId)} />
-            </div>
-          </a>
-        ))
-      }
-    </div>
+  <section class="block">
+    <h2 class="section-title">Как это устроено</h2>
+    <ol class="parts">
+      <li>
+        <span class="num" aria-hidden="true">1</span>
+        <div>
+          <h3><a href="/courses">Курсы</a> — научиться</h3>
+          <p>
+            Тема разбирается по шагам: одно новое понятие, короткое объяснение, код, который можно сразу выполнить и поменять, и
+            упражнение с проверкой.
+            {` Сейчас это ${names(courseNames)}: ${lessonsLabel(lessons.length)} и ${count(exercises, 'упражнение', 'упражнения', 'упражнений')}.`}
+          </p>
+        </div>
+      </li>
+      <li>
+        <span class="num" aria-hidden="true">2</span>
+        <div>
+          <h3><a href="/tasks">Задачи</a> — закрепить</h3>
+          <p>
+            Понять объяснение и написать код самому — разные вещи. Задачи бывают четырёх видов: реализовать функцию, найти ошибку,
+            дописать код и оценить сложность. Тесты сразу показывают, что не так.
+            {` Сейчас — ${tasksNow}${comingSoon.length > 0 ? `; задачи по ${names(comingSoon)} готовятся` : ''}.`}
+          </p>
+        </div>
+      </li>
+      <li>
+        <span class="num" aria-hidden="true">3</span>
+        <div>
+          <h3><a href="/reference">Справочник</a> — вспомнить</h3>
+          <p>
+            Через полгода снова понадобился <code>merge</code> или транслирование — проходить курс заново незачем. Статья справочника
+            напомнит синтаксис, покажет пример с настоящим выводом и предупредит о подводных камнях.
+            {` Сейчас — ${names(topics.map((t) => `${t.data.title} ${t.data.version}`))}.`}
+          </p>
+        </div>
+      </li>
+    </ol>
+    <p class="note">
+      Части связаны: урок ссылается на статьи справочника по своей теме, а разделы задач по NumPy и pandas повторяют разделы
+      справочника. Прошли урок — закрепили задачами — а дальше справочник под рукой.
+    </p>
   </section>
 
   <section class="block">
-    <h2 class="section-title">Темы</h2>
-    <div class="grid">
-      <a href="/reference" class="book card">
-        <span class="cover" aria-hidden="true">
-          <Icon name="search" size={20} />
-        </span>
-        <div class="info">
-          <h3>Справочник</h3>
-          <p class="desc">NumPy и pandas: синтаксис, примеры с настоящим выводом и подводные камни — без задач, чтобы быстро освежить память.</p>
+    <h2 class="section-title">Так выглядит урок</h2>
+    <figure class="sample">
+      <figcaption class="sample-head">
+        <span>Курс {sampleCourse.meta.title} · <a href={lessonUrl(sampleLesson)}>«{sampleLesson.meta.title}»</a></span>
+        <span class="muted">{sampleLesson.meta.minutes} мин</span>
+      </figcaption>
+      {
+        demos.map((d) => (
+          <div class="cell">
+            <div class="code">
+              <Code code={d.code} lang="python" theme="vitesse-dark" />
+            </div>
+            <pre class="out">{d.output}</pre>
+          </div>
+        ))
+      }
+      <div class="cell">
+        <p class="ex-title">Упражнение · {exerciseBlock.title}</p>
+        <p class="ex-prompt" set:html={prompt} />
+        <div class="code">
+          <Code code={exerciseCell.starter} lang="python" theme="vitesse-dark" />
         </div>
-      </a>
+        <ul class="checks" aria-label="Проверка после верного решения">
+          {checks.map((c) => <li>{c}</li>)}
+        </ul>
+      </div>
+    </figure>
+    <p class="sample-note">
+      {`Это настоящие ячейки урока. Вывод под кодом не набран руками: его записал скрипт, выполнив код${generated ? ` (${generated})` : ''}. `}
+      На странице урока каждую ячейку можно выполнить и поменять.{' '}
+      {
+        sampleArticles.length > 0 && (
+          <>
+            По теме урока в справочнике —{' '}
+            {sampleArticles.map((a, i) => (
+              <>
+                {i > 0 && (i === sampleArticles.length - 1 ? ' и ' : ', ')}
+                <a href={`/reference/${a.id}`}>«{a.data.title}»</a>
+              </>
+            ))}
+            .
+          </>
+        )
+      }
+    </p>
+  </section>
+
+  <section class="block">
+    <h2 class="section-title">Чем здесь иначе</h2>
+    <dl class="traits">
+      <div>
+        <dt>Ничего не нужно устанавливать</dt>
+        <dd>
+          Python работает прямо в браузере: это Pyodide, обычный CPython, собранный в WebAssembly. Открыли задачу или урок — можно
+          писать код и запускать.
+        </dd>
+      </div>
+      <div>
+        <dt>Можно решать в своём редакторе</dt>
+        <dd>
+          Задача копируется одним файлом: условие, заготовка и тесты. Его запускают как обычный скрипт на Python 3.10 и новее. Урок курса
+          скачивается ноутбуком .ipynb для Jupyter или Colab.
+        </dd>
+      </div>
+      <div>
+        <dt>Бесплатно и без регистрации</dt>
+        <dd>
+          Отметки «Решено», прогресс курсов и ваш код хранятся в браузере.
+          {ACCOUNTS_ENABLED && ' Вход по логину — по желанию и только для того, чтобы всё это было на всех ваших устройствах; почта не нужна.'}
+        </dd>
+      </div>
+      <div>
+        <dt>Каждый пример проверен запуском</dt>
+        <dd>
+          Вывод в справочнике и уроках записывает скрипт, а не человек. Когда что-то меняется, CI заново выполняет затронутые примеры,
+          эталонные решения и упражнения — в обычном Python и в браузерном, а задачи и уроки ещё и в Chromium, Firefox и WebKit — и
+          проверяет, что заготовки тесты не проходят, а типичные ошибки ловятся.
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="block">
+    <h2 class="section-title">С чего начать</h2>
+    <div class="paths">
+      <div>
+        <h3>Если вы только начинаете</h3>
+        <p>
+          Нужен только базовый Python. Откройте первый урок курса {firstCourse.meta.title} —{' '}
+          <a href={lessonUrl(firstLesson)}>«{firstLesson.meta.title}»</a>: это самопроверка, она подскажет, что повторить. Дальше курс
+          ведёт по порядку, по одному понятию за раз.
+        </p>
+        <a class="more" href={lessonUrl(firstLesson)}>Первый урок →</a>
+      </div>
+      <div>
+        <h3>Если уже что-то знаете</h3>
+        <p>
+          Начните с задач: решайте по главам, и тесты быстро покажут, где пробелы. Закрыть пробел поможет урок курса, а справочник — когда
+          нужно вспомнить одну конкретную вещь: поиск понимает и русские слова, и имена функций.
+        </p>
+        <a class="more" href="/tasks">К задачам →</a>
+      </div>
     </div>
   </section>
 </BaseLayout>
 
 <style>
   .hero {
-    max-width: 640px;
-    margin-bottom: 48px;
+    max-width: 720px;
   }
   .hero h1 {
-    margin-top: 10px;
-    font-size: clamp(30px, 6vw, 42px);
+    font-size: clamp(30px, 6.4vw, 46px);
     letter-spacing: -0.035em;
+    line-height: 1.12;
+    text-wrap: balance;
   }
   .lead {
-    margin: 14px 0 0;
-    color: var(--muted);
-    font-size: 16px;
+    margin: 18px 0 0;
+    font-size: 17px;
+    color: var(--text-2);
+    text-wrap: pretty;
   }
-  .block {
-    margin-top: 40px;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
-    gap: 12px;
-  }
-  .book {
+  .actions {
     display: flex;
-    gap: 16px;
-    padding: 20px;
-    min-width: 0;
-    transition:
-      border-color 0.15s,
-      background 0.15s;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 26px;
   }
-  .book:hover {
-    border-color: var(--border-strong);
-    background: var(--surface-2);
+  .actions .btn {
+    height: 38px;
+    padding: 0 16px;
+    font-size: 14px;
   }
-  .cover {
+  .btn-primary {
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
+  }
+  .btn-primary:hover {
+    background: #fff;
+    border-color: #fff;
+  }
+  .facts {
+    margin: 20px 0 0;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  .block {
+    margin-top: 72px;
+  }
+  .section-title {
+    margin-bottom: 18px;
+  }
+
+  .parts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border);
+  }
+  .parts li {
     display: grid;
-    place-items: center;
-    flex: none;
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    border: 1px solid var(--border-strong);
-    background: linear-gradient(180deg, #202229, #15161a);
+    grid-template-columns: 40px 1fr;
+    gap: 8px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .num {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--faint);
+    padding-top: 3px;
+  }
+  .parts h3 {
+    font-size: 17px;
+  }
+  .parts h3 a:hover {
     color: var(--accent-strong);
   }
-  .info {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    flex: 1;
-    min-width: 0;
-  }
-  .info h3 {
-    font-size: 17px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .info p {
-    margin: 0;
-    font-size: 13.5px;
-  }
-  .desc {
+  .parts p {
+    margin: 6px 0 0;
+    max-width: 680px;
     color: var(--text-2);
   }
-  .stats {
+  .note {
+    margin: 20px 0 0;
+    max-width: 680px;
     color: var(--muted);
-    margin-top: 4px !important;
+  }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    padding: 1px 5px;
+    border-radius: var(--radius-xs);
+    background: var(--surface-3);
+  }
+
+  .sample {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .sample-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-2);
+  }
+  .sample-head a {
+    color: var(--text);
+  }
+  .sample-head a:hover {
+    color: var(--accent-strong);
+  }
+  .cell {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    min-width: 0;
+  }
+  .cell:last-child {
+    border-bottom: 0;
+  }
+  .code {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    overflow: hidden;
+  }
+  .code :global(pre) {
+    margin: 0;
+    padding: 12px 14px;
+    overflow-x: auto;
+    background: transparent !important;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .out {
+    margin: 8px 0 0;
+    padding: 0 14px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .ex-title {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent-strong);
+  }
+  .ex-prompt {
+    margin: 4px 0 12px;
+    color: var(--text-2);
+  }
+  .checks {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0 14px;
+    font-size: 13.5px;
+    color: var(--text-2);
+  }
+  .checks li::before {
+    content: '✓';
+    display: inline-block;
+    width: 20px;
+    color: var(--easy);
+  }
+  .sample-note {
+    margin: 14px 0 0;
+    max-width: 680px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .sample-note a,
+  .paths p a {
+    color: var(--text-2);
+    text-decoration: underline;
+    text-decoration-color: var(--border-strong);
+    text-underline-offset: 3px;
+  }
+  .sample-note a:hover,
+  .paths p a:hover {
+    color: var(--text);
+  }
+
+  .traits {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    gap: 0 40px;
+    margin: 0;
+    border-top: 1px solid var(--border);
+  }
+  .traits div {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .traits dt {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .traits dd {
+    margin: 6px 0 0;
+    color: var(--text-2);
+  }
+
+  .paths {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    gap: 32px 40px;
+  }
+  .paths h3 {
+    font-size: 17px;
+  }
+  .paths p {
+    margin: 8px 0 0;
+    color: var(--text-2);
+  }
+  .more {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent-strong);
+  }
+  .more:hover {
+    color: var(--text);
+  }
+
+  @media (max-width: 480px) {
+    .cell {
+      padding: 12px;
+    }
+    .code :global(pre),
+    .out {
+      font-size: 12.5px;
+    }
+    .code :global(pre) {
+      padding: 10px 12px;
+    }
+    .out,
+    .checks {
+      padding: 0 12px;
+    }
   }
 </style>

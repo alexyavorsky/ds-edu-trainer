@@ -1,12 +1,12 @@
 ---
-import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import ChallengeList from '../../components/ChallengeList.astro';
-import ChapterCard from '../../components/ChapterCard.astro';
-import ProgressBar from '../../components/ProgressBar.astro';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import ChallengeList from '../../../components/ChallengeList.astro';
+import ChapterCard from '../../../components/ChapterCard.astro';
+import ProgressBar from '../../../components/ProgressBar.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getEntry } from 'astro:content';
-import { getBooks, getChallenges, getChapters, type Book } from '../../lib/content';
-import { tasksLabel } from '../../lib/labels';
+import { getBooks, getChallenges, getChapters, type Book } from '../../../lib/content';
+import { tasksLabel } from '../../../lib/labels';
 
 export async function getStaticPaths() {
   return (await getBooks()).map((book) => ({ params: { book: book.id }, props: { book } }));
@@ -22,7 +22,7 @@ const referenceTopic = book.data.reference ? await getEntry('topics', book.data.
 ---
 
 <BaseLayout title={book.data.title} description={book.data.description}>
-  <Breadcrumbs items={[{ label: 'Задачи', href: '/' }, { label: book.data.title }]} />
+  <Breadcrumbs items={[{ label: 'Задачи', href: '/tasks' }, { label: book.data.title }]} />
 
   <header class="head">
     <div>

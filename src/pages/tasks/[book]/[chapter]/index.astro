@@ -1,10 +1,10 @@
 ---
-import Breadcrumbs from '../../../components/Breadcrumbs.astro';
-import ChallengeList from '../../../components/ChallengeList.astro';
-import PrevNext from '../../../components/PrevNext.astro';
-import ProgressBar from '../../../components/ProgressBar.astro';
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { chapterLabel, chapterUrl, getBooks, getChallenges, getChapters, type Book, type Chapter } from '../../../lib/content';
+import Breadcrumbs from '../../../../components/Breadcrumbs.astro';
+import ChallengeList from '../../../../components/ChallengeList.astro';
+import PrevNext from '../../../../components/PrevNext.astro';
+import ProgressBar from '../../../../components/ProgressBar.astro';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import { chapterLabel, chapterUrl, getBooks, getChallenges, getChapters, type Book, type Chapter } from '../../../../lib/content';
 
 export async function getStaticPaths() {
   const paths: { params: Record<string, string>; props: Record<string, unknown> }[] = [];
@@ -26,7 +26,7 @@ const link = (c?: Chapter) => c && { href: chapterUrl(c), label: `${chapterLabel
 ---
 
 <BaseLayout title={`${chapter.data.title} — ${book.data.title}`} description={chapter.data.summary}>
-  <Breadcrumbs items={[{ label: 'Задачи', href: '/' }, { label: book.data.title, href: `/${book.id}` }, { label: chapterLabel(chapter, book.data.kind) }]} />
+  <Breadcrumbs items={[{ label: 'Задачи', href: '/tasks' }, { label: book.data.title, href: `/tasks/${book.id}` }, { label: chapterLabel(chapter, book.data.kind) }]} />
 
   <header class="head">
     <p class="eyebrow">{chapterLabel(chapter, book.data.kind)}</p>
