@@ -13,7 +13,6 @@ const all = await Promise.all(
   })),
 );
 const books = all.filter((b) => b.book.data.kind === 'book');
-const topics = all.filter((b) => b.book.data.kind === 'topic');
 ---
 
 <BaseLayout>
@@ -139,16 +138,5 @@ const topics = all.filter((b) => b.book.data.kind === 'topic');
   .stats {
     color: var(--muted);
     margin-top: 4px !important;
-  }
-  .soon-card .cover {
-    color: var(--muted);
-  }
-  .pill {
-    font-size: 11px;
-    font-weight: 500;
-    padding: 2px 7px;
-    border-radius: 99px;
-    color: var(--accent-strong);
-    background: var(--accent-soft);
   }
 </style>

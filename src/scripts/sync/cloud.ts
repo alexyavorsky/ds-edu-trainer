@@ -269,7 +269,3 @@ function failure(error: unknown): SyncState {
   console.warn('Синхронизация не удалась:', error);
   return 'error';
 }
-
-export function currentLogin(): string | null {
-  return readAccount()?.login ?? null;
-}
