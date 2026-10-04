@@ -21,3 +21,4 @@ bundles/
 # ключи Supabase для локальной сборки (README, «Аккаунты и Supabase»)
 .env
 .env.*
+browser-logs/
