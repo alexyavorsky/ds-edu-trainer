@@ -564,6 +564,13 @@ async function main(argv: string[]): Promise<number> {
     close();
   }
   const failed = reports.some((r) => r.problems.length);
+  // Повторы этой части — для итога прогона: задание ci-ok складывает их по всем частям и сравнивает с порогом
+  // (известный сбой JavaScriptCore даёт в среднем ~0,4 повтора WebKit на полный прогон, docs/ARCHITECTURE.md, «CI»)
+  mkdirSync(LOG_DIR, { recursive: true });
+  writeFileSync(
+    join(LOG_DIR, `retries-${chosen.join('-')}-${shard}of${shards}.json`),
+    `${JSON.stringify(reports.map((r) => ({ browser: r.name, shard: `${shard}/${shards}`, retries: [...r.retries, ...r.restarts] })), null, 2)}\n`,
+  );
   console.log(`\nЗеркало Pyodide: отдано файлов ${network.served}, скачано с jsDelivr ${network.downloaded}, повторов скачивания ${network.retries.length}`);
   if (process.env.GITHUB_STEP_SUMMARY) {
     const row = (r: BrowserReport) =>

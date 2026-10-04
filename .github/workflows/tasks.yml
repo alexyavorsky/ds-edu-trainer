@@ -265,6 +265,37 @@ jobs:
     needs: [plan, validate, run-bundles, reference, pyodide, courses, browsers, site]
     runs-on: ubuntu-latest
     steps:
+      # Повторы браузеров по всем частям. Известный сбой JavaScriptCore (docs/ARCHITECTURE.md, «CI») даёт в среднем
+      # ~0,4 повтора WebKit на полный прогон; больше 2 или любой повтор Chromium/Firefox — похоже на новую проблему,
+      # которую повтор может скрывать. Прогон не валится, но предупреждение видно на странице прогона.
+      - uses: actions/download-artifact@v4
+        if: needs.browsers.result != 'skipped'
+        continue-on-error: true
+        with:
+          pattern: browser-logs-*
+          path: browser-logs
+      - name: Повторы в браузерах (порог — 2 повтора WebKit за прогон)
+        if: needs.browsers.result != 'skipped'
+        run: |
+          files=$(find browser-logs -name 'retries-*.json' 2>/dev/null)
+          [ -n "$files" ] || { echo "отчётов о повторах нет"; exit 0; }
+          jq -s 'add' $files > retries.json
+          webkit=$(jq '[.[] | select(.browser == "webkit") | .retries | length] | add // 0' retries.json)
+          other=$(jq '[.[] | select(.browser != "webkit") | .retries | length] | add // 0' retries.json)
+          echo "Повторов: WebKit $webkit, Chromium и Firefox $other"
+          {
+            echo "### Повторы в браузерах"
+            echo
+            echo "WebKit: $webkit (ожидаемо 0–2: известный сбой JavaScriptCore), Chromium и Firefox: $other (ожидаемо 0)"
+            echo
+            jq -r '.[] | .browser as $b | .shard as $s | .retries[] | "- \($b) \($s): \(.)"' retries.json
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$webkit" -gt 2 ]; then
+            echo "::warning title=Повторов WebKit больше обычного::$webkit повтора(ов) за прогон при пороге 2 — вероятно, новая проблема, которую скрывает повтор. Разберите журналы browser-logs-* (docs/ARCHITECTURE.md, «CI»)"
+          fi
+          if [ "$other" -gt 0 ]; then
+            echo "::warning title=Повторы в Chromium или Firefox::$other повтора(ов) — для известного сбоя WebKit их быть не должно. Разберите журналы browser-logs-*"
+          fi
       - name: Все нужные задания прошли или пропущены
         env:
           NEEDS: ${{ toJSON(needs) }}
