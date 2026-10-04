@@ -267,9 +267,17 @@ async function main(argv: string[]): Promise<number> {
 
   if (only !== 'tasks') {
     const articles = loadArticles().filter((a) => matches(a.id, a.id.split('/')[0]));
-    const jobs = articles.flatMap((a) => a.cells.map((c) => exampleJob(a, c)));
+    // Статья — в своём Python, как страница статьи на сайте со своим воркером: пример не видит состояния, которое
+    // оставили примеры других статей (например, загруженный pyarrow меняет поведение pandas в других статьях).
+    // Иначе результат зависел бы от того, какие примеры достались тому же воркеру пула.
+    const jobs = articles.map((a) => () => async (py: NodePython) => {
+      py.stop(); // следующий запуск создаст новый воркер
+      const out: ExampleReport[] = [];
+      for (const c of a.cells) out.push(await exampleJob(a, c)()(py));
+      return out;
+    });
     const started = performance.now();
-    const reports = await pool(jobs, size);
+    const reports = (await pool(jobs, size)).flat();
     const stored = existsSync(STATUS_PATH) ? (JSON.parse(read(STATUS_PATH)) as { examples: Record<string, ExampleStatus> }) : { examples: {} };
     const fresh: Record<string, ExampleStatus> = {};
     for (const r of reports) if (r.status !== 'same') fresh[r.id] = { status: r.status, ...(r.reason ? { reason: r.reason } : {}) };
