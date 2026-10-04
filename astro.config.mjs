@@ -52,12 +52,15 @@ function noSupabaseSecrets() {
 
 /**
  * Задачи жили в корне сайта (/<книга>/<глава>/<задача>), теперь — в /tasks/…. Старые ссылки и закладки
- * перенаправляет Vercel (301, до поиска файлов, #якорь браузер сохраняет): на каждый раздел задач —
- * папку challenges/<раздел>/ с book.toml — правило «/<раздел>/… → /tasks/<раздел>/…». Список разделов
- * берётся из папок при сборке. vercel.json для этого не подходит: Vercel читает его до сборки. Поэтому на
- * Vercel (переменная VERCEL) сборка выкладывается через Build Output API: dist/ копируется в
- * .vercel/output/static, правила пишутся в .vercel/output/config.json. Локально ничего не пишется
- * (проверить: VERCEL=1 npm run build).
+ * перенаправляются двумя способами:
+ * - на Vercel — сервером (301, до поиска файлов, #якорь браузер сохраняет): на каждый раздел задач — папку
+ *   challenges/<раздел>/ с book.toml — правило «/<раздел>/… → /tasks/<раздел>/…». Список разделов берётся из
+ *   папок при сборке. vercel.json для этого не подходит: Vercel читает его до сборки. Поэтому на Vercel
+ *   (переменная VERCEL) сборка выкладывается через Build Output API: dist/ копируется в .vercel/output/static,
+ *   правила пишутся в .vercel/output/config.json. Локально ничего не пишется (проверить: VERCEL=1 npm run build);
+ * - везде — страницами с <meta http-equiv="refresh"> (`redirects` ниже): запасной вариант для другого хостинга,
+ *   astro dev и astro preview. На Vercel их закрывают правила 301.
+ * Раздел задач с именем страницы или папки сайта (tasks, courses…) останавливает сборку: перенаправление закрыло бы её.
  */
 function taskSections() {
   const root = fileURLToPath(new URL('./challenges/', import.meta.url));
@@ -70,13 +73,18 @@ function vercelTaskRedirects() {
   return {
     name: 'vercel-task-redirects',
     hooks: {
+      'astro:config:setup': () => {
+        const taken = new Set(
+          ['./src/pages/', './public/'].flatMap((d) => readdirSync(new URL(d, import.meta.url)).map((n) => n.replace(/\.[^.]+$/, ''))),
+        );
+        const clash = taskSections().filter((s) => taken.has(s));
+        if (clash.length) throw new Error(`Раздел задач совпадает с адресом страницы сайта: /${clash.join(', /')} — перенаправление его закроет`);
+      },
       /** @param {{ dir: URL }} options */
       'astro:build:done': ({ dir }) => {
         if (!process.env.VERCEL) return;
         const dist = fileURLToPath(dir);
         const sections = taskSections();
-        const clash = sections.filter((s) => existsSync(join(dist, s)));
-        if (clash.length) throw new Error(`Раздел задач совпадает с адресом страницы сайта: /${clash.join(', /')} — перенаправление его закроет`);
         const output = fileURLToPath(new URL('./.vercel/output/', import.meta.url));
         rmSync(output, { recursive: true, force: true });
         mkdirSync(output, { recursive: true });
@@ -100,6 +108,12 @@ function vercelTaskRedirects() {
 export default defineConfig({
   integrations: [mdx(), noSupabaseSecrets(), vercelTaskRedirects()],
   trailingSlash: 'ignore',
+  // запасной вариант к правилам 301 на Vercel (vercelTaskRedirects выше)
+  redirects: {
+    '/[book]': '/tasks/[book]',
+    '/[book]/[chapter]': '/tasks/[book]/[chapter]',
+    '/[book]/[chapter]/[task]': '/tasks/[book]/[chapter]/[task]',
+  },
   markdown: {
     shikiConfig: { theme: 'vitesse-dark', wrap: false },
   },

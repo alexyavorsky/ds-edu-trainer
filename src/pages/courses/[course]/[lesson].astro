@@ -243,6 +243,10 @@ const data = JSON.stringify(lessonPageData(course, lesson)).replace(/</g, '\\u00
     font-size: 16px;
     color: var(--text-2);
   }
+  /* под шапкой закреплена ещё и полоса .kernel (40 px): якорь не должен уходить под неё (global.css, scroll-padding-top) */
+  :global(html) {
+    --anchor-offset: 116px;
+  }
   .kernel {
     position: sticky;
     top: 57px;
