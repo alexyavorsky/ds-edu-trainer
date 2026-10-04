@@ -43,8 +43,8 @@ def test_top():
     "top_cities — три города с наибольшей выручкой"
     assert top_cities is not ..., "top_cities пока равна ... — замените многоточие цепочкой методов"
     assert isinstance(top_cities, pd.Series), f"top_cities — это {type(top_cities).__name__}, а нужен Series: цепочка должна заканчиваться суммой по городам, сортировкой и head(3)"
-    assert len(top_cities) == 3, f"в top_cities {len(top_cities)} значений, а нужно три: .head(3) в конце цепочки"
-    assert list(top_cities.index) == ["Москва", "Санкт-Петербург", "Казань"], f"города сейчас {list(top_cities.index)}, а три лучших — Москва, Санкт-Петербург, Казань: сортировка по убыванию"
+    assert len(top_cities) == 3, f"в top_cities {len(top_cities)} значений, а нужно три"
+    assert list(top_cities.index) == ["Москва", "Санкт-Петербург", "Казань"], f"города сейчас {list(top_cities.index)}: нужны три города с наибольшей выручкой, по убыванию"
     assert top_cities.tolist() == [1310110, 803720, 440150], "значения не те: выручка — цена × количество, сумма по городу"
 # ─── другое решение ───
 top_cities = (
@@ -114,11 +114,11 @@ def test_app():
     "app_bulk — выручка по категориям для покупок в приложении от 3 штук"
     assert app_bulk is not ..., "app_bulk пока равна ... — замените многоточие цепочкой методов"
     assert isinstance(app_bulk, pd.Series), f"app_bulk — это {type(app_bulk).__name__}, а нужен Series: сумма revenue по категориям"
-    assert len(app_bulk) == 5 and "Кофе" in app_bulk.index, "в app_bulk должны быть пять категорий: .groupby(\"category\")[\"revenue\"].sum()"
+    assert len(app_bulk) == 5 and "Кофе" in app_bulk.index, "в app_bulk должны быть пять категорий"
     assert app_bulk["Кофе"] != 540520, "посчитаны все покупки приложения, а нужны только строки, где количество не меньше 3: добавьте условие в query"
-    assert app_bulk["Кофе"] != 1051870, "посчитаны все каналы, а нужно только приложение: условие channel == 'приложение' в query"
-    assert app_bulk["Кофе"] == 279610 and app_bulk["Аксессуары"] == 1440, "значения не те: кофе — 279610, аксессуары — 1440"
-    assert app_bulk.tolist() == sorted(app_bulk.tolist(), reverse=True), "отсортируйте по убыванию: .sort_values(ascending=False)"
+    assert app_bulk["Кофе"] != 1051870, "посчитаны все каналы, а нужно только приложение: добавьте условие на канал в query"
+    assert app_bulk["Кофе"] == 279610 and app_bulk["Аксессуары"] == 1440, "значения не те: проверьте условия отбора и выручку"
+    assert app_bulk.tolist() == sorted(app_bulk.tolist(), reverse=True), "отсортируйте по убыванию"
 # ─── другое решение ───
 app_bulk = (
     orders[(orders["channel"] == "приложение") & (orders["quantity"] >= 3)]
@@ -186,19 +186,19 @@ by_month = (
 def test_function():
     "add_month(table) возвращает таблицу со столбцом month"
     result = add_month(orders)
-    assert result is not ..., "функция add_month пока возвращает ... — верните таблицу с новым столбцом: table.assign(month=...)"
+    assert result is not ..., "функция add_month пока возвращает ... — верните таблицу с новым столбцом"
     assert isinstance(result, pd.DataFrame), f"add_month вернула {type(result).__name__}, а должна возвращать таблицу"
     assert "month" in result.columns, "в таблице, которую возвращает add_month, нет столбца month"
-    assert result["month"].iloc[0] == 1 and result["month"].iloc[-1] == 12, "month — номер месяца из столбца date: table[\"date\"].dt.month"
+    assert result["month"].iloc[0] == 1 and result["month"].iloc[-1] == 12, "month — номер месяца из столбца date"
     assert "month" not in orders.columns, "функция изменила исходную таблицу orders: возвращайте новую таблицу через assign, а не записывайте столбец в table. Исправив функцию, выполните первую ячейку урока заново — она вернёт orders в исходный вид"
 
 
 def test_by_month():
     "by_month — выручка по месяцам"
     assert by_month is not ..., "by_month пока равна ... — замените многоточие цепочкой методов"
-    assert isinstance(by_month, pd.Series) and len(by_month) == 12, "by_month — Series из 12 значений: .groupby(\"month\")[\"revenue\"].sum()"
+    assert isinstance(by_month, pd.Series) and len(by_month) == 12, "by_month — Series из 12 значений"
     assert list(by_month.index) == list(range(1, 13)), "в индексе by_month должны быть номера месяцев 1–12"
-    assert by_month.iloc[0] == 318940 and by_month.sum() == 3301420, "значения не те: январь — 318940, весь год — 3301420"
+    assert by_month.iloc[0] == 318940 and by_month.sum() == 3301420, "значения не те: нужна выручка по месяцам"
 # ─── другое решение ───
 def add_month(table):
     result = table.copy()
@@ -259,17 +259,17 @@ def test_discounted():
     "discounted — таблица со столбцами revenue и to_pay"
     assert discounted is not ..., "discounted пока равна ... — замените многоточие цепочкой методов"
     assert isinstance(discounted, pd.DataFrame), f"discounted — это {type(discounted).__name__}, а нужна таблица"
-    assert "revenue" in discounted.columns and "to_pay" in discounted.columns, "в discounted нужны столбцы revenue и to_pay: два assign"
+    assert "revenue" in discounted.columns and "to_pay" in discounted.columns, "в discounted нужны столбцы revenue и to_pay"
     assert len(discounted) == 2448, "в discounted должны остаться все 2448 строк"
-    assert abs(discounted.loc[0, "to_pay"] - 6400) < 1e-9, "в первой строке 2 штуки — скидки нет, to_pay равно revenue: 6400"
-    assert abs(discounted.loc[9, "to_pay"] - discounted.loc[9, "revenue"] * (0.9 if discounted.loc[9, "quantity"] >= 3 else 1)) < 1e-9, "скидка 10 % — только там, где количество не меньше 3: np.where(условие, revenue * 0.9, revenue)"
+    assert abs(discounted.loc[0, "to_pay"] - 6400) < 1e-9, "в первой строке 2 штуки — скидки нет, to_pay равно revenue"
+    assert abs(discounted.loc[9, "to_pay"] - discounted.loc[9, "revenue"] * (0.9 if discounted.loc[9, "quantity"] >= 3 else 1)) < 1e-9, "скидка 10 % — только там, где количество не меньше 3"
 
 
 def test_total():
     "total_fast — та же сумма, что у цикла"
     assert abs(total_fast - 3301420) > 1, "скидка не применена: сумма равна выручке без скидки"
     assert abs(total_fast - 3301420 * 0.9) > 1, "скидка применена ко всем строкам, а нужна только там, где количество не меньше 3"
-    assert abs(total_fast - 3150009.0) < 1e-3, f"total_fast = {total_fast!r}, а цикл дал 3150009"
+    assert abs(total_fast - 3150009.0) < 1e-3, f"total_fast = {total_fast!r}: сравните с тем, что дал цикл"
 # ─── другое решение ───
 import numpy as np
 

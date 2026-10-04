@@ -26,14 +26,14 @@ rubles = ...
 # ─── проверка ───
 def test_int():
     "rubles — массив целых чисел"
-    assert isinstance(rubles, np.ndarray), f"rubles — это {type(rubles).__name__}, а нужен массив: prices.astype(int)"
-    assert rubles.dtype.kind == "i", f"тип rubles — {rubles.dtype}, а нужны целые: astype(int)"
+    assert isinstance(rubles, np.ndarray), f"rubles — это {type(rubles).__name__}, а нужен массив"
+    assert rubles.dtype.kind == "i", f"тип rubles — {rubles.dtype}, а нужны целые: вспомните, как поменять тип готового массива"
 
 
 def test_values():
     "копейки отброшены"
     assert isinstance(rubles, np.ndarray), "rubles пока не массив — сначала исправьте то, о чём говорит проверка выше"
-    assert rubles.tolist() == [199, 49, 1250], f"в rubles {rubles.tolist()}, а без копеек цены — 199, 49, 1250"
+    assert rubles.tolist() == [199, 49, 1250], f"в rubles {rubles.tolist()}, а нужны цены без копеек"
 # ─── другое решение ───
 prices = np.array([199.9, 49.5, 1250.75])
 rubles = np.array(prices, dtype=int)
@@ -55,9 +55,9 @@ visits = ...
 # ─── проверка ───
 def test_visits():
     "visits — семь целых нулей"
-    assert isinstance(visits, np.ndarray), f"visits — это {type(visits).__name__}, а нужен массив: np.zeros(...)"
+    assert isinstance(visits, np.ndarray), f"visits — это {type(visits).__name__}, а нужен массив"
     assert len(visits) == 7, f"в visits {len(visits)} счётчиков, а дней недели 7"
-    assert visits.dtype.kind == "i", f"тип visits — {visits.dtype}, а нужны целые: добавьте dtype=int"
+    assert visits.dtype.kind == "i", f"тип visits — {visits.dtype}, а нужны целые: тип можно задать прямо при создании массива"
     assert visits.sum() == 0, "все счётчики должны быть нулями"
 # ─── другое решение ───
 visits = np.full(7, 0)
@@ -72,7 +72,7 @@ ratings = ...
 def test_ratings():
     "ratings — оценки 4, 5, 3, 5 дробного типа"
     assert isinstance(ratings, np.ndarray), f"ratings — это {type(ratings).__name__}, а нужен массив"
-    assert ratings.dtype == np.float64, f"тип ratings — {ratings.dtype}, а нужен дробный: dtype=float"
+    assert ratings.dtype == np.float64, f"тип ratings — {ratings.dtype}, а нужен дробный: тип можно задать прямо при создании массива"
     assert ratings.tolist() == [4, 5, 3, 5], f"в ratings {ratings.tolist()}"
 # ─── другое решение ───
 ratings = np.array([4, 5, 3, 5]).astype(float)
@@ -95,13 +95,13 @@ share = ...
 # ─── проверка ───
 def test_present():
     "present — сколько пришло"
-    assert present == 6, f"present = {present}, а пришли 6 учеников из 8"
+    assert present == 6, f"present = {present} — это не число пришедших"
 
 
 def test_share():
     "share — доля пришедших"
     assert share != 75, "получились проценты, а нужна доля от 0 до 1"
-    assert abs(share - 0.75) < 1e-9, f"share = {share}, а пришла доля 6 / 8 = 0.75"
+    assert abs(share - 0.75) < 1e-9, f"share = {share} — это не доля пришедших"
 # ─── другое решение ───
 came = np.array([True, True, False, True, True, True, False, True])
 present = np.sum(came)

@@ -22,7 +22,7 @@ def test_doubles():
     "doubles — доля дублей"
     assert not isinstance(doubles, np.ndarray), "doubles — массив, а нужна одна доля: среднее маски"
     assert 0 < doubles < 1, f"doubles = {doubles}: доля должна быть между 0 и 1"
-    assert abs(doubles - 1 / 6) < 0.01, f"doubles = {doubles:.4f}, а должно быть около 1/6 ≈ 0.167: сравните столбцы pairs[:, 0] == pairs[:, 1]"
+    assert abs(doubles - 1 / 6) < 0.01, f"doubles = {doubles:.4f}, а должно быть около 1/6 ≈ 0.167: дубль — когда числа в двух столбцах равны"
     assert abs(doubles - 0.16459) < 1e-9, f"doubles = {doubles}: создайте генератор с seed 12 и бросьте кубики 100000 × 2"
 # ─── другое решение ───
 rng = np.random.default_rng(12)
@@ -44,7 +44,7 @@ at_least_3 = ...
 def test_share():
     "at_least_3 — доля серий с тремя и больше орлами"
     assert not isinstance(at_least_3, np.ndarray), "at_least_3 — массив, а нужна одна доля"
-    assert abs(at_least_3 - 0.5) < 0.02, f"at_least_3 = {at_least_3:.4f}, а должно быть около 0.5: орлов в серии — сумма по axis=1, условие — >= 3"
+    assert abs(at_least_3 - 0.5) < 0.02, f"at_least_3 = {at_least_3:.4f}, а должно быть около 0.5: орлов в серии — сумма по строке, условие — три и больше"
     assert abs(at_least_3 - 0.50136) < 1e-9, f"at_least_3 = {at_least_3}: seed 5, таблица 50000 × 5"
 # ─── другое решение ───
 rng = np.random.default_rng(5)
@@ -76,7 +76,7 @@ pi_est = ...
 def test_pi():
     "pi_est — оценка числа π"
     assert not isinstance(pi_est, np.ndarray), "pi_est — массив, а нужно одно число"
-    assert abs(pi_est - 0.78378) > 0.1, "это доля точек внутри круга (π/4); умножьте её на 4"
+    assert abs(pi_est - 0.78378) > 0.1, "это доля точек внутри круга, а она равна π/4"
     assert abs(pi_est - 3.14159) < 0.05, f"pi_est = {pi_est:.4f}, а должно быть близко к 3.14"
     assert abs(pi_est - 3.13512) < 1e-9, f"pi_est = {pi_est}: seed 3, 100000 точек, таблица 100000 × 2"
 # ─── другое решение ───
@@ -104,9 +104,9 @@ same_bday = ...
 # ─── проверка ───
 def test_bday():
     "same_bday — доля групп с совпавшим днём рождения"
-    assert not isinstance(same_bday, np.ndarray), "same_bday — массив, а нужна одна доля: .any(axis=1).mean()"
+    assert not isinstance(same_bday, np.ndarray), "same_bday — массив, а нужна одна доля"
     assert abs(same_bday - 0.507) < 0.03, (
-        f"same_bday = {same_bday:.4f}, а должно быть около 0.5. Не забыли отсортировать строки (np.sort(…, axis=1)) и взять any по axis=1?"
+        f"same_bday = {same_bday:.4f}, а должно быть около 0.5. Не забыли отсортировать каждую строку и искать совпадения соседей внутри строки?"
     )
     assert abs(same_bday - 0.4995) < 1e-9, f"same_bday = {same_bday}: seed 23, таблица 10000 × 23"
 # ─── другое решение ───

@@ -24,13 +24,13 @@ def test_all():
     "all_sales — январь, потом февраль"
     assert isinstance(all_sales, np.ndarray), f"all_sales — это {type(all_sales).__name__}, а нужен массив из np.concatenate"
     assert len(all_sales) == 9, f"в all_sales {len(all_sales)} чисел, а должно быть 5 + 4 = 9"
-    assert all_sales[0] == 410, "all_sales начинается не с января: порядок в списке — [jan, feb]"
+    assert all_sales[0] == 410, "all_sales начинается не с января: проверьте порядок частей"
     assert all_sales.tolist() == [410, 385, 402, 395, 430, 398, 441, 420, 415], f"all_sales = {all_sales.tolist()}, а нужны все дни января, потом февраля"
 
 
 def test_total():
     "total — выручка за все дни"
-    assert total == 3696, f"total = {total}, а сумма всех девяти дней — 3696"
+    assert total == 3696, f"total = {total} — это не сумма всех девяти дней"
 # ─── другое решение ───
 jan = np.array([410, 385, 402, 395, 430])
 feb = np.array([398, 441, 420, 415])
@@ -74,16 +74,16 @@ def test_hum():
     "hum — влажность: 3 станции × 28 дней"
     assert isinstance(hum, np.ndarray), f"hum — это {type(hum).__name__}, а нужен массив из np.stack"
     assert hum.shape != (84,), "hum — один длинный ряд из 84 чисел: concatenate продолжает массив, а таблицу строит np.stack"
-    assert hum.shape != (28, 3), "у hum форма (28, 3): станции должны быть строками — np.stack без axis=1"
+    assert hum.shape != (28, 3), "у hum форма (28, 3): станции должны быть строками"
     assert hum.shape == (3, 28), f"у hum форма {hum.shape}, а нужна (3, 28)"
-    assert np.nanmax(hum) <= 100 and np.nanmin(hum) >= 40, "в hum не влажность: нужен столбец 2 каждой станции"
+    assert np.nanmax(hum) <= 100 and np.nanmin(hum) >= 40, "в hum не влажность: нужен столбец влажности каждой станции"
     assert np.isnan(hum[2]).sum() == 1, "станции не в том порядке: center, airport, forest"
 
 
 def test_avg():
     "hum_avg — средняя влажность каждой станции"
     assert not np.isnan(hum_avg).any(), "в hum_avg есть nan: у леса пропуск — нужен np.nanmean"
-    assert np.allclose(hum_avg, [74.821429, 81.5, 86.481481], atol=1e-5), f"hum_avg = {hum_avg}, а средние по станциям ≈ [74.8, 81.5, 86.5]"
+    assert np.allclose(hum_avg, [74.821429, 81.5, 86.481481], atol=1e-5), f"hum_avg = {hum_avg} — это не средняя влажность станций без учёта пропусков"
 # ─── другое решение ───
 hum = np.vstack([center[:, 2], airport[:, 2], forest[:, 2]])
 hum_avg = np.array([np.nanmean(hum[0]), np.nanmean(hum[1]), np.nanmean(hum[2])])
@@ -118,10 +118,10 @@ table = ...
 def test_table():
     "table — заказ с третьим столбцом суммы"
     assert isinstance(table, np.ndarray), f"table — это {type(table).__name__}, а нужен массив"
-    assert table.shape != (5, 3) and table.shape != (3, 4), "суммы стали строкой: нужен столбец — np.hstack и [:, np.newaxis]"
+    assert table.shape != (5, 3) and table.shape != (3, 4), "суммы стали строкой: нужен столбец"
     assert table.shape == (4, 3), f"у table форма {table.shape}, а нужна (4, 3): четыре строки, три столбца"
     assert table[:, :2].tolist() == order.tolist(), "первые два столбца table должны быть ценой и количеством из order"
-    assert table[:, 2].tolist() == [360, 400, 200, 540], f"третий столбец — {table[:, 2].tolist()}, а суммы строк — [360, 400, 200, 540]"
+    assert table[:, 2].tolist() == [360, 400, 200, 540], f"третий столбец — {table[:, 2].tolist()}, а нужна сумма каждой строки: цена × количество"
 # ─── другое решение ───
 order = np.array([[120, 3], [80, 5], [200, 1], [45, 12]])
 line_total = order[:, 0] * order[:, 1]
@@ -151,18 +151,18 @@ week_avg = ...
 # ─── проверка ───
 def test_weeks():
     "weeks — таблица 4 × 7"
-    assert not isinstance(weeks, list), "weeks — список: np.split возвращает список частей, соберите их в таблицу np.stack"
+    assert not isinstance(weeks, list), "weeks — список: np.split возвращает список частей, а нужна таблица"
     assert isinstance(weeks, np.ndarray), f"weeks — это {type(weeks).__name__}, а нужен массив"
     assert weeks.shape != (7, 4), "у weeks форма (7, 4): режьте на 4 части (недели), а не на 7"
     assert weeks.shape == (4, 7), f"у weeks форма {weeks.shape}, а нужна (4, 7): строка — неделя"
-    assert weeks[1, 0] == -5.5, "в строках weeks не недели по порядку: разрежьте center_temp на 4 части"
+    assert weeks[1, 0] == -5.5, "в строках weeks не недели по порядку"
 
 
 def test_avg():
     "week_avg — средняя каждой недели"
-    assert np.shape(week_avg) == (4,), f"у week_avg форма {np.shape(week_avg)}, а недель 4: средняя по строкам weeks — axis=1"
+    assert np.shape(week_avg) == (4,), f"у week_avg форма {np.shape(week_avg)}, а недель 4: нужна средняя по строкам weeks"
     assert not np.isnan(week_avg).any(), "в week_avg есть nan: в первой неделе пропуск — нужен np.nanmean"
-    assert np.allclose(week_avg, [-4.966667, -4.885714, -1.657143, -0.242857], atol=1e-5), f"week_avg = {week_avg}, а средние недель ≈ [-4.97, -4.89, -1.66, -0.24]"
+    assert np.allclose(week_avg, [-4.966667, -4.885714, -1.657143, -0.242857], atol=1e-5), f"week_avg = {week_avg} — это не средние недель без учёта пропусков"
 # ─── другое решение ───
 center_temp = center[:, 1]
 weeks = center_temp.reshape(4, 7)

@@ -39,7 +39,7 @@ total = ...
 # ─── проверка ───
 def test_priced():
     "priced — заказы с данными о товаре"
-    assert isinstance(priced, pd.DataFrame), f"priced — это {type(priced).__name__}, а нужна таблица: orders.merge(products, on=\"product_id\")"
+    assert isinstance(priced, pd.DataFrame), f"priced — это {type(priced).__name__}, а нужна таблица"
     assert len(priced) == 2448, f"в priced {len(priced)} строк, а должно остаться 2448 — столько же, сколько в orders"
     assert "price" in priced.columns and "category" in priced.columns, "в priced должны появиться столбцы товаров — price, category и другие"
     assert "order_id" in priced.columns and "quantity" in priced.columns, "в priced должны остаться столбцы заказов: слева — orders, справа — products"
@@ -47,9 +47,9 @@ def test_priced():
 
 def test_revenue():
     "revenue и total — выручка строки и за год"
-    assert "revenue" in priced.columns, "в priced нет столбца revenue: цена × количество"
-    assert priced["revenue"].sum() == 3301420, "сумма revenue должна быть 3 301 420: priced[\"price\"] * priced[\"quantity\"]"
-    assert total == 3301420, f"total = {total!r}, а выручка за год — 3 301 420"
+    assert "revenue" in priced.columns, "в priced нет столбца revenue"
+    assert priced["revenue"].sum() == 3301420, "revenue не тот: выручка строки — цена × количество"
+    assert total == 3301420, f"total = {total!r} — это не сумма revenue"
 # ─── другое решение ───
 priced = pd.merge(orders, products[["product_id", "name", "category", "price", "cost"]], on="product_id", how="left")
 priced["revenue"] = priced["quantity"] * priced["price"]
@@ -75,14 +75,14 @@ total_profit = ...
 def test_profit():
     "profit — прибыль строки: (цена − себестоимость) × количество"
     assert "profit" in priced.columns, "в priced нет столбца profit"
-    assert priced.loc[0, "profit"] != 4500, "скобки: сначала разность цены и себестоимости, потом умножение на количество — (price − cost) × quantity"
-    assert priced["profit"].sum() == 1542150, "прибыль не та: (priced[\"price\"] - priced[\"cost\"]) * priced[\"quantity\"]"
-    assert total_profit == 1542150, f"total_profit = {total_profit!r}, а прибыль за год — 1 542 150"
+    assert priced.loc[0, "profit"] != 4500, "скобки: сначала разность цены и себестоимости, потом умножение на количество"
+    assert priced["profit"].sum() == 1542150, "прибыль не та: проверьте формулу"
+    assert total_profit == 1542150, f"total_profit = {total_profit!r} — это не сумма profit"
 
 
 def test_category():
     "category_profit — прибыль по категориям, по убыванию"
-    assert isinstance(category_profit, pd.Series) and len(category_profit) == 5, "category_profit — Series по пяти категориям: priced.groupby(\"category\")[\"profit\"].sum()"
+    assert isinstance(category_profit, pd.Series) and len(category_profit) == 5, "category_profit — Series по пяти категориям"
     assert category_profit["Чай"] == 340440, "суммы не те: сумма столбца profit по категориям"
     assert category_profit.tolist() == sorted(category_profit.tolist(), reverse=True), "отсортируйте category_profit по убыванию"
 # ─── другое решение ───
@@ -123,15 +123,15 @@ n_sleepers = ...
 # ─── проверка ───
 def test_orders():
     "n_orders — число заказов целым числом, без пропусков"
-    assert activity["n_orders"].isna().sum() == 0, "в activity[\"n_orders\"] остались пропуски: клиент без пары в таблице заказов — это ноль заказов, fillna(0). Результат запишите обратно в столбец"
-    assert str(activity["n_orders"].dtype) in ("int64", "int32"), f"тип столбца n_orders — {activity['n_orders'].dtype}, а нужен целый: astype(\"int64\")"
-    assert activity["n_orders"].sum() == 1576 and len(activity) == 240, "в activity должны быть все 240 клиентов, а сумма заказов — 1576"
+    assert activity["n_orders"].isna().sum() == 0, "в activity[\"n_orders\"] остались пропуски: клиент без пары в таблице заказов — это ноль заказов. Результат запишите обратно в столбец"
+    assert str(activity["n_orders"].dtype) in ("int64", "int32"), f"тип столбца n_orders — {activity['n_orders'].dtype}, а нужен целый"
+    assert activity["n_orders"].sum() == 1576 and len(activity) == 240, "в activity должны быть все 240 клиентов"
 
 
 def test_sleepers():
     "sleepers — клиенты без заказов"
-    assert isinstance(sleepers, pd.DataFrame), f"sleepers — это {type(sleepers).__name__}, а нужна таблица: activity[маска]"
-    assert len(sleepers) == 27 and n_sleepers == 27, f"в sleepers {len(sleepers)} строк, n_sleepers = {n_sleepers!r}, а клиентов без заказов 27"
+    assert isinstance(sleepers, pd.DataFrame), f"sleepers — это {type(sleepers).__name__}, а нужна таблица"
+    assert len(sleepers) == 27 and n_sleepers == 27, f"в sleepers {len(sleepers)} строк, n_sleepers = {n_sleepers!r} — проверьте условие"
     assert (sleepers["n_orders"] == 0).all(), "в sleepers должны быть только клиенты с нулём заказов"
 # ─── другое решение ───
 activity["n_orders"] = activity["n_orders"].fillna(0).astype("int64")
@@ -163,17 +163,17 @@ best_segment = ...
 # ─── проверка ───
 def test_stats():
     "segment_stats — выручка и число покупателей по сегментам"
-    assert isinstance(segment_stats, pd.DataFrame), f"segment_stats — это {type(segment_stats).__name__}, а нужна таблица: with_segment.groupby(\"segment\").agg(...)"
+    assert isinstance(segment_stats, pd.DataFrame), f"segment_stats — это {type(segment_stats).__name__}, а нужна таблица"
     assert sorted(segment_stats.index) == ["новый", "оптовый", "постоянный"], "в индексе должны быть три сегмента"
     assert list(segment_stats.columns)[:2] == ["revenue", "buyers"], f"столбцы сейчас {list(segment_stats.columns)}, а первые два должны быть revenue и buyers"
-    assert segment_stats.loc["оптовый", "revenue"] == 756240, "revenue — сумма столбца revenue"
-    assert segment_stats.loc["оптовый", "buyers"] == 25, "buyers — число разных покупателей: (\"customer_id\", \"nunique\")"
+    assert segment_stats.loc["оптовый", "revenue"] == 756240, "revenue не тот: нужна сумма выручки сегмента"
+    assert segment_stats.loc["оптовый", "buyers"] == 25, "buyers не тот: нужно число разных покупателей"
 
 
 def test_per_buyer():
     "per_buyer — выручка на покупателя, best_segment — самый ценный сегмент"
     assert "per_buyer" in segment_stats.columns, "в segment_stats нет столбца per_buyer"
-    assert segment_stats.loc["оптовый", "per_buyer"] == 30250 and segment_stats.loc["новый", "per_buyer"] == 13621, "per_buyer — revenue, делённая на buyers, с округлением до рублей"
+    assert segment_stats.loc["оптовый", "per_buyer"] == 30250 and segment_stats.loc["новый", "per_buyer"] == 13621, "per_buyer не тот: нужна выручка на одного покупателя, до рублей"
     assert best_segment == "оптовый", f"best_segment = {best_segment!r}, а больше всего выручки на покупателя у другого сегмента"
 # ─── другое решение ───
 g = with_segment.groupby("segment")

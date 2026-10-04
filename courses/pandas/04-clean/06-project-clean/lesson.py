@@ -26,18 +26,18 @@ n_ids = ...
 def test_ids():
     "customer_id — без пробелов, заглавная C"
     ids = customers["customer_id"].tolist()
-    assert all(i == i.strip() for i in ids), "в customer_id остались пробелы: .str.strip() — и запишите результат обратно в столбец"
-    assert all(i == i.upper() for i in ids), "в customer_id остались строчные буквы (c017): .str.upper()"
-    assert n_ids != 243 and n_ids != 257, "n_ids нужно считать после очистки: customers[\"customer_id\"].nunique()"
-    assert n_ids == 240, f"n_ids = {n_ids!r}, а разных клиентов после очистки 240"
+    assert all(i == i.strip() for i in ids), "в customer_id остались пробелы: запишите результат обратно в столбец"
+    assert all(i == i.upper() for i in ids), "в customer_id остались строчные буквы (c017)"
+    assert n_ids != 243 and n_ids != 257, "n_ids нужно считать после очистки"
+    assert n_ids == 240, f"n_ids = {n_ids!r} — это не число разных клиентов после очистки"
 
 
 def test_names():
     "name — без лишних пробелов, вид «Имя Ф.»"
     names = customers["name"].tolist()
-    assert all(n == n.strip() for n in names), "в name остались пробелы по краям: .str.strip()"
-    assert not any("  " in n for n in names), "в name остались двойные пробелы внутри: .str.replace(\"  \", \" \")"
-    assert not any(n == n.upper() for n in names), "в name остались имена заглавными буквами (КСЕНИЯ О.): .str.title()"
+    assert all(n == n.strip() for n in names), "в name остались пробелы по краям"
+    assert not any("  " in n for n in names), "в name остались двойные пробелы внутри"
+    assert not any(n == n.upper() for n in names), "в name остались имена заглавными буквами (КСЕНИЯ О.)"
     assert names[:3] == ["Сергей Ю.", "Сергей В.", "Максим С."], f"первые имена сейчас {names[:3]}"
     assert customers["name"].str.len().sum() == 2249, "не все имена приведены к виду «Имя Ф.»"
 # ─── другое решение ───
@@ -67,16 +67,16 @@ short = {"Спб": "Санкт-Петербург", "С.-Петербург": "�
 def test_city():
     "city — пять городов"
     cities = sorted(customers["city"].unique())
-    assert not any(c != c.strip() for c in cities), "в city остались пробелы по краям: .str.strip()"
-    assert "москва" not in cities and "МОСКВА" not in cities, "в city остались варианты с другим регистром: .str.title()"
-    assert "Спб" not in cities and "Екб" not in cities and "С.-Петербург" not in cities, "в city остались сокращения: после .str.title() добавьте .replace(short) — без .str, замена значения целиком"
+    assert not any(c != c.strip() for c in cities), "в city остались пробелы по краям"
+    assert "москва" not in cities and "МОСКВА" not in cities, "в city остались варианты с другим регистром"
+    assert "Спб" not in cities and "Екб" not in cities and "С.-Петербург" not in cities, "в city остались сокращения: замените их словарём short — значение целиком, а не часть строки"
     assert cities == ["Екатеринбург", "Казань", "Москва", "Новосибирск", "Санкт-Петербург"], f"в city сейчас значения {cities}"
 
 
 def test_segment():
     "segment — три значения строчными буквами"
     segments = sorted(customers["segment"].unique())
-    assert segments == ["новый", "оптовый", "постоянный"], f"в segment сейчас значения {segments}, а нужны три: .str.strip().str.lower()"
+    assert segments == ["новый", "оптовый", "постоянный"], f"в segment сейчас значения {segments}, а нужны три, без пробелов и строчными буквами"
 # ─── другое решение ───
 short = {"Спб": "Санкт-Петербург", "С.-Петербург": "Санкт-Петербург", "Екб": "Екатеринбург"}
 customers["city"] = customers["city"].str.title().str.strip()
@@ -101,10 +101,10 @@ no_email = ...
 def test_email():
     "email — строчными буквами, пропуски остались пропусками"
     known = customers["email"].dropna().tolist()
-    assert all(e == e.lower() for e in known), "в email остались заглавные буквы: .str.lower() — и запишите результат обратно"
+    assert all(e == e.lower() for e in known), "в email остались заглавные буквы: запишите результат обратно в столбец"
     assert customers["email"].isna().sum() != 0, "пропуски в email заполнять не нужно: адрес неизвестен, и придумать его нельзя"
-    assert customers["email"].isna().sum() == 49, "число пропусков в email изменилось, а должно остаться 49"
-    assert no_email == 49, f"no_email = {no_email!r}, а строк без адреса 49"
+    assert customers["email"].isna().sum() == 49, "число пропусков в email изменилось, а должно остаться прежним"
+    assert no_email == 49, f"no_email = {no_email!r} — это не число строк без адреса"
 # ─── другое решение ───
 customers["email"] = customers["email"].str.strip().str.lower()
 no_email = len(customers) - customers["email"].count()

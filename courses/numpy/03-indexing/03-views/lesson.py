@@ -36,13 +36,13 @@ sale[:] = sale * 0.5
 def test_sale():
     "sale — первые два товара за полцены"
     assert isinstance(sale, np.ndarray), f"sale — это {type(sale).__name__}, а нужен массив"
-    assert sale.tolist() == [50.0, 125.0], f"в sale {sale.tolist()}, а со скидкой 50 % первые два товара стоят 50 и 125"
+    assert sale.tolist() == [50.0, 125.0], f"в sale {sale.tolist()} — это не первые два товара за полцены"
 
 
 def test_prices_kept():
     "prices не изменился"
     assert prices.tolist() == [100.0, 250.0, 80.0, 40.0], (
-        f"prices изменился: {prices.tolist()} — sale смотрит на те же данные. Сделайте копию среза: prices[:2].copy()"
+        f"prices изменился: {prices.tolist()} — sale смотрит на те же данные. Сделайте копию среза"
     )
 # ─── другое решение ───
 prices = np.array([100.0, 250.0, 80.0, 40.0])
@@ -77,9 +77,9 @@ def test_plan():
     "в plan второй квартал увеличен на 10 %"
     got = np.asarray(plan, dtype=float)
     assert not np.allclose(got[3:6], [150, 160, 170]), (
-        "plan не изменился. Если вы писали q2 = q2 * 1.1, это новый массив, а не окно на plan: присвойте в срез — q2[:] = q2 * 1.1"
+        "plan не изменился: если присвоить переменной q2 результат умножения, это новый массив, а не окно на plan — записывайте значения в сам срез"
     )
-    assert np.allclose(got[3:6], [165, 176, 187]), f"второй квартал в plan — {np.round(got[3:6], 1).tolist()}, а должен стать 165, 176, 187"
+    assert np.allclose(got[3:6], [165, 176, 187]), f"второй квартал в plan — {np.round(got[3:6], 1).tolist()}, а должен вырасти на 10 %"
 
 
 def test_rest():
@@ -112,13 +112,13 @@ backup = ...
 # ─── проверка ───
 def test_scores():
     "в scores обнулено всё начиная с индекса 3"
-    assert scores.tolist() == [12, 15, 9, 0, 0, 0], f"scores = {scores.tolist()}, а должно быть [12, 15, 9, 0, 0, 0]"
+    assert scores.tolist() == [12, 15, 9, 0, 0, 0], f"scores = {scores.tolist()}, а обнулить нужно всё начиная с индекса 3, остальное не трогать"
 
 
 def test_backup():
     "backup — прежние значения"
-    assert isinstance(backup, np.ndarray), f"backup — это {type(backup).__name__}, а нужна копия массива: scores.copy()"
-    assert backup.tolist() != [12, 15, 9, 0, 0, 0], "backup тоже обнулился: backup = scores и backup = scores[:] — не копии, а окна на тот же массив; копия — scores.copy() до изменения"
+    assert isinstance(backup, np.ndarray), f"backup — это {type(backup).__name__}, а нужна копия массива"
+    assert backup.tolist() != [12, 15, 9, 0, 0, 0], "backup тоже обнулился: присваивание и срез — не копии, а окна на тот же массив; нужна настоящая копия, и до изменения"
     assert backup.tolist() == [12, 15, 9, 20, 17, 11], f"backup = {backup.tolist()}, а должен хранить исходные значения"
 # ─── другое решение ───
 scores = np.array([12, 15, 9, 20, 17, 11])

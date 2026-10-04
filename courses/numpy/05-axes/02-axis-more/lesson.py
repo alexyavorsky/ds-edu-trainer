@@ -27,14 +27,14 @@ def test_month():
     "worst_month — номер худшего месяца каждого магазина"
     assert isinstance(worst_month, np.ndarray), f"worst_month — это {type(worst_month).__name__}, а нужен массив из трёх номеров"
     got = worst_month.tolist()
-    assert len(got) == 3, f"в worst_month {len(got)} чисел, а магазинов 3: argmin(axis=1)"
-    assert got != [0, 1, 2], "это индексы; номера месяцев на единицу больше"
-    assert got == [1, 2, 3], f"worst_month = {got}, а худшие месяцы — январь, февраль и март: [1, 2, 3]"
+    assert len(got) == 3, f"в worst_month {len(got)} чисел, а магазинов 3"
+    assert got != [0, 1, 2], "это индексы, а месяцы нумеруются с 1"
+    assert got == [1, 2, 3], f"worst_month = {got} — это не номера худших месяцев"
 
 
 def test_value():
     "worst_value — выручка в худший месяц"
-    assert isinstance(worst_value, np.ndarray) and worst_value.tolist() == [40, 28, 68], "worst_value — минимум каждой строки: min(axis=1) → [40, 28, 68]"
+    assert isinstance(worst_value, np.ndarray) and worst_value.tolist() == [40, 28, 68], "worst_value — это должен быть минимум выручки каждого магазина"
 # ─── другое решение ───
 worst_month = np.argmin(monthly, axis=1) + 1
 worst_value = np.min(monthly, axis=1)
@@ -63,16 +63,16 @@ year = ...
 def test_ytd():
     "ytd — накопленная выручка, 3 × 12"
     assert isinstance(ytd, np.ndarray), f"ytd — это {type(ytd).__name__}, а нужна таблица из cumsum"
-    assert ytd.shape != (36,), "cumsum без axis вытянул таблицу в ряд: укажите axis=1"
+    assert ytd.shape != (36,), "cumsum без axis вытянул таблицу в ряд: укажите ось"
     assert ytd.shape == (3, 12), f"форма ytd — {ytd.shape}, а должна остаться (3, 12)"
     assert ytd[1].tolist() == [30, 58, 91, 126, 166, 204, 240, 275, 314, 372, 417, 472], (
-        "накопление должно идти вдоль месяцев каждого магазина: axis=1"
+        "накопление должно идти вдоль месяцев каждого магазина"
     )
 
 
 def test_year():
     "year — выручка магазинов за год"
-    assert isinstance(year, np.ndarray) and year.tolist() == [622, 472, 1041], "year — последний столбец ytd: ytd[:, -1] → [622, 472, 1041]"
+    assert isinstance(year, np.ndarray) and year.tolist() == [622, 472, 1041], "year — это должен быть последний столбец ytd"
 # ─── другое решение ───
 ytd = np.cumsum(monthly, axis=1)
 year = monthly.sum(axis=1)
@@ -103,14 +103,14 @@ half_day = ...
 # ─── проверка ───
 def test_cum():
     "rain_cum — накопленные осадки"
-    assert isinstance(rain_cum, np.ndarray) and rain_cum.shape == (365,), "rain_cum — накопленная сумма осадков на каждый день: precip.cumsum()"
-    assert abs(rain_cum[-1] - 711.3) < 1e-6, f"последний элемент rain_cum — {rain_cum[-1]:.1f}, а должен быть годовой суммой 711.3"
+    assert isinstance(rain_cum, np.ndarray) and rain_cum.shape == (365,), "rain_cum — накопленная сумма осадков на каждый день"
+    assert abs(rain_cum[-1] - 711.3) < 1e-6, f"последний элемент rain_cum — {rain_cum[-1]:.1f}, а должен быть годовой суммой осадков"
 
 
 def test_half():
     "half_day — день, когда накопилась половина осадков"
-    assert half_day != 173, "173 — индекс; номер дня на единицу больше"
-    assert half_day == 174, f"half_day = {half_day}, а половина годовых осадков накопилась к 174-му дню"
+    assert half_day != 173, "173 — индекс, а дни нумеруются с 1"
+    assert half_day == 174, f"half_day = {half_day} — это не день, когда накопилась половина годовых осадков"
 # ─── другое решение ───
 precip = np.loadtxt("data/moscow_2025.csv", delimiter=",", skiprows=1, usecols=3)
 rain_cum = np.cumsum(precip)

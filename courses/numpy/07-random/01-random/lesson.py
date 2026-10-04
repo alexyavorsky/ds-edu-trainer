@@ -25,15 +25,15 @@ rolls = ...
 # ─── проверка ───
 def test_rolls():
     "rolls — 20 бросков от 1 до 6"
-    assert isinstance(rolls, np.ndarray), f"rolls — это {type(rolls).__name__}, а нужен массив: rng.integers(...)"
-    assert len(rolls) == 20, f"бросков {len(rolls)}, а нужно 20: size=20"
-    assert rolls.min() >= 1 and rolls.max() <= 6, f"значения от {rolls.min()} до {rolls.max()}, а у кубика — от 1 до 6: rng.integers(1, 7, ...)"
+    assert isinstance(rolls, np.ndarray), f"rolls — это {type(rolls).__name__}, а нужен массив"
+    assert len(rolls) == 20, f"бросков {len(rolls)}, а нужно 20"
+    assert rolls.min() >= 1 and rolls.max() <= 6, f"значения от {rolls.min()} до {rolls.max()}, а у кубика — от 1 до 6: верхняя граница в integers не входит"
 
 
 def test_seed():
     "генератор создан с seed 42"
     assert rolls.tolist() == [1, 5, 4, 3, 3, 6, 1, 5, 2, 1, 4, 6, 5, 5, 5, 5, 4, 1, 6, 3], (
-        "числа не те: создайте генератор с seed 42 заново и сразу возьмите 20 бросков — np.random.default_rng(42)"
+        "числа не те: создайте генератор с seed 42 заново и сразу возьмите 20 бросков"
     )
 # ─── другое решение ───
 generator = np.random.default_rng(42)
@@ -62,14 +62,14 @@ share = ...
 # ─── проверка ───
 def test_heads():
     "heads — маска из 1000 бросков"
-    assert isinstance(heads, np.ndarray), f"heads — это {type(heads).__name__}, а нужна маска: rng.random(1000) < 0.5"
-    assert heads.dtype == bool, f"тип heads — {heads.dtype}, а маска — логический массив: сравните с 0.5"
+    assert isinstance(heads, np.ndarray), f"heads — это {type(heads).__name__}, а нужна маска"
+    assert heads.dtype == bool, f"тип heads — {heads.dtype}, а маска — логический массив, результат сравнения"
     assert heads.shape == (1000,), f"у heads форма {heads.shape}, а бросков 1000"
 
 
 def test_share():
     "share — доля орлов"
-    assert abs(share - 0.502) < 1e-9, f"share = {share}, а с seed 3 доля орлов — 0.502: создайте генератор с seed 3 заново"
+    assert abs(share - 0.502) < 1e-9, f"share = {share}: создайте генератор с seed 3 заново"
 # ─── другое решение ───
 rng = np.random.default_rng(3)
 heads = rng.random(size=1000) < 0.5
@@ -93,12 +93,12 @@ ticket = ...
 # ─── проверка ───
 def test_ticket():
     "ticket — шесть разных чисел от 1 до 49 по возрастанию"
-    assert isinstance(ticket, np.ndarray) and len(ticket) == 6, "ticket — массив из 6 чисел: rng.choice(..., size=6, replace=False)"
+    assert isinstance(ticket, np.ndarray) and len(ticket) == 6, "ticket — это должен быть массив из 6 чисел"
     got = ticket.tolist()
-    assert len(set(got)) == 6, f"в билете повторы {got}: добавьте replace=False"
-    assert got == sorted(got), f"числа не по возрастанию {got}: np.sort(...)"
-    assert min(got) >= 1 and max(got) <= 49, "числа должны быть от 1 до 49: np.arange(1, 50)"
-    assert got == [28, 29, 32, 39, 42, 43], f"ticket = {got}: создайте генератор с seed 7 и выберите из np.arange(1, 50)"
+    assert len(set(got)) == 6, f"в билете повторы {got}: вспомните параметр replace"
+    assert got == sorted(got), f"числа не по возрастанию {got}"
+    assert min(got) >= 1 and max(got) <= 49, "числа должны быть от 1 до 49"
+    assert got == [28, 29, 32, 39, 42, 43], f"ticket = {got}: создайте генератор с seed 7 заново и выбирайте из чисел от 1 до 49"
 # ─── другое решение ───
 rng = np.random.default_rng(7)
 balls = np.arange(1, 50)
@@ -120,7 +120,7 @@ def test_first():
     "first — одно имя из speakers"
     assert not isinstance(first, np.ndarray) or first.ndim == 0, "first — массив; без size метод choice вернёт одно имя"
     assert first in ["Анна", "Иван", "Мария", "Олег"], f"first = {first} — это не имя из списка speakers"
-    assert first == "Мария", f"first = {first}: с seed 5 первой выпадает Мария — создайте генератор с seed 5"
+    assert first == "Мария", f"first = {first}: создайте генератор с seed 5 заново"
 # ─── другое решение ───
 speakers = ["Анна", "Иван", "Мария", "Олег"]
 rng = np.random.default_rng(5)

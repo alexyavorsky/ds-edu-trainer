@@ -19,9 +19,9 @@ dist = ...
 def test_dist():
     "dist — расстояния до пяти точек"
     assert isinstance(dist, np.ndarray) and dist.shape == (5,), "dist — пять расстояний, по одному на заказ"
-    assert not np.allclose(dist, dx + dy), "dist = dx + dy — это путь по улицам; по прямой — корень из суммы квадратов"
-    assert not np.allclose(dist, dx ** 2 + dy ** 2), "не хватает корня: np.sqrt(dx ** 2 + dy ** 2)"
-    assert np.allclose(dist, [5.0, 13.0, 2.5, 10.0, 6.5]), f"dist = {dist}, а должно быть [5, 13, 2.5, 10, 6.5]"
+    assert not np.allclose(dist, dx + dy), "получилась сумма dx и dy — это путь по улицам; по прямой — теорема Пифагора"
+    assert not np.allclose(dist, dx ** 2 + dy ** 2), "не хватает корня"
+    assert np.allclose(dist, [5.0, 13.0, 2.5, 10.0, 6.5]), f"dist = {dist} — это не расстояния по прямой"
 # ─── другое решение ───
 dx = np.array([3.0, 5.0, 1.5, 8.0, 6.0])
 dy = np.array([4.0, 12.0, 2.0, 6.0, 2.5])
@@ -43,8 +43,8 @@ mae = ...
 def test_mae():
     "mae — средняя ошибка без учёта знака"
     assert not isinstance(mae, np.ndarray), "mae — массив, а нужно одно число: среднее модулей"
-    assert abs(mae - 0.428571) > 1e-3, "это среднее самих разностей — промахи вверх и вниз сократились; возьмите модуль np.abs"
-    assert abs(mae - 4.714286) < 1e-5, f"mae = {mae}, а средняя абсолютная ошибка ≈ 4.71"
+    assert abs(mae - 0.428571) > 1e-3, "это среднее самих разностей — промахи вверх и вниз сократились; нужна ошибка без учёта знака"
+    assert abs(mae - 4.714286) < 1e-5, f"mae = {mae} — это не средняя абсолютная ошибка"
 # ─── другое решение ───
 actual = np.array([120, 135, 150, 128, 142, 160, 155])
 forecast = np.array([118, 140, 145, 130, 150, 152, 158])
@@ -85,15 +85,15 @@ total_overtime = ...
 # ─── проверка ───
 def test_overtime():
     "overtime — часы переработки"
-    assert isinstance(overtime, np.ndarray), "overtime — одно число: np.max(…, 0) — это axis=0; поэлементный максимум — np.maximum"
+    assert isinstance(overtime, np.ndarray), "overtime — одно число: у np.max второй аргумент — это ось, а нужен поэлементный максимум"
     assert overtime.shape == (6,), f"у overtime форма {overtime.shape}, а сотрудников 6"
-    assert overtime.min() >= 0, "в overtime есть отрицательные: у кого нет переработки — 0, np.maximum(hours - 40, 0)"
-    assert overtime.tolist() == [0, 5, 0, 12, 0, 1], f"overtime = {overtime.tolist()}, а должно быть [0, 5, 0, 12, 0, 1]"
+    assert overtime.min() >= 0, "в overtime есть отрицательные: у кого нет переработки — 0"
+    assert overtime.tolist() == [0, 5, 0, 12, 0, 1], f"overtime = {overtime.tolist()}: переработка — часы сверх 40, а у кого их нет — 0"
 
 
 def test_total():
     "total_overtime — сумма переработок"
-    assert total_overtime == 18, f"total_overtime = {total_overtime}, а всего переработано 18 часов"
+    assert total_overtime == 18, f"total_overtime = {total_overtime} — это не сумма переработок"
 # ─── другое решение ───
 hours = np.array([38, 45, 40, 52, 36, 41])
 overtime = np.where(hours > 40, hours - 40, 0)
@@ -140,9 +140,9 @@ def test_bonus():
     "bonus — те же бонусы, что считает цикл"
     assert isinstance(bonus, np.ndarray), f"bonus — это {type(bonus).__name__}, а нужен массив NumPy, посчитанный без цикла"
     assert bonus.shape == (8,), f"у bonus форма {bonus.shape}, а участников 8"
-    assert bonus.min() >= 0, "в bonus есть отрицательные: кто набрал меньше 50, получает 0 — np.maximum(…, 0)"
-    assert bonus.max() <= 60, "в bonus есть больше 60: бонус ограничен сверху — np.minimum(…, 60)"
-    assert bonus.tolist() == [0, 0, 24, 42, 60, 60, 0, 60], f"bonus = {bonus.tolist()}, а цикл даёт [0, 0, 24, 42, 60, 60, 0, 60]"
+    assert bonus.min() >= 0, "в bonus есть отрицательные: кто набрал меньше 50, получает 0"
+    assert bonus.max() <= 60, "в bonus есть больше 60: бонус ограничен сверху"
+    assert bonus.tolist() == [0, 0, 24, 42, 60, 60, 0, 60], f"bonus = {bonus.tolist()}: сравните с тем, что печатает цикл"
 # ─── другое решение ───
 bonus = np.clip((scores - 50) * 2, 0, 60)
 # ─── ошибка ───

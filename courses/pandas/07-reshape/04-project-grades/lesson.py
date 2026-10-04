@@ -15,10 +15,10 @@ sheet = ...
 # ─── проверка ───
 def test_sheet():
     "sheet — средний балл за год: студенты × предметы"
-    assert isinstance(sheet, pd.DataFrame), f"sheet — это {type(sheet).__name__}, а нужна таблица: grades.pivot_table(...)"
+    assert isinstance(sheet, pd.DataFrame), f"sheet — это {type(sheet).__name__}, а нужна таблица"
     assert sheet.shape == (30, 5), f"у sheet размер {sheet.shape}, а нужно 30 студентов × 5 предметов"
     assert "Анна А." in sheet.index and "Физика" in sheet.columns, "в строках — студенты, в столбцах — предметы"
-    assert sheet.loc["Анна А.", "Физика"] != 109, "в ячейках суммы двух семестров, а нужно среднее: aggfunc=\"mean\""
+    assert sheet.loc["Анна А.", "Физика"] != 109, "в ячейках суммы двух семестров, а нужно среднее"
     assert sheet.loc["Анна А.", "Физика"] == 54.5 and sheet.loc["Алексей Я.", "Программирование"] == 98.5, "в ячейках должен быть средний балл за два семестра, округлённый до одного знака"
 # ─── другое решение ───
 sheet = grades.groupby(["student", "subject"])["score"].mean().unstack().round(1)
@@ -39,15 +39,15 @@ top3 = ...
 # ─── проверка ───
 def test_avg():
     "student_avg — средний балл каждого студента за год"
-    assert isinstance(student_avg, pd.Series) and len(student_avg) == 30, "student_avg — Series по 30 студентам: grades.groupby(\"student\")[\"score\"].mean()"
-    assert abs(student_avg["Алексей Я."] - 89.9) < 1e-9, "средние не те: среднее столбца score по студенту"
+    assert isinstance(student_avg, pd.Series) and len(student_avg) == 30, "student_avg — Series по 30 студентам"
+    assert abs(student_avg["Алексей Я."] - 89.9) < 1e-9, "средние не те: нужен средний балл студента по всем оценкам"
 
 
 def test_top():
     "top3 — три лучших студента, балл до одного знака"
-    assert isinstance(top3, pd.Series) and len(top3) == 3, "top3 — три наибольших значения student_avg: nlargest(3)"
-    assert list(top3.index) == ["Алексей Я.", "Наталья П.", "Ольга А."], f"в top3 сейчас {list(top3.index)}, а три лучших — Алексей Я., Наталья П., Ольга А."
-    assert top3.tolist() == [89.9, 81.0, 79.3], f"баллы в top3 сейчас {top3.tolist()}, а должны быть [89.9, 81.0, 79.3] — округлите до одного знака"
+    assert isinstance(top3, pd.Series) and len(top3) == 3, "top3 — три наибольших значения student_avg"
+    assert list(top3.index) == ["Алексей Я.", "Наталья П.", "Ольга А."], f"в top3 сейчас {list(top3.index)} — это не три студента с наибольшим средним"
+    assert top3.tolist() == [89.9, 81.0, 79.3], f"баллы в top3 сейчас {top3.tolist()}: округлите до одного знака"
 # ─── другое решение ───
 student_avg = grades.pivot_table(values="score", index="student", aggfunc="mean")["score"]
 top3 = student_avg.sort_values(ascending=False).head(3).round(1)
@@ -68,14 +68,14 @@ math_leader = ...
 def test_table():
     "group_subject — средний балл: группы × предметы, с итогами «Все»"
     assert isinstance(group_subject, pd.DataFrame), f"group_subject — это {type(group_subject).__name__}, а нужна таблица"
-    assert "Все" in group_subject.index and "Все" in group_subject.columns, "в таблице нет итогов: margins=True, margins_name=\"Все\""
+    assert "Все" in group_subject.index and "Все" in group_subject.columns, "в таблице нет итогов: вспомните параметры margins и margins_name"
     assert group_subject.shape == (4, 6), f"у group_subject размер {group_subject.shape}, а нужно 4 строки (3 группы и итог) × 6 столбцов (5 предметов и итог)"
-    assert group_subject.loc["ИТ-22", "Программирование"] == 77.4 and group_subject.loc["Все", "Все"] == 68.2, "в ячейках должен быть средний балл, округлённый до одного знака: у ИТ-22 по программированию — 77.4, общий — 68.2"
+    assert group_subject.loc["ИТ-22", "Программирование"] == 77.4 and group_subject.loc["Все", "Все"] == 68.2, "в ячейках должен быть средний балл, округлённый до одного знака"
 
 
 def test_leader():
     "math_leader — лучшая группа по математике"
-    assert math_leader == "ИТ-23", f"math_leader = {math_leader!r}, а лучший средний балл по математике у другой группы: group_subject[\"Математика\"].idxmax()"
+    assert math_leader == "ИТ-23", f"math_leader = {math_leader!r}, а лучший средний балл по математике у другой группы"
 # ─── другое решение ───
 group_subject = grades.pivot_table(values="score", index="group", columns="subject", aggfunc="mean", margins=True, margins_name="Все").round(1)
 math_leader = grades[grades["subject"] == "Математика"].groupby("group")["score"].mean().idxmax()
@@ -103,16 +103,16 @@ fell = ...
 def test_by_term():
     "by_term — средний балл: предметы × семестры, и прирост"
     assert isinstance(by_term, pd.DataFrame), f"by_term — это {type(by_term).__name__}, а нужна таблица"
-    assert len(by_term) == 5 and 1 in by_term.columns and 2 in by_term.columns, "в строках — пять предметов, в столбцах — семестры 1 и 2: index=\"subject\", columns=\"term\""
-    assert "growth" in by_term.columns, "в by_term нет столбца growth: by_term[2] - by_term[1]"
-    assert abs(by_term.loc["Физика", "growth"] - 2.1666667) < 1e-5, "growth — средний балл второго семестра минус первого: у физики ≈ 2.17"
+    assert len(by_term) == 5 and 1 in by_term.columns and 2 in by_term.columns, "в строках — пять предметов, в столбцах — семестры 1 и 2"
+    assert "growth" in by_term.columns, "в by_term нет столбца growth"
+    assert abs(by_term.loc["Физика", "growth"] - 2.1666667) < 1e-5, "growth не тот: нужен средний балл второго семестра минус первого"
 
 
 def test_answers():
     "grew_most — где баллы выросли сильнее всего, fell — где упали"
-    assert grew_most == "Физика", f"grew_most = {grew_most!r}, а сильнее всего выросли баллы по другому предмету: by_term[\"growth\"].idxmax()"
-    assert isinstance(fell, pd.DataFrame), f"fell — это {type(fell).__name__}, а нужна таблица: by_term[маска]"
-    assert list(fell.index) == ["История"], f"в fell сейчас {list(fell.index)}, а баллы упали только по истории: by_term[by_term[\"growth\"] < 0]"
+    assert grew_most == "Физика", f"grew_most = {grew_most!r}, а сильнее всего выросли баллы по другому предмету"
+    assert isinstance(fell, pd.DataFrame), f"fell — это {type(fell).__name__}, а нужна таблица"
+    assert list(fell.index) == ["История"], f"в fell сейчас {list(fell.index)}: нужны предметы с отрицательным приростом"
 # ─── другое решение ───
 by_term = grades.groupby(["subject", "term"])["score"].mean().unstack()
 by_term["growth"] = by_term[2] - by_term[1]
@@ -135,17 +135,17 @@ fail_21 = ...
 # ─── проверка ───
 def test_passed():
     "passed — оценка от 50 баллов"
-    assert "passed" in grades.columns and grades["passed"].dtype == bool, "в grades нужен столбец-маска passed: grades[\"score\"] >= 50"
-    assert (~grades["passed"]).sum() != 17, "50 баллов — это зачёт: условие >=, а не >"
-    assert (~grades["passed"]).sum() == 15, "маска не та: незачётов (меньше 50 баллов) должно быть 15"
+    assert "passed" in grades.columns and grades["passed"].dtype == bool, "в grades нужен столбец-маска passed"
+    assert (~grades["passed"]).sum() != 17, "50 баллов — это зачёт"
+    assert (~grades["passed"]).sum() == 15, "маска не та: незачёт — меньше 50 баллов"
 
 
 def test_table():
     "pass_table — доля зачётов и незачётов по группам"
-    assert isinstance(pass_table, pd.DataFrame), f"pass_table — это {type(pass_table).__name__}, а нужна таблица: pd.crosstab(...)"
+    assert isinstance(pass_table, pd.DataFrame), f"pass_table — это {type(pass_table).__name__}, а нужна таблица"
     assert pass_table.shape == (3, 2), f"у pass_table размер {pass_table.shape}, а нужно 3 группы × 2 значения"
-    assert abs(pass_table.loc["ИТ-21"].sum() - 1) < 1e-9, "доли в каждой строке должны давать в сумме 1: normalize=\"index\""
-    assert abs(fail_21 - 0.08) < 1e-9, f"fail_21 = {fail_21!r}, а доля незачётов в ИТ-21 — 0.08: pass_table.loc[\"ИТ-21\", False]"
+    assert abs(pass_table.loc["ИТ-21"].sum() - 1) < 1e-9, "доли в каждой строке должны давать в сумме 1"
+    assert abs(fail_21 - 0.08) < 1e-9, f"fail_21 = {fail_21!r} — это не доля незачётов в ИТ-21"
 # ─── другое решение ───
 grades["passed"] = ~(grades["score"] < 50)
 pass_table = pd.crosstab(grades["group"], grades["passed"], normalize="index")
@@ -168,7 +168,7 @@ stars = ...
 # ─── проверка ───
 def test_long():
     "year_marks — длинная таблица: студент, предмет, средний балл за год"
-    assert isinstance(year_marks, pd.DataFrame), f"year_marks — это {type(year_marks).__name__}, а нужна таблица: sheet.reset_index().melt(...)"
+    assert isinstance(year_marks, pd.DataFrame), f"year_marks — это {type(year_marks).__name__}, а нужна таблица"
     assert list(year_marks.columns) == ["student", "subject", "mean_score"], f"столбцы сейчас {list(year_marks.columns)}, а нужны student, subject, mean_score"
     assert len(year_marks) == 150, f"в year_marks {len(year_marks)} строк, а должно быть 150: 30 студентов × 5 предметов"
 
@@ -177,7 +177,7 @@ def test_stars():
     "stars — годовые баллы от 90, по убыванию"
     assert isinstance(stars, pd.DataFrame), f"stars — это {type(stars).__name__}, а нужна таблица"
     assert list(stars.columns) == ["student", "subject", "mean_score"], "stars — строки таблицы year_marks со столбцами student, subject, mean_score"
-    assert len(stars) == 5 and stars["mean_score"].min() >= 90, f"в stars {len(stars)} строк, а годовых баллов от 90 — пять"
+    assert len(stars) == 5 and stars["mean_score"].min() >= 90, f"в stars {len(stars)} строк — проверьте условие"
     assert stars["mean_score"].tolist() == sorted(stars["mean_score"].tolist(), reverse=True), "отсортируйте stars по убыванию mean_score"
     assert stars.iloc[0]["student"] == "Алексей Я." and stars.iloc[0]["subject"] == "Программирование", "первой должна быть строка с наибольшим баллом"
 # ─── другое решение ───

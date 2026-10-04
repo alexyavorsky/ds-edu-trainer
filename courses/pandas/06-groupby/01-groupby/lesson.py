@@ -40,16 +40,16 @@ top_category = ...
 # ─── проверка ───
 def test_by_category():
     "by_category — выручка по категориям"
-    assert isinstance(by_category, pd.Series), f"by_category — это {type(by_category).__name__}, а нужен Series: orders.groupby(\"category\")[\"revenue\"].sum()"
-    assert sorted(by_category.index) == ["Аксессуары", "Кофе", "Посуда", "Сладости", "Чай"], f"в индексе сейчас {list(by_category.index)}, а нужны пять категорий: groupby(\"category\")"
-    assert by_category["Кофе"] != 975, "это число строк, а нужна сумма выручки: [\"revenue\"].sum()"
+    assert isinstance(by_category, pd.Series), f"by_category — это {type(by_category).__name__}, а нужен Series"
+    assert sorted(by_category.index) == ["Аксессуары", "Кофе", "Посуда", "Сладости", "Чай"], f"в индексе сейчас {list(by_category.index)}, а нужны пять категорий"
+    assert by_category["Кофе"] != 975, "это число строк, а нужна сумма выручки"
     assert by_category["Кофе"] != 2138, "это сумма количества, а нужна выручка: после groupby выберите столбец revenue"
-    assert by_category["Кофе"] == 1914440 and by_category.sum() == 3301420, "суммы не те: orders.groupby(\"category\")[\"revenue\"].sum()"
+    assert by_category["Кофе"] == 1914440 and by_category.sum() == 3301420, "суммы не те: нужна сумма revenue по категориям"
 
 
 def test_top():
     "top_category — категория с наибольшей выручкой"
-    assert isinstance(top_category, str), f"top_category — это {type(top_category).__name__}, а нужно название категории: by_category.idxmax()"
+    assert isinstance(top_category, str), f"top_category — это {type(top_category).__name__}, а нужно название категории"
     assert top_category == "Кофе", f"top_category = {top_category!r}, а больше всего выручки у другой категории"
 # ─── другое решение ───
 by_category = orders.groupby("category")["revenue"].sum().sort_values(ascending=False)
@@ -82,18 +82,18 @@ channel_check = ...
 # ─── проверка ───
 def test_parts():
     "channel_revenue и channel_orders — выручка и число заказов по каналам"
-    assert isinstance(channel_revenue, pd.Series) and sorted(channel_revenue.index) == ["маркетплейс", "приложение", "сайт"], "channel_revenue — Series с тремя каналами в индексе: orders.groupby(\"channel\")[\"revenue\"].sum()"
+    assert isinstance(channel_revenue, pd.Series) and sorted(channel_revenue.index) == ["маркетплейс", "приложение", "сайт"], "channel_revenue — Series с тремя каналами в индексе"
     assert channel_revenue["сайт"] == 1522920, "выручка не та: сумма столбца revenue по каналам"
     assert isinstance(channel_orders, pd.Series) and sorted(channel_orders.index) == ["маркетплейс", "приложение", "сайт"], "channel_orders — Series с тремя каналами в индексе"
-    assert channel_orders["сайт"] != 1137, "1137 — число строк сайта, а заказ может занимать несколько строк: число разных order_id — nunique()"
-    assert channel_orders["сайт"] == 715, "число заказов не то: orders.groupby(\"channel\")[\"order_id\"].nunique()"
+    assert channel_orders["сайт"] != 1137, "1137 — число строк сайта, а заказ может занимать несколько строк: нужно число разных заказов"
+    assert channel_orders["сайт"] == 715, "число заказов не то: нужно число разных order_id в каждом канале"
 
 
 def test_check():
     "channel_check — средний чек по каналам"
     assert isinstance(channel_check, pd.Series), f"channel_check — это {type(channel_check).__name__}, а нужен Series: выручка, делённая на число заказов"
     assert abs(channel_check["сайт"] - 1522920 / 1137) > 1e-6, "выручка разделена на число строк — это выручка на строку. Средний чек — на число заказов"
-    assert abs(channel_check["сайт"] - 1522920 / 715) < 1e-6 and abs(channel_check["маркетплейс"] - 876070 / 407) < 1e-6, "средний чек — channel_revenue / channel_orders"
+    assert abs(channel_check["сайт"] - 1522920 / 715) < 1e-6 and abs(channel_check["маркетплейс"] - 876070 / 407) < 1e-6, "средний чек не тот: выручка канала на один заказ"
 # ─── другое решение ───
 groups = orders.groupby("channel")
 channel_revenue = groups["revenue"].sum()
@@ -130,19 +130,19 @@ wind_gaps = ...
 # ─── проверка ───
 def test_temp():
     "city_temp — средний дневной максимум по городам"
-    assert isinstance(city_temp, pd.Series), f"city_temp — это {type(city_temp).__name__}, а нужен Series: weather.groupby(\"city\")[\"temp_max\"].mean()"
-    assert len(city_temp) == 5 and "Сочи" in city_temp.index, "в индексе city_temp должны быть пять городов: groupby(\"city\")"
-    assert abs(city_temp["Сочи"] - 31.9) > 1e-9, "в city_temp — наибольшая температура, а нужна средняя: mean()"
-    assert abs(city_temp["Сочи"] - 17.724932) < 1e-5 and abs(city_temp["Казань"] - 8.295041) < 1e-5, "средние не те: столбец temp_max, метод mean()"
-    assert warmest == "Сочи", f"warmest = {warmest!r}, а самый тёплый город — city_temp.idxmax()"
+    assert isinstance(city_temp, pd.Series), f"city_temp — это {type(city_temp).__name__}, а нужен Series"
+    assert len(city_temp) == 5 and "Сочи" in city_temp.index, "в индексе city_temp должны быть пять городов"
+    assert abs(city_temp["Сочи"] - 31.9) > 1e-9, "в city_temp — наибольшая температура, а нужна средняя"
+    assert abs(city_temp["Сочи"] - 17.724932) < 1e-5 and abs(city_temp["Казань"] - 8.295041) < 1e-5, "средние не те: нужен средний temp_max по городам"
+    assert warmest == "Сочи", f"warmest = {warmest!r} — это не город с наибольшим средним максимумом"
 
 
 def test_gaps():
     "wind_gaps — сколько пропусков ветра в каждом городе"
-    assert isinstance(wind_gaps, pd.Series), f"wind_gaps — это {type(wind_gaps).__name__}, а нужен Series: размер группы минус число непустых значений"
+    assert isinstance(wind_gaps, pd.Series), f"wind_gaps — это {type(wind_gaps).__name__}, а нужен Series"
     assert len(wind_gaps) == 5, "в wind_gaps должны быть пять городов"
-    assert wind_gaps.sum() != 0, "получились нули: из size() нужно вычесть count() столбца wind_ms — count считает только непустые значения"
-    assert wind_gaps.sum() == 4 and wind_gaps["Москва"] == 0 and wind_gaps["Казань"] == 1, "числа не те: weather.groupby(\"city\").size() − weather.groupby(\"city\")[\"wind_ms\"].count()"
+    assert wind_gaps.sum() != 0, "получились нули: вспомните, что size считает все строки группы, а count — только непустые значения"
+    assert wind_gaps.sum() == 4 and wind_gaps["Москва"] == 0 and wind_gaps["Казань"] == 1, "числа не те: нужно число пропусков wind_ms в каждом городе"
 # ─── другое решение ───
 city_temp = weather.groupby("city")["temp_max"].sum() / weather.groupby("city")["temp_max"].count()
 warmest = city_temp.sort_values().index[-1]
@@ -172,17 +172,17 @@ best_customer = ...
 # ─── проверка ───
 def test_products():
     "product_qty и top3 — продано штук по товарам и три лидера"
-    assert isinstance(product_qty, pd.Series) and len(product_qty) == 20, "product_qty — Series с 20 товарами в индексе: orders.groupby(\"product\")[\"quantity\"].sum()"
+    assert isinstance(product_qty, pd.Series) and len(product_qty) == 20, "product_qty — Series с 20 товарами в индексе"
     assert product_qty.sum() == 5210, "суммы не те: складывать нужно столбец quantity"
-    assert isinstance(top3, pd.Series) and len(top3) == 3, "top3 — три наибольших значения product_qty: nlargest(3)"
+    assert isinstance(top3, pd.Series) and len(top3) == 3, "top3 — три наибольших значения product_qty"
     assert top3.tolist() == sorted(product_qty.tolist(), reverse=True)[:3], "top3 — три товара с наибольшим числом проданных штук, от большего к меньшему"
 
 
 def test_customer():
     "customer_revenue и best_customer — выручка по покупателям и лучший покупатель"
-    assert isinstance(customer_revenue, pd.Series) and len(customer_revenue) == 213, "customer_revenue — Series с 213 покупателями в индексе: orders.groupby(\"customer_id\")[\"revenue\"].sum()"
+    assert isinstance(customer_revenue, pd.Series) and len(customer_revenue) == 213, "customer_revenue — Series с 213 покупателями в индексе"
     assert customer_revenue.sum() == 3301420, "суммы не те: складывать нужно столбец revenue"
-    assert best_customer == "C134", f"best_customer = {best_customer!r}, а больше всех потратил другой покупатель: customer_revenue.idxmax()"
+    assert best_customer == "C134", f"best_customer = {best_customer!r}, а больше всех потратил другой покупатель"
 # ─── другое решение ───
 product_qty = orders.groupby("product")["quantity"].sum()
 top3 = product_qty.sort_values(ascending=False).head(3)

@@ -23,7 +23,7 @@ typical = ...
 def test_stats():
     "quantity_stats — сводка describe по столбцу quantity"
     assert not isinstance(quantity_stats, pd.DataFrame), "quantity_stats — таблица: describe вызван у всей таблицы, а нужен у столбца quantity"
-    assert isinstance(quantity_stats, pd.Series), f"quantity_stats — это {type(quantity_stats).__name__}, а нужен результат orders[\"quantity\"].describe()"
+    assert isinstance(quantity_stats, pd.Series), f"quantity_stats — это {type(quantity_stats).__name__}, а нужна сводка describe по столбцу quantity"
     assert "50%" in quantity_stats.index, "в quantity_stats нет строки 50% — это не сводка describe"
     assert quantity_stats["max"] != 3200, "это сводка по ценам, а нужна по столбцу quantity"
     assert quantity_stats["max"] == 10, "это сводка не по столбцу quantity"
@@ -33,7 +33,7 @@ def test_typical():
     "typical — медиана количества"
     assert not isinstance(typical, pd.Series), "typical — целая сводка, а нужно одно число из неё: строка с меткой \"50%\""
     assert abs(typical - 2.128268) > 1e-5, "это среднее (mean), а нужна медиана — строка \"50%\""
-    assert typical == 2, f"typical = {typical}, а медиана количества — 2"
+    assert typical == 2, f"typical = {typical} — это не медиана количества"
 # ─── другое решение ───
 quantity_stats = orders.describe()["quantity"]
 typical = quantity_stats.loc["50%"]
@@ -64,14 +64,14 @@ def test_counts():
     assert isinstance(channel_counts, pd.Series), f"channel_counts — это {type(channel_counts).__name__}, а нужен результат value_counts()"
     assert "сайт" in channel_counts.index, "в индексе нет каналов: value_counts нужно вызвать у столбца channel"
     assert len(channel_counts) == 3, f"в channel_counts {len(channel_counts)} строк, а каналов три"
-    assert channel_counts["сайт"] == 1137, "числа не те: нужен orders[\"channel\"].value_counts()"
+    assert channel_counts["сайт"] == 1137, "числа не те: нужны подсчёты по столбцу channel"
 
 
 def test_app():
     "app_rows — строк из приложения"
-    assert not isinstance(app_rows, pd.Series), "app_rows — Series, а нужно одно число: channel_counts[\"приложение\"]"
+    assert not isinstance(app_rows, pd.Series), "app_rows — Series, а нужно одно число: значение по метке канала"
     assert app_rows != 1137, "1137 — это сайт; по метке \"приложение\" лежит другое число"
-    assert app_rows == 684, f"app_rows = {app_rows}, а строк из приложения 684"
+    assert app_rows == 684, f"app_rows = {app_rows} — это не число строк из приложения"
 # ─── другое решение ───
 channel_counts = orders.value_counts("channel")
 app_rows = channel_counts.loc["приложение"]
@@ -107,15 +107,15 @@ categories = ...
 # ─── проверка ───
 def test_days():
     "n_days — в скольких днях года были продажи"
-    assert not isinstance(n_days, pd.Series), "n_days — Series, а нужно одно число: nunique() у столбца date"
-    assert n_days != 2448, "2448 — это число строк; разные значения считает nunique()"
-    assert n_days == 358, f"n_days = {n_days}, а разных дат в таблице 358"
+    assert not isinstance(n_days, pd.Series), "n_days — Series, а нужно одно число"
+    assert n_days != 2448, "2448 — это число строк; нужны разные даты"
+    assert n_days == 358, f"n_days = {n_days} — это не число разных дат"
 
 
 def test_categories():
     "categories — список категорий по алфавиту"
-    assert isinstance(categories, list), f"categories — это {type(categories).__name__}, а нужен список: sorted(...) вернёт список"
-    assert len(categories) == 5, f"в categories {len(categories)} значений, а категорий 5: возьмите unique() столбца category"
+    assert isinstance(categories, list), f"categories — это {type(categories).__name__}, а нужен список"
+    assert len(categories) == 5, f"в categories {len(categories)} значений, а категорий 5: нужны разные значения столбца category"
     assert sorted(categories) == ["Аксессуары", "Кофе", "Посуда", "Сладости", "Чай"], f"в categories сейчас {categories}"
     assert categories == ["Аксессуары", "Кофе", "Посуда", "Сладости", "Чай"], f"категории не по алфавиту: {categories} — отсортируйте функцией sorted"
 # ─── другое решение ───
@@ -145,9 +145,9 @@ def test_counts():
 
 def test_best():
     "best_seller и best_rows — самый частый товар"
-    assert isinstance(best_seller, str), f"best_seller — это {type(best_seller).__name__}, а нужно название товара: первая метка индекса, product_counts.index[0]"
-    assert best_seller == "Колумбия 250 г", f"best_seller = {best_seller!r}, а чаще всего покупали другой товар — он первый в product_counts"
-    assert best_rows == 218, f"best_rows = {best_rows!r}, а самый частый товар встречается в 218 строках"
+    assert isinstance(best_seller, str), f"best_seller — это {type(best_seller).__name__}, а нужно название товара: метка из индекса product_counts"
+    assert best_seller == "Колумбия 250 г", f"best_seller = {best_seller!r}: value_counts ставит самый частый товар первым"
+    assert best_rows == 218, f"best_rows = {best_rows!r} — это не число строк самого частого товара"
 # ─── другое решение ───
 product_counts = orders["product"].value_counts()
 best_seller = list(product_counts.index)[0]

@@ -23,8 +23,8 @@ top3 = ...
 # ─── проверка ───
 def test_type():
     "top3 — таблица DataFrame"
-    assert not callable(top3), "top3 — это сам метод head, а не таблица: вы забыли скобки — orders.head(3)"
-    assert isinstance(top3, pd.DataFrame), f"top3 — это {type(top3).__name__}, а нужна таблица: вызовите метод head у orders"
+    assert not callable(top3), "top3 — это сам метод head, а не таблица: вы забыли скобки"
+    assert isinstance(top3, pd.DataFrame), f"top3 — это {type(top3).__name__}, а нужна таблица"
 
 
 def test_rows():
@@ -61,14 +61,14 @@ n_cols = ...
 def test_rows():
     "n_rows — число строк"
     assert not isinstance(n_rows, tuple), f"n_rows — это весь кортеж {n_rows}: возьмите из него первое число"
-    assert n_rows != 9, "9 — это число столбцов; строки — первое число в orders.shape"
-    assert n_rows == 2448, f"n_rows = {n_rows!r}, а строк в таблице 2448 — это первое число в orders.shape"
+    assert n_rows != 9, "9 — это число столбцов; строки — первое число в shape"
+    assert n_rows == 2448, f"n_rows = {n_rows!r} — это не число строк orders"
 
 
 def test_cols():
     "n_cols — число столбцов"
     assert not isinstance(n_cols, tuple), f"n_cols — это весь кортеж {n_cols}: возьмите из него второе число"
-    assert n_cols == 9, f"n_cols = {n_cols!r}, а столбцов 9 — это второе число в orders.shape"
+    assert n_cols == 9, f"n_cols = {n_cols!r} — это не число столбцов orders"
 # ─── другое решение ───
 n_rows, n_cols = orders.shape
 # ─── другое решение ───
@@ -91,7 +91,7 @@ names = ...
 # ─── проверка ───
 def test_list():
     "names — список Python"
-    assert isinstance(names, list), f"names — это {type(names).__name__}, а нужен обычный список: передайте orders.columns в list(...)"
+    assert isinstance(names, list), f"names — это {type(names).__name__}, а нужен обычный список"
 
 
 def test_values():
@@ -116,8 +116,8 @@ sample = ...
 # ─── проверка ───
 def test_frame():
     "sample — таблица из 100 строк"
-    assert isinstance(sample, pd.DataFrame), f"sample — это {type(sample).__name__}, а нужна таблица: pd.read_csv(...)"
-    assert len(sample) == 100, f"в sample {len(sample)} строк, а нужно 100 — передайте read_csv параметр nrows"
+    assert isinstance(sample, pd.DataFrame), f"sample — это {type(sample).__name__}, а нужна таблица"
+    assert len(sample) == 100, f"в sample {len(sample)} строк, а нужно 100 — вспомните параметр nrows"
 
 
 def test_orders_kept():

@@ -19,12 +19,12 @@ channels = ...
 # ─── проверка ───
 def test_channels():
     "channels — выручка, заказы и покупатели по каналам"
-    assert isinstance(channels, pd.DataFrame), f"channels — это {type(channels).__name__}, а нужна таблица: orders.groupby(\"channel\").agg(...)"
-    assert sorted(channels.index) == ["маркетплейс", "приложение", "сайт"], "в индексе должны быть три канала: groupby(\"channel\") без as_index=False"
+    assert isinstance(channels, pd.DataFrame), f"channels — это {type(channels).__name__}, а нужна таблица"
+    assert sorted(channels.index) == ["маркетплейс", "приложение", "сайт"], "в индексе должны быть три канала"
     assert list(channels.columns)[:3] == ["total", "orders", "buyers"], f"столбцы сейчас {list(channels.columns)}, а нужны total, orders, buyers"
-    assert channels.loc["сайт", "total"] == 1522920, "total — сумма revenue"
-    assert channels.loc["сайт", "orders"] != 1137, "orders — число разных заказов, а не строк: (\"order_id\", \"nunique\")"
-    assert channels.loc["сайт", "orders"] == 715 and channels.loc["сайт", "buyers"] == 193, "orders и buyers — число разных order_id и customer_id: функция nunique"
+    assert channels.loc["сайт", "total"] == 1522920, "total не тот: нужна сумма revenue канала"
+    assert channels.loc["сайт", "orders"] != 1137, "orders — число разных заказов, а не строк"
+    assert channels.loc["сайт", "orders"] == 715 and channels.loc["сайт", "buyers"] == 193, "orders и buyers — число разных order_id и customer_id"
 # ─── другое решение ───
 g = orders.groupby("channel")
 channels = pd.DataFrame({"total": g["revenue"].sum(), "orders": g["order_id"].nunique(), "buyers": g["customer_id"].nunique()})
@@ -47,16 +47,16 @@ channels["orders_per_buyer"] = channels["orders"] / channels["buyers"]
 def test_share():
     "share — доля канала в выручке"
     assert "share" in channels.columns, "в channels нет столбца share"
-    assert abs(channels["share"].sum() - 1) < 1e-9, "доли каналов должны в сумме давать 1: total, делённый на сумму столбца total"
-    assert abs(channels.loc["сайт", "share"] - 1522920 / 3301420) < 1e-9, "доля сайта должна быть ≈ 0.461"
+    assert abs(channels["share"].sum() - 1) < 1e-9, "доли каналов должны в сумме давать 1"
+    assert abs(channels.loc["сайт", "share"] - 1522920 / 3301420) < 1e-9, "доля сайта не та: нужна доля канала в выручке всех каналов"
 
 
 def test_check():
     "check — средний чек, orders_per_buyer — заказов на покупателя"
     assert "check" in channels.columns and "orders_per_buyer" in channels.columns, "в channels нужны столбцы check и orders_per_buyer"
-    assert abs(channels.loc["сайт", "check"] - 1522920 / 715) < 1e-6, "check — total, делённый на orders"
-    assert abs(channels.loc["сайт", "orders_per_buyer"] - 193 / 715) > 1e-9, "дробь перевёрнута: заказов на покупателя — orders / buyers"
-    assert abs(channels.loc["сайт", "orders_per_buyer"] - 715 / 193) < 1e-9, "orders_per_buyer — orders, делённый на buyers"
+    assert abs(channels.loc["сайт", "check"] - 1522920 / 715) < 1e-6, "check не тот: средний чек — выручка канала на один заказ"
+    assert abs(channels.loc["сайт", "orders_per_buyer"] - 193 / 715) > 1e-9, "дробь перевёрнута"
+    assert abs(channels.loc["сайт", "orders_per_buyer"] - 715 / 193) < 1e-9, "orders_per_buyer не тот: нужно число заказов на одного покупателя"
 # ─── другое решение ───
 channels = channels.assign(
     share=channels["total"] / orders["revenue"].sum(),
@@ -84,7 +84,7 @@ city_channel = ...
 # ─── проверка ───
 def test_table():
     "city_channel — выручка по парам «город, канал», плоская таблица"
-    assert isinstance(city_channel, pd.DataFrame), f"city_channel — это {type(city_channel).__name__}, а нужна таблица: as_index=False"
+    assert isinstance(city_channel, pd.DataFrame), f"city_channel — это {type(city_channel).__name__}, а нужна таблица"
     assert list(city_channel.columns)[:3] == ["city", "channel", "revenue"], f"столбцы сейчас {list(city_channel.columns)}, а первые три должны быть city, channel, revenue"
     assert len(city_channel) == 15 and city_channel["revenue"].sum() == 3301420, "в city_channel 15 строк — по одной на пару"
 
@@ -92,11 +92,11 @@ def test_table():
 def test_share():
     "share — доля канала в выручке своего города"
     assert "share" in city_channel.columns, "в city_channel нет столбца share"
-    assert city_channel["share"].notna().all(), "в share пропуски: сумму города нужно раздать по строкам — transform(\"sum\"), а не sum()"
-    assert abs(city_channel["share"].sum() - 1) > 1e-6, "доли считаются от выручки всего магазина, а нужны от выручки своего города: делите на city_channel.groupby(\"city\")[\"revenue\"].transform(\"sum\")"
+    assert city_channel["share"].notna().all(), "в share пропуски: сумму города нужно раздать по строкам — вспомните transform"
+    assert abs(city_channel["share"].sum() - 1) > 1e-6, "доли считаются от выручки всего магазина, а нужны от выручки своего города"
     assert abs(city_channel["share"].sum() - 5) < 1e-9, "доли внутри каждого города должны давать в сумме 1"
     kazan_site = city_channel[(city_channel["city"] == "Казань") & (city_channel["channel"] == "сайт")]["share"].iloc[0]
-    assert abs(kazan_site - 219510 / 440150) < 1e-9, "доля сайта в Казани должна быть ≈ 0.499"
+    assert abs(kazan_site - 219510 / 440150) < 1e-9, "доля сайта в Казани не та: делите на выручку своего города"
 # ─── другое решение ───
 city_channel = orders.groupby(["city", "channel"])["revenue"].sum().reset_index()
 city_channel["share"] = city_channel["revenue"] / city_channel["city"].map(orders.groupby("city")["revenue"].sum())
@@ -123,7 +123,7 @@ def test_app():
     assert isinstance(app, pd.DataFrame) and len(app) == 5 and (app["channel"] == "приложение").all(), "app — пять строк таблицы city_channel с каналом «приложение»"
     shares = app["share"].tolist()
     assert shares == sorted(shares, reverse=True), "отсортируйте app по убыванию share"
-    assert isinstance(app_city, str), f"app_city — это {type(app_city).__name__}, а нужно название города: app.iloc[0][\"city\"]"
+    assert isinstance(app_city, str), f"app_city — это {type(app_city).__name__}, а нужно название города"
     assert app_city == "Екатеринбург", f"app_city = {app_city!r}, а доля приложения выше всего в другом городе"
 
 
@@ -158,15 +158,15 @@ def test_mix():
     assert isinstance(mix, pd.DataFrame), f"mix — это {type(mix).__name__}, а нужна таблица"
     assert list(mix.columns)[:3] == ["channel", "category", "revenue"], f"столбцы сейчас {list(mix.columns)}, а первые три должны быть channel, category, revenue — группировка по [\"channel\", \"category\"]"
     assert len(mix) == 15, f"в mix {len(mix)} строк, а пар «канал, категория» 15"
-    assert "share" in mix.columns and mix["share"].notna().all(), "в mix нужен столбец share без пропусков: revenue, делённая на transform(\"sum\") по каналу"
-    assert abs(mix["share"].sum() - 3) < 0.01, "доли внутри каждого канала должны давать в сумме 1: группировать для transform нужно по channel"
-    assert mix["share"].tolist()[1] == 0.526, "доли нужно округлить до трёх знаков: у кофе на маркетплейсе — 0.526"
+    assert "share" in mix.columns and mix["share"].notna().all(), "в mix нужен столбец share без пропусков"
+    assert abs(mix["share"].sum() - 3) < 0.01, "доли внутри каждого канала должны давать в сумме 1: делите на выручку своего канала"
+    assert mix["share"].tolist()[1] == 0.526, "доли нужно округлить до трёх знаков"
 
 
 def test_dishes():
     "dishes — строки посуды"
     assert isinstance(dishes, pd.DataFrame) and len(dishes) == 3 and (dishes["category"] == "Посуда").all(), "dishes — три строки таблицы mix с категорией «Посуда»"
-    assert sorted(dishes["share"].tolist()) == [0.085, 0.102, 0.188], f"доли посуды сейчас {sorted(dishes['share'].tolist())}, а должны быть 0.085, 0.102 и 0.188"
+    assert sorted(dishes["share"].tolist()) == [0.085, 0.102, 0.188], f"доли посуды сейчас {sorted(dishes['share'].tolist())}"
 # ─── другое решение ───
 mix = orders.groupby(["channel", "category"])["revenue"].sum().reset_index()
 mix["share"] = (mix["revenue"] / mix["channel"].map(orders.groupby("channel")["revenue"].sum())).round(3)
@@ -196,11 +196,11 @@ def test_totals():
 
 def test_typical():
     "typical — средний и медианный чек по каналам"
-    assert isinstance(typical, pd.DataFrame), f"typical — это {type(typical).__name__}, а нужна таблица: .agg([\"mean\", \"median\"])"
+    assert isinstance(typical, pd.DataFrame), f"typical — это {type(typical).__name__}, а нужна таблица"
     assert list(typical.columns) == ["mean", "median"], f"столбцы сейчас {list(typical.columns)}, а нужны mean и median"
     assert abs(typical.loc["сайт", "mean"] - 1339.4195) > 1e-3, "это средняя выручка строки, а не заказа: считать нужно по таблице order_totals"
-    assert abs(typical.loc["сайт", "mean"] - 1522920 / 715) < 1e-6, "средний чек сайта должен быть ≈ 2130"
-    assert typical.loc["сайт", "median"] == 1610 and typical.loc["приложение", "median"] == 1450, "медианный чек: сайт — 1610, приложение — 1450"
+    assert abs(typical.loc["сайт", "mean"] - 1522920 / 715) < 1e-6, "средний чек сайта не тот: нужна средняя сумма заказа"
+    assert typical.loc["сайт", "median"] == 1610 and typical.loc["приложение", "median"] == 1450, "медианный чек не тот: нужна медиана сумм заказов по каналу"
 # ─── другое решение ───
 order_totals = orders.groupby(["channel", "order_id"])["revenue"].sum().reset_index()
 g = order_totals.groupby("channel")["revenue"]

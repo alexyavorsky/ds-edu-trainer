@@ -35,21 +35,21 @@ compare = ...
 # ─── проверка ───
 def test_compare():
     "compare — товары с текущей и новой себестоимостью"
-    assert isinstance(compare, pd.DataFrame), f"compare — это {type(compare).__name__}, а нужна таблица: products.merge(...)"
+    assert isinstance(compare, pd.DataFrame), f"compare — это {type(compare).__name__}, а нужна таблица"
     assert len(compare) == 20, f"в compare {len(compare)} строк, а товаров 20"
-    assert "cost_x" not in compare.columns, "столбцы называются cost_x и cost_y: задайте свои окончания — suffixes=(\"_now\", \"_new\")"
+    assert "cost_x" not in compare.columns, "столбцы называются cost_x и cost_y: задайте свои окончания — вспомните параметр suffixes"
     assert "cost_now" in compare.columns and "cost_new" in compare.columns, f"в compare нужны столбцы cost_now и cost_new, а сейчас {list(compare.columns)}"
     assert "stock" in compare.columns and "name" in compare.columns, "из прайса поставщика нужны только product_id, cost и stock — тогда остальные столбцы не задвоятся"
-    assert "name_now" not in compare.columns, "задвоился столбец name: берите из supplier только нужные столбцы — supplier[[\"product_id\", \"cost\", \"stock\"]]"
+    assert "name_now" not in compare.columns, "задвоился столбец name: берите из supplier только нужные столбцы"
 
 
 def test_change():
     "cost_new — числа, cost_change — на сколько выросла себестоимость"
     assert "cost_new" in compare.columns, "в compare нет столбца cost_new — сначала исправьте то, о чём говорит проверка выше"
-    assert compare["cost_new"].dtype == float, "cost_new пока текст: pd.to_numeric(compare[\"cost_new\"], errors=\"coerce\")"
+    assert compare["cost_new"].dtype == float, "cost_new пока текст: переведите его в числа, нераспознанное — в пропуски"
     assert compare["cost_new"].isna().sum() == 3, "в cost_new должно быть три пропуска — там, где поставщик написал «нет данных» или «—»"
     assert "cost_change" in compare.columns, "в compare нет столбца cost_change"
-    assert compare.loc[0, "cost_change"] == 50, f"cost_change в первой строке — {compare.loc[0, 'cost_change']}, а должно быть 50 (920 − 870): новая себестоимость минус текущая"
+    assert compare.loc[0, "cost_change"] == 50, f"cost_change в первой строке — {compare.loc[0, 'cost_change']}: нужна новая себестоимость минус текущая"
 # ─── другое решение ───
 supplier = pd.read_csv("data/supplier_prices.csv")
 new_cost = supplier[["product_id", "cost", "stock"]].rename(columns={"cost": "cost_new"})
@@ -99,19 +99,19 @@ return_rate = ...
 # ─── проверка ───
 def test_lines():
     "lines — строки заказов с числом возвращённых штук"
-    assert isinstance(lines, pd.DataFrame), f"lines — это {type(lines).__name__}, а нужна таблица: orders.merge(returns, ...)"
-    assert len(lines) != 2458, "строк стало 2458 — больше, чем в orders: соединять нужно по двум ключам сразу, on=[\"order_id\", \"product_id\"]"
-    assert len(lines) != 150, "осталось 150 строк — только позиции с возвратом: нужны все строки заказов, how=\"left\""
+    assert isinstance(lines, pd.DataFrame), f"lines — это {type(lines).__name__}, а нужна таблица"
+    assert len(lines) != 2458, "строк стало 2458 — больше, чем в orders: соединять нужно по двум ключам сразу"
+    assert len(lines) != 150, "осталось 150 строк — только позиции с возвратом: нужны все строки заказов — вспомните параметр how"
     assert len(lines) == 2448, f"в lines {len(lines)} строк, а должно быть 2448 — столько же, сколько в orders"
-    assert "quantity_returned" in lines.columns and "quantity" in lines.columns, f"в lines нужны столбцы quantity и quantity_returned: suffixes=(\"\", \"_returned\"). Сейчас столбцы {list(lines.columns)}"
-    assert lines["quantity_returned"].isna().sum() == 0, "в quantity_returned остались пропуски: позиция без возврата — это ноль возвращённых штук, fillna(0)"
-    assert str(lines["quantity_returned"].dtype) in ("int64", "int32"), "quantity_returned должен быть целым: astype(\"int64\")"
-    assert lines["quantity_returned"].sum() == 214, "возвращено должно быть 214 штук"
+    assert "quantity_returned" in lines.columns and "quantity" in lines.columns, f"в lines нужны столбцы quantity и quantity_returned — вспомните параметр suffixes. Сейчас столбцы {list(lines.columns)}"
+    assert lines["quantity_returned"].isna().sum() == 0, "в quantity_returned остались пропуски: позиция без возврата — это ноль возвращённых штук"
+    assert str(lines["quantity_returned"].dtype) in ("int64", "int32"), "quantity_returned должен быть целым"
+    assert lines["quantity_returned"].sum() == 214, "сумма quantity_returned не та: проверьте соединение"
 
 
 def test_rate():
     "return_rate — доля возвращённых штук"
-    assert abs(return_rate - 214 / 5210) < 1e-9, f"return_rate = {return_rate!r}, а возвращено ≈ 0.041 проданных штук: сумма quantity_returned, делённая на сумму quantity"
+    assert abs(return_rate - 214 / 5210) < 1e-9, f"return_rate = {return_rate!r} — это не доля возвращённых штук"
 # ─── другое решение ───
 lines = pd.merge(orders, returns.rename(columns={"quantity": "quantity_returned"}), on=["order_id", "product_id"], how="left")
 lines["quantity_returned"] = lines["quantity_returned"].fillna(0).astype("int64")
@@ -154,18 +154,18 @@ worst_name = ...
 # ─── проверка ───
 def test_sold():
     "sold — продано и возвращено штук по товарам, доля возврата"
-    assert isinstance(sold, pd.DataFrame), f"sold — это {type(sold).__name__}, а нужна таблица: lines.groupby(\"product_id\", as_index=False).agg(...)"
+    assert isinstance(sold, pd.DataFrame), f"sold — это {type(sold).__name__}, а нужна таблица"
     assert list(sold.columns)[:3] == ["product_id", "sold", "returned"], f"столбцы сейчас {list(sold.columns)}, а первые три должны быть product_id, sold, returned"
-    assert len(sold) == 20 and sold["sold"].sum() == 5210 and sold["returned"].sum() == 214, "в sold 20 товаров; продано 5210 штук, возвращено 214"
-    assert "rate" in sold.columns and abs(sold["rate"].max() - 0.094) < 1e-9, "rate — returned, делённое на sold, с округлением до трёх знаков; наибольшее значение — 0.094"
+    assert len(sold) == 20 and sold["sold"].sum() == 5210 and sold["returned"].sum() == 214, "в sold 20 товаров"
+    assert "rate" in sold.columns and abs(sold["rate"].max() - 0.094) < 1e-9, "rate не тот: нужна доля возврата с округлением до трёх знаков"
 
 
 def test_rates():
     "rates — с названиями, по убыванию доли возврата; worst_name — товар с наибольшей долей"
     assert isinstance(rates, pd.DataFrame) and len(rates) == 20, "rates — 20 строк: sold, соединённая с названиями товаров"
-    assert "name" in rates.columns and "rate" in rates.columns, "в rates нужны столбцы name и rate: sold.merge(products[[\"product_id\", \"name\"]], on=\"product_id\")"
+    assert "name" in rates.columns and "rate" in rates.columns, "в rates нужны столбцы name и rate"
     assert rates["rate"].tolist() == sorted(rates["rate"].tolist(), reverse=True), "отсортируйте rates по убыванию rate"
-    assert worst_name == "Кофемолка ручная", f"worst_name = {worst_name!r}, а чаще всего возвращают другой товар: rates.iloc[0][\"name\"]"
+    assert worst_name == "Кофемолка ручная", f"worst_name = {worst_name!r}, а чаще всего возвращают другой товар"
 # ─── другое решение ───
 g = lines.groupby("product_id")
 sold = pd.DataFrame({"sold": g["quantity"].sum(), "returned": g["quantity_returned"].sum()}).reset_index()

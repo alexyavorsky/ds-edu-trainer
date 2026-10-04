@@ -23,14 +23,14 @@ cafe_prices = ...
 def test_system():
     "A и b — система из двух чеков"
     assert np.shape(A) == (2, 2), f"у A форма {np.shape(A)}, а нужна (2, 2): два чека × два товара"
-    assert np.shape(b) == (2,), f"у b форма {np.shape(b)}, а чеков два: [520, 560]"
+    assert np.shape(b) == (2,), f"у b форма {np.shape(b)}, а чеков два"
 
 
 def test_prices():
     "cafe_prices — цены латте и круассана"
-    assert np.shape(cafe_prices) == (2,), "cafe_prices — две цены: np.linalg.solve(A, b)"
+    assert np.shape(cafe_prices) == (2,), "cafe_prices — две цены"
     assert not np.allclose(cafe_prices, [120, 200]), "цены в обратном порядке: столбцы A — сначала латте, потом круассан"
-    assert np.allclose(cafe_prices, [200, 120]), f"cafe_prices = {np.round(cafe_prices, 2)}, а латте стоит 200 ₽, круассан — 120 ₽: проверьте строки A"
+    assert np.allclose(cafe_prices, [200, 120]), f"cafe_prices = {np.round(cafe_prices, 2)}: проверьте строки A"
 # ─── другое решение ───
 A = np.array([
     [2, 1],
@@ -64,8 +64,8 @@ def test_system():
 
 def test_prices():
     "unit_prices — цены кофе, чая и пирожного"
-    assert np.shape(unit_prices) == (3,), "unit_prices — три цены: np.linalg.solve(A3, b3)"
-    assert np.allclose(unit_prices, [120, 200, 250]), f"unit_prices = {np.round(unit_prices, 2)}, а кофе 120 ₽, чай 200 ₽, пирожное 250 ₽ — проверьте строки A3: позиции нет в чеке — 0"
+    assert np.shape(unit_prices) == (3,), "unit_prices — три цены"
+    assert np.allclose(unit_prices, [120, 200, 250]), f"unit_prices = {np.round(unit_prices, 2)}: проверьте строки A3 — если позиции нет в чеке, её количество 0"
 # ─── другое решение ───
 A3 = np.array([
     [2, 1, 1],
@@ -87,9 +87,9 @@ blend = ...
 def test_blend():
     "blend — килограммы дешёвого и дорогого сорта"
     assert np.shape(blend) == (2,), "blend — два числа: сколько килограммов каждого сорта"
-    assert abs(np.sum(blend) - 10) < 1e-9, f"в сумме {np.sum(blend):.2f} кг, а смеси нужно 10 кг: первое уравнение — x + y = 10"
+    assert abs(np.sum(blend) - 10) < 1e-9, f"в сумме {np.sum(blend):.2f} кг, а смеси нужно 10 кг: первое уравнение — про общий вес смеси"
     assert not np.allclose(blend, [3.75, 6.25]), "сорта в обратном порядке: сначала дешёвый (800 ₽/кг), потом дорогой"
-    assert np.allclose(blend, [6.25, 3.75]), f"blend = {np.round(blend, 2)}, а нужно 6.25 кг дешёвого и 3.75 кг дорогого: стоимость всей смеси — 10 × 950 = 9500"
+    assert np.allclose(blend, [6.25, 3.75]), f"blend = {np.round(blend, 2)}: проверьте второе уравнение — про стоимость всей смеси"
 # ─── другое решение ───
 weights_and_costs = np.array([[1, 1], [800, 1200]])
 totals = np.array([10, 10 * 950])

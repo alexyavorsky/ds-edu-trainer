@@ -24,17 +24,17 @@ top3 = ...
 # ─── проверка ───
 def test_top3():
     "top3 — три самые большие суммы по убыванию"
-    assert top3 is not None, "top3 = None: метод sort() ничего не возвращает — используйте np.sort(checks)"
+    assert top3 is not None, "top3 = None: метод sort() ничего не возвращает — используйте функцию np.sort"
     assert isinstance(top3, np.ndarray), f"top3 — это {type(top3).__name__}, а нужен массив"
     got = top3.tolist()
-    assert got != [380, 540, 760], "это три самые маленькие суммы: разверните отсортированный массив — [::-1]"
+    assert got != [380, 540, 760], "это три самые маленькие суммы, а нужны самые большие"
     assert got != [2210, 2990, 3120], "суммы верные, но по возрастанию; нужно от большей к меньшей"
-    assert got == [3120, 2990, 2210], f"top3 = {got}, а три самые большие суммы — [3120, 2990, 2210]"
+    assert got == [3120, 2990, 2210], f"top3 = {got} — это не три самые большие суммы"
 
 
 def test_checks():
     "checks не изменился"
-    assert checks.tolist() == [1450, 380, 2990, 760, 2210, 540, 3120, 890], "checks изменился — вместо метода sort() используйте np.sort(checks)"
+    assert checks.tolist() == [1450, 380, 2990, 760, 2210, 540, 3120, 890], "checks изменился: метод sort() меняет сам массив, а функция np.sort возвращает копию"
 # ─── другое решение ───
 checks = np.array([1450, 380, 2990, 760, 2210, 540, 3120, 890])
 top3 = np.sort(checks)[-3:][::-1]
@@ -67,11 +67,11 @@ ranking = ...
 # ─── проверка ───
 def test_ranking():
     "ranking — имена от большей выручки к меньшей"
-    assert isinstance(ranking, np.ndarray), f"ranking — это {type(ranking).__name__}, а нужен массив имён: sellers[порядок]"
+    assert isinstance(ranking, np.ndarray), f"ranking — это {type(ranking).__name__}, а нужен массив имён"
     got = ranking.tolist()
-    assert got != [3, 1, 0, 4, 2], "это индексы; подставьте их в sellers[...], чтобы получить имена"
-    assert got != ["Максим", "Роман", "Пётр", "Юлия", "Светлана"], "порядок от меньшей выручки: разверните индексы — [::-1]"
-    assert got != ["Юлия", "Светлана", "Роман", "Пётр", "Максим"], "имена отсортированы по алфавиту, а нужно по выручке: np.argsort(revenue)"
+    assert got != [3, 1, 0, 4, 2], "это индексы; по ним нужно взять имена из sellers"
+    assert got != ["Максим", "Роман", "Пётр", "Юлия", "Светлана"], "порядок от меньшей выручки, а нужно от большей"
+    assert got != ["Юлия", "Светлана", "Роман", "Пётр", "Максим"], "имена отсортированы по алфавиту, а нужно по выручке"
     assert got == ["Светлана", "Юлия", "Пётр", "Роман", "Максим"], f"ranking = {got}"
 # ─── другое решение ───
 sellers = np.array(["Пётр", "Юлия", "Максим", "Светлана", "Роман"])
@@ -109,19 +109,19 @@ most_common = ...
 # ─── проверка ───
 def test_values():
     "values — разные оценки по возрастанию"
-    assert isinstance(values, np.ndarray) and values.tolist() == [2, 3, 4, 5], "values — это np.unique(marks): [2, 3, 4, 5]"
+    assert isinstance(values, np.ndarray) and values.tolist() == [2, 3, 4, 5], "values — это должны быть разные оценки из marks по возрастанию"
 
 
 def test_counts():
     "counts — сколько раз каждая"
-    assert isinstance(counts, np.ndarray) and counts.tolist() == [1, 7, 5, 3], f"counts должно быть [1, 7, 5, 3] — используйте return_counts=True"
+    assert isinstance(counts, np.ndarray) and counts.tolist() == [1, 7, 5, 3], "counts — это не число повторов каждой оценки: вспомните параметр return_counts"
 
 
 def test_most():
     "most_common — самая частая оценка"
-    assert most_common != 7, "7 — сколько раз встречается самая частая оценка, а нужна сама оценка: values[counts.argmax()]"
+    assert most_common != 7, "7 — сколько раз встречается самая частая оценка, а нужна сама оценка"
     assert most_common != 1, "1 — это индекс; оценку возьмите из values по этому индексу"
-    assert most_common == 3, f"most_common = {most_common}, а чаще всего ставили 3"
+    assert most_common == 3, f"most_common = {most_common} — это не самая частая оценка"
 # ─── другое решение ───
 marks = np.array([4, 3, 5, 4, 4, 2, 5, 3, 4, 3, 3, 5, 3, 4, 3, 3])
 result = np.unique(marks, return_counts=True)

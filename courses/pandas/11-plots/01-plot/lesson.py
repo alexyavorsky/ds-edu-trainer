@@ -28,7 +28,7 @@ ax = ...
 # ─── проверка ───
 def test_line():
     "ax — линейный график ряда items"
-    assert hasattr(ax, "get_title") and hasattr(ax, "lines"), f"ax — это {type(ax).__name__}, а нужен график: ax = items.plot(...)"
+    assert hasattr(ax, "get_title") and hasattr(ax, "lines"), f"ax — это {type(ax).__name__}, а нужен график"
     assert len(ax.lines) == 1, f"на графике линий: {len(ax.lines)}, а нужна одна. Если вы вызвали plot в этой ячейке дважды, линии сложились на одном графике — оставьте один вызов"
     assert list(ax.lines[0].get_ydata()) == items.tolist(), "на графике не те значения: строить нужно ряд items"
 
@@ -37,7 +37,7 @@ def test_labels():
     "заголовок и подпись оси Y"
     assert hasattr(ax, "get_title"), "сначала постройте график и сохраните его в ax"
     assert ax.get_title() == "Продано штук по месяцам", f"заголовок сейчас {ax.get_title()!r}, а нужен «Продано штук по месяцам»: параметр title="
-    assert ax.get_ylabel() == "штук", f"подпись оси Y сейчас {ax.get_ylabel()!r}, а нужна «штук»: ax.set_ylabel(\"штук\")"
+    assert ax.get_ylabel() == "штук", f"подпись оси Y сейчас {ax.get_ylabel()!r}, а нужна «штук»"
 # ─── другое решение ───
 items = orders.groupby("month")["quantity"].sum()
 ax = items.plot(kind="line")
@@ -71,15 +71,15 @@ ax = ...
 # ─── проверка ───
 def test_series():
     "by_city — выручка по городам, по убыванию"
-    assert isinstance(by_city, pd.Series) and len(by_city) == 5, "by_city — Series по пяти городам: orders.groupby(\"city\")[\"revenue\"].sum()"
-    assert by_city.tolist() == sorted(by_city.tolist(), reverse=True), "отсортируйте by_city по убыванию: sort_values(ascending=False)"
-    assert by_city.index[0] == "Москва" and by_city.iloc[0] == 1310110, "первой должна быть Москва с выручкой 1310110"
+    assert isinstance(by_city, pd.Series) and len(by_city) == 5, "by_city — Series по пяти городам"
+    assert by_city.tolist() == sorted(by_city.tolist(), reverse=True), "отсортируйте by_city по убыванию"
+    assert by_city.index[0] == "Москва" and by_city.iloc[0] == 1310110, "первым должен быть город с наибольшей выручкой"
 
 
 def test_bars():
     "ax — столбчатая диаграмма с заголовком"
-    assert hasattr(ax, "patches") and hasattr(ax, "get_title"), f"ax — это {type(ax).__name__}, а нужен график: ax = by_city.plot(kind=\"bar\", ...)"
-    assert len(ax.patches) != 0, "на графике нет столбцов: похоже, построена линия — нужен kind=\"bar\""
+    assert hasattr(ax, "patches") and hasattr(ax, "get_title"), f"ax — это {type(ax).__name__}, а нужен график"
+    assert len(ax.patches) != 0, "на графике нет столбцов: похоже, построена линия, а нужны столбцы"
     assert len(ax.patches) == 5, f"столбцов на графике: {len(ax.patches)}, а городов пять"
     heights = [p.get_height() for p in ax.patches]
     assert heights == by_city.tolist(), "высоты столбцов должны совпадать со значениями by_city — от большего к меньшему"
@@ -113,18 +113,18 @@ ax = ...
 # ─── проверка ───
 def test_temp():
     "moscow_temp — дневной максимум в Москве"
-    assert isinstance(moscow_temp, pd.Series) and len(moscow_temp) == 365, "moscow_temp — столбец temp_max по строкам Москвы: weather.loc[weather[\"city\"] == \"Москва\", \"temp_max\"]"
+    assert isinstance(moscow_temp, pd.Series) and len(moscow_temp) == 365, "moscow_temp — столбец temp_max по строкам Москвы"
     assert abs(moscow_temp.max() - 27.2) < 1e-9, "в moscow_temp должен быть столбец temp_max"
 
 
 def test_hist():
     "ax — гистограмма из 20 столбцов с подписями"
-    assert hasattr(ax, "patches") and hasattr(ax, "get_title"), f"ax — это {type(ax).__name__}, а нужен график: ax = moscow_temp.plot(kind=\"hist\", ...)"
-    assert len(ax.patches) != 10, "на гистограмме 10 столбцов — это значение по умолчанию; нужно 20: bins=20"
-    assert len(ax.patches) == 20, f"столбцов на гистограмме: {len(ax.patches)}, а нужно 20: kind=\"hist\", bins=20"
+    assert hasattr(ax, "patches") and hasattr(ax, "get_title"), f"ax — это {type(ax).__name__}, а нужен график"
+    assert len(ax.patches) != 10, "на гистограмме 10 столбцов — это значение по умолчанию; нужно 20"
+    assert len(ax.patches) == 20, f"столбцов на гистограмме: {len(ax.patches)}, а нужно 20"
     assert sum(p.get_height() for p in ax.patches) == 365, "в гистограмму должны попасть все 365 дней"
     assert ax.get_title() == "Дневной максимум в Москве", f"заголовок сейчас {ax.get_title()!r}, а нужен «Дневной максимум в Москве»"
-    assert ax.get_xlabel() == "°C", f"подпись оси X сейчас {ax.get_xlabel()!r}, а нужна «°C»: ax.set_xlabel(\"°C\")"
+    assert ax.get_xlabel() == "°C", f"подпись оси X сейчас {ax.get_xlabel()!r}, а нужна «°C»"
 # ─── другое решение ───
 weather = pd.read_csv("data/weather.csv", parse_dates=["date"])
 moscow_temp = weather[weather["city"] == "Москва"]["temp_max"]
@@ -166,15 +166,15 @@ ax = ...
 # ─── проверка ───
 def test_table():
     "month_temp — средний дневной максимум: месяцы × города"
-    assert isinstance(month_temp, pd.DataFrame), f"month_temp — это {type(month_temp).__name__}, а нужна таблица: weather.pivot_table(...)"
-    assert month_temp.shape == (12, 5), f"у month_temp размер {month_temp.shape}, а нужно 12 месяцев × 5 городов: index=\"month\", columns=\"city\""
+    assert isinstance(month_temp, pd.DataFrame), f"month_temp — это {type(month_temp).__name__}, а нужна таблица"
+    assert month_temp.shape == (12, 5), f"у month_temp размер {month_temp.shape}, а нужно 12 месяцев × 5 городов"
     assert list(month_temp.index) == list(range(1, 13)) and "Сочи" in month_temp.columns, "в строках — месяцы 1–12, в столбцах — города"
-    assert abs(month_temp.loc[7, "Сочи"] - 24.35) < 0.01, "в ячейках должен быть средний temp_max за месяц: values=\"temp_max\", aggfunc=\"mean\""
+    assert abs(month_temp.loc[7, "Сочи"] - 24.35) < 0.01, "в ячейках должен быть средний temp_max за месяц"
 
 
 def test_plot():
     "ax — три линии: Сочи, Москва, Новосибирск"
-    assert hasattr(ax, "lines") and hasattr(ax, "get_title"), f"ax — это {type(ax).__name__}, а нужен график: ax = month_temp[[...]].plot(...)"
+    assert hasattr(ax, "lines") and hasattr(ax, "get_title"), f"ax — это {type(ax).__name__}, а нужен график"
     assert len(ax.lines) != 5, "на графике пять линий, а нужны три города: выберите столбцы списком до .plot"
     assert len(ax.lines) == 3, f"линий на графике: {len(ax.lines)}, а нужны три: выберите столбцы «Сочи», «Москва», «Новосибирск» списком до .plot"
     labels = [line.get_label() for line in ax.lines]

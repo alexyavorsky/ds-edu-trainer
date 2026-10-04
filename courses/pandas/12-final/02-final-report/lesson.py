@@ -50,18 +50,18 @@ worst_month = ...
 # ─── проверка ───
 def test_by_month():
     "by_month — чистая выручка, прибыль и рост по месяцам"
-    assert isinstance(by_month, pd.DataFrame), f"by_month — это {type(by_month).__name__}, а нужна таблица: data.groupby(\"month\").agg(...)"
-    assert list(by_month.index) == list(range(1, 13)), "в индексе by_month должны быть номера месяцев 1–12: группируйте по столбцу month — data.groupby(\"month\")"
+    assert isinstance(by_month, pd.DataFrame), f"by_month — это {type(by_month).__name__}, а нужна таблица"
+    assert list(by_month.index) == list(range(1, 13)), "в индексе by_month должны быть номера месяцев 1–12: группируйте по столбцу month"
     assert list(by_month.columns) == ["net", "profit", "growth"], f"столбцы сейчас {list(by_month.columns)}, а нужны net, profit, growth"
-    assert len(by_month) == 12 and by_month.loc[1, "net"] == 297120 and by_month.loc[1, "profit"] == 140940, "в by_month 12 месяцев; январь: net — 297120, profit — 140940"
-    assert by_month["growth"].isna().sum() == 1, "у января нет прошлого месяца — первое значение growth должно быть пропуском: pct_change()"
-    assert abs(by_month.loc[2, "growth"] - (-0.179)) < 1e-9 and abs(by_month.loc[12, "growth"] - 0.296) < 1e-9, "growth — рост net к прошлому месяцу, три знака: февраль — −0.179, декабрь — 0.296"
+    assert len(by_month) == 12 and by_month.loc[1, "net"] == 297120 and by_month.loc[1, "profit"] == 140940, "в by_month 12 месяцев, net и profit — суммы за месяц"
+    assert by_month["growth"].isna().sum() == 1, "у января нет прошлого месяца — первое значение growth должно быть пропуском"
+    assert abs(by_month.loc[2, "growth"] - (-0.179)) < 1e-9 and abs(by_month.loc[12, "growth"] - 0.296) < 1e-9, "growth не тот: нужен относительный рост net к прошлому месяцу, три знака"
 
 
 def test_best():
     "best_month и worst_month — лучший и худший месяц по чистой выручке"
-    assert best_month == 12, f"best_month = {best_month!r}, а лучший месяц — декабрь (12)"
-    assert worst_month == 7, f"worst_month = {worst_month!r}, а худший месяц — июль (7)"
+    assert best_month == 12, f"best_month = {best_month!r} — это не месяц с наибольшей чистой выручкой"
+    assert worst_month == 7, f"worst_month = {worst_month!r} — это не месяц с наименьшей чистой выручкой"
 # ─── другое решение ───
 by_month = data.pivot_table(values=["net", "profit"], index="month", aggfunc="sum")[["net", "profit"]]
 by_month["growth"] = (by_month["net"] / by_month["net"].shift(1) - 1).round(3)
@@ -93,9 +93,9 @@ def test_by_category():
     "by_category — выручка, прибыль, штуки, маржа и доля возврата по категориям"
     assert isinstance(by_category, pd.DataFrame), f"by_category — это {type(by_category).__name__}, а нужна таблица"
     assert list(by_category.columns) == ["net", "profit", "sold", "returned", "margin", "return_rate"], f"столбцы сейчас {list(by_category.columns)}, а нужны net, profit, sold, returned, margin, return_rate"
-    assert len(by_category) == 5 and by_category.loc["Кофе", "net"] == 1830330 and by_category.loc["Кофе", "sold"] == 2138, "в by_category пять категорий; кофе: net — 1830330, sold — 2138"
-    assert abs(by_category.loc["Чай", "margin"] - 0.56) < 1e-9, "margin — profit / net, три знака: у чая 0.56"
-    assert abs(by_category.loc["Кофе", "return_rate"] - 0.042) < 1e-9, "return_rate — returned / sold, три знака: у кофе 0.042"
+    assert len(by_category) == 5 and by_category.loc["Кофе", "net"] == 1830330 and by_category.loc["Кофе", "sold"] == 2138, "в by_category пять категорий, net и sold — суммы по категории"
+    assert abs(by_category.loc["Чай", "margin"] - 0.56) < 1e-9, "margin не тот: нужна доля прибыли в net, три знака"
+    assert abs(by_category.loc["Кофе", "return_rate"] - 0.042) < 1e-9, "return_rate не тот: нужна доля возвращённых штук среди проданных, три знака"
 
 
 def test_order():
@@ -133,16 +133,16 @@ def test_by_city():
     "by_city — выручка, заказы, покупатели, средний чек и доля по городам"
     assert isinstance(by_city, pd.DataFrame), f"by_city — это {type(by_city).__name__}, а нужна таблица"
     assert list(by_city.columns) == ["net", "orders", "buyers", "check", "share"], f"столбцы сейчас {list(by_city.columns)}, а нужны net, orders, buyers, check, share"
-    assert by_city.loc["Москва", "net"] == 1245060, "net — сумма столбца net по городу"
-    assert by_city.loc["Москва", "orders"] != 948, "orders — число разных заказов, а не строк: (\"order_id\", \"nunique\")"
-    assert by_city.loc["Москва", "orders"] == 627 and by_city.loc["Москва", "buyers"] == 79, "orders и buyers — число разных order_id и customer_id"
-    assert by_city.loc["Москва", "check"] == 1986, "check — net, делённая на orders, с округлением до рублей: в Москве 1986"
-    assert abs(by_city.loc["Москва", "share"] - 0.394) < 1e-9 and abs(by_city["share"].sum() - 1) < 0.01, "share — доля города в общей net, три знака: у Москвы 0.394"
+    assert by_city.loc["Москва", "net"] == 1245060, "net не тот: нужна сумма net по городу"
+    assert by_city.loc["Москва", "orders"] != 948, "orders — число разных заказов, а не строк"
+    assert by_city.loc["Москва", "orders"] == 627 and by_city.loc["Москва", "buyers"] == 79, "orders или buyers не те: нужно число разных заказов и покупателей"
+    assert by_city.loc["Москва", "check"] == 1986, "check не тот: нужна net на один заказ, до рублей"
+    assert abs(by_city.loc["Москва", "share"] - 0.394) < 1e-9 and abs(by_city["share"].sum() - 1) < 0.01, "share не тот: нужна доля города в общей net, три знака"
 
 
 def test_top():
     "top_check_city — город с наибольшим средним чеком"
-    assert top_check_city == "Санкт-Петербург", f"top_check_city = {top_check_city!r}, а самый высокий средний чек в другом городе: by_city[\"check\"].idxmax()"
+    assert top_check_city == "Санкт-Петербург", f"top_check_city = {top_check_city!r}, а самый высокий средний чек в другом городе"
 # ─── другое решение ───
 g = data.groupby("city")
 by_city = pd.DataFrame({"net": g["net"].sum(), "orders": g["order_id"].nunique(), "buyers": g["customer_id"].nunique()})
@@ -164,16 +164,16 @@ moscow_coffee_share = ...
 # ─── проверка ───
 def test_cross():
     "cross — чистая выручка: категории × города, с итогами «Всего»"
-    assert isinstance(cross, pd.DataFrame), f"cross — это {type(cross).__name__}, а нужна таблица: data.pivot_table(...)"
-    assert "Всего" in cross.index and "Всего" in cross.columns, "в cross нет итогов: margins=True, margins_name=\"Всего\""
+    assert isinstance(cross, pd.DataFrame), f"cross — это {type(cross).__name__}, а нужна таблица"
+    assert "Всего" in cross.index and "Всего" in cross.columns, "в cross нет итогов: вспомните параметры margins и margins_name"
     assert cross.shape == (6, 6), f"у cross размер {cross.shape}, а нужно 6 × 6: пять категорий и пять городов с итогами"
     assert "Кофе" in cross.index and "Москва" in cross.columns, "в строках — категории, в столбцах — города"
-    assert cross.loc["Кофе", "Москва"] == 735480 and cross.loc["Всего", "Всего"] == 3159140, "в ячейках — сумма net: кофе в Москве — 735480, общий итог — 3159140"
+    assert cross.loc["Кофе", "Москва"] == 735480 and cross.loc["Всего", "Всего"] == 3159140, "в ячейках должна быть сумма net"
 
 
 def test_share():
     "moscow_coffee_share — доля московского кофе во всей чистой выручке"
-    assert abs(moscow_coffee_share - 735480 / 3159140) < 1e-9, f"moscow_coffee_share = {moscow_coffee_share!r}, а доля ≈ 0.233: ячейка «Кофе, Москва», делённая на общий итог"
+    assert abs(moscow_coffee_share - 735480 / 3159140) < 1e-9, f"moscow_coffee_share = {moscow_coffee_share!r} — это не доля московского кофе во всей чистой выручке"
 # ─── другое решение ───
 cross = data.pivot_table(values="net", index="category", columns="city", aggfunc="sum", margins=True, margins_name="Всего")
 moscow_coffee_share = data.loc[(data["category"] == "Кофе") & (data["city"] == "Москва"), "net"].sum() / data["net"].sum()
@@ -199,8 +199,8 @@ def test_segment():
     "by_segment — выручка, покупатели и выручка на покупателя по сегментам"
     assert isinstance(by_segment, pd.DataFrame), f"by_segment — это {type(by_segment).__name__}, а нужна таблица"
     assert list(by_segment.columns) == ["net", "buyers", "per_buyer"], f"столбцы сейчас {list(by_segment.columns)}, а нужны net, buyers, per_buyer"
-    assert by_segment.loc["оптовый", "net"] == 737000 and by_segment.loc["оптовый", "buyers"] == 25, "оптовый сегмент: net — 737000, buyers — 25 разных покупателей"
-    assert by_segment.loc["оптовый", "per_buyer"] == 29480, "per_buyer — net / buyers с округлением до рублей: у оптовых 29480"
+    assert by_segment.loc["оптовый", "net"] == 737000 and by_segment.loc["оптовый", "buyers"] == 25, "значения не те: net — сумма по сегменту, buyers — число разных покупателей"
+    assert by_segment.loc["оптовый", "per_buyer"] == 29480, "per_buyer не тот: нужна net на одного покупателя, до рублей"
 
 
 def test_vip():
@@ -208,8 +208,8 @@ def test_vip():
     assert isinstance(vip, pd.DataFrame), f"vip — это {type(vip).__name__}, а нужна таблица"
     assert list(vip.columns) == ["customer_id", "city", "segment", "net"], f"столбцы сейчас {list(vip.columns)}, а нужны customer_id, city, segment, net"
     assert len(vip) == 5, f"в vip {len(vip)} строк, а нужно пять"
-    assert vip["customer_id"].tolist() == ["C134", "C137", "C118", "C151", "C216"], f"покупатели сейчас {vip['customer_id'].tolist()}, а пять лучших — C134, C137, C118, C151, C216"
-    assert list(vip.index) == [0, 1, 2, 3, 4], "индекс vip должен идти с нуля: reset_index(drop=True)"
+    assert vip["customer_id"].tolist() == ["C134", "C137", "C118", "C151", "C216"], f"покупатели сейчас {vip['customer_id'].tolist()}: нужны пять покупателей с наибольшей net"
+    assert list(vip.index) == [0, 1, 2, 3, 4], "индекс vip должен идти с нуля"
 # ─── другое решение ───
 g = data.groupby("segment")
 by_segment = pd.DataFrame({"net": g["net"].sum(), "buyers": g["customer_id"].nunique()})
@@ -234,7 +234,7 @@ ax = ...
 # ─── проверка ───
 def test_chart():
     "ax — две линии: чистая выручка и прибыль по месяцам"
-    assert hasattr(ax, "lines") and hasattr(ax, "get_title"), f"ax — это {type(ax).__name__}, а нужен график: by_month[[\"net\", \"profit\"]].plot(...)"
+    assert hasattr(ax, "lines") and hasattr(ax, "get_title"), f"ax — это {type(ax).__name__}, а нужен график"
     assert len(ax.lines) != 3, "на графике три линии: столбец growth рисовать не нужно — выберите net и profit"
     assert len(ax.lines) == 2, f"линий на графике: {len(ax.lines)}, а нужны две — net и profit"
     assert [line.get_label() for line in ax.lines] == ["net", "profit"], "линии должны быть net и profit — в этом порядке"

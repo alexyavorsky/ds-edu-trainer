@@ -21,9 +21,9 @@ cities = ...
 # ─── проверка ───
 def test_series():
     "cities — столбец Series"
-    assert not isinstance(cities, str), "cities — это строка с названием, а нужен сам столбец: orders[\"city\"]"
-    assert not isinstance(cities, pd.DataFrame), "cities — целая таблица, а нужен один столбец: orders[\"city\"]"
-    assert isinstance(cities, pd.Series), f"cities — это {type(cities).__name__}, а нужен столбец Series: orders[\"city\"]"
+    assert not isinstance(cities, str), "cities — это строка с названием, а нужен сам столбец"
+    assert not isinstance(cities, pd.DataFrame), "cities — целая таблица, а нужен один столбец"
+    assert isinstance(cities, pd.Series), f"cities — это {type(cities).__name__}, а нужен столбец Series"
 
 
 def test_city():
@@ -66,22 +66,22 @@ mean_items = ...
 # ─── проверка ───
 def test_total():
     "total_items — сколько штук продано"
-    assert not isinstance(total_items, pd.Series), "total_items — столбец, а нужно одно число: вызовите у столбца sum()"
+    assert not isinstance(total_items, pd.Series), "total_items — столбец, а нужно одно число"
     assert not callable(total_items), "total_items — сам метод: вы забыли скобки после sum"
     assert total_items != 1685990, "это сумма столбца price, а нужен столбец quantity"
-    assert total_items == 5210, f"total_items = {total_items}, а всего продано 5210 штук"
+    assert total_items == 5210, f"total_items = {total_items} — это не сумма столбца quantity"
 
 
 def test_max():
     "max_items — больше всего штук в одной строке"
     assert not callable(max_items), "max_items — сам метод: вы забыли скобки после max"
-    assert max_items == 10, f"max_items = {max_items}, а наибольшее количество в строке — 10"
+    assert max_items == 10, f"max_items = {max_items} — это не максимум столбца quantity"
 
 
 def test_mean():
     "mean_items — в среднем штук в строке"
     assert not callable(mean_items), "mean_items — сам метод: вы забыли скобки после mean"
-    assert abs(mean_items - 2.128268) < 1e-5, f"mean_items = {mean_items}, а среднее количество ≈ 2.13"
+    assert abs(mean_items - 2.128268) < 1e-5, f"mean_items = {mean_items} — это не среднее столбца quantity"
 # ─── другое решение ───
 quantity = orders["quantity"]
 total_items = sum(quantity)
@@ -118,15 +118,15 @@ def test_price():
     assert isinstance(sale_price, pd.Series), f"sale_price — это {type(sale_price).__name__}, а нужен столбец: цена каждой строки со скидкой"
     assert len(sale_price) == 2448, f"в sale_price {len(sale_price)} значений, а строк 2448"
     assert abs(sale_price[0] - 480.0) > 1e-6, "получилось 15 % от цены — это размер скидки; цена со скидкой — 85 % от исходной"
-    assert abs(sale_price[0] - 2720.0) < 1e-6, f"первая цена со скидкой — {sale_price[0]}, а должна быть 2720.0 (3200 × 0.85)"
-    assert abs(sale_price.sum() - 1685990 * 0.85) < 1e-3, "в sale_price должны быть цены всех строк, умноженные на 0.85"
+    assert abs(sale_price[0] - 2720.0) < 1e-6, f"первая цена со скидкой — {sale_price[0]}: цена со скидкой — 85 % от исходной"
+    assert abs(sale_price.sum() - 1685990 * 0.85) < 1e-3, "в sale_price должны быть цены всех строк со скидкой"
 
 
 def test_total():
     "sale_total — выручка года со скидкой"
-    assert not isinstance(sale_total, pd.Series), "sale_total — столбец, а нужно одно число: сложите выручку строк методом sum()"
-    assert abs(sale_total - 1433091.5) > 1e-3, "это сумма цен со скидкой, без учёта количества: умножьте на столбец quantity до сложения"
-    assert abs(sale_total - 2806207.0) < 1e-3, f"sale_total = {sale_total}, а выручка со скидкой — 2 806 207 ₽"
+    assert not isinstance(sale_total, pd.Series), "sale_total — столбец, а нужно одно число"
+    assert abs(sale_total - 1433091.5) > 1e-3, "это сумма цен со скидкой, без учёта количества: выручка строки — цена × количество"
+    assert abs(sale_total - 2806207.0) < 1e-3, f"sale_total = {sale_total} — это не выручка года со скидкой"
 # ─── другое решение ───
 sale_price = orders["price"] - orders["price"] * 0.15
 sale_total = (orders["price"] * orders["quantity"]).sum() * 0.85
@@ -146,16 +146,16 @@ avg_revenue = ...
 # ─── проверка ───
 def test_max():
     "max_revenue — самая большая выручка одной строки"
-    assert not isinstance(max_revenue, pd.Series), "max_revenue — столбец, а нужно одно число: revenue.max()"
-    assert max_revenue != 3200, "3200 — наибольшая цена; нужна наибольшая выручка строки: максимум столбца revenue"
-    assert max_revenue == 9030, f"max_revenue = {max_revenue}, а самая дорогая строка — 9030 ₽"
+    assert not isinstance(max_revenue, pd.Series), "max_revenue — столбец, а нужно одно число"
+    assert max_revenue != 3200, "3200 — наибольшая цена; нужна наибольшая выручка строки"
+    assert max_revenue == 9030, f"max_revenue = {max_revenue} — это не наибольшая выручка строки"
 
 
 def test_avg():
     "avg_revenue — средняя выручка строки"
-    assert not isinstance(avg_revenue, pd.Series), "avg_revenue — столбец, а нужно одно число: revenue.mean()"
-    assert abs(avg_revenue - 688.7214) > 1e-3, "это средняя цена; нужна средняя выручка строки: среднее столбца revenue"
-    assert abs(avg_revenue - 1348.61928) < 1e-4, f"avg_revenue = {avg_revenue}, а средняя выручка строки ≈ 1348.62 ₽"
+    assert not isinstance(avg_revenue, pd.Series), "avg_revenue — столбец, а нужно одно число"
+    assert abs(avg_revenue - 688.7214) > 1e-3, "это средняя цена; нужна средняя выручка строки"
+    assert abs(avg_revenue - 1348.61928) < 1e-4, f"avg_revenue = {avg_revenue} — это не средняя выручка строки"
 # ─── другое решение ───
 max_revenue = max(revenue)
 avg_revenue = revenue.sum() / len(revenue)

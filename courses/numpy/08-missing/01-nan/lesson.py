@@ -35,20 +35,20 @@ week_avg = ...
 def test_gaps():
     "gaps — число пропусков"
     assert gaps != 0, "gaps = 0: сравнение с np.nan всегда False — ищите пропуски через np.isnan"
-    assert gaps == 2, f"gaps = {gaps}, а пропусков в неделе два"
+    assert gaps == 2, f"gaps = {gaps} — это не число пропусков"
 
 
 def test_known():
     "known — только известные значения"
-    assert isinstance(known, np.ndarray), f"known — это {type(known).__name__}, а нужен массив: readings[маска]"
-    assert not np.isnan(known).any(), "в known остались пропуски: отберите элементы, где np.isnan даёт False — маска ~np.isnan(readings)"
+    assert isinstance(known, np.ndarray), f"known — это {type(known).__name__}, а нужен массив"
+    assert not np.isnan(known).any(), "в known остались пропуски: отберите элементы, где np.isnan даёт False"
     assert known.tolist() == [-3.1, -2.4, -4.0, -1.8, -2.2], f"known = {known.tolist()}, а должны остаться пять известных дней по порядку"
 
 
 def test_avg():
     "week_avg — средняя по известным дням"
     assert not np.isnan(week_avg), "week_avg = nan: среднее посчитано вместе с пропусками — берите known"
-    assert abs(week_avg - (-2.7)) < 1e-9, f"week_avg = {week_avg}, а средняя по пяти известным дням — −2.7"
+    assert abs(week_avg - (-2.7)) < 1e-9, f"week_avg = {week_avg} — это не средняя по известным дням"
 # ─── другое решение ───
 readings = np.array([-3.1, np.nan, -2.4, -4.0, np.nan, -1.8, -2.2])
 missing = np.isnan(readings)
@@ -102,15 +102,15 @@ def test_avg():
     "station_avg — средняя каждой станции"
     assert isinstance(station_avg, np.ndarray), f"station_avg — это {type(station_avg).__name__}, а нужен массив из трёх средних"
     assert not np.isnan(station_avg).any(), "в station_avg есть nan: обычный mean не пропускает пропуски — нужен np.nanmean"
-    assert station_avg.shape == (3,), f"у station_avg форма {station_avg.shape}, а станций 3: средняя по строкам — axis=1"
-    assert np.allclose(station_avg, [-0.85, -1.66, -3.366667], atol=1e-6), f"station_avg = {station_avg}, а должно быть около [-0.85, -1.66, -3.37]"
+    assert station_avg.shape == (3,), f"у station_avg форма {station_avg.shape}, а станций 3: нужна средняя по строкам"
+    assert np.allclose(station_avg, [-0.85, -1.66, -3.366667], atol=1e-6), f"station_avg = {station_avg} — это не средние станций без учёта пропусков"
 
 
 def test_max():
     "day_max — самая высокая температура каждого дня"
-    assert isinstance(day_max, np.ndarray) and day_max.shape == (7,), "day_max — семь чисел, по дню: максимум по столбцам — axis=0"
+    assert isinstance(day_max, np.ndarray) and day_max.shape == (7,), "day_max — семь чисел, по дню: нужен максимум по столбцам"
     assert not np.isnan(day_max).any(), "в day_max есть nan: нужен np.nanmax"
-    assert day_max.tolist() == [-2.1, -3.4, -4.4, -1.0, 0.5, 1.2, -0.3], f"day_max = {day_max.tolist()}, а максимумы дней — [-2.1, -3.4, -4.4, -1.0, 0.5, 1.2, -0.3]"
+    assert day_max.tolist() == [-2.1, -3.4, -4.4, -1.0, 0.5, 1.2, -0.3], f"day_max = {day_max.tolist()} — это не максимумы дней без учёта пропусков"
 # ─── другое решение ───
 week = np.array([
     [-2.1, -3.4, np.nan, -1.0, 0.5, 1.2, -0.3],
@@ -145,8 +145,8 @@ def test_filled():
     "filled — пропуски заменены средней"
     assert isinstance(filled, np.ndarray), f"filled — это {type(filled).__name__}, а нужен массив"
     assert len(filled) == 7, f"в filled {len(filled)} значений, а дней 7: пропуски заменяют, а не выбрасывают"
-    assert not np.isnan(filled).any(), "в filled остались пропуски: условие — np.isnan(readings), а не сравнение с np.nan"
-    assert np.allclose(filled, [-3.1, -2.7, -2.4, -4.0, -2.7, -1.8, -2.2]), f"filled = {filled}, а пропуски должны стать средней −2.7"
+    assert not np.isnan(filled).any(), "в filled остались пропуски: пропуски находит np.isnan, а сравнение с np.nan всегда False"
+    assert np.allclose(filled, [-3.1, -2.7, -2.4, -4.0, -2.7, -1.8, -2.2]), f"filled = {filled}: пропуски должны стать средней по известным дням"
 
 
 def test_readings():

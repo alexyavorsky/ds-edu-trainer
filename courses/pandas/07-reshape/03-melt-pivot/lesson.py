@@ -35,8 +35,8 @@ n_marks = ...
 # ─── проверка ───
 def test_marks():
     "marks — длинная таблица: студент, предмет, балл"
-    assert isinstance(marks, pd.DataFrame), f"marks — это {type(marks).__name__}, а нужна таблица: scores.melt(...)"
-    assert list(marks.columns) != ["student_id", "variable", "value"], "столбцы называются variable и value: задайте названия параметрами var_name=\"subject\" и value_name=\"score\""
+    assert isinstance(marks, pd.DataFrame), f"marks — это {type(marks).__name__}, а нужна таблица"
+    assert list(marks.columns) != ["student_id", "variable", "value"], "столбцы называются variable и value: задайте свои названия — вспомните параметры var_name и value_name"
     assert list(marks.columns) == ["student_id", "subject", "score"], f"столбцы сейчас {list(marks.columns)}, а нужны student_id, subject, score"
     assert len(marks) == 150, f"в marks {len(marks)} строк, а должно быть 150: 30 студентов × 5 предметов"
     assert sorted(marks["subject"].unique()) == ["english", "history", "math", "physics", "programming"], "в столбце subject должны быть названия пяти предметов"
@@ -45,7 +45,7 @@ def test_marks():
 
 def test_n():
     "n_marks — число оценок"
-    assert n_marks == 150, f"n_marks = {n_marks!r}, а оценок 150: len(marks)"
+    assert n_marks == 150, f"n_marks = {n_marks!r} — это не число строк marks"
 # ─── другое решение ───
 marks = scores.melt("student_id", ["math", "physics", "programming", "history", "english"], "subject", "score")
 n_marks = marks.shape[0]
@@ -65,15 +65,15 @@ weak = ...
 # ─── проверка ───
 def test_mean():
     "subject_mean — средний балл по предметам, один знак"
-    assert isinstance(subject_mean, pd.Series), f"subject_mean — это {type(subject_mean).__name__}, а нужен Series: marks.groupby(\"subject\")[\"score\"].mean()"
+    assert isinstance(subject_mean, pd.Series), f"subject_mean — это {type(subject_mean).__name__}, а нужен Series"
     assert len(subject_mean) == 5 and "math" in subject_mean.index, "в индексе должны быть пять предметов"
-    assert abs(subject_mean["history"] - 69.7) < 1e-9 and abs(subject_mean["english"] - 66.0) < 1e-9, "средние не те или не округлены до одного знака: история — 69.7, английский — 66.0"
+    assert abs(subject_mean["history"] - 69.7) < 1e-9 and abs(subject_mean["english"] - 66.0) < 1e-9, "средние не те или не округлены до одного знака"
 
 
 def test_weak():
     "weak — оценки ниже 50, от низких к высоким"
-    assert isinstance(weak, pd.DataFrame), f"weak — это {type(weak).__name__}, а нужна таблица: marks[маска]"
-    assert len(weak) == 10 and weak["score"].max() < 50, f"в weak {len(weak)} строк, а оценок ниже 50 — десять"
+    assert isinstance(weak, pd.DataFrame), f"weak — это {type(weak).__name__}, а нужна таблица"
+    assert len(weak) == 10 and weak["score"].max() < 50, f"в weak {len(weak)} строк — проверьте условие"
     assert weak["score"].tolist() == sorted(weak["score"].tolist()), "отсортируйте weak по баллу по возрастанию"
 # ─── другое решение ───
 subject_mean = marks.pivot_table(values="score", index="subject", aggfunc="mean")["score"].round(1)
@@ -118,10 +118,10 @@ def test_term():
 
 def test_sheet():
     "sheet — ведомость: студенты в строках, предметы в столбцах"
-    assert isinstance(sheet, pd.DataFrame), f"sheet — это {type(sheet).__name__}, а нужна таблица: first_term.pivot(...)"
+    assert isinstance(sheet, pd.DataFrame), f"sheet — это {type(sheet).__name__}, а нужна таблица"
     assert sheet.shape == (30, 5), f"у sheet размер {sheet.shape}, а нужно 30 студентов × 5 предметов"
-    assert "Анна А." in sheet.index and "Физика" in sheet.columns, "в строках — студенты (index=\"student\"), в столбцах — предметы (columns=\"subject\")"
-    assert sheet.loc["Анна А.", "Физика"] == 49 and sheet.loc["Анна А.", "Математика"] == 68, "в ячейках должны быть баллы первого семестра: values=\"score\""
+    assert "Анна А." in sheet.index and "Физика" in sheet.columns, "в строках — студенты, в столбцах — предметы"
+    assert sheet.loc["Анна А.", "Физика"] == 49 and sheet.loc["Анна А.", "Математика"] == 68, "в ячейках должны быть баллы первого семестра"
 # ─── другое решение ───
 first_term = grades.query("term == 1")
 sheet = first_term.pivot_table(values="score", index="student", columns="subject", aggfunc="first")
@@ -143,17 +143,17 @@ best_growth = ...
 # ─── проверка ───
 def test_terms():
     "terms — средний балл студента по семестрам"
-    assert isinstance(terms, pd.DataFrame), f"terms — это {type(terms).__name__}, а нужна таблица: grades.pivot_table(...)"
-    assert len(terms) == 30 and 1 in terms.columns and 2 in terms.columns, "в строках — 30 студентов, в столбцах — семестры 1 и 2: index=\"student\", columns=\"term\""
-    assert abs(terms.loc["Анна А.", 1] - 69.6) < 1e-9, "в ячейках должен быть средний балл по пяти предметам: values=\"score\", aggfunc=\"mean\""
+    assert isinstance(terms, pd.DataFrame), f"terms — это {type(terms).__name__}, а нужна таблица"
+    assert len(terms) == 30 and 1 in terms.columns and 2 in terms.columns, "в строках — 30 студентов, в столбцах — семестры 1 и 2"
+    assert abs(terms.loc["Анна А.", 1] - 69.6) < 1e-9, "в ячейках должен быть средний балл по пяти предметам"
 
 
 def test_growth():
     "growth — прирост среднего балла, best_growth — кто вырос сильнее всех"
-    assert "growth" in terms.columns, "в terms нет столбца growth: terms[2] - terms[1]"
+    assert "growth" in terms.columns, "в terms нет столбца growth"
     assert abs(terms.loc["Павел Ч.", "growth"] - (-11.8)) > 1e-9, "знак перепутан: из второго семестра вычитают первый"
     assert abs(terms.loc["Павел Ч.", "growth"] - 11.8) < 1e-9, "growth — средний балл второго семестра минус средний балл первого"
-    assert best_growth == "Павел Ч.", f"best_growth = {best_growth!r}, а сильнее всех вырос другой студент: terms[\"growth\"].idxmax()"
+    assert best_growth == "Павел Ч.", f"best_growth = {best_growth!r}, а сильнее всех вырос другой студент"
 # ─── другое решение ───
 terms = grades.groupby(["student", "term"])["score"].mean().unstack()
 terms["growth"] = terms[2] - terms[1]

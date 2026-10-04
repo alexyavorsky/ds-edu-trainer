@@ -25,7 +25,7 @@ total = ...
 # ─── проверка ───
 def test_array():
     "total — массив из семи чисел"
-    assert isinstance(total, np.ndarray), f"total — это {type(total).__name__}, а нужен массив: сложите morning и evening"
+    assert isinstance(total, np.ndarray), f"total — это {type(total).__name__}, а нужен массив: арифметика с массивами даёт массив"
     assert len(total) == 7, f"в total {len(total)} чисел, а дней 7"
 
 
@@ -33,7 +33,7 @@ def test_values():
     "total — продажи за каждый день"
     assert isinstance(total, np.ndarray), "total пока не массив — сначала исправьте то, о чём говорит проверка выше"
     got = total.tolist()
-    assert got == [55, 66, 57, 75, 96, 111, 98], f"получилось {got}, а в понедельник продано 34 + 21 = 55 чашек"
+    assert got == [55, 66, 57, 75, 96, 111, 98], f"получилось {got}, а в понедельник продано 55 чашек"
 # ─── другое решение ───
 morning = np.array([34, 41, 38, 45, 52, 60, 58])
 evening = np.array([21, 25, 19, 30, 44, 51, 40])
@@ -59,15 +59,15 @@ secs = ...
 # ─── проверка ───
 def test_mins():
     "mins — целые минуты каждого звонка"
-    assert isinstance(mins, np.ndarray), f"mins — это {type(mins).__name__}, а нужен массив: calls // 60"
+    assert isinstance(mins, np.ndarray), f"mins — это {type(mins).__name__}, а нужен массив"
     got = np.asarray(mins).tolist()
-    assert got != [130 / 60, 59 / 60, 6.0, 245 / 60, 61 / 60], "обычное деление / дало дробные минуты, а нужны целые — это //"
+    assert got != [130 / 60, 59 / 60, 6.0, 245 / 60, 61 / 60], "обычное деление / дало дробные минуты, а нужны целые — вспомните целочисленное деление"
     assert got == [2, 0, 6, 4, 1], f"в mins {got}, а 130 секунд — это 2 целые минуты"
 
 
 def test_secs():
     "secs — оставшиеся секунды"
-    assert isinstance(secs, np.ndarray), f"secs — это {type(secs).__name__}, а нужен массив: calls % 60"
+    assert isinstance(secs, np.ndarray), f"secs — это {type(secs).__name__}, а нужен массив"
     assert np.asarray(secs).tolist() == [10, 59, 0, 5, 1], f"в secs {np.asarray(secs).tolist()}, а у 130 секунд остаётся 10"
 # ─── другое решение ───
 calls = np.array([130, 59, 360, 245, 61])
@@ -103,7 +103,7 @@ avg_check = ...
 # ─── проверка ───
 def test_array():
     "avg_check — массив из пяти чисел"
-    assert isinstance(avg_check, np.ndarray), f"avg_check — это {type(avg_check).__name__}, а нужен массив: разделите revenue на checks"
+    assert isinstance(avg_check, np.ndarray), f"avg_check — это {type(avg_check).__name__}, а нужен массив: арифметика с массивами даёт массив"
     assert len(avg_check) == 5, f"в avg_check {len(avg_check)} чисел, а дней 5"
 
 
@@ -112,7 +112,7 @@ def test_values():
     assert isinstance(avg_check, np.ndarray), "avg_check пока не массив — сначала исправьте то, о чём говорит проверка выше"
     got = np.asarray(avg_check, dtype=float)
     assert not np.allclose(got, [92 / 18400, 105 / 21150, 80 / 16800, 110 / 25300, 136 / 30600]), "деление перевёрнуто: выручку делят на число покупок, а не наоборот"
-    assert np.allclose(got, [200, 201.43, 210, 230, 225], atol=0.01), f"получилось {np.round(got, 2).tolist()}, а в первый день чек 18400 / 92 = 200 ₽"
+    assert np.allclose(got, [200, 201.43, 210, 230, 225], atol=0.01), f"получилось {np.round(got, 2).tolist()}, а в первый день чек 200 ₽"
 # ─── другое решение ───
 revenue = np.array([18400, 21150, 16800, 25300, 30600])
 checks = np.array([92, 105, 80, 110, 136])
@@ -133,7 +133,7 @@ percent = ...
 # ─── проверка ───
 def test_array():
     "percent — массив из пяти процентов"
-    assert isinstance(percent, np.ndarray), f"percent — это {type(percent).__name__}, а нужен массив: done / goal * 100"
+    assert isinstance(percent, np.ndarray), f"percent — это {type(percent).__name__}, а нужен массив"
     assert len(percent) == 5, f"в percent {len(percent)} чисел, а городов 5"
 
 
@@ -141,7 +141,7 @@ def test_values():
     "процент выполнения плана по каждому городу"
     assert isinstance(percent, np.ndarray), "percent пока не массив — сначала исправьте то, о чём говорит проверка выше"
     got = np.asarray(percent, dtype=float)
-    assert not np.allclose(got, [1.08, 0.9, 1.0, 0.6, 1.15]), "получилась доля, а нужны проценты — умножьте на 100"
+    assert not np.allclose(got, [1.08, 0.9, 1.0, 0.6, 1.15]), "получилась доля, а нужны проценты: доля 1 — это 100 %"
     assert np.allclose(got, [108, 90, 100, 60, 115]), f"получилось {np.round(got, 1).tolist()}, а первый город выполнил план на 108 %"
 # ─── другое решение ───
 goal = np.array([500, 320, 280, 150, 200])

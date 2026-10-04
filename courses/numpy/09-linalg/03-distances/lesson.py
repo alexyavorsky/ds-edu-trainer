@@ -48,14 +48,14 @@ nearest = ...
 # ─── проверка ───
 def test_dists():
     "dists — расстояния до шести магазинов"
-    assert isinstance(dists, np.ndarray), "dists — одно число: без axis=1 norm считает длину всей таблицы"
-    assert dists.shape == (6,), f"у dists форма {dists.shape}, а магазинов 6: норма каждой строки — axis=1"
-    assert np.allclose(dists, [1.414214, 3.605551, 4.0, 4.123106, 2.5, 4.123106], atol=1e-5), f"dists = {np.round(dists, 3)}, а должно быть ≈ [1.414, 3.606, 4, 4.123, 2.5, 4.123]"
+    assert isinstance(dists, np.ndarray), "dists — одно число: без оси norm считает длину всей таблицы"
+    assert dists.shape == (6,), f"у dists форма {dists.shape}, а магазинов 6: нужна норма каждой строки"
+    assert np.allclose(dists, [1.414214, 3.605551, 4.0, 4.123106, 2.5, 4.123106], atol=1e-5), f"dists = {np.round(dists, 3)} — это не расстояния от дома до магазинов"
 
 
 def test_nearest():
     "nearest — номер ближайшего магазина"
-    assert nearest == 0, f"nearest = {nearest}, а ближе всех магазин в строке 0 (≈ 1.41 км)"
+    assert nearest == 0, f"nearest = {nearest} — это не номер ближайшего магазина"
 # ─── другое решение ───
 shops = np.array([
     [1.0, 2.0],
@@ -101,15 +101,15 @@ max_dist = ...
 def test_dist():
     "dist — таблица 5 × 5"
     assert isinstance(dist, np.ndarray), f"dist — это {type(dist).__name__}, а нужна таблица расстояний"
-    assert dist.shape != (5, 5, 2), "у dist форма (5, 5, 2) — это разности; норма по последней оси: axis=2"
+    assert dist.shape != (5, 5, 2), "у dist форма (5, 5, 2) — это разности; норму нужно взять по последней оси"
     assert dist.shape == (5, 5), f"у dist форма {dist.shape}, а нужна (5, 5): все пары пяти городов"
     assert abs(dist[0, 1] - 5) < 1e-9, "от города 0 до города 1 должно быть 5: проверьте разности"
 
 
 def test_max():
     "max_dist — наибольшее расстояние"
-    assert np.shape(max_dist) == (), "max_dist — массив, а нужно одно число: max без axis"
-    assert abs(max_dist - 9.848858) < 1e-5, f"max_dist = {max_dist}, а дальше всего друг от друга города 2 и 4 — ≈ 9.85"
+    assert np.shape(max_dist) == (), "max_dist — массив, а нужно одно число"
+    assert abs(max_dist - 9.848858) < 1e-5, f"max_dist = {max_dist} — это не наибольшее расстояние между городами"
 # ─── другое решение ───
 towns = np.array([[0, 0], [3, 4], [6, 0], [7, 5], [2, 9]])
 diff_all = towns[:, np.newaxis] - towns
@@ -138,19 +138,19 @@ neighbor_dist = ...
 # ─── проверка ───
 def test_dist_kept():
     "dist не изменился"
-    assert (dist.diagonal() == 0).all(), "в dist изменилась диагональ: заполняйте копию — dist.copy()"
+    assert (dist.diagonal() == 0).all(), "в dist изменилась диагональ: заполняйте копию"
 
 
 def test_neighbor():
     "neighbor — ближайший другой город"
-    assert np.shape(neighbor) == (5,), f"у neighbor форма {np.shape(neighbor)}, а городов 5: argmin по строкам, axis=1"
-    assert neighbor.tolist() != [0, 1, 2, 3, 4], "каждый город ближе всего к самому себе: заполните диагональ np.inf"
-    assert neighbor.tolist() == [1, 3, 1, 1, 1], f"neighbor = {neighbor.tolist()}, а ближайшие соседи — [1, 3, 1, 1, 1]"
+    assert np.shape(neighbor) == (5,), f"у neighbor форма {np.shape(neighbor)}, а городов 5: нужен argmin по строкам"
+    assert neighbor.tolist() != [0, 1, 2, 3, 4], "каждый город ближе всего к самому себе: уберите диагональ из поиска"
+    assert neighbor.tolist() == [1, 3, 1, 1, 1], f"neighbor = {neighbor.tolist()} — это не ближайшие другие города"
 
 
 def test_neighbor_dist():
     "neighbor_dist — расстояние до ближайшего"
-    assert np.shape(neighbor_dist) == (5,), "neighbor_dist — пять расстояний: min по axis=1"
+    assert np.shape(neighbor_dist) == (5,), "neighbor_dist — пять расстояний — по одному на город"
     assert np.allclose(neighbor_dist, [5.0, 4.123106, 5.0, 4.123106, 5.09902], atol=1e-5), f"neighbor_dist = {np.round(neighbor_dist, 3)}"
 # ─── другое решение ───
 no_self = dist + 0

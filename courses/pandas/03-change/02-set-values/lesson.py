@@ -29,7 +29,7 @@ fixed = pd.read_csv("data/products.csv")
 def test_fixed():
     "в строке 12 цена 250 и себестоимость 120"
     assert isinstance(fixed, pd.DataFrame) and fixed.shape == (20, 5), "fixed должна остаться таблицей товаров: 20 строк, 5 столбцов"
-    assert fixed.loc[12, "price"] != 210 or fixed.loc[12, "cost"] != 100, "строка 12 не изменилась: fixed.loc[12, \"price\"] = 250"
+    assert fixed.loc[12, "price"] != 210 or fixed.loc[12, "cost"] != 100, "строка 12 не изменилась"
     assert fixed.loc[12, "price"] == 250, f"цена в строке 12 — {fixed.loc[12, 'price']}, а нужна 250"
     assert fixed.loc[12, "cost"] == 120, f"себестоимость в строке 12 — {fixed.loc[12, 'cost']}, а нужна 120"
 
@@ -71,9 +71,9 @@ def test_tea():
     "чай подорожал на 30 ₽"
     assert isinstance(sale, pd.DataFrame) and sale.shape == (20, 5), "sale должна остаться таблицей товаров: 20 строк, 5 столбцов"
     tea = sale.loc[sale["category"] == "Чай", "price"].tolist()
-    assert tea != [350, 390, 540, 260], "цены чая не изменились. Если вы писали sale[...][\"price\"] = ..., это запись в два шага: она меняет временную копию. Нужен один шаг: sale.loc[маска, \"price\"] = ..."
+    assert tea != [350, 390, 540, 260], "цены чая не изменились. Если вы писали sale[...][\"price\"] = ..., это запись в два шага: она меняет временную копию. Нужна запись в один шаг — через loc"
     assert tea != [30, 30, 30, 30], "цены чая стали равны 30, а нужно прибавить 30 к прежним ценам"
-    assert tea == [380, 420, 570, 290], f"цены чая сейчас {tea}, а должны быть [380, 420, 570, 290]"
+    assert tea == [380, 420, 570, 290], f"цены чая сейчас {tea}, а нужно прибавить 30 к прежним ценам чая"
 
 
 def test_rest():
@@ -135,13 +135,13 @@ def test_draft():
     "draft — копия с нулевыми ценами"
     assert isinstance(draft, pd.DataFrame), f"draft — это {type(draft).__name__}, а нужна таблица: копия original"
     assert draft.shape == (20, 5), f"у draft размер {draft.shape}, а должен быть (20, 5) — как у original"
-    assert draft["price"].sum() == 0, "цены в draft не обнулены: draft[\"price\"] = 0"
+    assert draft["price"].sum() == 0, "цены в draft не обнулены"
     assert draft["cost"].sum() == 9670, "в draft изменилась себестоимость, а обнулить нужно только price"
 
 
 def test_original():
     "original не изменилась"
-    assert draft is not original, "draft и original — одна и та же таблица под двумя именами: draft = original не создаёт копию. Нужен original.copy()"
+    assert draft is not original, "draft и original — одна и та же таблица под двумя именами: draft = original не создаёт копию. Нужна копия"
     assert original["price"].sum() == 18160, "цены в original изменились, а она должна остаться исходной"
 # ─── другое решение ───
 original = pd.read_csv("data/products.csv")
@@ -175,9 +175,9 @@ def test_coffee():
     "кофе подорожал на 7.5 %"
     assert isinstance(raised, pd.DataFrame) and raised.shape == (20, 5), "raised должна остаться таблицей товаров: 20 строк, 5 столбцов"
     coffee = raised.loc[raised["category"] == "Кофе", "price"].tolist()
-    assert coffee != [1450, 690, 790, 1290, 720], "цены кофе не изменились: raised.loc[маска, \"price\"] = ..."
+    assert coffee != [1450, 690, 790, 1290, 720], "цены кофе не изменились: записывайте через loc с маской"
     expected = [1558.75, 741.75, 849.25, 1386.75, 774.0]
-    assert all(abs(a - b) < 1e-6 for a, b in zip(coffee, expected)), f"цены кофе сейчас {coffee}, а должны быть {expected}: прежняя цена × 1.075"
+    assert all(abs(a - b) < 1e-6 for a, b in zip(coffee, expected)), f"цены кофе сейчас {coffee}: прежние цены кофе нужно поднять на 7.5 %"
 
 
 def test_rest():

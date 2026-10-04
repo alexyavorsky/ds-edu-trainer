@@ -20,15 +20,15 @@ def test_shapes():
     "три массива по 365 значений"
     for name, value in [("tmin", tmin), ("tmax", tmax), ("precip", precip)]:
         assert isinstance(value, np.ndarray), f"{name} — это {type(value).__name__}, а нужен массив из np.loadtxt"
-        assert value.shape == (365,), f"у {name} форма {value.shape}, а нужен один столбец из 365 значений — задайте usecols="
+        assert value.shape == (365,), f"у {name} форма {value.shape}, а нужен один столбец из 365 значений — выберите столбец при чтении"
 
 
 def test_columns():
     "в каждом массиве — свой столбец"
     assert isinstance(tmin, np.ndarray) and isinstance(tmax, np.ndarray) and isinstance(precip, np.ndarray), "сначала исправьте то, о чём говорит проверка выше"
-    assert tmin.min() == -14.9, "tmin — не столбец temp_min: его номер 1"
-    assert tmax.max() == 27.2, "tmax — не столбец temp_max: его номер 2"
-    assert precip.min() == 0 and precip.max() == 24.4, "precip — не столбец precip_mm: его номер 3"
+    assert tmin.min() == -14.9, "tmin — не столбец temp_min — номера столбцов считают с нуля"
+    assert tmax.max() == 27.2, "tmax — не столбец temp_max — номера столбцов считают с нуля"
+    assert precip.min() == 0 and precip.max() == 24.4, "precip — не столбец precip_mm — номера столбцов считают с нуля"
 # ─── другое решение ───
 path = "data/moscow_2025.csv"
 tmin = np.loadtxt(path, delimiter=",", skiprows=1, usecols=1)
@@ -48,13 +48,13 @@ warm_temp = ...
 # ─── проверка ───
 def test_day():
     "warm_day — номер самого тёплого дня (с 1)"
-    assert warm_day != 196, "196 — это индекс; номер дня на единицу больше"
-    assert warm_day == 197, f"warm_day = {warm_day}, а самый тёплый — 197-й день"
+    assert warm_day != 196, "196 — это индекс, а дни нумеруются с 1"
+    assert warm_day == 197, f"warm_day = {warm_day} — это не номер самого тёплого дня"
 
 
 def test_temp():
     "warm_temp — его температура"
-    assert warm_temp == 27.2, f"warm_temp = {warm_temp}, а самый тёплый день — 27.2 °C"
+    assert warm_temp == 27.2, f"warm_temp = {warm_temp} — это не температура самого тёплого дня"
 # ─── другое решение ───
 i = np.argmax(tmax)
 warm_day = i + 1
@@ -72,13 +72,13 @@ cold_temp = ...
 # ─── проверка ───
 def test_day():
     "cold_day — номер самой холодной ночи (с 1)"
-    assert cold_day != 44, "44 — это индекс; номер дня на единицу больше"
-    assert cold_day == 45, f"cold_day = {cold_day}, а самая холодная ночь — в 45-й день"
+    assert cold_day != 44, "44 — это индекс, а дни нумеруются с 1"
+    assert cold_day == 45, f"cold_day = {cold_day} — это не номер самой холодной ночи"
 
 
 def test_temp():
     "cold_temp — её температура"
-    assert cold_temp == -14.9, f"cold_temp = {cold_temp}, а самый холодный минимум — −14.9 °C"
+    assert cold_temp == -14.9, f"cold_temp = {cold_temp} — это не температура самой холодной ночи"
 # ─── другое решение ───
 cold_temp = tmin.min()
 cold_day = np.argmin(tmin) + 1
@@ -93,9 +93,9 @@ amp = ...
 # ─── проверка ───
 def test_amp():
     "amp — средний суточный перепад"
-    assert not isinstance(amp, np.ndarray), "amp — массив, а нужно одно число: среднее от tmax - tmin"
+    assert not isinstance(amp, np.ndarray), "amp — массив, а нужно одно число: средний перепад за все дни"
     assert abs(amp + 5.519726) > 1e-4, "перепад получился отрицательным: из максимума вычитайте минимум"
-    assert abs(amp - 5.519726) < 1e-4, f"amp = {amp}, а средний перепад ≈ 5.52 °C"
+    assert abs(amp - 5.519726) < 1e-4, f"amp = {amp} — это не средний суточный перепад"
 # ─── другое решение ───
 amp = tmax.mean() - tmin.mean()
 # ─── ошибка ───
@@ -109,7 +109,7 @@ tmax_f = ...
 def test_int():
     "tmax_f — массив целых чисел"
     assert isinstance(tmax_f, np.ndarray), f"tmax_f — это {type(tmax_f).__name__}, а нужен массив"
-    assert tmax_f.dtype.kind == "i", f"тип tmax_f — {tmax_f.dtype}, а нужны целые: .astype(int) к результату формулы"
+    assert tmax_f.dtype.kind == "i", f"тип tmax_f — {tmax_f.dtype}, а нужны целые"
     assert tmax_f.shape == (365,), f"у tmax_f форма {tmax_f.shape}, а нужно 365 значений"
 
 
@@ -117,8 +117,8 @@ def test_values():
     "температуры переведены в °F"
     assert isinstance(tmax_f, np.ndarray) and tmax_f.shape == (365,), "сначала исправьте то, о чём говорит проверка выше"
     first = tmax_f.tolist()[:5]
-    assert first != [26, 26, 26, 19, 19], "похоже, astype(int) применён к tmax до формулы: скобки вокруг формулы, потом astype"
-    assert first == [26, 26, 25, 19, 19], f"первые значения — {first}, а должны быть [26, 26, 25, 19, 19]: формула C × 9 / 5 + 32, от результата — целая часть"
+    assert first != [26, 26, 26, 19, 19], "похоже, к целым приведены градусы Цельсия до перевода: целую часть берут от результата формулы"
+    assert first == [26, 26, 25, 19, 19], f"первые значения — {first}: переведите по формуле из условия и возьмите целую часть результата"
 # ─── другое решение ───
 tmax_f = np.array(tmax * 1.8 + 32, dtype=int)
 # ─── ошибка ───
@@ -133,13 +133,13 @@ rain_avg = ...
 # ─── проверка ───
 def test_day():
     "wet_day — номер самого дождливого дня"
-    assert wet_day != 222, "222 — это индекс; номер дня на единицу больше"
-    assert wet_day == 223, f"wet_day = {wet_day}, а больше всего осадков выпало в 223-й день"
+    assert wet_day != 222, "222 — это индекс, а дни нумеруются с 1"
+    assert wet_day == 223, f"wet_day = {wet_day} — это не номер самого дождливого дня"
 
 
 def test_avg():
     "rain_avg — осадки в среднем за день"
-    assert abs(rain_avg - 1.948767) < 1e-5, f"rain_avg = {rain_avg}, а в среднем выпадало ≈ 1.95 мм в день"
+    assert abs(rain_avg - 1.948767) < 1e-5, f"rain_avg = {rain_avg} — это не средние осадки за день"
 # ─── другое решение ───
 wet_day = np.argmax(precip) + 1
 rain_avg = precip.sum() / 365

@@ -26,16 +26,16 @@ last_rows = ...
 def test_row():
     "row_100 — сотая по счёту строка"
     assert not isinstance(row_100, pd.DataFrame), "row_100 — таблица, а нужна одна строка: iloc с одним числом, без среза"
-    assert isinstance(row_100, pd.Series), f"row_100 — это {type(row_100).__name__}, а нужна строка таблицы: orders.iloc[...]"
-    assert row_100["product"] != "Улун 100 г", "это строка с позицией 100 — сто первая по счёту: позиции считаются с нуля, сотая строка — 99"
-    assert row_100["order_id"] == 10061 and row_100["product"] == "Зефир", "это не сотая строка: нужна позиция 99"
+    assert isinstance(row_100, pd.Series), f"row_100 — это {type(row_100).__name__}, а нужна строка таблицы"
+    assert row_100["product"] != "Улун 100 г", "это строка с позицией 100 — сто первая по счёту: позиции считаются с нуля"
+    assert row_100["order_id"] == 10061 and row_100["product"] == "Зефир", "это не сотая строка: позиции считаются с нуля"
 
 
 def test_last():
     "last_rows — четыре последние строки"
-    assert isinstance(last_rows, pd.DataFrame), f"last_rows — это {type(last_rows).__name__}, а нужна таблица: срез iloc[-4:]"
+    assert isinstance(last_rows, pd.DataFrame), f"last_rows — это {type(last_rows).__name__}, а нужна таблица"
     assert len(last_rows) == 4, f"в last_rows {len(last_rows)} строк, а нужно 4"
-    assert last_rows["order_id"].tolist() == [11574, 11575, 11575, 11576], "это не последние строки таблицы: срез от -4 до конца"
+    assert last_rows["order_id"].tolist() == [11574, 11575, 11575, 11576], "это не последние строки таблицы"
 # ─── другое решение ───
 row_100 = orders.loc[99]
 last_rows = orders.tail(4)
@@ -63,8 +63,8 @@ corner = ...
 # ─── проверка ───
 def test_corner():
     "corner — 5 строк и 3 столбца"
-    assert isinstance(corner, pd.DataFrame), f"corner — это {type(corner).__name__}, а нужна таблица: orders.iloc[строки, столбцы]"
-    assert corner.shape[0] != 4, "в corner 4 строки: конец среза iloc не входит — позиции с 10 по 14 это 10:15"
+    assert isinstance(corner, pd.DataFrame), f"corner — это {type(corner).__name__}, а нужна таблица"
+    assert corner.shape[0] != 4, "в corner 4 строки: конец среза iloc не входит"
     assert corner.shape == (5, 3), f"у corner размер {corner.shape}, а нужно 5 строк и 3 столбца"
     assert list(corner.columns) == ["order_id", "date", "customer_id"], f"столбцы сейчас {list(corner.columns)}, а нужны первые три"
     assert corner["order_id"].tolist() == [10008, 10009, 10010, 10011, 10012], "строки не те: нужны позиции с 10 по 14"
@@ -102,16 +102,16 @@ def test_median():
     "median_price — медиана цены из сводки"
     assert not isinstance(median_price, (pd.Series, pd.DataFrame)), "median_price — не одно число: в loc нужны и метка строки, и название столбца"
     assert median_price != 2, "2 — медиана количества; нужен столбец price"
-    assert abs(median_price - 688.7214) > 1e-3, "это среднее (mean), а медиана — строка \"50%\""
-    assert median_price == 540, f"median_price = {median_price!r}, а медиана цены — 540"
+    assert abs(median_price - 688.7214) > 1e-3, "это среднее (mean), а нужна медиана"
+    assert median_price == 540, f"median_price = {median_price!r} — это не медиана цены"
 
 
 def test_quartiles():
     "quartiles — три строки сводки по quantity"
     assert not isinstance(quartiles, pd.DataFrame), "quartiles — таблица, а нужен один столбец quantity: название без списка"
-    assert isinstance(quartiles, pd.Series), f"quartiles — это {type(quartiles).__name__}, а нужен Series: stats.loc[срез меток, \"quantity\"]"
+    assert isinstance(quartiles, pd.Series), f"quartiles — это {type(quartiles).__name__}, а нужен Series"
     assert list(quartiles.index) == ["25%", "50%", "75%"], f"метки сейчас {list(quartiles.index)}, а нужны 25%, 50%, 75% — срез loc включает оба конца"
-    assert quartiles.tolist() == [1, 2, 3], f"значения сейчас {quartiles.tolist()}, а у quantity это 1, 2, 3"
+    assert quartiles.tolist() == [1, 2, 3], f"значения сейчас {quartiles.tolist()} — это не строки сводки по quantity"
 # ─── другое решение ───
 median_price = stats["price"]["50%"]
 quartiles = stats["quantity"].loc[["25%", "50%", "75%"]]
@@ -148,16 +148,16 @@ first_product = ...
 # ─── проверка ───
 def test_piece():
     "piece — строки с метками 10–14, три столбца"
-    assert isinstance(piece, pd.DataFrame), f"piece — это {type(piece).__name__}, а нужна таблица: orders.loc[строки, столбцы]"
+    assert isinstance(piece, pd.DataFrame), f"piece — это {type(piece).__name__}, а нужна таблица"
     assert list(piece.columns) == ["date", "product", "price"], f"столбцы сейчас {list(piece.columns)}, а нужны date, product, price"
-    assert len(piece) != 4, "в piece 4 строки: похоже, взят iloc[10:14] — у iloc конец не входит. У loc метка 14 входит"
+    assert len(piece) != 4, "в piece 4 строки: похоже, строки выбраны по позициям — там конец среза не входит, а у loc последняя метка входит"
     assert list(piece.index) == [10, 11, 12, 13, 14], f"метки строк сейчас {list(piece.index)}, а нужны 10, 11, 12, 13, 14"
 
 
 def test_first():
     "first_product — товар в первой строке piece"
     assert isinstance(first_product, str), f"first_product — это {type(first_product).__name__}, а нужно название товара: одна ячейка piece"
-    assert first_product != "2025-01-03", "это дата: столбец product в piece второй, его позиция — 1"
+    assert first_product != "2025-01-03", "это дата: позиции столбцов считаются с нуля"
     assert first_product == "Миндаль в шоколаде", f"first_product = {first_product!r}, а в первой строке piece другой товар"
 # ─── другое решение ───
 piece = orders[["date", "product", "price"]].iloc[10:15]

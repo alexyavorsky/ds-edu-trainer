@@ -29,14 +29,14 @@ jan_avg = ...
 def test_jan():
     "jan — 31 день января"
     assert isinstance(jan, np.ndarray), f"jan — это {type(jan).__name__}, а нужен срез массива tmax"
-    assert len(jan) != 30, "в срезе 30 дней: конец не входит, поэтому для 31 дня нужно [:31]"
+    assert len(jan) != 30, "в срезе 30 дней: конец среза не входит"
     assert len(jan) == 31, f"в jan {len(jan)} дней, а в январе 31"
     assert jan[0] == -3.2, "январь начинается с первого дня года — с индекса 0"
 
 
 def test_avg():
     "jan_avg — средняя температура января"
-    assert abs(jan_avg - (-3.829032)) < 1e-5, f"jan_avg = {jan_avg}, а средний максимум января ≈ −3.83 °C"
+    assert abs(jan_avg - (-3.829032)) < 1e-5, f"jan_avg = {jan_avg} — это не средняя температура января"
 # ─── другое решение ───
 jan = tmax[0:31]
 jan_avg = np.mean(jan)
@@ -56,7 +56,7 @@ def test_last10():
     "last10 — последние десять дней"
     assert isinstance(last10, np.ndarray), f"last10 — это {type(last10).__name__}, а нужен срез массива tmax"
     assert len(last10) == 10, f"в last10 {len(last10)} значений, а нужно 10"
-    assert last10.tolist() != tmax[:10].tolist(), "это первые десять дней года, а нужны последние: [-10:]"
+    assert last10.tolist() != tmax[:10].tolist(), "это первые десять дней года, а нужны последние: считайте с конца"
     assert last10[-1] == -2.0, "срез должен заканчиваться последним днём года"
 # ─── другое решение ───
 last10 = tmax[355:]
@@ -81,12 +81,12 @@ def test_mondays():
     "mondays — 52 понедельника"
     assert isinstance(mondays, np.ndarray), f"mondays — это {type(mondays).__name__}, а нужен срез с шагом"
     assert len(mondays) == 52, f"в mondays {len(mondays)} значений, а понедельников в 2025 году 52"
-    assert mondays[0] == -7.8, "первый понедельник — 6 января, индекс 5: начните срез с 5"
+    assert mondays[0] == -7.8, "первый понедельник — 6 января: с него и должен начинаться срез"
 
 
 def test_avg():
     "monday_avg — средняя температура понедельников"
-    assert abs(monday_avg - 9.426923) < 1e-5, f"monday_avg = {monday_avg}, а среднее по понедельникам ≈ 9.43 °C"
+    assert abs(monday_avg - 9.426923) < 1e-5, f"monday_avg = {monday_avg} — это не средняя температура понедельников"
 # ─── другое решение ───
 mondays = tmax[5:365:7]
 monday_avg = mondays.sum() / len(mondays)
@@ -114,13 +114,13 @@ readings = np.array([20.1, 20.4, 20.9, 99.9, 21.8, 22.0, 21.7, 21.4])
 def test_fixed():
     "четвёртое показание исправлено на 21.5"
     assert readings[3] != 99.9, "показание с ошибкой (индекс 3) всё ещё 99.9"
-    assert readings[3] == 21.5, f"readings[3] = {readings[3]}, а должно быть 21.5 — индексы с нуля, четвёртый элемент — [3]"
+    assert readings[3] == 21.5, f"readings[3] = {readings[3]}, а должно быть 21.5 — индексы считают с нуля"
 
 
 def test_off():
     "два последних часа — нули"
     got = readings.tolist()
-    assert got[-2:] == [0, 0], f"последние два показания — {got[-2:]}, а должны быть нули: readings[-2:] = 0"
+    assert got[-2:] == [0, 0], f"последние два показания — {got[-2:]}, а должны быть нули"
     assert got[:3] == [20.1, 20.4, 20.9] and got[4:6] == [21.8, 22.0], f"остальные показания не должны меняться: {got}"
 # ─── другое решение ───
 readings = np.array([20.1, 20.4, 20.9, 99.9, 21.8, 22.0, 21.7, 21.4])

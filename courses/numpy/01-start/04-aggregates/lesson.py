@@ -27,14 +27,14 @@ avg_steps = ...
 # ─── проверка ───
 def test_total():
     "total_steps — сумма за неделю"
-    assert not isinstance(total_steps, np.ndarray), "total_steps — массив, а нужно одно число: вызовите steps.sum()"
-    assert total_steps == 66550, f"total_steps = {total_steps}, а за неделю пройдено 66550 шагов"
+    assert not isinstance(total_steps, np.ndarray), "total_steps — массив, а нужно одно число — сумму всех элементов"
+    assert total_steps == 66550, f"total_steps = {total_steps} — это не сумма шагов за неделю"
 
 
 def test_avg():
     "avg_steps — среднее в день"
-    assert not isinstance(avg_steps, np.ndarray), "avg_steps — массив, а нужно одно число: вызовите steps.mean()"
-    assert abs(avg_steps - 9507.142857) < 0.001, f"avg_steps = {avg_steps}, а в среднем в день — 66550 / 7 ≈ 9507.14"
+    assert not isinstance(avg_steps, np.ndarray), "avg_steps — массив, а нужно одно число — среднее всех элементов"
+    assert abs(avg_steps - 9507.142857) < 0.001, f"avg_steps = {avg_steps} — это не среднее за день"
 # ─── другое решение ───
 steps = np.array([8200, 10450, 6100, 9800, 12300, 15400, 4300])
 total_steps = np.sum(steps)
@@ -59,9 +59,9 @@ best_day = ...
 # ─── проверка ───
 def test_day():
     "best_day — название дня с наибольшей выручкой"
-    assert best_day != 61700, "61700 — сама выручка, а нужно название дня: используйте argmax и список days"
+    assert best_day != 61700, "61700 — сама выручка, а нужно название дня: вспомните, как узнать позицию максимума и взять по ней элемент списка days"
     assert not isinstance(best_day, (int, np.integer)), f"best_day = {best_day} — это индекс; по нему возьмите название из списка days"
-    assert best_day == "сб", f"best_day = {best_day!r}, а больше всего выручки в субботу"
+    assert best_day == "сб", f"best_day = {best_day!r} — это не день с наибольшей выручкой"
 # ─── другое решение ───
 sales = np.array([41200, 38900, 45100, 39800, 52300, 61700, 48800])
 best_day = days[np.argmax(sales)]
@@ -113,8 +113,8 @@ spread = ...
 # ─── проверка ───
 def test_spread():
     "spread — максимум минус минимум"
-    assert not isinstance(spread, np.ndarray), "spread — массив, а нужно одно число: temps.max() - temps.min()"
-    assert abs(spread - 7.6) < 1e-9, f"spread = {spread}, а размах — 25.4 − 17.8 = 7.6"
+    assert not isinstance(spread, np.ndarray), "spread — массив, а нужно одно число"
+    assert abs(spread - 7.6) < 1e-9, f"spread = {spread} — это не разница между самой высокой и самой низкой температурой"
 # ─── другое решение ───
 spread = np.max(temps) - np.min(temps)
 # ─── ошибка ───

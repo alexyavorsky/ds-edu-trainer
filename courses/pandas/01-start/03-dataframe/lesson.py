@@ -32,8 +32,8 @@ staff = ...
 # ─── проверка ───
 def test_frame():
     "staff — таблица 3 × 3"
-    assert not isinstance(staff, dict), "staff — словарь, а нужна таблица: передайте словарь в pd.DataFrame(...)"
-    assert isinstance(staff, pd.DataFrame), f"staff — это {type(staff).__name__}, а нужна таблица: pd.DataFrame({{...}})"
+    assert not isinstance(staff, dict), "staff — словарь, а нужна таблица"
+    assert isinstance(staff, pd.DataFrame), f"staff — это {type(staff).__name__}, а нужна таблица"
     assert list(staff.columns) == ["name", "role", "salary"], f"столбцы сейчас {list(staff.columns)}, а нужны name, role, salary — в этом порядке"
     assert len(staff) == 3, f"в staff {len(staff)} строк, а сотрудников трое"
 
@@ -91,7 +91,7 @@ total_liters = ...
 # ─── проверка ───
 def test_stock():
     "stock — таблица из трёх строк"
-    assert isinstance(stock, pd.DataFrame), f"stock — это {type(stock).__name__}, а нужна таблица: pd.DataFrame([...])"
+    assert isinstance(stock, pd.DataFrame), f"stock — это {type(stock).__name__}, а нужна таблица"
     assert list(stock.columns) == ["item", "liters"], f"столбцы сейчас {list(stock.columns)}, а нужны item и liters"
     assert stock["item"].tolist() == ["молоко", "сливки", "сироп"], f"в столбце item сейчас {stock['item'].tolist()}"
     assert stock["liters"].tolist() == [12.5, 3.0, 1.5], f"в столбце liters сейчас {stock['liters'].tolist()}"
@@ -100,7 +100,7 @@ def test_stock():
 def test_total():
     "total_liters — сколько всего литров"
     assert not isinstance(total_liters, pd.Series), "total_liters — столбец, а нужно одно число: сумма столбца liters"
-    assert abs(total_liters - 17.0) < 1e-9, f"total_liters = {total_liters}, а всего 17.0 литров"
+    assert abs(total_liters - 17.0) < 1e-9, f"total_liters = {total_liters} — это не сумма столбца liters"
 # ─── другое решение ───
 stock = pd.DataFrame({"item": ["молоко", "сливки", "сироп"], "liters": [12.5, 3.0, 1.5]})
 total_liters = sum(stock["liters"])
@@ -140,16 +140,16 @@ friday = ...
 # ─── проверка ───
 def test_series():
     "guests — Series с днями недели в индексе"
-    assert isinstance(guests, pd.Series), f"guests — это {type(guests).__name__}, а нужен pd.Series(...)"
+    assert isinstance(guests, pd.Series), f"guests — это {type(guests).__name__}, а нужен Series"
     assert guests.tolist() == [84, 91, 77, 102, 130], f"значения сейчас {guests.tolist()}, а нужны 84, 91, 77, 102, 130"
-    assert list(guests.index) != [0, 1, 2, 3, 4], "индекс — номера 0…4, а нужны дни недели: передайте их параметром index="
+    assert list(guests.index) != [0, 1, 2, 3, 4], "индекс — номера 0…4, а нужны дни недели: вспомните параметр index"
     assert list(guests.index) == ["пн", "вт", "ср", "чт", "пт"], f"индекс сейчас {list(guests.index)}, а нужен пн, вт, ср, чт, пт"
-    assert guests.name == "guests", f"название сейчас {guests.name!r}, а нужно \"guests\": параметр name="
+    assert guests.name == "guests", f"название сейчас {guests.name!r}, а нужно \"guests\""
 
 
 def test_friday():
     "friday — гостей в пятницу"
-    assert friday == 130, f"friday = {friday!r}, а в пятницу было 130 гостей: guests[\"пт\"]"
+    assert friday == 130, f"friday = {friday!r}: значение берут по метке индекса"
 # ─── другое решение ───
 guests = pd.Series({"пн": 84, "вт": 91, "ср": 77, "чт": 102, "пт": 130}, name="guests")
 friday = guests["пт"]

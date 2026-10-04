@@ -23,7 +23,7 @@ scores = ...
 # ─── проверка ───
 def test_array():
     "scores — двумерный массив 3 × 3"
-    assert isinstance(scores, np.ndarray), f"scores — это {type(scores).__name__}, а нужен массив: передайте список списков в np.array"
+    assert isinstance(scores, np.ndarray), f"scores — это {type(scores).__name__}, а нужен массив — его создают из списка списков"
     assert scores.ndim == 2, f"у scores {scores.ndim} измерение, а нужна таблица: каждый ученик — в своём внутреннем списке"
     assert scores.shape == (3, 3), f"форма scores — {scores.shape}, а нужно 3 ученика × 3 предмета"
 
@@ -56,12 +56,12 @@ def test_rows_cols():
     "rows и cols — строки и столбцы sales"
     assert not isinstance(rows, tuple), f"rows — это весь кортеж {rows}: возьмите из него первое число"
     assert (rows, cols) != (4, 3), "строки и столбцы перепутаны: в shape сначала строки"
-    assert (rows, cols) == (3, 4), f"rows = {rows}, cols = {cols}, а у sales 3 строки и 4 столбца"
+    assert (rows, cols) == (3, 4), f"rows = {rows}, cols = {cols} — это не число строк и столбцов sales"
 
 
 def test_cells():
     "cells — число элементов"
-    assert cells == 12, f"cells = {cells}, а элементов 3 × 4 = 12"
+    assert cells == 12, f"cells = {cells} — это не число элементов sales"
 # ─── другое решение ───
 rows = sales.shape[0]
 cols = sales.shape[1]
@@ -89,9 +89,9 @@ board = ...
 # ─── проверка ───
 def test_board():
     "board — таблица 8 × 8 из нулей"
-    assert isinstance(board, np.ndarray), f"board — это {type(board).__name__}, а нужен массив: np.zeros((8, 8))"
-    assert board.shape != (64,), "получился ряд из 64 нулей, а нужна таблица: передайте форму кортежем (8, 8)"
-    assert board.shape == (8, 8), f"форма board — {board.shape}, а нужно (8, 8)"
+    assert isinstance(board, np.ndarray), f"board — это {type(board).__name__}, а нужен массив"
+    assert board.shape != (64,), "получился ряд из 64 нулей, а нужна таблица: форму таблицы передают кортежем"
+    assert board.shape == (8, 8), f"форма board — {board.shape}, а нужно 8 × 8"
     assert board.sum() == 0, "в board должны быть только нули"
 # ─── другое решение ───
 board = np.full((8, 8), 0)
@@ -109,8 +109,8 @@ avg_score = ...
 # ─── проверка ───
 def test_avg():
     "средняя оценка по всей таблице"
-    assert not isinstance(avg_score, np.ndarray), "avg_score — массив, а нужно одно число: scores.mean()"
-    assert abs(avg_score - 39 / 9) < 1e-9, f"avg_score = {avg_score}, а средняя оценка — 39 / 9 ≈ 4.33"
+    assert not isinstance(avg_score, np.ndarray), "avg_score — массив, а нужно одно число — среднее по всей таблице"
+    assert abs(avg_score - 39 / 9) < 1e-9, f"avg_score = {avg_score} — это не средняя оценка по всей таблице"
 # ─── другое решение ───
 avg_score = scores.sum() / scores.size
 # ─── ошибка ───

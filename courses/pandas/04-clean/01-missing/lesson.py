@@ -27,18 +27,18 @@ no_rating = ...
 # ─── проверка ───
 def test_share():
     "gap_share — доля пропусков в каждом столбце"
-    assert isinstance(gap_share, pd.Series), f"gap_share — это {type(gap_share).__name__}, а нужен Series: среднее маски isna() по столбцам"
-    assert list(gap_share.index) == ["order_id", "days", "rating"], f"метки сейчас {list(gap_share.index)}, а нужны названия трёх столбцов: delivery.isna().mean()"
+    assert isinstance(gap_share, pd.Series), f"gap_share — это {type(gap_share).__name__}, а нужен Series"
+    assert list(gap_share.index) == ["order_id", "days", "rating"], f"метки сейчас {list(gap_share.index)}, а нужны названия трёх столбцов"
     assert gap_share["rating"] != 287, "это число пропусков (sum), а нужна доля — mean"
-    assert abs(gap_share["rating"] - 287 / 816) < 1e-9, f"доля пропусков в rating — {gap_share['rating']}, а должна быть ≈ 0.352"
-    assert abs(gap_share["days"] - 36 / 816) < 1e-9, "доля пропусков в days должна быть ≈ 0.044"
+    assert abs(gap_share["rating"] - 287 / 816) < 1e-9, f"доля пропусков в rating — {gap_share['rating']} — это не доля пропусков"
+    assert abs(gap_share["days"] - 36 / 816) < 1e-9, "доля пропусков в days не та: нужна доля по каждому столбцу"
 
 
 def test_rows():
     "no_rating — строки без оценки"
-    assert isinstance(no_rating, pd.DataFrame), f"no_rating — это {type(no_rating).__name__}, а нужна таблица: delivery[маска]"
-    assert len(no_rating) != 529, "в no_rating строки С оценкой, а нужны без неё: маска isna(), а не notna()"
-    assert len(no_rating) == 287 and no_rating["rating"].isna().all(), f"в no_rating {len(no_rating)} строк, а заказов без оценки 287"
+    assert isinstance(no_rating, pd.DataFrame), f"no_rating — это {type(no_rating).__name__}, а нужна таблица"
+    assert len(no_rating) != 529, "в no_rating строки С оценкой, а нужны без неё"
+    assert len(no_rating) == 287 and no_rating["rating"].isna().all(), f"в no_rating {len(no_rating)} строк — проверьте маску"
 # ─── другое решение ───
 gap_share = delivery.isna().sum() / len(delivery)
 no_rating = delivery[~delivery["rating"].notna()]
@@ -78,15 +78,15 @@ late_share = ...
 def test_known():
     "known_days — известные сроки"
     assert isinstance(known_days, pd.Series), f"known_days — это {type(known_days).__name__}, а нужен Series: столбец days без пропусков"
-    assert known_days.notna().all(), "в known_days остались пропуски: отберите строки маской notna() или уберите их dropna()"
-    assert len(known_days) == 780, f"в known_days {len(known_days)} значений, а известных сроков 780"
+    assert known_days.notna().all(), "в known_days остались пропуски"
+    assert len(known_days) == 780, f"в known_days {len(known_days)} значений — должны остаться все известные сроки"
 
 
 def test_share():
     "late_share — доля опозданий среди известных сроков"
     assert abs(late_share - 150 / 816) > 1e-9, "доля посчитана по всем заказам: 36 заказов без срока записаны в «доставленные вовремя». Считайте по known_days"
     assert late_share != 150, "150 — число опозданий, а нужна доля: среднее маски"
-    assert abs(late_share - 150 / 780) < 1e-9, f"late_share = {late_share!r}, а доля опозданий ≈ 0.192"
+    assert abs(late_share - 150 / 780) < 1e-9, f"late_share = {late_share!r} — это не доля опозданий среди известных сроков"
 # ─── другое решение ───
 known_days = delivery["days"].dropna()
 late_share = (known_days > 5).sum() / len(known_days)
@@ -119,16 +119,16 @@ avg_rating = ...
 # ─── проверка ───
 def test_rated():
     "rated — заказы с оценкой"
-    assert isinstance(rated, pd.DataFrame), f"rated — это {type(rated).__name__}, а нужна таблица: delivery.dropna(...)"
-    assert len(rated) != 505, "в rated 505 строк: dropna() без subset убрал и заказы, у которых пропущен только срок. Нужен subset=[\"rating\"]"
-    assert len(rated) == 529, f"в rated {len(rated)} строк, а заказов с оценкой 529"
+    assert isinstance(rated, pd.DataFrame), f"rated — это {type(rated).__name__}, а нужна таблица"
+    assert len(rated) != 505, "в rated 505 строк: dropna() без subset убрал и заказы, у которых пропущен только срок. Вспомните параметр subset"
+    assert len(rated) == 529, f"в rated {len(rated)} строк — должны остаться все заказы с оценкой"
     assert rated["rating"].notna().all(), "в rated остались строки без оценки"
 
 
 def test_avg():
     "avg_rating — средняя оценка"
     assert abs(avg_rating - 2.39338) > 1e-4, "это среднее с нулями вместо пропусков: нули — не оценки. Считайте среднее по rated"
-    assert abs(avg_rating - 3.691871) < 1e-5, f"avg_rating = {avg_rating!r}, а средняя оценка ≈ 3.69"
+    assert abs(avg_rating - 3.691871) < 1e-5, f"avg_rating = {avg_rating!r} — это не средняя оценка"
 # ─── другое решение ───
 rated = delivery[delivery["rating"].notna()]
 avg_rating = delivery["rating"].mean()
@@ -151,16 +151,16 @@ n_gaps_left = ...
 def test_filled():
     "в filled пропуски days заполнены медианой"
     assert isinstance(filled, pd.DataFrame) and filled.shape == (816, 3), "filled должна остаться таблицей 816 × 3"
-    assert filled["days"].isna().sum() != 36, "пропуски в filled[\"days\"] остались. fillna возвращает новый Series — его нужно записать обратно: filled[\"days\"] = filled[\"days\"].fillna(...)"
+    assert filled["days"].isna().sum() != 36, "пропуски в filled[\"days\"] остались. fillna возвращает новый Series — его нужно записать обратно в столбец"
     assert filled["days"].isna().sum() == 0, "в filled[\"days\"] ещё есть пропуски"
     assert filled["days"].sum() != 3257, "пропуски заполнены нулями, а нужна медиана столбца"
-    assert filled["days"].sum() == 3401, "пропуски нужно заполнить медианой срока — 4 дня: filled[\"days\"].median()"
+    assert filled["days"].sum() == 3401, "пропуски нужно заполнить медианой срока"
     assert filled["rating"].isna().sum() == 287, "столбец rating заполнять не нужно"
 
 
 def test_left():
     "n_gaps_left — сколько пропусков осталось в days"
-    assert n_gaps_left == 0, f"n_gaps_left = {n_gaps_left!r}, а после заполнения пропусков быть не должно: filled[\"days\"].isna().sum()"
+    assert n_gaps_left == 0, f"n_gaps_left = {n_gaps_left!r}, а после заполнения пропусков быть не должно"
 
 
 def test_delivery_kept():
