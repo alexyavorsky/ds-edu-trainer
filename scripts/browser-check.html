@@ -82,9 +82,9 @@
 
   /**
    * Новый воркер с загруженным Python; не запустился — до двух повторов после паузы, каждый попадает в отчёт.
-   * Это страховка, а не норма: в WebKit после ~90–150 воркеров в одном процессе страницы JavaScriptCore
-   * портит JIT-код (процесс падает или воркер не запускается), поэтому validate_browsers.ts открывает для
-   * каждой пачки задач и уроков новый контекст — новый процесс (docs/ARCHITECTURE.md, «CI»).
+   * Страховка от сбоя среды: JavaScriptCore на виртуальных машинах macOS arm64 в CI изредка (~0,1–0,3 % запусков)
+   * падает при запуске Pyodide — «Out of bounds memory access», «access to a null reference» и т.п.
+   * (docs/ARCHITECTURE.md, «CI»). Детерминированная ошибка загрузки повторится трижды и останется ошибкой.
    */
   async function startPython(where) {
     for (let attempt = 1; ; attempt++) {

@@ -22,9 +22,8 @@
  * Нужны браузеры Playwright: npx playwright install chromium firefox webkit.
  *
  * Как выполняется (docs/ARCHITECTURE.md, «CI»):
- *   - задачи и уроки — пачками по BATCH, каждая пачка в новом контексте браузера (свой процесс страницы):
- *     у каждой задачи и урока свой воркер, как на сайте, но в одной странице их не больше BATCH — WebKit
- *     после сотни-другой воркеров в одном процессе страницы падает (подробности — у BATCH);
+ *   - задачи и уроки — пачками по BATCH, каждая пачка в новом контексте браузера (свой процесс страницы);
+ *     у каждой задачи и урока свой воркер, как на сайте;
  *   - пачки выполняются в нескольких вкладках параллельно (--pages);
  *   - Pyodide и пакеты для задач и уроков — из локального зеркала (/__pyodide/): ядро — из npm-пакета pyodide
  *     той же версии (побайтно совпадает с jsDelivr), пакеты — из кэша PYODIDE_CACHE, при промахе скачиваются
@@ -35,9 +34,13 @@
  * останавливается, в ошибке — браузер, урок, последняя начатая ячейка и сколько прошло; остальные уроки
  * проверяются дальше, итог — ненулевой код выхода.
  *
- * Повторы — только страховка, и каждый виден (строка «повтор» и ::warning в CI, итог «повторов: N»):
- * упала вкладка или браузер — пачка выполняется заново один раз в новом контексте; не запустился
- * воркер Python — до двух повторов (browser-check.html, startPython); скачивание файла Pyodide — до 6 попыток.
+ * Повторы — только страховка от сбоев среды, и каждый виден (строка «повтор» и ::warning в CI, итог «повторов: N»,
+ * таблица в сводке задания): упала вкладка или браузер — пачка заново один раз в новом контексте; задача или урок
+ * со сбоем движка (ENGINE_FAULT) — ещё раз один раз в новом контексте; не запустился воркер Python — до двух
+ * повторов (browser-check.html, startPython); скачивание файла Pyodide — до 6 попыток. Зачем: JavaScriptCore на
+ * виртуальных машинах macOS arm64 в GitHub Actions изредка (~0,1–0,3 % запусков Pyodide) падает внутри
+ * WebAssembly — разбор в docs/ARCHITECTURE.md, «CI». Провал тестов, расхождение вывода, таймауты не повторяются;
+ * детерминированное падение повторится и останется ошибкой.
  * Журнал каждой вкладки пишется по мере выполнения в browser-logs/ (в CI — артефакт), конец журнала упавшей
  * вкладки печатается в ошибке.
  */
@@ -60,9 +63,9 @@ const LESSON_TIMEOUT = 5 * 60;
 /** Лимит на одну вкладку (пачку), секунды. */
 const PAGE_TIMEOUT = 20 * 60;
 /**
- * Задач и уроков на одну вкладку (новый контекст — новый процесс страницы). WebKit в одном процессе страницы
- * выдерживает около сотни воркеров Pyodide: дальше процесс страницы падает при запуске очередного воркера
- * (docs/ARCHITECTURE.md, «CI» — разбор). С запасом — 25 воркеров.
+ * Задач и уроков на одну вкладку (новый контекст — новый процесс страницы). Пачки нужны для вкладок
+ * параллельно и чтобы падение процесса страницы (сбой JavaScriptCore, docs/ARCHITECTURE.md, «CI») стоило
+ * повтора не больше 25 задач и уроков, а не всего прогона.
  */
 const BATCH = 25;
 /** Полные журналы вкладок (в CI — артефакт). */
@@ -342,6 +345,13 @@ async function runPage(browser: Browser, url: string, batch: Batch, journal: str
   }
 }
 
+/**
+ * Статус «упал движок», а не «проверка не прошла»: воркер погиб, Pyodide в аварийном состоянии, ложная ловушка
+ * WebAssembly. Такие задачи и уроки выполняются ещё раз в новом контексте (один раз); провал тестов, расхождение
+ * вывода и таймауты не повторяются. Детерминированное падение повторится и останется ошибкой.
+ */
+const ENGINE_FAULT = /^(crash|load-error)\b|fatally failed|Out of bounds memory access|null reference|unreachable|_pyodide_core/;
+
 const STEP_KIND: Record<string, string> = { start: 'запуске Python', check: 'упражнении', cell: 'ячейке', quiz: 'вопросе' };
 
 function lessonProblem(browser: string, l: CheckResult['lessons'][number]): string {
@@ -384,31 +394,60 @@ async function checkBrowser(name: string, url: string, batches: Batch[], pages: 
   const retries: string[] = [];
   const errors: string[] = [];
   const log: string[] = [];
+  /** Пачка; упала вкладка или браузер — ещё одна попытка в новом контексте. */
+  const runBatch = async (batch: Batch): Promise<CheckResult | null> => {
+    for (let attempt = 1; ; attempt++) {
+      const journal: string[] = [];
+      try {
+        const result = await runPage(await alive(), url, batch, journal);
+        log.push(`── ${batch.label}${attempt > 1 ? `, попытка ${attempt}` : ''}`, ...journal);
+        return result;
+      } catch (error) {
+        log.push(`── ${batch.label}, попытка ${attempt} — ✗`, ...journal);
+        const where = journal.filter((l) => / · |урок |задача /.test(l)).slice(-1)[0]?.trim() ?? 'до первой задачи';
+        const message = `${batch.label}: ${String(error).split('\n')[0]}; последнее в журнале: ${where}`;
+        if (attempt === 2) {
+          errors.push(`${message}\nконец журнала:\n${journal.slice(-25).join('\n')}`);
+          return null;
+        }
+        retries.push(message);
+        warn(name, `повтор — ${message}`);
+      }
+    }
+  };
   const queue = [...batches];
   await Promise.all(
     Array.from({ length: Math.min(pages, batches.length) }, async () => {
       for (let batch = queue.shift(); batch; batch = queue.shift()) {
-        for (let attempt = 1; ; attempt++) {
-          const journal: string[] = [];
-          try {
-            results.push(await runPage(await alive(), url, batch, journal));
-            log.push(`── ${batch.label}${attempt > 1 ? `, попытка ${attempt}` : ''}`, ...journal);
-            break;
-          } catch (error) {
-            log.push(`── ${batch.label}, попытка ${attempt} — ✗`, ...journal);
-            const where = journal.filter((l) => / · |урок |задача /.test(l)).slice(-1)[0]?.trim() ?? 'до первой задачи';
-            const message = `${batch.label}: ${String(error).split('\n')[0]}; последнее в журнале: ${where}`;
-            if (attempt === 2) {
-              errors.push(`${message}\nконец журнала:\n${journal.slice(-25).join('\n')}`);
-              break;
-            }
-            retries.push(message);
-            warn(name, `повтор — ${message}`);
-          }
-        }
+        const result = await runBatch(batch);
+        if (result) results.push(result);
       }
     }),
   );
+  // Сбой движка в задаче или уроке, а в пробе — аварийный итог там, где глубина обязана работать: ещё раз,
+  // в новом контексте; новый результат заменяет старый
+  const faulty = [
+    ...new Set([...results.flatMap((r) => r.tasks), ...results.flatMap((r) => r.lessons)].filter((x) => ENGINE_FAULT.test(x.status)).map((x) => x.id)),
+  ];
+  const badProbes = results.flatMap((r) => Object.entries(r.probes)).filter(([n, o]) => (n === 'plain' && o['990'] !== 'ok') || (n === 'cache' && o[String(MEMO_DEPTH)] !== 'ok')).map(([n]) => n);
+  for (const [ids, probesAgain] of [[faulty, []], [[], badProbes]] as [string[], string[]][]) {
+    if (!ids.length && !probesAgain.length) continue;
+    const what = ids.length ? `задачи и уроки ${ids.join(', ')}` : `пробы ${probesAgain.join(', ')}`;
+    const before = ids.length
+      ? [...results.flatMap((r) => r.tasks), ...results.flatMap((r) => r.lessons)].filter((x) => ids.includes(x.id) && ENGINE_FAULT.test(x.status)).map((x) => `${x.id}: ${x.status.slice(0, 160)}`)
+      : probesAgain.map((n) => `${n}: ${JSON.stringify(results.find((r) => r.probes[n])?.probes[n])}`);
+    const message = `сбой движка — ${what} ещё раз в новом контексте (${before.join('; ')})`;
+    retries.push(message);
+    warn(name, `повтор — ${message}`);
+    const again = await runBatch({ label: `повтор: ${what}`, ids, probes: probesAgain });
+    if (!again) continue;
+    for (const r of results) {
+      r.tasks = r.tasks.filter((t) => !ids.includes(t.id));
+      r.lessons = r.lessons.filter((l) => !ids.includes(l.id));
+      for (const n of probesAgain) delete r.probes[n];
+    }
+    results.push(again);
+  }
   await browser.close().catch(() => {});
   mkdirSync(LOG_DIR, { recursive: true });
   writeFileSync(join(LOG_DIR, `${name}.log`), `${log.join('\n')}\n`);
@@ -455,7 +494,7 @@ async function checkBrowser(name: string, url: string, batches: Batch[], pages: 
   const lessonLine = `прошли ${goodLessons.length} из ${lessonIds.length} (ячеек ${lessons.length - stopped}${stopped ? `, остановлено по времени: ${stopped}` : ''})`;
   console.log(`  Задачи: ${taskLine}`);
   console.log(`  Уроки курсов: ${lessonLine}`);
-  console.log(`  Повторов: ${retries.length + restarts.length} (вкладок ${retries.length}, запусков Python ${restarts.length})`);
+  console.log(`  Повторов: ${retries.length + restarts.length} (вкладок и сбоев движка ${retries.length}, запусков Python ${restarts.length})`);
   for (const p of problems) {
     console.log(`  ✗ ${p}`);
     annotate(name, p);

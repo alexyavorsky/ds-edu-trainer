@@ -54,7 +54,7 @@ export const GLOBAL = [
 ];
 
 /** Не влияет ни на одну проверку. */
-export const IGNORED = ['docs/', '.claude/', 'README.md', 'LICENSE', 'CONTENT-LICENSE.md', 'changes.txt', '.gitignore'];
+export const IGNORED = ['docs/', '.claude/', 'README.md', 'LICENSE', 'CONTENT-LICENSE.md', 'changes.txt', '.gitignore', 'scripts/stress_webkit.ts'];
 
 export const AREAS: Record<string, Area> = {
   tasks: {
