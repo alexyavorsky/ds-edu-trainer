@@ -14,10 +14,6 @@ export function getCourses(): CourseSource[] {
   return cache;
 }
 
-export function getCourse(slug: string): CourseSource | undefined {
-  return getCourses().find((c) => c.slug === slug);
-}
-
 export function findLesson(id: string): { course: CourseSource; lesson: LessonSource } {
   for (const course of getCourses()) {
     const lesson = courseLessons(course).find((l) => l.meta.id === id);
