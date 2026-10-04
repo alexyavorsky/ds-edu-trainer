@@ -160,8 +160,17 @@ src/
   components/              Header, Footer, BugReportLink, Badge, Breadcrumbs, ProgressBar, ChapterCard,
                            ChallengeList (фильтры + поиск), CodeBlock (Shiki + копирование), Hints,
                            SolutionReveal, SolvedToggle, ComplexityQuiz, PrevNext, reference/*
-  pages/                   /  ·  /[book]  ·  /[book]/[chapter]  ·  /[book]/[chapter]/[task]  ·  /reference/…
+  pages/                   /  ·  /tasks  ·  /tasks/[book]  ·  /tasks/[book]/[chapter]  ·  /tasks/[book]/[chapter]/[task]  ·
+                           /courses/…  ·  /reference/…
 ```
+
+- Главная (`pages/index.astro`) — что это за сайт и откуда начать. Числа (уроки, упражнения, статьи, примеры, задачи)
+  считаются из контента при сборке; фрагмент урока — настоящие ячейки `np-first-array` с сохранённым выводом
+  (`SAMPLE` в начале файла; урока или ячейки нет — сборка останавливается с понятной ошибкой). Клиентского JS у
+  главной нет.
+- Задачи раньше жили в корне (`/<книга>/<глава>/<задача>`). Старые адреса перенаправляют на `/tasks/…`:
+  `redirects` в `astro.config.mjs`, при статической сборке это страницы с `<meta http-equiv="refresh">` и
+  `rel="canonical"`. Прогресс и код хранятся по id задачи, а не по адресу, поэтому переезд их не затрагивает.
 
 - Подсветка Shiki — при сборке, без клиентского JS; интерактив — небольшие скрипты на TS без фреймворка.
 - «Решено» и прогресс — localStorage (`edu:solved:v2` = `{id: {v, t}}`; старый `edu:solved:v1` читается) по id;

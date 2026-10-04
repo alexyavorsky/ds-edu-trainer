@@ -33,11 +33,11 @@ export async function getChallenges(book: string, chapter?: string): Promise<Cha
 }
 
 export function challengeUrl(c: Challenge): string {
-  return `/${c.data.book}/${c.data.chapter}/${c.data.slug}`;
+  return `/tasks/${c.data.book}/${c.data.chapter}/${c.data.slug}`;
 }
 
 export function chapterUrl(c: Chapter): string {
-  return `/${c.data.book}/${c.data.slug}`;
+  return `/tasks/${c.data.book}/${c.data.slug}`;
 }
 
 /** «Глава 3» у книги, «Раздел 3» у темы: главы темы повторяют разделы справочника. */

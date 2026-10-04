@@ -53,6 +53,12 @@ function noSupabaseSecrets() {
 export default defineConfig({
   integrations: [mdx(), noSupabaseSecrets()],
   trailingSlash: 'ignore',
+  // Задачи жили в корне сайта (/<книга>/<глава>/<задача>) — старые ссылки и закладки ведут на /tasks/…
+  redirects: {
+    '/[book]': '/tasks/[book]',
+    '/[book]/[chapter]': '/tasks/[book]/[chapter]',
+    '/[book]/[chapter]/[task]': '/tasks/[book]/[chapter]/[task]',
+  },
   markdown: {
     shikiConfig: { theme: 'vitesse-dark', wrap: false },
   },

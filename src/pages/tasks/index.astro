@@ -1,0 +1,142 @@
+---
+import Icon from '../../components/Icon.astro';
+import ProgressBar from '../../components/ProgressBar.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getBooks, getChallenges, getChapters } from '../../lib/content';
+import { tasksLabel } from '../../lib/labels';
+
+const all = await Promise.all(
+  (await getBooks()).map(async (book) => ({
+    book,
+    chapters: await getChapters(book.id),
+    challenges: await getChallenges(book.id),
+  })),
+);
+const books = all.filter((b) => b.book.data.kind === 'book');
+---
+
+<BaseLayout>
+  <section class="hero">
+    <p class="eyebrow">Личный тренажёр</p>
+    <h1>Задачи по книгам и темам</h1>
+    <p class="lead">
+      Выберите книгу и главу, скопируйте задачу в редактор и запустите — тесты сразу покажут результат. Прогресс сохраняется в этом
+      браузере.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="section-title">Книги</h2>
+    <div class="grid">
+      {
+        books.map(({ book, chapters, challenges }) => (
+          <a href={`/tasks/${book.id}`} class="book card">
+            <span class="cover" aria-hidden="true">
+              <Icon name="book" size={20} />
+            </span>
+            <div class="info">
+              <h3>{book.data.title}</h3>
+              <p class="muted">
+                {book.data.author}
+                {book.data.edition && ` · ${book.data.edition}`}
+              </p>
+              {book.data.description && <p class="desc">{book.data.description}</p>}
+              <p class="stats">
+                {chapters.length} глав · {tasksLabel(challenges.length)}
+              </p>
+              <ProgressBar ids={challenges.map((c) => c.data.taskId)} />
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="block">
+    <h2 class="section-title">Темы</h2>
+    <div class="grid">
+      <a href="/reference" class="book card">
+        <span class="cover" aria-hidden="true">
+          <Icon name="search" size={20} />
+        </span>
+        <div class="info">
+          <h3>Справочник</h3>
+          <p class="desc">NumPy и pandas: синтаксис, примеры с настоящим выводом и подводные камни — без задач, чтобы быстро освежить память.</p>
+        </div>
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    max-width: 640px;
+    margin-bottom: 48px;
+  }
+  .hero h1 {
+    margin-top: 10px;
+    font-size: clamp(30px, 6vw, 42px);
+    letter-spacing: -0.035em;
+  }
+  .lead {
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 16px;
+  }
+  .block {
+    margin-top: 40px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+    gap: 12px;
+  }
+  .book {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    min-width: 0;
+    transition:
+      border-color 0.15s,
+      background 0.15s;
+  }
+  .book:hover {
+    border-color: var(--border-strong);
+    background: var(--surface-2);
+  }
+  .cover {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background: linear-gradient(180deg, #202229, #15161a);
+    color: var(--accent-strong);
+  }
+  .info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+  }
+  .info h3 {
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .info p {
+    margin: 0;
+    font-size: 13.5px;
+  }
+  .desc {
+    color: var(--text-2);
+  }
+  .stats {
+    color: var(--muted);
+    margin-top: 4px !important;
+  }
+</style>
