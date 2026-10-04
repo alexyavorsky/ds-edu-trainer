@@ -28,10 +28,10 @@ on:
         type: string
         default: main
 
-# Новый push в ветку отменяет её незаконченный прогон. В main каждый прогон — в своей группе: прогон слияния
-# не отменяется следующим слиянием (у каждого коммита main — свой полный результат).
+# Новый push в ветку отменяет её незаконченный push-прогон. Прогоны main, ночные и ручные — каждый в своей
+# группе: прогон слияния не отменяется следующим слиянием (у каждого коммита main — свой полный результат).
 concurrency:
-  group: ci-${{ github.ref == 'refs/heads/main' && format('main-{0}', github.run_id) || github.ref }}
+  group: ci-${{ (github.ref == 'refs/heads/main' || github.event_name != 'push') && format('{0}-{1}', github.ref, github.run_id) || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -196,7 +196,7 @@ jobs:
     timeout-minutes: 30
     strategy:
       fail-fast: false
-      # три браузера всегда; всё — по частям (--shard), немного задач и уроков — одна часть
+      # три браузера всегда; всё — по частям (--shard, scripts/ci_changes.ts: BROWSER_SHARDS), немного — одна часть
       matrix: ${{ fromJSON(needs.plan.outputs.browsers_matrix) }}
     steps:
       - uses: actions/checkout@v5

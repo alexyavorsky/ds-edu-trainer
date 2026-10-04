@@ -19,7 +19,7 @@
  *
  * Вывод: таблица в консоль, в GitHub Actions — ключи в $GITHUB_OUTPUT и сводка в $GITHUB_STEP_SUMMARY:
  *   full=true|false, run_<задание>=true|false, ids_<задание>=id1,id2 (пусто — все),
- *   browsers_matrix — JSON для strategy.matrix (браузер × часть), browser_probes — пробы глубины рекурсии.
+ *   browsers_matrix — JSON для strategy.matrix ({include: [{browser, shard}]}), browser_probes — пробы глубины рекурсии.
  */
 import { execFileSync } from 'node:child_process';
 import { appendFileSync, existsSync, readFileSync } from 'node:fs';
@@ -91,9 +91,11 @@ export const JOBS: Record<string, { areas: string[]; shared?: string[]; ids?: bo
   site: { areas: ['tasks', 'reference', 'courses', 'site'] },
 };
 
-const BROWSERS = ['chromium', 'firefox', 'webkit'];
-/** На сколько заданий делится проверка одного браузера, если проверяется всё (замеры — docs/ARCHITECTURE.md, «CI»). */
-export const BROWSER_SHARDS = 2;
+/**
+ * На сколько заданий делится проверка каждого браузера, если проверяется всё (замеры — docs/ARCHITECTURE.md, «CI»).
+ * Всего 5 заданий — столько раннеров macOS у аккаунта одновременно; Chromium и Firefox медленнее WebKit.
+ */
+export const BROWSER_SHARDS: Record<string, number> = { chromium: 2, firefox: 2, webkit: 1 };
 /** Выбрано не больше стольких задач и уроков — одна часть на браузер. */
 const ONE_SHARD_LIMIT = 40;
 
@@ -179,12 +181,15 @@ function changedFiles(base: string): string[] {
 /** Ключи для GitHub Actions. */
 export function outputs(p: Plan): Record<string, string> {
   const b = p.jobs.browsers;
-  const shards = b.ids && b.ids.length <= ONE_SHARD_LIMIT ? 1 : BROWSER_SHARDS;
+  const few = b.ids !== null && b.ids.length <= ONE_SHARD_LIMIT;
+  const include = Object.entries(BROWSER_SHARDS).flatMap(([browser, n]) =>
+    Array.from({ length: few ? 1 : n }, (_, i) => ({ browser, shard: `${i + 1}/${few ? 1 : n}` })),
+  );
   const out: Record<string, string> = {
     full: String(p.full),
     // пробы глубины проверяют воркер и браузер, а не содержимое: только если проверяется всё
     browser_probes: String(b.run && b.ids === null),
-    browsers_matrix: JSON.stringify({ browser: BROWSERS, shard: Array.from({ length: shards }, (_, i) => `${i + 1}/${shards}`) }),
+    browsers_matrix: JSON.stringify({ include }),
   };
   for (const [name, job] of Object.entries(p.jobs)) {
     out[`run_${name}`] = String(job.run);
@@ -198,11 +203,11 @@ function main(argv: string[]): void {
   const files = argv.includes('--full') ? null : argv.includes('--files') ? argv.slice(argv.indexOf('--files') + 1) : changedFiles(baseArg ?? 'origin/main');
   const p = plan(files);
   const out = outputs(p);
-  const shards = (JSON.parse(out.browsers_matrix) as { shard: string[] }).shard.length;
+  const parts = (JSON.parse(out.browsers_matrix) as { include: { browser: string; shard: string }[] }).include;
   const lines = [
     `Уровень: ${p.full ? 'полный' : 'ветка'} — ${p.reason}${files ? ` (файлов изменено: ${files.length})` : ''}`,
     ...Object.entries(p.jobs).map(([name, job]) => `  ${name.padEnd(9)} ${job.run ? (job.ids ? `только: ${job.ids.join(', ')}` : 'всё') : '—'}`),
-    `  браузеры: ${BROWSERS.join(', ')} × частей ${shards}${out.browser_probes === 'true' ? ', с пробами глубины' : ''}`,
+    `  браузеры: ${Object.keys(BROWSER_SHARDS).map((n) => `${n} × ${parts.filter((x) => x.browser === n).length}`).join(', ')}${out.browser_probes === 'true' ? ', с пробами глубины' : ''}`,
   ];
   console.log(lines.join('\n'));
   if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, Object.entries(out).map(([k, v]) => `${k}=${v}\n`).join(''));

@@ -6,11 +6,11 @@
  *   node scripts/validate_browsers.ts webkit firefox       # выбранные
  *   node scripts/validate_browsers.ts --only ga-tile-ways,ga-typo-distance   # выбранные задачи и уроки (по id)
  *   node scripts/validate_browsers.ts webkit --shard 2/3   # часть 2 из 3 (как в CI): каждая третья задача и урок
- *   node scripts/validate_browsers.ts chromium --pages 2   # две вкладки параллельно (по умолчанию — по ядрам)
+ *   node scripts/validate_browsers.ts chromium --pages 2   # две вкладки параллельно (по умолчанию — по ядру, до 8)
  *   node scripts/validate_browsers.ts chromium --only pd-project-clean --lesson-timeout 5   # свой лимит на урок, с
  *
- * --only можно задать и переменной CHECK_ONLY. Пробы глубины (--probes / --no-probes) по умолчанию выполняются,
- * если проверяется всё (без --only) и это часть 1.
+ * --only можно задать и переменной CHECK_ONLY. Пробы глубины — только в части 1: с --probes всегда, без него —
+ * если проверяется всё (без --only); --no-probes — без них.
  *
  * Зачем, если есть scripts/validate_pyodide.ts: стек WebAssembly в браузерах разный, и рекурсия, которая идёт
  * через C (functools.cache / lru_cache, sum(генератор), map), в Safari выдерживает всего ~60 уровней, а в
@@ -468,10 +468,12 @@ async function main(argv: string[]): Promise<number> {
   const onlyArg = option(argv, '--only') ?? process.env.CHECK_ONLY ?? '';
   const only = onlyArg ? new Set(onlyArg.split(',')) : null;
   const [shard, shards] = (option(argv, '--shard') ?? '1/1').split('/').map(Number);
-  const pages = Number(option(argv, '--pages') ?? Math.max(1, availableParallelism() - 1));
+  // по вкладке на ядро: раннер macOS (3 ядра) с тремя вкладками проходит WebKit за ~3–5 мин, с двумя — за ~6–7
+  const pages = Number(option(argv, '--pages') ?? Math.min(8, availableParallelism()));
   const lessonTimeout = Number(option(argv, '--lesson-timeout') ?? LESSON_TIMEOUT);
   if (!(shards >= 1 && shard >= 1 && shard <= shards && pages >= 1)) throw new Error('--shard k/n: 1 ≤ k ≤ n; --pages — не меньше 1');
-  const probes = argv.includes('--probes') || (!argv.includes('--no-probes') && !only && shard === 1);
+  // пробы — только в части 1 (--probes в CI передаётся всем частям)
+  const probes = shard === 1 && (argv.includes('--probes') || (!argv.includes('--no-probes') && !only));
   const names = argv.filter((a, i) => !a.startsWith('--') && !valued.includes(argv[i - 1]));
   const chosen = names.length ? names : Object.keys(engines);
   for (const n of chosen) if (!engines[n]) throw new Error(`неизвестный браузер ${n}: ${Object.keys(engines).join(', ')}`);
