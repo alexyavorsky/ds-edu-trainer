@@ -37,7 +37,7 @@
  *
  * Повторы — только страховка, и каждый виден (строка «повтор» и ::warning в CI, итог «повторов: N»):
  * упала вкладка или браузер — пачка выполняется заново один раз в новом контексте; не запустился
- * воркер Python — до двух повторов (browser-check.html, startPython); скачивание пакета — до 5 попыток.
+ * воркер Python — до двух повторов (browser-check.html, startPython); скачивание файла Pyodide — до 6 попыток.
  * Журнал каждой вкладки пишется по мере выполнения в browser-logs/ (в CI — артефакт), конец журнала упавшей
  * вкладки печатается в ошибке.
  */
@@ -69,8 +69,8 @@ const BATCH = 25;
 const LOG_DIR = join(import.meta.dirname, '..', 'browser-logs');
 /** Пакеты Pyodide, скачанные с jsDelivr (тот же кэш, что у scripts/validate_pyodide.ts в CI). */
 const CACHE_DIR = process.env.PYODIDE_CACHE || join(import.meta.dirname, '..', '.pyodide-cache');
-/** Попыток скачать файл Pyodide; пауза между ними растёт: 2, 4, 8, 16 с. */
-const DOWNLOAD_ATTEMPTS = 5;
+/** Попыток скачать файл Pyodide; пауза между ними растёт: 2, 4, 8, 16, 32 с — сеть может пропасть на минуту. */
+const DOWNLOAD_ATTEMPTS = 6;
 
 const PROBES: Record<string, { depths: number[]; code: string }> = {
   plain: { depths: [990, 5000], code: 'def f(n):\n    return 0 if n == 0 else f(n - 1) + 1\nprint(f(DEPTH))' },
@@ -489,7 +489,8 @@ async function main(argv: string[]): Promise<number> {
   const mine = all.filter((x) => !only || only.has(x.id)).filter((_, i) => i % shards === shard - 1);
   // пробы — каждая своей вкладкой: в них воркеры падают от переполнения стека намеренно
   const batches: Batch[] = probes ? Object.keys(PROBES).map((name) => ({ label: `проба ${name}`, ids: [], probes: [name] })) : [];
-  const count = Math.ceil(mine.length / BATCH);
+  // пачек — кратно числу вкладок, иначе в конце одна вкладка работает, а остальные ждут
+  const count = Math.min(mine.length, Math.ceil(Math.ceil(mine.length / BATCH) / pages) * pages);
   for (let b = 0; b < count; b++) {
     // элементы через один по всем пачкам: в каждой и задачи, и уроки — пачки примерно равны по времени
     const ids = mine.filter((_, i) => i % count === b).map((x) => x.id);
@@ -506,7 +507,14 @@ async function main(argv: string[]): Promise<number> {
   const mirror = new PyodideMirror();
   const t0 = performance.now();
   const needed = new Set(mine.flatMap((x) => x.packages));
-  await mirror.prefetch([...needed]);
+  try {
+    await mirror.prefetch([...needed]);
+  } catch (error) {
+    const message = `пакеты Pyodide не скачались за ${DOWNLOAD_ATTEMPTS} попыток (около минуты): ${(error as Error).message}`;
+    console.log(`✗ ${message}`);
+    annotate('сеть', message);
+    return 1;
+  }
   console.log(`Пакеты Pyodide (${[...needed].join(', ') || 'без пакетов'}): готовы за ${((performance.now() - t0) / 1000).toFixed(0)} с, скачано ${network.downloaded}`);
 
   const { url, close } = await serve(lessonTimeout, tasks, lessons, mirror);

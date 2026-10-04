@@ -93,9 +93,10 @@ export const JOBS: Record<string, { areas: string[]; shared?: string[]; ids?: bo
 
 /**
  * На сколько заданий делится проверка каждого браузера, если проверяется всё (замеры — docs/ARCHITECTURE.md, «CI»).
- * Всего 5 заданий — столько раннеров macOS у аккаунта одновременно; Chromium и Firefox медленнее WebKit.
+ * Всего 5 заданий — столько раннеров macOS у аккаунта одновременно. Chromium целиком быстрее Firefox и WebKit
+ * (у WebKit ещё и пробы глубины дольше).
  */
-export const BROWSER_SHARDS: Record<string, number> = { chromium: 2, firefox: 2, webkit: 1 };
+export const BROWSER_SHARDS: Record<string, number> = { chromium: 1, firefox: 2, webkit: 2 };
 /** Выбрано не больше стольких задач и уроков — одна часть на браузер. */
 const ONE_SHARD_LIMIT = 40;
 
