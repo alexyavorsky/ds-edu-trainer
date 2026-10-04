@@ -3,23 +3,37 @@
 <title>Проверка Python в браузере</title>
 <!--
   Страница для scripts/validate_browsers.ts: запускает воркер production-сборки сайта (dist/) — тот же код,
-  что на страницах задач, — и выполняет в нём все задачи и пробы глубины рекурсии. Результат — window.__result.
+  что на страницах задач, — и выполняет в нём задачи и уроки из only (через запятую) или пробы глубины
+  рекурсии (probes — их имена через запятую). Результат — window.__result. Пробы грузят Pyodide с jsDelivr, как сайт; задачи и
+  уроки — с зеркала validate_browsers.ts (тот же воркер, адрес Pyodide заменён на локальный).
 -->
 <pre id="log"></pre>
 <script type="module">
-  const log = (s) => (document.getElementById('log').textContent += s + '\n');
+  // журнал — и на странице, и в консоль: validate_browsers.ts собирает его по мере выполнения, поэтому он
+  // сохраняется, даже если процесс страницы упадёт
+  const log = (s) => {
+    document.getElementById('log').textContent += s + '\n';
+    console.log(`[check] ${s}`);
+  };
+  /** Только в журнал (не на страницу): что начато — по нему видно, где остановилась упавшая страница. */
+  let workers = 0;
+  const trace = (s) => console.log(`[check] · ${s}`);
   const params = new URLSearchParams(location.search);
   const [worker, tasks, config, lessons] = await Promise.all(['/__check/worker', '/__check/tasks.json', '/__check/config.json', '/__check/lessons.json'].map((u) => fetch(u)));
-  const workerUrl = `/_astro/${await worker.text()}`;
+  const workerUrls = await worker.json();
   const allTasks = await tasks.json();
   const allLessons = await lessons.json();
   const { timeoutFactor, defaultTestTimeout, probes, lessonTimeout } = await config.json();
-  const only = params.get('only')?.split(',');
+  const only = (params.get('only') || '').split(',').filter(Boolean);
+  const probeNames = (params.get('probes') || '').split(',').filter(Boolean);
+  const withProbes = probeNames.length > 0;
+  const workerUrl = withProbes ? workerUrls.cdn : workerUrls.mirror;
 
   /** Один воркер; при таймауте или падении завершается, как на сайте. */
   class Python {
     constructor() {
       this.worker = new Worker(workerUrl, { type: 'module' });
+      workers++;
       this.listeners = new Set();
       this.worker.onmessage = (e) => this.listeners.forEach((l) => l(e.data));
       this.worker.onerror = (e) => {
@@ -67,9 +81,10 @@
   const result = { probes: {}, tasks: [], lessons: [], restarts: [], userAgent: navigator.userAgent };
 
   /**
-   * Новый воркер с загруженным Python. WebKit после сотни-другой воркеров в одной странице изредка не может
-   * запустить очередной (Out of bounds memory access при инициализации) — человек на сайте в таком случае
-   * перезагружает страницу. Здесь — до двух повторов после паузы; каждый повтор попадает в отчёт.
+   * Новый воркер с загруженным Python; не запустился — до двух повторов после паузы, каждый попадает в отчёт.
+   * Страховка от сбоя среды: JavaScriptCore на виртуальных машинах macOS arm64 в CI изредка (~0,1–0,3 % запусков)
+   * падает при запуске Pyodide — «Out of bounds memory access», «access to a null reference» и т.п.
+   * (docs/ARCHITECTURE.md, «CI»). Детерминированная ошибка загрузки повторится трижды и останется ошибкой.
    */
   async function startPython(where) {
     for (let attempt = 1; ; attempt++) {
@@ -88,7 +103,7 @@
   }
   try {
     // Пробы: до какой глубины каждый вид рекурсии работает, а где Python падает целиком (стек WebAssembly)
-    for (const [name, { depths, code }] of Object.entries(probes)) {
+    for (const [name, { depths, code }] of Object.entries(probes).filter(([name]) => probeNames.includes(name))) {
       result.probes[name] = {};
       for (const depth of depths) {
         const py = await startPython(`проба ${name}`);
@@ -101,7 +116,8 @@
       log(`${name}: ${JSON.stringify(result.probes[name])}`);
     }
     // Задачи: у каждой свой воркер — как на сайте, где у страницы задачи свой
-    for (const task of allTasks.filter((t) => !only || only.includes(t.id))) {
+    for (const task of allTasks.filter((t) => only.includes(t.id))) {
+      trace(`задача ${task.id} (воркер №${workers + 1})`);
       const py = await startPython(`задача ${task.id}`);
       for (const [variant, code] of task.variants) {
         const end = await py.run({ kind: 'task', packages: task.packages, code, footer: task.footer });
@@ -122,12 +138,13 @@
     // На урок — не больше lessonTimeout секунд (вместе с запуском Python): зависший урок останавливается,
     // в отчёт идёт последняя начатая ячейка, остальные уроки проверяются дальше.
     const same = (a, b) => JSON.stringify([a.lines, a.result, a.error]) === JSON.stringify([b.lines, b.result, b.error]);
-    for (const lesson of allLessons.filter((l) => !only || only.includes(l.id))) {
+    for (const lesson of allLessons.filter((l) => only.includes(l.id))) {
       const started = performance.now();
       const at = { cell: 'запуск Python', kind: 'start' }; // последняя начатая ячейка
       let py = null;
       let expired = false;
       const work = (async () => {
+        trace(`урок ${lesson.id} (воркер №${workers + 1})`);
         const fresh = await startPython(`урок ${lesson.id}`);
         if (expired) return fresh.stop();
         py = fresh;
@@ -135,6 +152,7 @@
           const { expected, raises, ...rest } = step;
           at.cell = step.cell;
           at.kind = step.op;
+          trace(`${lesson.id}: ${step.op} ${step.cell}`);
           const end = await py.run({ kind: 'lesson', lesson: lesson.id, session: 'browser', files: lesson.files, packages: lesson.packages, ...rest });
           if (expired) return;
           let status = 'passed';

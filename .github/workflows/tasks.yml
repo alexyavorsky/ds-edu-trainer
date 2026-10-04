@@ -1,13 +1,77 @@
 name: Задачи, справочник и сайт
 
+# Уровни прогона (подробно — docs/ARCHITECTURE.md, «CI»; правила путей — scripts/ci_changes.ts):
+#   полный — push в main, ночной прогон, ручной запуск (scope = full): всё — все задачи, уроки, статьи;
+#   ветка  — push в любую другую ветку (его результат виден и в PR): только задания затронутых разделов, в
+#            медленных (курсы, браузеры) — только изменённые уроки и задачи относительно merge-base с main.
+#            Изменены общие части (воркер, конфиг Pyodide, раннер, валидаторы, зависимости, сборка, CI) — всё
+#            зависимое целиком.
+# Матрица Python 3 ОС × 3.10–3.14 и три браузера — всегда, когда задание запускается.
+# Итог — задание «ci-ok»: зелёное, если каждое нужное задание прошло или пропущено. Его и делать обязательным.
+#
+# pull_request не запускает workflow: push-прогон ветки проверяет тот же коммит и виден в PR, а второй прогон
+# удвоил бы очередь раннеров macOS (их у аккаунта не больше 5 одновременно).
+
 on:
   push:
-  pull_request:
+  schedule:
+    - cron: "23 1 * * *" # ночной полный прогон (UTC): свежие образы раннеров, браузеры, jsDelivr
   workflow_dispatch:
+    inputs:
+      scope:
+        description: "full — всё; changed — как push в ветку (изменения относительно base)"
+        type: choice
+        options: [full, changed]
+        default: full
+      base:
+        description: "changed: с какой веткой сравнивать"
+        type: string
+        default: main
+
+# Новый push в ветку отменяет её незаконченный push-прогон. Прогоны main, ночные и ручные — каждый в своей
+# группе: прогон слияния не отменяется следующим слиянием (у каждого коммита main — свой полный результат).
+concurrency:
+  group: ci-${{ (github.ref == 'refs/heads/main' || github.event_name != 'push') && format('{0}-{1}', github.ref, github.run_id) || github.ref }}
+  cancel-in-progress: true
 
 jobs:
+  plan:
+    name: План прогона
+    runs-on: ubuntu-latest
+    outputs:
+      full: ${{ steps.plan.outputs.full }}
+      run_tasks: ${{ steps.plan.outputs.run_tasks }}
+      run_reference: ${{ steps.plan.outputs.run_reference }}
+      run_pyodide: ${{ steps.plan.outputs.run_pyodide }}
+      run_courses: ${{ steps.plan.outputs.run_courses }}
+      ids_courses: ${{ steps.plan.outputs.ids_courses }}
+      run_browsers: ${{ steps.plan.outputs.run_browsers }}
+      ids_browsers: ${{ steps.plan.outputs.ids_browsers }}
+      browsers_matrix: ${{ steps.plan.outputs.browsers_matrix }}
+      browser_probes: ${{ steps.plan.outputs.browser_probes }}
+      run_site: ${{ steps.plan.outputs.run_site }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # merge-base с main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Что изменилось и что проверять
+        id: plan
+        env:
+          FULL: ${{ github.event_name == 'schedule' || github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.scope == 'full') }}
+          BASE: origin/${{ github.event_name == 'workflow_dispatch' && inputs.base || 'main' }}
+        run: |
+          if [ "$FULL" = true ]; then node scripts/ci_changes.ts --full
+          else node scripts/ci_changes.ts --base "$BASE"; fi
+
   validate:
     name: Валидация задач (Python 3.12)
+    needs: plan
+    if: needs.plan.outputs.run_tasks == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -26,7 +90,7 @@ jobs:
 
   run-bundles:
     name: Файлы задач · ${{ matrix.os }} · Python ${{ matrix.python }}
-    needs: validate
+    needs: [plan, validate]
     strategy:
       fail-fast: false
       matrix:
@@ -48,6 +112,8 @@ jobs:
 
   reference:
     name: Справочник (примеры NumPy и pandas, Python 3.12)
+    needs: plan
+    if: needs.plan.outputs.run_reference == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -63,6 +129,8 @@ jobs:
 
   pyodide:
     name: Python в браузере (Pyodide в Node.js)
+    needs: plan
+    if: needs.plan.outputs.run_pyodide == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -89,6 +157,8 @@ jobs:
 
   courses:
     name: Курсы (Pyodide и CPython 3.14, ноутбуки)
+    needs: plan
+    if: needs.plan.outputs.run_courses == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -111,14 +181,23 @@ jobs:
           path: .pyodide-cache
           key: pyodide-packages-${{ hashFiles('src/lib/python/config.ts', 'package-lock.json') }}
       - name: Уроки целиком с эталонами, заготовками, другими решениями и ошибками; вывод совпадает с сохранённым; ноутбуки выполняются
-        run: node scripts/validate_courses.ts --python python
+        # структура курсов и порядок понятий — всегда по всем курсам; выполнение — уроки IDS (пусто — все)
+        run: node scripts/validate_courses.ts --python python ${IDS//,/ }
         env:
           PYODIDE_CACHE: ${{ github.workspace }}/.pyodide-cache
+          IDS: ${{ needs.plan.outputs.ids_courses }}
 
   browsers:
-    name: Python в браузерах (Chromium, Firefox, WebKit на macOS)
+    name: Браузер ${{ matrix.browser }} · часть ${{ matrix.shard }}
+    needs: plan
+    if: needs.plan.outputs.run_browsers == 'true'
     # macOS: стек WebKit здесь такой же, как у Safari (на Linux он в разы больше и бюджет глубины не проверяет)
     runs-on: macos-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      # три браузера всегда; всё — по частям (--shard, scripts/ci_changes.ts: BROWSER_SHARDS), немного — одна часть
+      matrix: ${{ fromJSON(needs.plan.outputs.browsers_matrix) }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v4
@@ -126,14 +205,40 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Браузеры Playwright
-        run: npx playwright install chromium firefox webkit
+      - name: Версия Playwright
+        id: playwright
+        run: echo "version=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Кэш браузера Playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.version }}-${{ matrix.browser }}
+      - name: Браузер Playwright (из кэша — только проверка)
+        run: npx playwright install ${{ matrix.browser }}
+      - name: Кэш пакетов Pyodide
+        uses: actions/cache@v4
+        with:
+          path: .pyodide-cache
+          key: pyodide-packages-${{ runner.os }}-${{ hashFiles('src/lib/python/config.ts', 'package-lock.json') }}
       - run: npm run build
-      - name: Все эталоны задач и уроки курсов в трёх браузерах; глубина рекурсии не меньше бюджета тестов
-        run: node scripts/validate_browsers.ts
+      - name: Эталоны задач и уроки курсов в браузере; в части 1 — глубина рекурсии не меньше бюджета тестов (если проверяется всё)
+        run: node scripts/validate_browsers.ts ${{ matrix.browser }} --shard ${{ matrix.shard }} $PROBES
+        env:
+          CHECK_ONLY: ${{ needs.plan.outputs.ids_browsers }} # пусто — всё
+          PROBES: ${{ needs.plan.outputs.browser_probes == 'true' && '--probes' || '--no-probes' }}
+          PYODIDE_CACHE: ${{ github.workspace }}/.pyodide-cache
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-logs-${{ matrix.browser }}-${{ strategy.job-index }}
+          path: browser-logs/
+          retention-days: 14
+          if-no-files-found: ignore
 
   site:
     name: Сайт (сверка сборок, типы, build)
+    needs: plan
+    if: needs.plan.outputs.run_site == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -151,3 +256,49 @@ jobs:
       - name: Supabase — политики RLS и слияние записей (миграция в PGlite)
         run: npm run test:supabase
       - run: npm run build
+
+  # Ворота: одно обязательное задание вместо списка, который меняется от прогона к прогону. Новое задание —
+  # добавить в needs (docs/ARCHITECTURE.md, «CI»).
+  ci-ok:
+    name: ci-ok
+    if: always()
+    needs: [plan, validate, run-bundles, reference, pyodide, courses, browsers, site]
+    runs-on: ubuntu-latest
+    steps:
+      # Повторы браузеров по всем частям. Известный сбой JavaScriptCore (docs/ARCHITECTURE.md, «CI») даёт в среднем
+      # ~0,4 повтора WebKit на полный прогон; больше 2 или любой повтор Chromium/Firefox — похоже на новую проблему,
+      # которую повтор может скрывать. Прогон не валится, но предупреждение видно на странице прогона.
+      - uses: actions/download-artifact@v4
+        if: needs.browsers.result != 'skipped'
+        continue-on-error: true
+        with:
+          pattern: browser-logs-*
+          path: browser-logs
+      - name: Повторы в браузерах (порог — 2 повтора WebKit за прогон)
+        if: needs.browsers.result != 'skipped'
+        run: |
+          files=$(find browser-logs -name 'retries-*.json' 2>/dev/null)
+          [ -n "$files" ] || { echo "отчётов о повторах нет"; exit 0; }
+          jq -s 'add' $files > retries.json
+          webkit=$(jq '[.[] | select(.browser == "webkit") | .retries | length] | add // 0' retries.json)
+          other=$(jq '[.[] | select(.browser != "webkit") | .retries | length] | add // 0' retries.json)
+          echo "Повторов: WebKit $webkit, Chromium и Firefox $other"
+          {
+            echo "### Повторы в браузерах"
+            echo
+            echo "WebKit: $webkit (ожидаемо 0–2: известный сбой JavaScriptCore), Chromium и Firefox: $other (ожидаемо 0)"
+            echo
+            jq -r '.[] | .browser as $b | .shard as $s | .retries[] | "- \($b) \($s): \(.)"' retries.json
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$webkit" -gt 2 ]; then
+            echo "::warning title=Повторов WebKit больше обычного::$webkit повтора(ов) за прогон при пороге 2 — вероятно, новая проблема, которую скрывает повтор. Разберите журналы browser-logs-* (docs/ARCHITECTURE.md, «CI»)"
+          fi
+          if [ "$other" -gt 0 ]; then
+            echo "::warning title=Повторы в Chromium или Firefox::$other повтора(ов) — для известного сбоя WebKit их быть не должно. Разберите журналы browser-logs-*"
+          fi
+      - name: Все нужные задания прошли или пропущены
+        env:
+          NEEDS: ${{ toJSON(needs) }}
+        run: |
+          echo "$NEEDS" | jq -r 'to_entries[] | "\(.key): \(.value.result)"'
+          echo "$NEEDS" | jq -e '.plan.result == "success" and ([.[] | .result] | all(. == "success" or . == "skipped"))' > /dev/null

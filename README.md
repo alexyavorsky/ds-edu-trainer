@@ -60,10 +60,17 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 | `npm run check:bundles` | сборка на сайте совпадает с проверенной сборкой байт в байт |
 | `.venv/bin/python scripts/validate_reference.py --strict` | справочник: структура, ссылки, все примеры выполняются и дают показанный вывод и графики; замеры времени выполняются, но числа не сравниваются |
 | `node scripts/validate_pyodide.ts` | то же в Python для браузера (Pyodide в Node.js): эталоны проходят, заготовки — нет; примеры справочника сверяются с `reference/browser.json` (`--update` — обновить) |
-| `node scripts/validate_browsers.ts` | эталоны в Chromium, Firefox и WebKit (Playwright, после `npm run build`) и пробы глубины рекурсии: в Safari стек меньше всего |
+| `node scripts/validate_browsers.ts [браузер…] [--only id,…]` | эталоны задач и уроки курсов в Chromium, Firefox и WebKit (Playwright, после `npm run build`) и пробы глубины рекурсии: в Safari стек меньше всего; журналы — `browser-logs/` |
+| `node scripts/ci_changes.ts --files <путь…>` | что запустит CI при изменении этих файлов (docs/ARCHITECTURE.md, «CI») |
 | `node scripts/validate_courses.ts` | курсы: структура, понятия по порядку, каждый урок целиком с эталонами, заготовками, другими решениями и ошибками — в Pyodide и CPython; сохранённый вывод совпадает (`--update` — записать); ноутбук .ipynb выполняется |
 | `npm run check` | типы TypeScript / Astro |
 | `npm run test:supabase` | миграция Supabase в PGlite (Postgres в WebAssembly): каждый пользователь видит и меняет только свои строки, аноним — ничего, слияние записей по времени |
+
+CI (`.github/workflows/tasks.yml`) на push в ветку проверяет только затронутое: изменили урок — курсы и браузеры
+только для этого урока, изменили только `docs/` — ничего, кроме плана; изменили общую часть (воркер, раннер,
+валидатор, зависимости) — всё зависимое. Push в main, ночной прогон и ручной запуск (Actions → Run workflow,
+`scope = full`) — всё: три ОС × Python 3.10–3.14, три браузера. Итог — задание `ci-ok`. Устройство —
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), раздел «CI».
 
 ## Деплой
 
